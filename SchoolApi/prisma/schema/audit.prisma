@@ -1,0 +1,250 @@
+enum ApprovalType {
+  HELPER_DRAFT
+  PROBATION_REVIEW
+  ATTENDANCE_CORRECTION
+  LEAVE
+  TIMETABLE_PUBLISH
+  SYLLABUS_PLAN
+  ACTIVITY
+  DIARY_MODERATION
+  RESULT_PUBLISH
+  PROMOTION
+  CONCESSION
+  REFUND
+  PAYMENT_REVERSAL
+  PAYROLL
+  EXPENSE
+  PURCHASE_ORDER
+  ADMISSION
+  CHILD_LINK
+  CONTACT_CHANGE
+  EARLY_LEAVE
+  CERTIFICATE
+
+  @@map("approval_type")
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  RETURNED
+  CANCELLED
+
+  @@map("approval_status")
+}
+
+enum ApprovalDecision {
+  APPROVED
+  REJECTED
+  RETURNED
+
+  @@map("approval_decision")
+}
+
+enum NotificationChannel {
+  IN_APP
+  PUSH
+  EMAIL
+  SMS
+
+  @@map("notification_channel")
+}
+
+enum DeliveryStatus {
+  PENDING
+  SENT
+  FAILED
+  SKIPPED
+
+  @@map("delivery_status")
+}
+
+enum FilePurpose {
+  SCHOOL_LOGO
+  DOCUMENT
+  ATTACHMENT
+
+  @@map("file_purpose")
+}
+
+enum FileScanStatus {
+  PENDING
+  CLEAN
+  INFECTED
+  FAILED
+
+  @@map("file_scan_status")
+}
+
+enum DomainEventStatus {
+  PENDING
+  DISPATCHED
+  FAILED
+
+  @@map("domain_event_status")
+}
+
+// Append-only; partitioned by month in raw SQL, hence the composite key.
+model AuditLog {
+  id                String   @default(uuid(7)) @db.Uuid
+  actorId           String?  @map("actor_id") @db.Uuid
+  onBehalfOfStaffId String?  @map("on_behalf_of_staff_id") @db.Uuid
+  action            String
+  entityType        String   @map("entity_type")
+  entityId          String   @map("entity_id")
+  schoolId          String?  @map("school_id") @db.Uuid
+  branchId          String?  @map("branch_id") @db.Uuid
+  before            Json?
+  after             Json?
+  ip                String?
+  userAgent         String?  @map("user_agent")
+  at                DateTime @default(now()) @db.Timestamptz(3)
+
+  @@id([id, at])
+  @@index([entityType, entityId])
+  @@index([actorId, at])
+  @@index([branchId, at])
+  @@map("audit_logs")
+}
+
+model ApprovalRequest {
+  id            String         @id @default(uuid(7)) @db.Uuid
+  type          ApprovalType
+  entityType    String         @map("entity_type")
+  entityId      String         @map("entity_id") @db.Uuid
+  schoolId      String         @map("school_id") @db.Uuid
+  branchId      String?        @map("branch_id") @db.Uuid
+  requestedById String         @map("requested_by_id") @db.Uuid
+  title         String
+  amountMinor   BigInt?        @map("amount_minor")
+  status        ApprovalStatus @default(PENDING)
+  currentStep   Int            @default(1) @map("current_step")
+  payload       Json
+  reason        String?
+  decidedAt     DateTime?      @map("decided_at") @db.Timestamptz(3)
+  version       Int            @default(0)
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school      School         @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch      Branch?        @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  requestedBy User           @relation("ApprovalRequester", fields: [requestedById], references: [id], onDelete: Restrict)
+  steps       ApprovalStep[]
+
+  @@index([schoolId])
+  @@index([branchId, status])
+  @@index([requestedById])
+  @@index([entityType, entityId])
+  @@map("approval_requests")
+}
+
+model ApprovalStep {
+  id               String            @id @default(uuid(7)) @db.Uuid
+  requestId        String            @map("request_id") @db.Uuid
+  order            Int               @map("step_order")
+  approverRole     String?           @map("approver_role")
+  approverUserId   String?           @map("approver_user_id") @db.Uuid
+  amountLimitMinor BigInt?           @map("amount_limit_minor")
+  decision         ApprovalDecision?
+  decidedById      String?           @map("decided_by_id") @db.Uuid
+  comment          String?
+  decidedAt        DateTime?         @map("decided_at") @db.Timestamptz(3)
+  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  request      ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  approverUser User?           @relation("ApprovalStepApprover", fields: [approverUserId], references: [id], onDelete: Restrict)
+  decidedBy    User?           @relation("ApprovalStepDecider", fields: [decidedById], references: [id], onDelete: Restrict)
+
+  @@unique([requestId, order])
+  @@index([approverUserId])
+  @@index([approverRole])
+  @@index([decidedById])
+  @@map("approval_steps")
+}
+
+model Notification {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  category  String
+  title     String
+  body      String
+  data      Json?
+  readAt    DateTime? @map("read_at") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user       User                   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  deliveries NotificationDelivery[]
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+  @@map("notifications")
+}
+
+model NotificationDelivery {
+  id             String              @id @default(uuid(7)) @db.Uuid
+  notificationId String              @map("notification_id") @db.Uuid
+  channel        NotificationChannel
+  status         DeliveryStatus      @default(PENDING)
+  attempts       Int                 @default(0)
+  lastError      String?             @map("last_error")
+  sentAt         DateTime?           @map("sent_at") @db.Timestamptz(3)
+  createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime            @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, channel])
+  @@index([status, createdAt])
+  @@map("notification_deliveries")
+}
+
+model File {
+  id           String         @id @default(uuid(7)) @db.Uuid
+  schoolId     String?        @map("school_id") @db.Uuid
+  purpose      FilePurpose
+  storageKey   String         @unique @map("storage_key")
+  originalName String         @map("original_name")
+  mime         String
+  size         Int
+  sha256       String         @db.Char(64)
+  uploadedById String         @map("uploaded_by_id") @db.Uuid
+  scanStatus   FileScanStatus @default(PENDING) @map("scan_status")
+  archivedAt   DateTime?      @map("archived_at") @db.Timestamptz(3)
+  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  school      School?  @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  uploadedBy  User     @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  schoolLogos School[] @relation("SchoolLogo")
+
+  @@index([schoolId])
+  @@index([uploadedById])
+  @@index([sha256])
+  @@map("files")
+}
+
+model Sequence {
+  scopeKey  String   @id @map("scope_key")
+  nextValue BigInt   @default(1) @map("next_value")
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("sequences")
+}
+
+// Transactional outbox: written inside the business transaction, dispatched to queues after commit.
+model DomainEvent {
+  id            String            @id @default(uuid(7)) @db.Uuid
+  type          String
+  aggregateType String            @map("aggregate_type")
+  aggregateId   String            @map("aggregate_id")
+  payload       Json
+  status        DomainEventStatus @default(PENDING)
+  attempts      Int               @default(0)
+  lastError     String?           @map("last_error")
+  occurredAt    DateTime          @default(now()) @map("occurred_at") @db.Timestamptz(3)
+  dispatchedAt  DateTime?         @map("dispatched_at") @db.Timestamptz(3)
+
+  @@index([status, occurredAt])
+  @@index([aggregateType, aggregateId])
+  @@map("domain_events")
+}

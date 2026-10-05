@@ -1,0 +1,51 @@
+<resources>
+    <string name="org_read_only_hint">Changes are made on the web panel.</string>
+    <string name="org_branches_empty">No branches yet</string>
+    <string name="org_branch_title">Branch</string>
+    <string name="org_branch_code">Code</string>
+    <string name="org_branch_principal">Principal</string>
+    <string name="org_branch_address">Address</string>
+    <string name="org_branch_phone">Phone</string>
+    <string name="org_branch_email">Email</string>
+    <string name="org_branch_timings">Timings</string>
+    <string name="org_branch_opens">Opens at</string>
+    <string name="org_branch_closes">Closes at</string>
+    <string name="org_branch_attendance_lock">Attendance locks at</string>
+    <string name="org_branch_working_days">Working days</string>
+    <string name="org_branch_settings">Branch settings</string>
+    <string name="org_settings_empty">Default settings apply.</string>
+    <string name="org_sessions_title">Academic sessions</string>
+    <string name="org_sessions_empty">No academic sessions yet</string>
+    <string name="org_calendar_title">Calendar</string>
+    <string name="org_calendar_empty">No holidays or events in this session</string>
+    <string name="org_tab_branch">Branch</string>
+    <string name="org_tab_calendar">Sessions &amp; calendar</string>
+    <string name="org_tab_sections">Sections</string>
+    <string name="org_tab_classes">Classes</string>
+    <string name="org_tab_subjects">Subjects</string>
+    <string name="org_sections_empty">No sections in the active session</string>
+    <string name="org_classes_empty">No classes yet</string>
+    <string name="org_subjects_empty">No subjects yet</string>
+    <string name="org_section_capacity">Capacity %1$d</string>
+    <plurals name="org_session_terms">
+        <item quantity="one">%1$d term</item>
+        <item quantity="other">%1$d terms</item>
+    </plurals>
+    <plurals name="org_class_subjects">
+        <item quantity="one">%1$d subject</item>
+        <item quantity="other">%1$d subjects</item>
+    </plurals>
+    <plurals name="org_section_students">
+        <item quantity="one">%1$d student</item>
+        <item quantity="other">%1$d students</item>
+    </plurals>
+    <string-array name="org_week_days">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
+</resources>

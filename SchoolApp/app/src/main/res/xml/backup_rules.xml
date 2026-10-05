@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 and lower. Session tokens are Keystore-bound and the DB is a cache; neither is backed up. -->
+<full-backup-content>
+    <exclude domain="database" path="schoolapp.db" />
+    <exclude domain="database" path="schoolapp.db-shm" />
+    <exclude domain="database" path="schoolapp.db-wal" />
+    <exclude domain="file" path="datastore/" />
+    <exclude domain="sharedpref" path="." />
+</full-backup-content>

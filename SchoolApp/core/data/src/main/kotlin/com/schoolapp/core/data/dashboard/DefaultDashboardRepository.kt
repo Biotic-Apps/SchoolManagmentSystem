@@ -1,0 +1,26 @@
+package com.schoolapp.core.data.dashboard
+
+import com.schoolapp.core.common.result.AppResult
+import com.schoolapp.core.model.dashboard.DashboardMetric
+import com.schoolapp.core.network.ApiCaller
+import com.schoolapp.core.network.api.DashboardApi
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.longOrNull
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class DefaultDashboardRepository @Inject constructor(
+    private val api: DashboardApi,
+    private val apiCaller: ApiCaller,
+) : DashboardRepository {
+
+    override suspend fun summary(branchId: String?): AppResult<List<DashboardMetric>> =
+        apiCaller.call { api.summary(branchId = branchId).data.toMetrics() }
+}
+
+/** Keeps numeric entries only, in server order; unknown future keys pass through. */
+internal fun JsonObject.toMetrics(): List<DashboardMetric> = mapNotNull { (key, value) ->
+    (value as? JsonPrimitive)?.longOrNull?.let { DashboardMetric(key, it) }
+}

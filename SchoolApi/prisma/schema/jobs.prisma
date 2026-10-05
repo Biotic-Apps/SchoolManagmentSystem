@@ -1,0 +1,23 @@
+enum JobRunStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+
+  @@map("job_run_status")
+}
+
+model JobRun {
+  id         String       @id @default(uuid(7)) @db.Uuid
+  queue      String
+  name       String
+  driver     String
+  status     JobRunStatus @default(RUNNING)
+  attempt    Int          @default(1)
+  error      String?
+  startedAt  DateTime     @default(now()) @map("started_at") @db.Timestamptz(3)
+  finishedAt DateTime?    @map("finished_at") @db.Timestamptz(3)
+
+  @@index([status, startedAt])
+  @@index([queue, name, startedAt])
+  @@map("job_runs")
+}

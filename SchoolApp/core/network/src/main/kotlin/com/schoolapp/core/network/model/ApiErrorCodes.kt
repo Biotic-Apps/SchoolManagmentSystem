@@ -1,0 +1,18 @@
+package com.schoolapp.core.network.model
+
+object ApiErrorCodes {
+    const val VALIDATION_FAILED = "VALIDATION_FAILED"
+    const val UNAUTHENTICATED = "UNAUTHENTICATED"
+    const val FORBIDDEN = "FORBIDDEN"
+    const val FORBIDDEN_SCOPE = "FORBIDDEN_SCOPE"
+    const val NOT_FOUND = "NOT_FOUND"
+    const val CONFLICT = "CONFLICT"
+    const val RECORD_LOCKED = "RECORD_LOCKED"
+    const val RATE_LIMITED = "RATE_LIMITED"
+    const val APPROVAL_REQUIRED = "APPROVAL_REQUIRED"
+    const val INVALID_CREDENTIALS = "INVALID_CREDENTIALS"
+    const val ACCOUNT_DISABLED = "ACCOUNT_DISABLED"
+    const val ACCOUNT_LOCKED = "ACCOUNT_LOCKED"
+    const val PASSWORD_CHANGE_REQUIRED = "PASSWORD_CHANGE_REQUIRED"
+    const val SESSION_REVOKED = "SESSION_REVOKED"
+}

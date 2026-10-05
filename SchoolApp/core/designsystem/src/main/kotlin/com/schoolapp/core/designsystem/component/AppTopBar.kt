@@ -1,0 +1,64 @@
+package com.schoolapp.core.designsystem.component
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import com.schoolapp.core.designsystem.theme.AppColors
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppTopBar(
+    title: String,
+    modifier: Modifier = Modifier,
+    subtitle: String? = null,
+    navigationIcon: @Composable () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {},
+) {
+    Column(modifier) {
+        TopAppBar(
+            title = {
+                Column {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.headlineSmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    if (subtitle != null) {
+                        Text(
+                            text = subtitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = AppColors.TextSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+            },
+            navigationIcon = navigationIcon,
+            actions = actions,
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = AppColors.Surface,
+                titleContentColor = AppColors.TextPrimary,
+                navigationIconContentColor = AppColors.TextPrimary,
+                actionIconContentColor = AppColors.TextPrimary,
+            ),
+        )
+        HorizontalDivider(color = AppColors.Border)
+    }
+}
+
+@Preview
+@Composable
+private fun AppTopBarPreview() = PreviewContainer {
+    AppTopBar(title = "Attendance", subtitle = "Class 5 - Section A")
+}

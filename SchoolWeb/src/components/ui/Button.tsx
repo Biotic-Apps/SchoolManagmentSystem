@@ -1,0 +1,60 @@
+import { forwardRef, type ButtonHTMLAttributes } from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/cn";
+import { Spinner } from "./Spinner";
+import { focusRing } from "./styles";
+
+const buttonVariants = cva(
+  `inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-input font-medium transition-colors disabled:pointer-events-none disabled:opacity-60 [&_svg]:size-4 ${focusRing}`,
+  {
+    variants: {
+      variant: {
+        primary: "bg-primary text-on-primary hover:bg-primary/90 active:bg-primary/85",
+        secondary: "border border-border bg-surface text-fg hover:bg-selected/60",
+        ghost: "text-fg hover:bg-selected/60",
+        danger: "border border-error/30 bg-error-soft text-error hover:border-error/50",
+      },
+      size: {
+        sm: "h-8 px-3 text-label",
+        md: "h-10 px-4 text-label",
+        lg: "h-12 px-5 text-body",
+        icon: "size-10",
+      },
+    },
+    defaultVariants: { variant: "primary", size: "md" },
+  },
+);
+
+export interface ButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean;
+  loading?: boolean;
+}
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  { className, variant, size, asChild, loading, disabled, children, type, ...props },
+  ref,
+) {
+  if (asChild) {
+    return (
+      <Slot ref={ref} className={cn(buttonVariants({ variant, size }), className)} {...props}>
+        {children}
+      </Slot>
+    );
+  }
+  return (
+    <button
+      ref={ref}
+      type={type ?? "button"}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      className={cn(buttonVariants({ variant, size }), className)}
+      {...props}
+    >
+      {loading && <Spinner />}
+      {children}
+    </button>
+  );
+});

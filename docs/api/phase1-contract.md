@@ -187,3 +187,18 @@ Dev uses `STORAGE_DRIVER=local` (files under `SchoolApi/storage/`); production u
 | `accountant@eschool.local` | ACCOUNTANT | Main Branch |
 | `parent@eschool.local` | PARENT | GUARDIAN |
 | `teacherparent@eschool.local` | TEACHER + PARENT | Main Branch (tests role switch) |
+
+## Deviations (as implemented in SchoolApi)
+Paths and documented fields are unchanged. Additions and clarifications:
+- **Status codes**: create endpoints return `201`; action endpoints (`/archive`, `/activate`, `/decide`, `/auth/*`, `/read`, `/devices`) return `200`.
+- **Auth errors per request**: disabled user → `403 ACCOUNT_DISABLED` (checked before anything else, also on refresh); revoked session, logout, logout-all or bumped tokenVersion → `401 SESSION_REVOKED`; bad/expired access token → `401 UNAUTHENTICATED`. `X-Active-Role` naming a role the user does not hold → `403 FORBIDDEN`. Login of a user with no active assignment → `403 FORBIDDEN`.
+- **Password**: wrong `currentPassword` on change → `401 INVALID_CREDENTIALS`; invalid/expired/used reset token → `400 VALIDATION_FAILED`. Password policy also rejects a short list of common passwords. Accounts created by admins always get `mustChangePassword=true`, also when a password is supplied (security.md §1). `PASSWORD_CHANGE_REQUIRED` is not raised for `/auth/*` and `/me` (GET and PATCH).
+- **`POST /auth/logout`**: if `refreshToken` is given and belongs to the caller, its session is revoked too.
+- **Sessions are not role-bound**: `PUT /branches/:id/principal` and `DELETE /users/:id/assignments/:id` revoke all sessions of the affected user and bump their tokenVersion (they log in again and keep their other roles).
+- **`ApprovalRequest`** adds `amountMinor: number | null`; steps add `amountLimitMinor`; `decidedBy` is `{ id, name } | null`. `GET /approvals` also returns requests whose later step awaits the caller; `decide` only accepts the current step. Approving above a step's limit escalates to the next step, or fails with `409 APPROVAL_REQUIRED` when none exists.
+- **Lists without pagination**: `GET /sessions/:id/terms`, `GET /calendar` (max 500, includes whole-school events of the branch's school), `GET /classes/:id/subjects`, `GET /roles`, `GET /permissions`, `GET /auth/sessions` return plain arrays. `GET /notifications` is paged (`meta`).
+- **Files**: `url` values point to `GET /files/:id/content?exp=&sig=` (public, HMAC-signed, 5 min). Images are served `inline`, other types as `attachment`. Allowed: jpg/jpeg, png, webp (≤5 MB), pdf, docx (≤10 MB), content signature must match; `SCHOOL_LOGO` must be an image.
+- **Branch settings PATCH**: only known keys; values validated (`HH:mm` strings, booleans, `{from,to}`, `approval.limits` = `{ [type]: amountMinor }`) → `400 VALIDATION_FAILED`.
+- **Scope rules**: classes/subjects (school-wide) may be created/edited by holders of `classes.add/edit` who belong to the school; rooms, sections, sessions, terms and branch calendar events need management scope over the branch; whole-school calendar events need school-level scope. Branch archive/activate need school-level scope.
+- **`DELETE /roles/:id`**: a custom role with assignment history is archived (hidden) instead of deleted; with active assignments → `409 CONFLICT`. Non-super-admins can only put permissions they hold into a custom role.
+- **Default permissions** follow security.md §2.1: e.g. PRINCIPAL also has `schools.view`, `branches.edit`, `users.view/add/edit`, `roles.view`, `classes.delete`; TEACHER/COORDINATOR/HEAD_TEACHER have `sessions.view`, `guardians.view`, `health.view`, `students.view` (in-screen only, no menu entry).

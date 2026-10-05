@@ -1,0 +1,224 @@
+enum UserStatus {
+  ACTIVE
+  DISABLED
+
+  @@map("user_status")
+}
+
+enum ClientPlatform {
+  WEB
+  ANDROID
+
+  @@map("client_platform")
+}
+
+enum ScopeType {
+  GLOBAL
+  SCHOOL
+  BRANCH
+  SECTION
+  SUBJECT_SECTION
+  SELF
+  GUARDIAN
+
+  @@map("scope_type")
+}
+
+enum OtpPurpose {
+  LOGIN
+  PASSWORD_RESET
+  PHONE_VERIFY
+  CHILD_LINK
+
+  @@map("otp_purpose")
+}
+
+model User {
+  id                 String     @id @default(uuid(7)) @db.Uuid
+  name               String
+  email              String?    @unique
+  phone              String?    @unique
+  passwordHash       String     @map("password_hash")
+  status             UserStatus @default(ACTIVE)
+  tokenVersion       Int        @default(0) @map("token_version")
+  mustChangePassword Boolean    @default(false) @map("must_change_password")
+  failedLoginCount   Int        @default(0) @map("failed_login_count")
+  lockedUntil        DateTime?  @map("locked_until") @db.Timestamptz(3)
+  lastLoginAt        DateTime?  @map("last_login_at") @db.Timestamptz(3)
+  createdById        String?    @map("created_by_id") @db.Uuid
+  updatedById        String?    @map("updated_by_id") @db.Uuid
+  createdAt          DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime   @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  refreshSessions     RefreshSession[]
+  passwordResetTokens PasswordResetToken[]
+  otpCodes            OtpCode[]
+  roleAssignments     RoleAssignment[]     @relation("AssignedUser")
+  grantedAssignments  RoleAssignment[]     @relation("AssignmentGrantedBy")
+  devices             UserDevice[]
+  principalOfBranches Branch[]             @relation("BranchPrincipal")
+  approvalRequests    ApprovalRequest[]    @relation("ApprovalRequester")
+  approvalSteps       ApprovalStep[]       @relation("ApprovalStepApprover")
+  decidedSteps        ApprovalStep[]       @relation("ApprovalStepDecider")
+  notifications       Notification[]
+  uploadedFiles       File[]
+
+  @@map("users")
+}
+
+model RefreshSession {
+  id           String         @id @default(uuid(7)) @db.Uuid
+  userId       String         @map("user_id") @db.Uuid
+  familyId     String         @map("family_id") @db.Uuid
+  tokenHash    String         @unique @map("token_hash")
+  deviceName   String?        @map("device_name")
+  platform     ClientPlatform
+  ip           String?
+  userAgent    String?        @map("user_agent")
+  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  lastUsedAt   DateTime       @default(now()) @map("last_used_at") @db.Timestamptz(3)
+  expiresAt    DateTime       @map("expires_at") @db.Timestamptz(3)
+  revokedAt    DateTime?      @map("revoked_at") @db.Timestamptz(3)
+  replacedById String?        @unique @map("replaced_by_id") @db.Uuid
+
+  user       User            @relation(fields: [userId], references: [id], onDelete: Restrict)
+  replacedBy RefreshSession? @relation("SessionRotation", fields: [replacedById], references: [id], onDelete: Restrict)
+  replaces   RefreshSession? @relation("SessionRotation")
+
+  @@index([userId])
+  @@index([familyId])
+  @@map("refresh_sessions")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(3)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
+}
+
+model OtpCode {
+  id          String     @id @default(uuid(7)) @db.Uuid
+  userId      String?    @map("user_id") @db.Uuid
+  destination String
+  purpose     OtpPurpose
+  codeHash    String     @map("code_hash")
+  attempts    Int        @default(0)
+  expiresAt   DateTime   @map("expires_at") @db.Timestamptz(3)
+  consumedAt  DateTime?  @map("consumed_at") @db.Timestamptz(3)
+  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([destination, purpose])
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("otp_codes")
+}
+
+model Role {
+  id          String       @id @default(uuid(7)) @db.Uuid
+  key         String
+  name        String
+  description String?
+  isSystem    Boolean      @default(false) @map("is_system")
+  schoolId    String?      @map("school_id") @db.Uuid
+  status      RecordStatus @default(ACTIVE)
+  createdById String?      @map("created_by_id") @db.Uuid
+  updatedById String?      @map("updated_by_id") @db.Uuid
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school      School?          @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  permissions RolePermission[]
+  assignments RoleAssignment[]
+
+  @@unique([schoolId, key])
+  @@unique([key], map: "roles_global_key_key", where: { schoolId: null })
+  @@map("roles")
+}
+
+model Permission {
+  key         String   @id
+  module      String
+  action      String
+  description String
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  roles RolePermission[]
+
+  @@index([module])
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId        String   @map("role_id") @db.Uuid
+  permissionKey String   @map("permission_key")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionKey], references: [key], onDelete: Restrict)
+
+  @@id([roleId, permissionKey])
+  @@index([permissionKey])
+  @@map("role_permissions")
+}
+
+model RoleAssignment {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  roleId      String    @map("role_id") @db.Uuid
+  scopeType   ScopeType @map("scope_type")
+  schoolId    String?   @map("school_id") @db.Uuid
+  branchId    String?   @map("branch_id") @db.Uuid
+  sectionId   String?   @map("section_id") @db.Uuid
+  subjectId   String?   @map("subject_id") @db.Uuid
+  validFrom   DateTime  @default(now()) @map("valid_from") @db.Timestamptz(3)
+  validUntil  DateTime? @map("valid_until") @db.Timestamptz(3)
+  revokedAt   DateTime? @map("revoked_at") @db.Timestamptz(3)
+  grantedById String?   @map("granted_by_id") @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user      User     @relation("AssignedUser", fields: [userId], references: [id], onDelete: Restrict)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  grantedBy User?    @relation("AssignmentGrantedBy", fields: [grantedById], references: [id], onDelete: Restrict)
+  school    School?  @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch    Branch?  @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  section   Section? @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+  subject   Subject? @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([roleId])
+  @@index([schoolId])
+  @@index([branchId])
+  @@index([sectionId])
+  @@index([subjectId])
+  @@index([grantedById])
+  @@map("role_assignments")
+}
+
+model UserDevice {
+  id         String         @id @default(uuid(7)) @db.Uuid
+  userId     String         @map("user_id") @db.Uuid
+  fcmToken   String         @unique @map("fcm_token")
+  platform   ClientPlatform
+  deviceName String?        @map("device_name")
+  appVersion String?        @map("app_version")
+  lastSeenAt DateTime       @default(now()) @map("last_seen_at") @db.Timestamptz(3)
+  createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@map("user_devices")
+}

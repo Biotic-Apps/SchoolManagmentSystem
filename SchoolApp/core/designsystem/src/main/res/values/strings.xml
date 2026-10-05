@@ -1,0 +1,16 @@
+<resources>
+    <string name="ds_retry">Try again</string>
+    <string name="ds_show_password">Show password</string>
+    <string name="ds_hide_password">Hide password</string>
+    <string name="ds_loading">Loading</string>
+    <string name="ds_approve">Approve</string>
+    <string name="ds_reject">Reject</string>
+    <string name="ds_return">Return</string>
+    <string name="ds_cancel">Cancel</string>
+    <string name="ds_ok">OK</string>
+    <string name="ds_switch_role">Switch role</string>
+    <string name="ds_switch_child">Switch child</string>
+    <string name="ds_switch_branch">Switch branch</string>
+    <string name="ds_back">Back</string>
+    <string name="ds_error_title">Something went wrong</string>
+</resources>

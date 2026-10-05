@@ -1,0 +1,20 @@
+<resources>
+    <string name="ui_error_network">No connection. Check your internet and try again.</string>
+    <string name="ui_error_unauthorized">Your session has ended. Sign in again.</string>
+    <string name="ui_error_forbidden">You do not have access to this.</string>
+    <string name="ui_error_validation">Some details are not valid.</string>
+    <string name="ui_error_not_found">This item no longer exists.</string>
+    <string name="ui_error_conflict">This conflicts with an existing record.</string>
+    <string name="ui_error_locked">This record is locked and cannot be changed.</string>
+    <string name="ui_error_rate_limited">Too many attempts. Wait a moment and try again.</string>
+    <string name="ui_error_server">The server could not complete this. Try again shortly.</string>
+    <string name="ui_error_unknown">Something went wrong. Try again.</string>
+    <string name="role_super_admin">Super Admin</string>
+    <string name="role_principal">Principal</string>
+    <string name="role_coordinator">Coordinator</string>
+    <string name="role_head_teacher">Head Teacher</string>
+    <string name="role_teacher">Teacher</string>
+    <string name="role_helper">Helper</string>
+    <string name="role_accountant">Accountant</string>
+    <string name="role_parent">Parent</string>
+</resources>

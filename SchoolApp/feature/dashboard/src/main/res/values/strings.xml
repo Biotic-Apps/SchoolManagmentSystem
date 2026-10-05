@@ -1,0 +1,15 @@
+<resources>
+    <string name="dashboard_greeting">Hello, %1$s</string>
+    <string name="dashboard_all_schools">All schools</string>
+    <string name="dashboard_welcome">Welcome, %1$s</string>
+    <string name="dashboard_welcome_hint">Use the menu to open your sections. More of your daily tools arrive in the next updates.</string>
+    <string name="dashboard_role">Signed in as</string>
+    <string name="dashboard_school">School</string>
+    <string name="dashboard_branch">Branch</string>
+    <string name="dashboard_metric_schools">Schools</string>
+    <string name="dashboard_metric_branches">Branches</string>
+    <string name="dashboard_metric_users">Users</string>
+    <string name="dashboard_metric_sessions">Active sessions</string>
+    <string name="dashboard_metric_sections">Sections</string>
+    <string name="dashboard_metric_approvals">Pending approvals</string>
+</resources>

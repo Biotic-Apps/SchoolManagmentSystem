@@ -1,0 +1,24 @@
+<resources>
+    <string name="approvals_empty_title">Nothing here</string>
+    <string name="approvals_empty_message">Requests that need your decision will appear here.</string>
+    <string name="approvals_status_pending">Pending</string>
+    <string name="approvals_status_approved">Approved</string>
+    <string name="approvals_status_rejected">Rejected</string>
+    <string name="approvals_status_returned">Returned</string>
+    <string name="approvals_status_cancelled">Cancelled</string>
+    <string name="approvals_status_unknown">Unknown</string>
+    <string name="approvals_detail_title">Approval request</string>
+    <string name="approvals_type">Type</string>
+    <string name="approvals_record">Record</string>
+    <string name="approvals_requested_by">Requested by</string>
+    <string name="approvals_requested_at">Requested on</string>
+    <string name="approvals_current_step">Current step</string>
+    <string name="approvals_steps">Approval steps</string>
+    <string name="approvals_step">Step %1$d · %2$s</string>
+    <string name="approvals_comment">Comment</string>
+    <string name="approvals_comment_hint">Required when rejecting or returning</string>
+    <string name="approvals_comment_required">Add a comment so the requester knows what to change</string>
+    <string name="approvals_decided_approved">Request approved.</string>
+    <string name="approvals_decided_rejected">Request rejected.</string>
+    <string name="approvals_decided_returned">Request returned to the requester.</string>
+</resources>

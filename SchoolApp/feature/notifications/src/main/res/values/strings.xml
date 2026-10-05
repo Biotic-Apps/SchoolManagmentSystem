@@ -1,0 +1,9 @@
+<resources>
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_mark_all">Mark all read</string>
+    <string name="notifications_filter_all">All</string>
+    <string name="notifications_filter_unread">Unread</string>
+    <string name="notifications_unread">Unread</string>
+    <string name="notifications_empty_title">You are all caught up</string>
+    <string name="notifications_empty_message">New updates for you will appear here.</string>
+</resources>

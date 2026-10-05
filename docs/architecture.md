@@ -260,6 +260,8 @@ Typography (Inter on web, system/Inter on Android):
 | Buttons / menu | 500 | 14–16 |
 | Supporting labels | 400 | 13–14 |
 
+Time display: always **12-hour with AM/PM** (e.g. `8:00 AM`) on web and Android, in pickers and in text. APIs and the database keep 24-hour `HH:mm` / UTC timestamps; only the UI converts (web `lib/time.ts` + `TimeField`, Android designsystem time formatter + 12-hour picker).
+
 Spacing scale 4/8/12/16/24/32; radius 8 (inputs) / 12 (cards); 1px `border` lines instead of heavy shadows.
 
 ## 11. Environments and configuration

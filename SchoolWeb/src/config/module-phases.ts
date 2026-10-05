@@ -1,0 +1,52 @@
+import type { NavId } from "./navigation";
+
+/** Modules with real screens (own route folder under app/(portal)). */
+export const BUILT_MODULES: ReadonlySet<NavId> = new Set<NavId>([
+  "dashboard",
+  "schools",
+  "branches",
+  "users",
+  "roles",
+  "sessions",
+  "classes",
+  "approvals",
+  "profile",
+]);
+
+// Delivery phase for each menu module, per docs/PROGRESS.md.
+export const MODULE_PHASE: Record<NavId, number> = {
+  dashboard: 3,
+  schools: 1,
+  branches: 1,
+  users: 1,
+  roles: 1,
+  sessions: 1,
+  classes: 1,
+  approvals: 1,
+  profile: 1,
+  admissions: 2,
+  students: 2,
+  guardians: 2,
+  staff: 2,
+  timetable: 2,
+  syllabus: 2,
+  diary: 3,
+  activities: 3,
+  notices: 3,
+  attendance: 3,
+  health: 3,
+  pickup: 3,
+  messages: 3,
+  meetings: 3,
+  complaints: 3,
+  exams: 4,
+  progress: 4,
+  fees: 4,
+  payroll: 4,
+  expenses: 4,
+  inventory: 4,
+  certificates: 4,
+  reports: 4,
+  my_salary: 4,
+  settings: 5,
+};

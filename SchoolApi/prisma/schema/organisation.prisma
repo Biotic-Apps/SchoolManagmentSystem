@@ -1,0 +1,286 @@
+enum AcademicSessionStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+
+  @@map("academic_session_status")
+}
+
+enum CalendarEventType {
+  HOLIDAY
+  VACATION
+  DEADLINE
+  EVENT
+
+  @@map("calendar_event_type")
+}
+
+model School {
+  id          String       @id @default(uuid(7)) @db.Uuid
+  code        String       @unique
+  name        String
+  logoFileId  String?      @map("logo_file_id") @db.Uuid
+  address     String?
+  phone       String?
+  email       String?
+  website     String?
+  status      RecordStatus @default(ACTIVE)
+  createdById String?      @map("created_by_id") @db.Uuid
+  updatedById String?      @map("updated_by_id") @db.Uuid
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  logoFile         File?             @relation("SchoolLogo", fields: [logoFileId], references: [id], onDelete: Restrict)
+  branches         Branch[]
+  academicSessions AcademicSession[]
+  terms            Term[]
+  calendarEvents   CalendarEvent[]
+  classes          SchoolClass[]
+  sections         Section[]
+  subjects         Subject[]
+  classSubjects    ClassSubject[]
+  rooms            Room[]
+  roles            Role[]
+  roleAssignments  RoleAssignment[]
+  approvalRequests ApprovalRequest[]
+  files            File[]
+
+  @@index([logoFileId])
+  @@map("schools")
+}
+
+model Branch {
+  id              String       @id @default(uuid(7)) @db.Uuid
+  schoolId        String       @map("school_id") @db.Uuid
+  code            String
+  name            String
+  address         String?
+  phone           String?
+  email           String?
+  timings         Json?
+  workingDays     Int[]        @default([1, 2, 3, 4, 5, 6]) @map("working_days")
+  principalUserId String?      @map("principal_user_id") @db.Uuid
+  status          RecordStatus @default(ACTIVE)
+  createdById     String?      @map("created_by_id") @db.Uuid
+  updatedById     String?      @map("updated_by_id") @db.Uuid
+  createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school           School            @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  principal        User?             @relation("BranchPrincipal", fields: [principalUserId], references: [id], onDelete: Restrict)
+  settings         BranchSetting[]
+  academicSessions AcademicSession[]
+  terms            Term[]
+  calendarEvents   CalendarEvent[]
+  sections         Section[]
+  rooms            Room[]
+  roleAssignments  RoleAssignment[]
+  approvalRequests ApprovalRequest[]
+
+  @@unique([schoolId, code])
+  @@index([principalUserId])
+  @@map("branches")
+}
+
+model BranchSetting {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  branchId    String   @map("branch_id") @db.Uuid
+  key         String
+  value       Json
+  updatedById String?  @map("updated_by_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Restrict)
+
+  @@unique([branchId, key])
+  @@map("branch_settings")
+}
+
+model AcademicSession {
+  id          String                @id @default(uuid(7)) @db.Uuid
+  schoolId    String                @map("school_id") @db.Uuid
+  branchId    String                @map("branch_id") @db.Uuid
+  name        String
+  startDate   DateTime              @map("start_date") @db.Date
+  endDate     DateTime              @map("end_date") @db.Date
+  status      AcademicSessionStatus @default(DRAFT)
+  createdById String?               @map("created_by_id") @db.Uuid
+  updatedById String?               @map("updated_by_id") @db.Uuid
+  createdAt   DateTime              @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime              @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school         School          @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch         Branch          @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  terms          Term[]
+  calendarEvents CalendarEvent[]
+  sections       Section[]
+
+  @@unique([branchId, name])
+  @@unique([branchId], map: "academic_sessions_one_active_per_branch", where: raw("status = 'ACTIVE'::academic_session_status"))
+  @@index([schoolId])
+  @@index([branchId, status])
+  @@map("academic_sessions")
+}
+
+model Term {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  schoolId    String   @map("school_id") @db.Uuid
+  branchId    String   @map("branch_id") @db.Uuid
+  sessionId   String   @map("session_id") @db.Uuid
+  name        String
+  sortOrder   Int      @map("sort_order")
+  startDate   DateTime @map("start_date") @db.Date
+  endDate     DateTime @map("end_date") @db.Date
+  createdById String?  @map("created_by_id") @db.Uuid
+  updatedById String?  @map("updated_by_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school  School          @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch  Branch          @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  session AcademicSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+
+  @@unique([sessionId, name])
+  @@index([schoolId])
+  @@index([branchId])
+  @@map("terms")
+}
+
+model CalendarEvent {
+  id          String            @id @default(uuid(7)) @db.Uuid
+  schoolId    String            @map("school_id") @db.Uuid
+  branchId    String?           @map("branch_id") @db.Uuid
+  sessionId   String?           @map("session_id") @db.Uuid
+  type        CalendarEventType
+  title       String
+  description String?
+  startDate   DateTime          @map("start_date") @db.Date
+  endDate     DateTime          @map("end_date") @db.Date
+  status      RecordStatus      @default(ACTIVE)
+  createdById String?           @map("created_by_id") @db.Uuid
+  updatedById String?           @map("updated_by_id") @db.Uuid
+  createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school  School           @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch  Branch?          @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  session AcademicSession? @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+
+  @@index([schoolId, startDate])
+  @@index([branchId, startDate])
+  @@index([sessionId])
+  @@map("calendar_events")
+}
+
+model SchoolClass {
+  id          String       @id @default(uuid(7)) @db.Uuid
+  schoolId    String       @map("school_id") @db.Uuid
+  name        String
+  levelOrder  Int          @map("level_order")
+  status      RecordStatus @default(ACTIVE)
+  createdById String?      @map("created_by_id") @db.Uuid
+  updatedById String?      @map("updated_by_id") @db.Uuid
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school   School         @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  sections Section[]
+  subjects ClassSubject[]
+
+  @@unique([schoolId, name])
+  @@map("classes")
+}
+
+model Section {
+  id                  String       @id @default(uuid(7)) @db.Uuid
+  schoolId            String       @map("school_id") @db.Uuid
+  branchId            String       @map("branch_id") @db.Uuid
+  sessionId           String       @map("session_id") @db.Uuid
+  classId             String       @map("class_id") @db.Uuid
+  name                String
+  capacity            Int?
+  roomId              String?      @map("room_id") @db.Uuid
+  classTeacherStaffId String?      @map("class_teacher_staff_id") @db.Uuid
+  status              RecordStatus @default(ACTIVE)
+  createdById         String?      @map("created_by_id") @db.Uuid
+  updatedById         String?      @map("updated_by_id") @db.Uuid
+  createdAt           DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school          School           @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch          Branch           @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  session         AcademicSession  @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  schoolClass     SchoolClass      @relation(fields: [classId], references: [id], onDelete: Restrict)
+  room            Room?            @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  roleAssignments RoleAssignment[]
+
+  @@unique([sessionId, classId, name])
+  @@index([schoolId])
+  @@index([branchId, sessionId])
+  @@index([classId])
+  @@index([roomId])
+  @@index([classTeacherStaffId])
+  @@map("sections")
+}
+
+model Subject {
+  id          String       @id @default(uuid(7)) @db.Uuid
+  schoolId    String       @map("school_id") @db.Uuid
+  code        String
+  name        String
+  status      RecordStatus @default(ACTIVE)
+  createdById String?      @map("created_by_id") @db.Uuid
+  updatedById String?      @map("updated_by_id") @db.Uuid
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school          School           @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  classes         ClassSubject[]
+  roleAssignments RoleAssignment[]
+
+  @@unique([schoolId, code])
+  @@map("subjects")
+}
+
+model ClassSubject {
+  id             String       @id @default(uuid(7)) @db.Uuid
+  schoolId       String       @map("school_id") @db.Uuid
+  classId        String       @map("class_id") @db.Uuid
+  subjectId      String       @map("subject_id") @db.Uuid
+  isOptional     Boolean      @default(false) @map("is_optional")
+  periodsPerWeek Int?         @map("periods_per_week")
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school      School      @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  schoolClass SchoolClass @relation(fields: [classId], references: [id], onDelete: Restrict)
+  subject     Subject     @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+
+  @@unique([classId, subjectId])
+  @@index([schoolId])
+  @@index([subjectId])
+  @@map("class_subjects")
+}
+
+model Room {
+  id          String       @id @default(uuid(7)) @db.Uuid
+  schoolId    String       @map("school_id") @db.Uuid
+  branchId    String       @map("branch_id") @db.Uuid
+  name        String
+  capacity    Int?
+  status      RecordStatus @default(ACTIVE)
+  createdById String?      @map("created_by_id") @db.Uuid
+  updatedById String?      @map("updated_by_id") @db.Uuid
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school   School    @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch   Branch    @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  sections Section[]
+
+  @@unique([branchId, name])
+  @@index([schoolId])
+  @@map("rooms")
+}
