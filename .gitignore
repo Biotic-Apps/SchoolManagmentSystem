@@ -1,0 +1,28 @@
+# Secrets and local config
+.env
+.env.*
+!.env.example
+local.properties
+
+# Dependencies and build output
+node_modules/
+dist/
+.next/
+out/
+build/
+.gradle/
+.kotlin/
+*.apk
+*.aab
+
+# Local data
+SchoolApi/.pgdata/
+SchoolApi/storage/
+*.log
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
