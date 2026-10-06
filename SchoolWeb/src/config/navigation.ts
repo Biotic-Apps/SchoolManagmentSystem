@@ -136,7 +136,7 @@ export const ROLE_MENUS: Record<RoleKey, readonly NavId[]> = {
   ],
   PARENT: [
     "dashboard", "students", "diary", "attendance", "progress", "syllabus", "timetable", "fees",
-    "messages", "meetings", "complaints", "profile",
+    "certificates", "messages", "meetings", "complaints", "profile",
   ],
 };
 

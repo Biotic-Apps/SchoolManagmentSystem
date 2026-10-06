@@ -5,6 +5,7 @@ import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.model.ChildSummary
 import com.schoolapp.core.model.RoleRef
 import com.schoolapp.core.model.dashboard.DashboardMetric
+import com.schoolapp.feature.dashboard.finance.FinanceCardState
 import com.schoolapp.feature.dashboard.parent.ParentHome
 import com.schoolapp.feature.dashboard.supervisor.PendingTile
 import com.schoolapp.feature.dashboard.teacher.TeacherDay
@@ -23,6 +24,8 @@ sealed interface DashboardUiState {
         val pendingError: AppError? = null,
         val metrics: List<DashboardMetric> = emptyList(),
         val summaryError: AppError? = null,
+        /** "Finance this month" for roles with `fees.view`; null hides the card. */
+        val finance: FinanceCardState? = null,
         val isRefreshing: Boolean = false,
     ) : DashboardUiState
 
@@ -45,7 +48,7 @@ sealed interface DashboardUiState {
         val isRefreshing: Boolean = false,
     ) : DashboardUiState
 
-    /** Roles without a dashboard (accountant, custom roles, ...) see who/where they are signed in as. */
+    /** Roles without a supervisor dashboard (accountant, custom roles, ...): who/where they are signed in as, plus finance for `fees.view`. */
     @Immutable
     data class Welcome(
         val userName: String,
@@ -53,6 +56,8 @@ sealed interface DashboardUiState {
         val roleName: String?,
         val branchName: String?,
         val schoolName: String?,
+        val finance: FinanceCardState? = null,
+        val isRefreshing: Boolean = false,
     ) : DashboardUiState
 
     data class Error(val error: AppError) : DashboardUiState

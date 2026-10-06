@@ -7,12 +7,11 @@ import androidx.compose.ui.res.stringResource
 import com.schoolapp.core.designsystem.component.AppCard
 import com.schoolapp.core.designsystem.component.KeyValueRow
 import com.schoolapp.core.designsystem.component.SectionHeader
-import com.schoolapp.core.ui.humanizeKey
 import com.schoolapp.feature.approvals.R
 
 /**
- * Payload summary for typed requests (SYLLABUS_PLAN, CHILD_LINK, LEAVE, DIARY_MODERATION, NOTICE, ...):
- * the server payload flattened to label/value rows, with known keys shown first.
+ * Payload summary for typed requests (SYLLABUS_PLAN, CHILD_LINK, LEAVE, ..., PAYROLL, EXPENSE, CERTIFICATE):
+ * the server payload flattened to label/value rows, known keys first, `…Minor` amounts as money.
  */
 @Composable
 internal fun RequestDetailsCard(type: String, details: List<Pair<String, String>>, modifier: Modifier = Modifier) {
@@ -21,11 +20,9 @@ internal fun RequestDetailsCard(type: String, details: List<Pair<String, String>
     val ordered = details.sortedBy { (key, _) -> preferred.indexOf(key).let { if (it < 0) Int.MAX_VALUE else it } }
     AppCard(modifier.fillMaxWidth()) {
         SectionHeader(title = stringResource(titleFor(type)))
-        ordered.forEach { (key, value) -> KeyValueRow(humanizeKey(key.substringAfterLast('.')), value.toDisplay()) }
+        ordered.forEach { (key, value) -> KeyValueRow(detailLabel(key), detailValue(key, value)) }
     }
 }
-
-private fun String.toDisplay(): String = if (this == this.uppercase() && contains('_')) humanizeKey(this) else this
 
 private fun titleFor(type: String): Int = when (type) {
     "SYLLABUS_PLAN" -> R.string.approvals_details_syllabus
@@ -37,6 +34,15 @@ private fun titleFor(type: String): Int = when (type) {
     "DIARY_MODERATION" -> R.string.approvals_details_diary
     "ACTIVITY" -> R.string.approvals_details_activity
     "NOTICE" -> R.string.approvals_details_notice
+    "RESULT_PUBLISH" -> R.string.approvals_details_result_publish
+    "PROMOTION" -> R.string.approvals_details_promotion
+    "CONCESSION" -> R.string.approvals_details_concession
+    "REFUND" -> R.string.approvals_details_refund
+    "PAYMENT_REVERSAL" -> R.string.approvals_details_payment_reversal
+    "PAYROLL" -> R.string.approvals_details_payroll
+    "EXPENSE" -> R.string.approvals_details_expense
+    "PURCHASE_ORDER" -> R.string.approvals_details_purchase_order
+    "CERTIFICATE" -> R.string.approvals_details_certificate
     else -> R.string.approvals_details
 }
 
@@ -50,4 +56,13 @@ private val PreferredKeys: Map<String, List<String>> = mapOf(
     "DIARY_MODERATION" to listOf("className", "sectionName", "subject", "subjectName", "date", "topics", "homework"),
     "ACTIVITY" to listOf("title", "type", "startAt", "venue", "consentRequired"),
     "NOTICE" to listOf("title", "audience"),
+    "RESULT_PUBLISH" to listOf("examName", "className", "sheetsAccepted", "sheetsTotal"),
+    "PROMOTION" to listOf("fromSession", "toSession", "className", "promoteCount", "repeatCount"),
+    "CONCESSION" to listOf("studentName", "className", "type", "value", "amountMinor", "reason"),
+    "REFUND" to listOf("studentName", "receiptNo", "amountMinor", "method", "reason"),
+    "PAYMENT_REVERSAL" to listOf("receiptNo", "studentName", "amountMinor", "reason"),
+    "PAYROLL" to listOf("month", "staffCount", "netMinor"),
+    "EXPENSE" to listOf("title", "category", "vendor", "amountMinor", "billDate", "dueDate"),
+    "PURCHASE_ORDER" to listOf("lines", "totalMinor", "reason"),
+    "CERTIFICATE" to listOf("studentName", "className", "type", "purpose"),
 )

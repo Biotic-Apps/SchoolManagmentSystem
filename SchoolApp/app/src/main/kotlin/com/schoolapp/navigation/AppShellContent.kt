@@ -60,6 +60,18 @@ import com.schoolapp.feature.syllabus.navigation.syllabusDestinations
 import com.schoolapp.feature.syllabus.parent.ParentSyllabusRoute
 import com.schoolapp.feature.syllabus.plans.MyPlansRoute
 import com.schoolapp.feature.timetable.TimetableRoute
+import com.schoolapp.feature.certificates.CertificatesMenuScreen
+import com.schoolapp.feature.certificates.certificatesDestinations
+import com.schoolapp.feature.exams.ExamsMenuScreen
+import com.schoolapp.feature.exams.ParentResultsScreen
+import com.schoolapp.feature.exams.examsDestinations
+import com.schoolapp.feature.fees.FeesMenuScreen
+import com.schoolapp.feature.fees.feesDestinations
+import com.schoolapp.feature.payroll.MySalaryScreen
+import com.schoolapp.feature.payroll.PayrollMenuScreen
+import com.schoolapp.feature.payroll.payrollDestinations
+import com.schoolapp.feature.progress.ProgressMenuScreen
+import com.schoolapp.feature.progress.progressDestinations
 
 /** Menu ids with a real screen; everything else shows the phase placeholder. */
 internal val AppShellContent = ShellContent(
@@ -107,7 +119,7 @@ internal val AppShellContent = ShellContent(
         MenuIds.ADMISSIONS to { shell -> AdmissionsRoute(onOpenApplication = { shell.open(ApplicationDetailDestination(it)) }) },
         MenuIds.STAFF to { shell -> StaffListRoute(onOpenStaff = { shell.open(StaffDetailDestination(it)) }) },
         MenuIds.ATTENDANCE to { shell -> AttendanceMenuScreen(role = shell.activeRole, onOpen = shell::open) },
-        MenuIds.MY_SALARY to { shell -> MyAttendanceLeaveScreen(onOpen = shell::open) },
+        MenuIds.MY_SALARY to { shell -> MySalaryScreen(attendanceContent = { MyAttendanceLeaveScreen(onOpen = shell::open) }) },
         MenuIds.DIARY to { shell ->
             DiaryMenuScreen(
                 role = shell.activeRole,
@@ -122,6 +134,17 @@ internal val AppShellContent = ShellContent(
         MenuIds.MEETINGS to { shell -> MeetingsMenuScreen(role = shell.activeRole, onOpen = shell::open) },
         MenuIds.HEALTH to { shell -> HealthMenuScreen(role = shell.activeRole, onOpen = shell::open) },
         MenuIds.PICKUP to { shell -> PickupMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.EXAMS to { shell -> ExamsMenuScreen(role = shell.activeRole, onOpen = shell::open, onOpenApprovals = shell.approvalsLink()) },
+        MenuIds.PROGRESS to { shell ->
+            if (shell.activeRole == RoleKey.PARENT) {
+                ParentResultsScreen(onOpen = shell::open)
+            } else {
+                ProgressMenuScreen(role = shell.activeRole, onOpen = shell::open)
+            }
+        },
+        MenuIds.FEES to { shell -> FeesMenuScreen(role = shell.activeRole, onOpen = shell::open, onOpenApprovals = shell.approvalsLink()) },
+        MenuIds.PAYROLL to { shell -> PayrollMenuScreen(role = shell.activeRole, onOpen = shell::open, onOpenApprovals = shell.approvalsLink()) },
+        MenuIds.CERTIFICATES to { shell -> CertificatesMenuScreen(role = shell.activeRole, onOpen = shell::open) },
     ),
     destinations = { navController ->
         approvalsDestinations(navController)
@@ -141,10 +164,18 @@ internal val AppShellContent = ShellContent(
         meetingsDestinations(navController)
         healthDestinations(navController)
         pickupDestinations(navController)
+        examsDestinations(navController)
+        progressDestinations(navController)
+        feesDestinations(navController)
+        payrollDestinations(navController)
+        certificatesDestinations(navController)
     },
 )
 
 private val SECTION_STAFF = setOf(RoleKey.TEACHER, RoleKey.HELPER)
+
+/** Opens the Approvals menu, or null when the role has none. */
+private fun ShellNavigator.approvalsLink(): (() -> Unit)? = { openMenu(MenuIds.APPROVALS) }.takeIf { canOpenMenu(MenuIds.APPROVALS) }
 
 @Composable
 private fun MyClasses(shell: ShellNavigator) = MyClassesRoute(

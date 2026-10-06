@@ -18,12 +18,24 @@ export function utcToday(): Date {
   return new Date(`${new Date().toISOString().slice(0, 10)}T00:00:00.000Z`);
 }
 
-export const addDays = (date: Date, days: number) => new Date(date.getTime() + days * DAY);
+export const addDays = (date: Date, days: number) =>
+  new Date(date.getTime() + days * DAY);
 
-async function workingDays(prisma: SeedClient, org: DemoOrg, until: Date, count: number): Promise<Date[]> {
-  const branch = await prisma.branch.findUniqueOrThrow({ where: { id: org.branchId } });
+async function workingDays(
+  prisma: SeedClient,
+  org: DemoOrg,
+  until: Date,
+  count: number,
+): Promise<Date[]> {
+  const branch = await prisma.branch.findUniqueOrThrow({
+    where: { id: org.branchId },
+  });
   const holidays = await prisma.calendarEvent.findMany({
-    where: { schoolId: org.schoolId, type: { in: ['HOLIDAY', 'VACATION'] }, status: 'ACTIVE' },
+    where: {
+      schoolId: org.schoolId,
+      type: { in: ['HOLIDAY', 'VACATION'] },
+      status: 'ACTIVE',
+    },
   });
   const days: Date[] = [];
   for (let i = 0; days.length < count && i < count * 3; i++) {
@@ -31,19 +43,36 @@ async function workingDays(prisma: SeedClient, org: DemoOrg, until: Date, count:
     const weekday = date.getUTCDay() === 0 ? 7 : date.getUTCDay();
     const off =
       !branch.workingDays.includes(weekday) ||
-      holidays.some((h) => (h.branchId === null || h.branchId === org.branchId) && h.startDate <= date && h.endDate >= date);
+      holidays.some(
+        (h) =>
+          (h.branchId === null || h.branchId === org.branchId) &&
+          h.startDate <= date &&
+          h.endDate >= date,
+      );
     if (!off) days.push(date);
   }
   return days;
 }
 
-export async function loadDailyContext(prisma: SeedClient, org: DemoOrg): Promise<DailyContext> {
+export async function loadDailyContext(
+  prisma: SeedClient,
+  org: DemoOrg,
+): Promise<DailyContext> {
   const today = utcToday();
   const users = new Map(
-    (await prisma.user.findMany({ where: { email: { endsWith: '@eschool.local' } } })).map((u) => [u.email!, u.id]),
+    (
+      await prisma.user.findMany({
+        where: { email: { endsWith: '@eschool.local' } },
+      })
+    ).map((u) => [u.email!, u.id]),
   );
   const staff = new Map(
-    (await prisma.staff.findMany({ where: { branchId: org.branchId }, include: { user: true } }))
+    (
+      await prisma.staff.findMany({
+        where: { branchId: org.branchId },
+        include: { user: true },
+      })
+    )
       .filter((s) => s.user?.email)
       .map((s) => [s.user!.email!, s.id]),
   );
@@ -56,10 +85,20 @@ export async function loadDailyContext(prisma: SeedClient, org: DemoOrg): Promis
     });
     students.set(
       key,
-      rows.map((r) => ({ id: r.studentId, name: `${r.student.firstName} ${r.student.lastName}` })),
+      rows.map((r) => ({
+        id: r.studentId,
+        name: `${r.student.firstName} ${r.student.lastName}`,
+      })),
     );
   }
-  return { org, today, days: await workingDays(prisma, org, today, 11), users, staff, students };
+  return {
+    org,
+    today,
+    days: await workingDays(prisma, org, today, 11),
+    users,
+    staff,
+    students,
+  };
 }
 
 export const userId = (ctx: DailyContext, email: string) => {

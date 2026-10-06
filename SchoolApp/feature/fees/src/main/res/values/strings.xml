@@ -1,0 +1,157 @@
+<resources>
+    <!-- Parent -->
+    <string name="fees_parent_title">Fees, Dues &amp; Receipts</string>
+    <string name="fees_no_child">No child selected</string>
+    <string name="fees_no_child_message">Fees appear here once a child is linked to your account.</string>
+    <string name="fees_summary_title">Summary</string>
+    <string name="fees_total_due">Total due</string>
+    <string name="fees_overdue">Overdue</string>
+    <string name="fees_advance_credit">Advance credit</string>
+    <string name="fees_next_due">Next due</string>
+    <string name="fees_last_payment">Last payment</string>
+    <string name="fees_due_on">Due %1$s</string>
+    <string name="fees_invoices">Invoices</string>
+    <string name="fees_no_invoices">No invoices yet</string>
+    <string name="fees_balance">Balance</string>
+    <string name="fees_of_total">of total</string>
+    <string name="fees_parent_note">Receipts are issued by the school office. Online payment and proof upload appear on an invoice when your school enables them.</string>
+
+    <!-- Invoice -->
+    <string name="fees_invoice_title">Invoice</string>
+    <string name="fees_invoice">Invoice</string>
+    <string name="fees_period">Period: %1$s</string>
+    <string name="fees_issued_on">Issued %1$s</string>
+    <string name="fees_breakdown">Breakdown</string>
+    <string name="fees_fee">Fee</string>
+    <string name="fees_concession">Concession</string>
+    <string name="fees_late_fee">Late fee</string>
+    <string name="fees_total">Total</string>
+    <string name="fees_paid">Paid</string>
+    <string name="fees_payments">Payments</string>
+    <string name="fees_no_payments">No payments yet.</string>
+    <string name="fees_receipt">Receipt</string>
+    <string name="fees_receipt_pending_no">Receipt number pending</string>
+    <string name="fees_receipt_not_ready">The receipt is being prepared. Please try again in a moment.</string>
+    <string name="fees_pay_online">Pay online</string>
+    <string name="fees_gateway_disabled">Online payment is not available for this school yet.</string>
+    <string name="fees_upload_proof">Upload payment proof</string>
+
+    <!-- Statuses -->
+    <string name="fees_status_draft">Draft</string>
+    <string name="fees_status_issued">Issued</string>
+    <string name="fees_status_partially_paid">Partially paid</string>
+    <string name="fees_status_paid">Paid</string>
+    <string name="fees_status_overdue">Overdue</string>
+    <string name="fees_status_cancelled">Cancelled</string>
+    <string name="fees_proof_status_submitted">Waiting for verification</string>
+    <string name="fees_proof_status_verified">Verified</string>
+    <string name="fees_proof_status_rejected">Rejected</string>
+
+    <!-- Methods -->
+    <string name="fees_method">Payment method</string>
+    <string name="fees_method_cash">Cash</string>
+    <string name="fees_method_bank">Bank transfer</string>
+    <string name="fees_method_cheque">Cheque</string>
+    <string name="fees_method_online">Online</string>
+    <string name="fees_method_wallet">Mobile wallet</string>
+    <string name="fees_method_other">Other</string>
+
+    <!-- Proof upload -->
+    <string name="fees_proof_note">Uploading a proof does not mark the invoice paid. The school checks it first.</string>
+    <string name="fees_proof_file">Proof file</string>
+    <string name="fees_pick_file">Choose photo or PDF</string>
+    <string name="fees_amount_paid">Amount paid</string>
+    <string name="fees_paid_on">Paid on</string>
+    <string name="fees_paid_on_value">Paid on %1$s</string>
+    <string name="fees_reference">Reference / transaction ID</string>
+    <string name="fees_reference_optional">Reference (optional)</string>
+    <string name="fees_reference_help">As shown on the bank or wallet receipt</string>
+    <string name="fees_send_proof">Send proof</string>
+    <string name="fees_proof_sent">Proof sent. The school will verify it. Uploading a proof does not mark the invoice paid.</string>
+    <string name="fees_done">Done</string>
+    <string name="fees_required">Required</string>
+    <string name="fees_amount_invalid">Enter a valid amount, e.g. 8,500</string>
+    <string name="fees_amount_positive">Amount must be more than zero</string>
+    <string name="fees_amount_over_balance">Amount cannot be more than the balance</string>
+    <string name="fees_date_future">Date cannot be in the future</string>
+    <string name="fees_file_required">Attach a photo or PDF of the payment</string>
+    <string name="fees_file_type">Only photos or PDF files can be uploaded</string>
+
+    <!-- Staff tabs -->
+    <string name="fees_tab_today">Today</string>
+    <string name="fees_tab_dues">Dues</string>
+    <string name="fees_tab_proofs">Proofs</string>
+    <string name="fees_today_collected">Collected today</string>
+    <string name="fees_month_collected">Collected this month</string>
+    <string name="fees_outstanding">Outstanding</string>
+    <string name="fees_collection_rate">Collection rate</string>
+    <string name="fees_daily_collection">Daily collection</string>
+    <string name="fees_day_closed_banner">This day is closed. New back-dated cash payments are blocked.</string>
+    <string name="fees_day_total">Total collected</string>
+    <string name="fees_by_method">By method</string>
+    <string name="fees_by_cashier">By cashier</string>
+    <string name="fees_unknown_cashier">Cashier</string>
+    <string name="fees_unknown_student">Student</string>
+    <string name="fees_received_by">Received by %1$s</string>
+    <string name="fees_no_payments_today">No payments recorded today.</string>
+    <string name="fees_approvals_note">Concessions, refunds and reversals are approved in Approvals.</string>
+    <string name="fees_open_approvals">Open Approvals</string>
+    <string name="fees_search_dues">Search student or admission no.</string>
+    <string name="fees_no_dues">No outstanding dues</string>
+    <string name="fees_dues_total">Total outstanding</string>
+    <string name="fees_aging_30">0–30 days</string>
+    <string name="fees_aging_60">31–60 days</string>
+    <string name="fees_aging_90">61–90 days</string>
+    <string name="fees_aging_over_90">90+ days</string>
+    <string name="fees_no_proofs">No proofs to verify</string>
+    <string name="fees_no_proofs_message">Payment proofs uploaded by parents appear here.</string>
+    <string name="fees_proof_title">Payment proof</string>
+    <string name="fees_proof_file_unavailable">The proof file is not available.</string>
+    <string name="fees_proof_no_permission">You can view proofs but not verify them.</string>
+    <string name="fees_student">Student</string>
+    <string name="fees_submitted_by">Submitted by</string>
+    <string name="fees_submitted_at">Submitted</string>
+    <string name="fees_verify">Verify</string>
+    <string name="fees_verify_help">Verifying records the payment against the invoice and issues a receipt.</string>
+    <string name="fees_note_optional">Note (optional)</string>
+    <string name="fees_reject">Reject</string>
+    <string name="fees_reject_reason">Reason for rejecting</string>
+    <string name="fees_back">Back</string>
+    <string name="fees_proof_verified_message">Proof verified and payment recorded.</string>
+    <string name="fees_proof_rejected_message">Proof rejected. The parent has been told why.</string>
+
+    <!-- Record payment -->
+    <string name="fees_record_payment">Record payment</string>
+    <string name="fees_search_student">Search by name or admission no.</string>
+    <string name="fees_student_required">Choose a student</string>
+    <string name="fees_no_students">No students found.</string>
+    <string name="fees_change">Change</string>
+    <string name="fees_roll_no">Roll %1$d</string>
+    <string name="fees_amount_received">Amount received</string>
+    <string name="fees_cheque_help">Cheque number and bank</string>
+    <string name="fees_received_on">Received on</string>
+    <string name="fees_save_payment">Save payment</string>
+    <string name="fees_retry_save">Try again</string>
+    <string name="fees_day_closed">This day is already closed. Back-dated cash payments cannot be added.</string>
+    <string name="fees_payment_recorded">Payment recorded.</string>
+    <string name="fees_receipt_no">Receipt %1$s</string>
+    <string name="fees_payment_queued">Saved on this device, will send when online. The receipt number arrives after it is sent.</string>
+    <string name="fees_record_another">Record another payment</string>
+
+    <plurals name="fees_payment_count">
+        <item quantity="one">%1$d payment</item>
+        <item quantity="other">%1$d payments</item>
+    </plurals>
+    <plurals name="fees_queued_banner">
+        <item quantity="one">%1$d payment saved on this device will send when online.</item>
+        <item quantity="other">%1$d payments saved on this device will send when online.</item>
+    </plurals>
+    <plurals name="fees_oldest_due_days">
+        <item quantity="one">Oldest due %1$d day ago</item>
+        <item quantity="other">Oldest due %1$d days ago</item>
+    </plurals>
+    <plurals name="fees_student_count">
+        <item quantity="one">%1$d student</item>
+        <item quantity="other">%1$d students</item>
+    </plurals>
+</resources>

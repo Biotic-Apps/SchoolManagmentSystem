@@ -56,6 +56,9 @@ model Staff {
   attendance       StaffAttendance[]    @relation("StaffAttendanceOf")
   leaveRequests    LeaveRequest[]       @relation("StaffLeave")
   proxiedDiaries   DiaryEntry[]         @relation("DiaryOnBehalfOf")
+  salaryStructures SalaryStructure[]    @relation("StaffSalaryStructures")
+  payrollAdjusts   PayrollAdjustment[]  @relation("StaffPayrollAdjustments")
+  payrollLines     PayrollLine[]        @relation("StaffPayrollLines")
 
   @@unique([schoolId, employeeNo])
   @@index([branchId, status])

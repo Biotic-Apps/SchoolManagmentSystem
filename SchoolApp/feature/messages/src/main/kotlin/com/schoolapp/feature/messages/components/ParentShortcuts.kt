@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Campaign
+import androidx.compose.material.icons.outlined.CardMembership
 import androidx.compose.material.icons.outlined.DirectionsCar
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.HealthAndSafety
@@ -21,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.navigation.ActivitiesDestination
+import com.schoolapp.core.navigation.CertificatesDestination
 import com.schoolapp.core.navigation.HealthCardDestination
 import com.schoolapp.core.navigation.NoticesDestination
 import com.schoolapp.core.navigation.PickupDestination
@@ -33,6 +35,7 @@ private val Shortcuts = listOf(
     Shortcut(R.string.messages_shortcut_activities, Icons.Outlined.Event, ActivitiesDestination),
     Shortcut(R.string.messages_shortcut_pickup, Icons.Outlined.DirectionsCar, PickupDestination),
     Shortcut(R.string.messages_shortcut_health, Icons.Outlined.HealthAndSafety, HealthCardDestination()),
+    Shortcut(R.string.messages_shortcut_certificates, Icons.Outlined.CardMembership, CertificatesDestination),
 )
 
 /** Parent-only quick links above the conversations; chips wrap instead of truncating. */

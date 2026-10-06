@@ -27,6 +27,11 @@ import com.schoolapp.core.network.api.MessagesApi
 import com.schoolapp.core.network.api.NoticesApi
 import com.schoolapp.core.network.api.PickupApi
 import com.schoolapp.core.network.api.RefreshApi
+import com.schoolapp.core.network.api.ExamsApi
+import com.schoolapp.core.network.api.ProgressApi
+import com.schoolapp.core.network.api.FeesApi
+import com.schoolapp.core.network.api.PayrollApi
+import com.schoolapp.core.network.api.CertificatesApi
 import com.schoolapp.core.network.auth.AuthInterceptor
 import com.schoolapp.core.network.auth.TokenAuthenticator
 import dagger.Module
@@ -182,6 +187,26 @@ internal object NetworkModule {
     @Provides
     @Singleton
     fun providePickupApi(retrofit: Retrofit): PickupApi = retrofit.create(PickupApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideExamsApi(retrofit: Retrofit): ExamsApi = retrofit.create(ExamsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideProgressApi(retrofit: Retrofit): ProgressApi = retrofit.create(ProgressApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideFeesApi(retrofit: Retrofit): FeesApi = retrofit.create(FeesApi::class.java)
+
+    @Provides
+    @Singleton
+    fun providePayrollApi(retrofit: Retrofit): PayrollApi = retrofit.create(PayrollApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideCertificatesApi(retrofit: Retrofit): CertificatesApi = retrofit.create(CertificatesApi::class.java)
 
     @Provides
     @Singleton

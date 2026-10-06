@@ -1,9 +1,19 @@
 import { IsIn } from 'class-validator';
 import { FilePurpose } from '../../../generated/prisma/client';
 
-/** System-generated files (ID cards) cannot be uploaded. */
+/** System-generated files (ID cards, PDFs, reports) cannot be uploaded. */
+export const GENERATED_PURPOSES: ReadonlySet<FilePurpose> = new Set([
+  FilePurpose.ID_CARD,
+  FilePurpose.REPORT_CARD,
+  FilePurpose.CHALLAN,
+  FilePurpose.RECEIPT,
+  FilePurpose.PAYSLIP,
+  FilePurpose.CERTIFICATE,
+  FilePurpose.REPORT,
+]);
+
 export const UPLOAD_PURPOSES = Object.values(FilePurpose).filter(
-  (purpose) => purpose !== FilePurpose.ID_CARD,
+  (purpose) => !GENERATED_PURPOSES.has(purpose),
 );
 
 export class UploadFileDto {

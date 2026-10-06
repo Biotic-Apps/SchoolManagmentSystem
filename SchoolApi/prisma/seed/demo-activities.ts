@@ -1,4 +1,7 @@
-import type { ActivityStatus, ActivityType } from '../../src/generated/prisma/client';
+import type {
+  ActivityStatus,
+  ActivityType,
+} from '../../src/generated/prisma/client';
 import type { SeedClient } from './client';
 import { addDays, type DailyContext, userId } from './demo-daily-context';
 
@@ -13,13 +16,43 @@ interface ActivitySeed {
 }
 
 const SEEDS: ActivitySeed[] = [
-  { title: 'Annual Sports Day', type: 'SPORTS', status: 'ANNOUNCED', startDays: 10, consentRequired: true, sections: ['5-A', '5-B'], by: 'teacher@eschool.local' },
-  { title: 'Trip to Lahore Museum', type: 'TRIP', status: 'PROPOSED', startDays: 20, consentRequired: true, sections: ['5-A'], by: 'teacher@eschool.local' },
-  { title: 'Inter-class Spelling Bee', type: 'COMPETITION', status: 'COMPLETED', startDays: -7, consentRequired: false, sections: ['5-A', '5-B'], by: 'teacher2@eschool.local' },
+  {
+    title: 'Annual Sports Day',
+    type: 'SPORTS',
+    status: 'ANNOUNCED',
+    startDays: 10,
+    consentRequired: true,
+    sections: ['5-A', '5-B'],
+    by: 'teacher@eschool.local',
+  },
+  {
+    title: 'Trip to Lahore Museum',
+    type: 'TRIP',
+    status: 'PROPOSED',
+    startDays: 20,
+    consentRequired: true,
+    sections: ['5-A'],
+    by: 'teacher@eschool.local',
+  },
+  {
+    title: 'Inter-class Spelling Bee',
+    type: 'COMPETITION',
+    status: 'COMPLETED',
+    startDays: -7,
+    consentRequired: false,
+    sections: ['5-A', '5-B'],
+    by: 'teacher2@eschool.local',
+  },
 ];
 
-async function create(prisma: SeedClient, ctx: DailyContext, seed: ActivitySeed) {
-  const start = new Date(addDays(ctx.today, seed.startDays).getTime() + 4 * 3600_000);
+async function create(
+  prisma: SeedClient,
+  ctx: DailyContext,
+  seed: ActivitySeed,
+) {
+  const start = new Date(
+    addDays(ctx.today, seed.startDays).getTime() + 4 * 3600_000,
+  );
   const principal = userId(ctx, 'principal@eschool.local');
   const decided = seed.status !== 'PROPOSED';
   return prisma.activity.create({
@@ -32,9 +65,15 @@ async function create(prisma: SeedClient, ctx: DailyContext, seed: ActivitySeed)
       startAt: start,
       endAt: new Date(start.getTime() + 4 * 3600_000),
       venue: seed.type === 'TRIP' ? 'Lahore Museum' : 'School ground',
-      audience: { sectionIds: seed.sections.map((s) => ctx.org.sections.get(s)!), classIds: [], wholeBranch: false },
+      audience: {
+        sectionIds: seed.sections.map((s) => ctx.org.sections.get(s)!),
+        classIds: [],
+        wholeBranch: false,
+      },
       consentRequired: seed.consentRequired,
-      consentDeadline: seed.consentRequired ? addDays(ctx.today, seed.startDays - 3) : null,
+      consentDeadline: seed.consentRequired
+        ? addDays(ctx.today, seed.startDays - 3)
+        : null,
       feeMinor: seed.type === 'TRIP' ? 50000n : null,
       status: seed.status,
       proposedById: userId(ctx, seed.by),
@@ -45,9 +84,17 @@ async function create(prisma: SeedClient, ctx: DailyContext, seed: ActivitySeed)
 }
 
 /** Sports day (announced, consent), a proposed trip, a completed competition with results. */
-export async function seedActivities(prisma: SeedClient, ctx: DailyContext): Promise<void> {
+export async function seedActivities(
+  prisma: SeedClient,
+  ctx: DailyContext,
+): Promise<void> {
   for (const seed of SEEDS) {
-    if (await prisma.activity.findFirst({ where: { title: seed.title, branchId: ctx.org.branchId } })) continue;
+    if (
+      await prisma.activity.findFirst({
+        where: { title: seed.title, branchId: ctx.org.branchId },
+      })
+    )
+      continue;
     const activity = await create(prisma, ctx, seed);
     const students = seed.sections.flatMap((s) => ctx.students.get(s)!);
     if (seed.status === 'PROPOSED') {
@@ -64,13 +111,19 @@ export async function seedActivities(prisma: SeedClient, ctx: DailyContext): Pro
           steps: { create: [{ order: 1, approverRole: 'PRINCIPAL' }] },
         },
       });
-      await prisma.activity.update({ where: { id: activity.id }, data: { approvalId: approval.id } });
+      await prisma.activity.update({
+        where: { id: activity.id },
+        data: { approvalId: approval.id },
+      });
     }
     if (seed.status === 'ANNOUNCED') {
       const parentUser = userId(ctx, 'parent@eschool.local');
       for (const [i, student] of students.entries()) {
-        const link = await prisma.studentGuardian.findFirst({ where: { studentId: student.id, status: 'VERIFIED' } });
-        const status = i % 5 === 1 ? 'GRANTED' : i % 7 === 3 ? 'DECLINED' : 'PENDING';
+        const link = await prisma.studentGuardian.findFirst({
+          where: { studentId: student.id, status: 'VERIFIED' },
+        });
+        const status =
+          i % 5 === 1 ? 'GRANTED' : i % 7 === 3 ? 'DECLINED' : 'PENDING';
         await prisma.activityConsent.create({
           data: {
             activityId: activity.id,

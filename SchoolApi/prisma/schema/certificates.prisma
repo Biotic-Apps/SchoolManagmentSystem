@@ -1,0 +1,134 @@
+// Phase 4 §F–G: certificates, generated PDFs, background tasks (reports and long jobs).
+
+enum CertificateType {
+  SCHOOL_LEAVING
+  TRANSFER
+  CHARACTER
+  ATTENDANCE
+  ACHIEVEMENT
+
+  @@map("certificate_type")
+}
+
+enum CertificateStatus {
+  REQUESTED
+  APPROVED
+  REJECTED
+  ISSUED
+
+  @@map("certificate_status")
+}
+
+enum GeneratedDocumentKind {
+  REPORT_CARD
+  CHALLAN
+  RECEIPT
+  PAYSLIP
+  CERTIFICATE
+
+  @@map("generated_document_kind")
+}
+
+enum GeneratedDocumentStatus {
+  PENDING
+  READY
+  FAILED
+
+  @@map("generated_document_status")
+}
+
+enum AsyncTaskStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+
+  @@map("async_task_status")
+}
+
+enum ReportFormat {
+  PDF
+  XLSX
+  CSV
+
+  @@map("report_format")
+}
+
+model Certificate {
+  id            String            @id @default(uuid(7)) @db.Uuid
+  schoolId      String            @map("school_id") @db.Uuid
+  branchId      String            @map("branch_id") @db.Uuid
+  studentId     String            @map("student_id") @db.Uuid
+  type          CertificateType
+  purpose       String?
+  details       Json?
+  status        CertificateStatus @default(REQUESTED)
+  // Shared by an original and its duplicates; unique among originals.
+  serialNo      String?           @map("serial_no")
+  duplicateOfId String?           @map("duplicate_of_id") @db.Uuid
+  reissueReason String?           @map("reissue_reason")
+  issuedOn      DateTime?         @map("issued_on") @db.Date
+  effectiveDate DateTime?         @map("effective_date") @db.Date
+  documentId    String?           @map("document_id") @db.Uuid
+  requestedById String            @map("requested_by_id") @db.Uuid
+  decidedById   String?           @map("decided_by_id") @db.Uuid
+  decidedAt     DateTime?         @map("decided_at") @db.Timestamptz(3)
+  rejectReason  String?           @map("reject_reason")
+  issuedById    String?           @map("issued_by_id") @db.Uuid
+  createdAt     DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  student     Student       @relation("StudentCertificates", fields: [studentId], references: [id], onDelete: Restrict)
+  duplicateOf Certificate?  @relation("CertificateDuplicates", fields: [duplicateOfId], references: [id], onDelete: Restrict)
+  duplicates  Certificate[] @relation("CertificateDuplicates")
+
+  @@unique([serialNo], map: "certificates_serial_no_original", where: raw("duplicate_of_id IS NULL AND serial_no IS NOT NULL"))
+  @@index([branchId, status])
+  @@index([studentId])
+  @@index([serialNo])
+  @@map("certificates")
+}
+
+// PDFs rendered by the documents queue (report cards, challans, receipts, payslips, certificates).
+model GeneratedDocument {
+  id          String                  @id @default(uuid(7)) @db.Uuid
+  schoolId    String                  @map("school_id") @db.Uuid
+  kind        GeneratedDocumentKind
+  entityId    String                  @map("entity_id") @db.Uuid
+  version     Int
+  status      GeneratedDocumentStatus @default(PENDING)
+  fileId      String?                 @map("file_id") @db.Uuid
+  error       String?
+  // Owner of the file row (e.g. the staff member for a payslip).
+  ownerUserId String                  @map("owner_user_id") @db.Uuid
+  generatedAt DateTime?               @map("generated_at") @db.Timestamptz(3)
+  createdAt   DateTime                @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime                @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@unique([kind, entityId, version])
+  @@index([kind, entityId])
+  @@map("generated_documents")
+}
+
+// Reports and long-running jobs; `GET /reports/:jobId` reads these.
+model AsyncTask {
+  id            String          @id @default(uuid(7)) @db.Uuid
+  schoolId      String?         @map("school_id") @db.Uuid
+  branchId      String?         @map("branch_id") @db.Uuid
+  kind          String
+  params        Json
+  format        ReportFormat?
+  status        AsyncTaskStatus @default(PENDING)
+  fileId        String?         @map("file_id") @db.Uuid
+  result        Json?
+  error         String?
+  requestedById String          @map("requested_by_id") @db.Uuid
+  activeRole    String?         @map("active_role")
+  startedAt     DateTime?       @map("started_at") @db.Timestamptz(3)
+  finishedAt    DateTime?       @map("finished_at") @db.Timestamptz(3)
+  createdAt     DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([requestedById, createdAt])
+  @@index([kind, status])
+  @@map("async_tasks")
+}

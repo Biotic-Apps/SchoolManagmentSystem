@@ -3,6 +3,7 @@
 import { DetailDrawer } from "@/components/shared/DetailDrawer";
 import { DetailList } from "@/components/shared/DetailList";
 import { ErrorState } from "@/components/shared/ErrorState";
+import { MoneyText } from "@/components/shared/MoneyText";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatDateTime, formatNumber, humanize } from "@/lib/format";
@@ -37,6 +38,9 @@ export function ApprovalDetailDrawer({ request, onClose }: ApprovalDetailDrawerP
             { label: "Created", value: formatDateTime(summary.createdAt) },
             { label: "Current step", value: formatNumber(summary.currentStep) },
             { label: "Record", value: humanize(summary.entityType) },
+            ...(typeof summary.amountMinor === "number"
+              ? [{ label: "Amount", value: <MoneyText amountMinor={summary.amountMinor} /> }]
+              : []),
           ]}
         />
       )}

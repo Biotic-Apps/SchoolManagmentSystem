@@ -68,12 +68,15 @@ internal object DemoSessions {
         "teacherwork.proxy", "attendance.edit", "attendance.submit", "diary.approve", "complaints.view", "pickup.view",
     )
 
-    /** Action permissions used inside Phase 2 / Phase 3 screens (not menu entries). */
+    private val supervisorPhase4 = listOf("exams.approve", "exams.edit", "exams.submit", "progress.edit")
+
+    /** Action permissions used inside Phase 2 / Phase 3 / Phase 4 screens (not menu entries). */
     private val extraPermissions: Map<RoleKey, List<String>> = mapOf(
         RoleKey.TEACHER to listOf(
             "syllabus.edit", "students.view",
             "attendance.edit", "attendance.submit", "diary.edit", "diary.publish", "activities.add", "health.view",
             "notices.view", "messages.view", "meetings.view",
+            "exams.edit", "exams.submit", "progress.edit",
         ),
         RoleKey.HELPER to listOf("attendance.edit", "diary.edit", "health.view"),
         RoleKey.PRINCIPAL to listOf(
@@ -81,9 +84,12 @@ internal object DemoSessions {
             "attendance.edit", "attendance.submit", "attendance.approve", "teacherwork.proxy", "diary.approve", "diary.edit",
             "diary.publish", "activities.approve", "activities.add", "notices.add", "notices.publish", "complaints.edit",
             "health.edit", "pickup.edit", "complaints.view", "pickup.view",
+            "exams.approve", "exams.edit", "fees.add", "fees.approve", "payroll.approve", "certificates.add", "certificates.approve",
         ),
-        RoleKey.COORDINATOR to listOf("syllabus.approve") + supervisorPhase3,
-        RoleKey.HEAD_TEACHER to supervisorPhase3,
+        RoleKey.COORDINATOR to listOf("syllabus.approve") + supervisorPhase3 + supervisorPhase4,
+        RoleKey.HEAD_TEACHER to supervisorPhase3 + supervisorPhase4,
+        RoleKey.ACCOUNTANT to listOf("fees.add", "fees.approve"),
+        RoleKey.PARENT to listOf("certificates.view", "certificates.add", "exams.view"),
         RoleKey.SUPER_ADMIN to listOf("complaints.edit"),
     )
 

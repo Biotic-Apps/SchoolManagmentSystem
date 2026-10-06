@@ -4,19 +4,25 @@ import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.dashboard.DashboardRepository
 import com.schoolapp.core.model.SessionContext
 import com.schoolapp.feature.dashboard.DashboardUiState
+import com.schoolapp.feature.dashboard.finance.FinanceLoader
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
-/** Loads the Today queue and the summary in parallel; one failing still shows the other with an inline error. */
-class SupervisorLoader @Inject constructor(private val repository: DashboardRepository) {
+/** Loads the Today queue, the summary and the finance card in parallel; one failing still shows the others with an inline error. */
+class SupervisorLoader @Inject constructor(
+    private val repository: DashboardRepository,
+    private val financeLoader: FinanceLoader,
+) {
 
     suspend fun load(session: SessionContext, date: String, showsToday: Boolean): DashboardUiState = coroutineScope {
         val scope = session.activeAssignments.firstOrNull()
         val pending = if (showsToday) async { repository.pending(session.activeBranchId, date) } else null
         val summary = async { repository.summary(scope?.branchId) }
+        val finance = async { financeLoader.load(session, date) }
         val pendingResult = pending?.await()
         val summaryResult = summary.await()
+        val financeState = finance.await()
         if (summaryResult is AppResult.Failure && (pendingResult == null || pendingResult is AppResult.Failure)) {
             return@coroutineScope DashboardUiState.Error(summaryResult.error)
         }
@@ -29,6 +35,7 @@ class SupervisorLoader @Inject constructor(private val repository: DashboardRepo
             pendingError = (pendingResult as? AppResult.Failure)?.error,
             metrics = (summaryResult as? AppResult.Success)?.data.orEmpty(),
             summaryError = (summaryResult as? AppResult.Failure)?.error,
+            finance = financeState,
         )
     }
 }

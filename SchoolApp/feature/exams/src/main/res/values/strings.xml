@@ -1,0 +1,131 @@
+<resources>
+    <!-- Mark sheet statuses -->
+    <string name="exams_status_not_entered">Not entered</string>
+    <string name="exams_status_draft">Draft</string>
+    <string name="exams_status_submitted">Submitted</string>
+    <string name="exams_status_pending_review">Pending review</string>
+    <string name="exams_status_accepted">Accepted</string>
+    <string name="exams_status_returned">Returned</string>
+
+    <!-- Mark sheet cards / lists -->
+    <string name="exams_paper_date">Paper on %1$s</string>
+    <string name="exams_teacher_name">Teacher: %1$s</string>
+    <string name="exams_teacher_unassigned">No teacher assigned</string>
+    <string name="exams_entered_of_total">%1$d of %2$d entered</string>
+    <string name="exams_returned_comment">Returned: %1$s</string>
+    <string name="exams_my_sheets_empty">No mark sheets open</string>
+    <string name="exams_my_sheets_empty_message">Mark sheets appear here when an exam is open for marks.</string>
+    <string name="exams_exam_fallback">Exam</string>
+    <plurals name="exams_sheets_count">
+        <item quantity="one">%1$d mark sheet</item>
+        <item quantity="other">%1$d mark sheets</item>
+    </plurals>
+
+    <!-- Sheet header -->
+    <string name="exams_exam">Exam</string>
+    <string name="exams_max_marks">Max marks</string>
+    <string name="exams_pass_marks">Pass marks</string>
+    <string name="exams_paper_date_label">Paper date</string>
+    <string name="exams_teacher">Teacher</string>
+    <string name="exams_count_entered">Entered</string>
+    <string name="exams_count_absent">Absent</string>
+    <string name="exams_count_pending">Pending</string>
+
+    <!-- Marks entry -->
+    <string name="exams_marks_title">Marks</string>
+    <string name="exams_roll_name">%1$d. %2$s</string>
+    <string name="exams_marks_out_of">Marks (out of %1$s)</string>
+    <string name="exams_marks_of_max">%1$s / %2$s</string>
+    <string name="exams_absent">Absent</string>
+    <string name="exams_pending">Pending</string>
+    <string name="exams_error_invalid">Enter a number</string>
+    <string name="exams_error_negative">Marks cannot be negative</string>
+    <string name="exams_error_too_high">More than the maximum (%1$s)</string>
+    <string name="exams_error_decimals">Use at most 2 decimal places</string>
+    <string name="exams_roster_empty">No students on this sheet</string>
+    <string name="exams_sheet_unavailable">This mark sheet could not be opened.</string>
+    <string name="exams_save_draft">Save draft</string>
+    <string name="exams_submit">Submit</string>
+    <string name="exams_confirm_submit_title">Submit marks?</string>
+    <string name="exams_confirm_submit_message">Entered: %1$d · Absent: %2$d. After submitting you cannot change the marks unless the sheet is returned to you.</string>
+    <string name="exams_offline_banner">You are offline. Showing the copy last opened on this device.</string>
+    <string name="exams_queued_message">Saved on this device, will send when online.</string>
+    <string name="exams_sync_needs_attention">These marks could not be sent. Discard your changes to see the marks on the server.</string>
+    <string name="exams_discard_mine">Discard my changes</string>
+    <string name="exams_draft_saved">Draft saved.</string>
+    <string name="exams_submitted_message">Marks submitted for review.</string>
+    <string name="exams_pending_review_message">Marks sent. They are held for review by your supervisor before they count.</string>
+    <string name="exams_fix_invalid">Fix the highlighted marks before saving.</string>
+    <plurals name="exams_pending_blocking">
+        <item quantity="one">%1$d student still pending.</item>
+        <item quantity="other">%1$d students still pending.</item>
+    </plurals>
+    <string name="exams_pending_hint">Enter marks or tick Absent for every highlighted student.</string>
+    <string name="exams_unsent_changes">You have changes that are not saved yet.</string>
+    <string name="exams_submitted_banner">Submitted for review. Marks can no longer be changed.</string>
+    <string name="exams_pending_review_banner">Held for review by your supervisor (probation). Marks cannot be changed now.</string>
+    <string name="exams_accepted_banner">Accepted. These marks are final.</string>
+    <string name="exams_returned_banner">Returned by the reviewer. Correct the marks and submit again.</string>
+    <string name="exams_returned_banner_comment">Returned by the reviewer: %1$s</string>
+    <string name="exams_view_only_banner">You can view these marks but not change them.</string>
+
+    <!-- Completeness board -->
+    <string name="exams_completeness_title">Mark sheet completeness</string>
+    <string name="exams_pick_exam">Choose an exam</string>
+    <string name="exams_no_exams">No exams yet</string>
+    <string name="exams_no_exams_message">Exams appear here once they are scheduled.</string>
+    <string name="exams_no_sheets">No mark sheets for this exam yet.</string>
+    <string name="exams_no_sheets_filter">No mark sheets with this status.</string>
+    <string name="exams_filter_all">All (%1$d)</string>
+    <string name="exams_filter_status">%1$s (%2$d)</string>
+    <string name="exams_approvals_note">Approving and publishing results is done in Approvals or on the web panel.</string>
+    <string name="exams_open_approvals">Open approvals</string>
+
+    <!-- Sheet review -->
+    <string name="exams_accept">Accept</string>
+    <string name="exams_return">Return</string>
+    <string name="exams_accept_title">Accept %1$s</string>
+    <string name="exams_return_title">Return %1$s</string>
+    <string name="exams_accept_hint">Accepted marks are final and count towards results.</string>
+    <string name="exams_return_hint">The teacher can correct the marks and submit again.</string>
+    <string name="exams_comment_optional">Comment (optional)</string>
+    <string name="exams_comment_required">What should the teacher fix?</string>
+    <string name="exams_return_comment_missing">Add a comment for the teacher</string>
+    <string name="exams_accepted_message">Mark sheet accepted.</string>
+    <string name="exams_returned_message">Mark sheet returned to the teacher.</string>
+    <string name="exams_review_comment">Reviewer comment: %1$s</string>
+    <string name="exams_review_no_permission">Waiting for a reviewer to accept or return this sheet.</string>
+
+    <!-- Parent results -->
+    <string name="exams_results_title">Progress &amp; Results</string>
+    <string name="exams_no_child">No child linked</string>
+    <string name="exams_no_child_message">Results appear here once your child is linked to your account.</string>
+    <string name="exams_no_results">No results published yet</string>
+    <string name="exams_no_results_message">Results appear here when the school publishes them.</string>
+    <string name="exams_published_on">Published %1$s</string>
+    <string name="exams_pass">Pass</string>
+    <string name="exams_fail">Fail</string>
+    <string name="exams_overall">Overall</string>
+    <string name="exams_percent_value">%1$s%%</string>
+    <string name="exams_total">Total marks</string>
+    <string name="exams_grade">Grade</string>
+    <string name="exams_position">Position in section</string>
+    <string name="exams_remarks">Remarks</string>
+    <string name="exams_teacher_remark">Class teacher</string>
+    <string name="exams_col_subject">Subject</string>
+    <string name="exams_col_marks">Marks</string>
+    <string name="exams_col_grade">Grade</string>
+    <string name="exams_col_result">Result</string>
+    <string name="exams_report_card">Report card</string>
+    <string name="exams_report_card_pending">Report card is being prepared. Please check again later.</string>
+    <string name="exams_report_card_failed">The report card could not be prepared. Please contact the school.</string>
+    <string name="exams_trend_title">Progress trend</string>
+    <string name="exams_trend_hint">Overall percentage in each exam, oldest first.</string>
+    <string name="exams_teacher_notes">Teacher notes</string>
+    <string name="exams_no_notes">No notes from teachers yet.</string>
+    <string name="exams_note_by">By %1$s</string>
+    <string name="exams_note_homework">Homework</string>
+    <string name="exams_note_behaviour">Behaviour</string>
+    <string name="exams_note_learning">Learning</string>
+    <string name="exams_note_achievement">Achievement</string>
+</resources>

@@ -23,13 +23,14 @@ import com.schoolapp.core.designsystem.component.StatCard
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.core.ui.formatDate
+import com.schoolapp.core.navigation.MenuIds
 import com.schoolapp.core.ui.humanizeKey
 import com.schoolapp.feature.dashboard.DashboardUiState
 import com.schoolapp.feature.dashboard.R
 import com.schoolapp.feature.dashboard.action
 import com.schoolapp.feature.dashboard.presentationFor
 
-/** Adaptive grid: the Today queue above the summary counts; two columns on phones, more when wider. */
+/** Adaptive grid: the Today queue, the month's finance card, then the summary counts; two columns on phones, more when wider. */
 @Composable
 internal fun SupervisorGrid(
     state: DashboardUiState.Supervisor,
@@ -61,6 +62,11 @@ internal fun SupervisorGrid(
                         onClick = tile.link.action(onOpenMenu, onOpen, canOpenMenu),
                     )
                 }
+            }
+            state.finance?.let { finance ->
+                fullWidth("finance") { FinanceCard(finance, onClick = financeAction(onOpenMenu, canOpenMenu)) }
+            }
+            if (state.showsToday) {
                 fullWidth("overview-title") { SectionHeader(title = stringResource(R.string.dashboard_overview_title)) }
             }
             state.summaryError?.let { error -> fullWidth("summary-error") { InlineMessage(appErrorMessage(error), StatusTone.Error) } }
@@ -77,6 +83,10 @@ internal fun SupervisorGrid(
         }
     }
 }
+
+/** Finance card opens the fees menu when the role has it. */
+internal fun financeAction(onOpenMenu: (String) -> Unit, canOpenMenu: (String) -> Boolean): (() -> Unit)? =
+    if (canOpenMenu(MenuIds.FEES)) ({ onOpenMenu(MenuIds.FEES) }) else null
 
 private fun LazyGridScope.fullWidth(key: String, content: @Composable () -> Unit) {
     item(key = key, span = { GridItemSpan(maxLineSpan) }) { content() }

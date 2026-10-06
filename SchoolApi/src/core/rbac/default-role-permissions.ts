@@ -28,7 +28,7 @@ const PRINCIPAL: PermissionKey[] = [
   ...grant('progress', 'view', 'edit'),
   ...grant('activities', 'view', 'add', 'edit', 'approve', 'publish'),
   ...grant('notices', 'view', 'add', 'edit', 'publish'),
-  ...grant('exams', 'view', 'add', 'edit', 'approve', 'publish', 'export'),
+  ...grant('exams', 'view', 'add', 'edit', 'submit', 'approve', 'publish', 'export'),
   ...grant('fees', 'view', 'approve', 'export'),
   ...grant('payroll', 'view', 'approve'),
   ...grant('expenses', 'view', 'approve'),
@@ -46,6 +46,7 @@ const PRINCIPAL: PermissionKey[] = [
   'audit.view',
   'people.sensitive.view',
   'fees.concession.approve',
+  'self.payroll.view',
 ];
 
 const SUPERVISOR: PermissionKey[] = [
@@ -56,7 +57,8 @@ const SUPERVISOR: PermissionKey[] = [
   ...grant('syllabus', 'view', 'add', 'edit', 'submit', 'approve'),
   ...grant('activities', 'view', 'add', 'edit', 'submit'),
   ...grant('exams', 'view', 'add', 'edit', 'submit', 'approve'),
-  ...viewOnly('progress', 'health'),
+  ...grant('progress', 'view', 'edit'),
+  ...viewOnly('health', 'certificates'),
   ...grant('pickup', 'view', 'add'),
   ...grant('notices', 'view', 'add'),
   ...grant('messages', 'view', 'add'),
@@ -70,7 +72,8 @@ const SUPERVISOR: PermissionKey[] = [
 
 const TEACHER: PermissionKey[] = [
   ...viewOnly('dashboard', 'sessions', 'classes', 'students', 'guardians'),
-  ...viewOnly('timetable', 'progress', 'health'),
+  ...viewOnly('timetable', 'health'),
+  ...grant('progress', 'view', 'edit'),
   ...grant('attendance', 'view', 'add', 'edit', 'submit'),
   ...grant('diary', 'view', 'add', 'edit', 'submit', 'publish'),
   ...grant('syllabus', 'view', 'add', 'edit', 'submit'),
@@ -96,11 +99,13 @@ const HELPER: PermissionKey[] = [
 ];
 
 const ACCOUNTANT: PermissionKey[] = [
-  ...viewOnly('dashboard', 'sessions', 'classes', 'students'),
-  ...grant('fees', 'view', 'add', 'edit', 'submit', 'export'),
+  ...viewOnly('dashboard', 'branches', 'sessions', 'classes', 'students', 'staff'),
+  // Accountant prepares, records and verifies (security.md §2.1).
+  ...grant('fees', 'view', 'add', 'edit', 'submit', 'approve', 'export'),
   ...grant('payroll', 'view', 'add', 'edit', 'submit', 'export'),
   ...grant('expenses', 'view', 'add', 'edit', 'submit', 'export'),
   ...grant('inventory', 'view', 'add', 'edit', 'submit'),
+  ...viewOnly('certificates'),
   ...grant('complaints', 'view', 'add'),
   ...grant('reports', 'view', 'export'),
   ...OWN_PROFILE,
@@ -111,6 +116,7 @@ const PARENT: PermissionKey[] = [
   ...viewOnly('dashboard', 'students', 'diary', 'attendance', 'progress'),
   ...viewOnly('syllabus', 'timetable', 'activities', 'notices', 'exams'),
   ...grant('fees', 'view', 'add'),
+  ...grant('certificates', 'view', 'add'),
   ...grant('guardians', 'add'),
   ...grant('health', 'view', 'submit'),
   ...grant('pickup', 'view', 'add'),

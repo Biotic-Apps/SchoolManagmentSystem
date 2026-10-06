@@ -11,4 +11,5 @@
     <string name="home_logout">Sign out</string>
     <string name="home_logout_title">Sign out?</string>
     <string name="home_logout_message">Offline drafts on this device will be removed.</string>
+    <string name="home_web_panel_only">Available on the web panel. Sign in on a computer to manage this.</string>
 </resources>

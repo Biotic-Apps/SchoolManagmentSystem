@@ -48,6 +48,16 @@ import com.schoolapp.core.data.pickup.PickupRepository
 import com.schoolapp.core.data.pickup.DefaultPickupRepository
 import com.schoolapp.core.data.notifications.NotificationPreferencesRepository
 import com.schoolapp.core.data.notifications.DefaultNotificationPreferencesRepository
+import com.schoolapp.core.data.exams.ExamsRepository
+import com.schoolapp.core.data.exams.DefaultExamsRepository
+import com.schoolapp.core.data.progress.ProgressRepository
+import com.schoolapp.core.data.progress.DefaultProgressRepository
+import com.schoolapp.core.data.fees.FeesRepository
+import com.schoolapp.core.data.fees.DefaultFeesRepository
+import com.schoolapp.core.data.payroll.PayrollRepository
+import com.schoolapp.core.data.payroll.DefaultPayrollRepository
+import com.schoolapp.core.data.certificates.CertificatesRepository
+import com.schoolapp.core.data.certificates.DefaultCertificatesRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -127,4 +137,19 @@ interface RepositoryModule {
 
     @Binds
     fun bindNotificationPreferencesRepository(impl: DefaultNotificationPreferencesRepository): NotificationPreferencesRepository
+
+    @Binds
+    fun bindExamsRepository(impl: DefaultExamsRepository): ExamsRepository
+
+    @Binds
+    fun bindProgressRepository(impl: DefaultProgressRepository): ProgressRepository
+
+    @Binds
+    fun bindFeesRepository(impl: DefaultFeesRepository): FeesRepository
+
+    @Binds
+    fun bindPayrollRepository(impl: DefaultPayrollRepository): PayrollRepository
+
+    @Binds
+    fun bindCertificatesRepository(impl: DefaultCertificatesRepository): CertificatesRepository
 }

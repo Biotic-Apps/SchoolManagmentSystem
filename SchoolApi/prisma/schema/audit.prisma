@@ -21,6 +21,7 @@ enum ApprovalType {
   EARLY_LEAVE
   CERTIFICATE
   NOTICE
+  INVOICE_CANCEL
 
   @@map("approval_type")
 }
@@ -68,6 +69,12 @@ enum FilePurpose {
   STUDENT_PHOTO
   STAFF_PHOTO
   ID_CARD
+  REPORT_CARD
+  CHALLAN
+  RECEIPT
+  PAYSLIP
+  CERTIFICATE
+  REPORT
 
   @@map("file_purpose")
 }

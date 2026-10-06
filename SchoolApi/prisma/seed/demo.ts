@@ -8,6 +8,7 @@ import { seedSyllabus } from './demo-syllabus';
 import { seedPeriods, seedTimetables } from './demo-timetable';
 import { seedDailyOperations } from './demo-daily';
 import { seedOrganisation } from './demo-org';
+import { seedFinanceAndResults } from './demo-phase4';
 import type { SystemRoleIds } from './system-roles';
 import { ensureAssignment, ensureUser } from './users';
 
@@ -24,7 +25,7 @@ const BRANCH_STAFF = [
   ['helper@eschool.local', 'Demo Helper', RoleKey.HELPER],
 ] as const;
 
-/** Phase 1 §14 accounts + Phase 2 §9 people, timetable, syllabus, admissions (dev only). */
+/** Phase 1 §14 accounts, Phase 2 §9 people/academics, Phase 3 daily operations, Phase 4 finance/results (dev only). */
 export async function seedDemo(prisma: SeedClient, roles: SystemRoleIds): Promise<void> {
   const org = await seedOrganisation(prisma);
   await seedAcademics(prisma, org);
@@ -58,4 +59,5 @@ export async function seedDemo(prisma: SeedClient, roles: SystemRoleIds): Promis
   await seedSyllabus(prisma, people);
   await seedAdmissions(prisma, people);
   await seedDailyOperations(prisma, people);
+  await seedFinanceAndResults(prisma, people);
 }

@@ -16,7 +16,12 @@ import com.schoolapp.core.navigation.NavigationCatalog
 import com.schoolapp.feature.home.ModulePhases
 import com.schoolapp.feature.home.R
 
-/** Destination for modules that are not built yet. */
+/** Modules managed on the web panel only; the app explains where to find them. */
+private val WebOnlyModules = setOf(
+    MenuIds.SCHOOLS, MenuIds.USERS, MenuIds.ROLES, MenuIds.EXPENSES, MenuIds.INVENTORY, MenuIds.REPORTS,
+)
+
+/** Destination for web-only modules and modules that are not built yet. */
 @Composable
 internal fun MenuPlaceholder(menuId: String, modifier: Modifier = Modifier) {
     val item = NavigationCatalog.find(menuId)
@@ -24,8 +29,11 @@ internal fun MenuPlaceholder(menuId: String, modifier: Modifier = Modifier) {
     Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         EmptyState(
             title = item?.label ?: menuId,
-            message = phase?.let { stringResource(R.string.home_coming_in_phase, it) }
-                ?: stringResource(R.string.home_coming_soon),
+            message = when {
+                menuId in WebOnlyModules -> stringResource(R.string.home_web_panel_only)
+                phase != null -> stringResource(R.string.home_coming_in_phase, phase)
+                else -> stringResource(R.string.home_coming_soon)
+            },
             icon = item?.icon ?: Icons.Outlined.Inbox,
         )
     }

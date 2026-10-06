@@ -7,6 +7,7 @@ import com.schoolapp.core.common.time.AppClock
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.data.dashboard.DashboardRepository
 import com.schoolapp.core.model.SessionContext
+import com.schoolapp.feature.dashboard.finance.FinanceLoader
 import com.schoolapp.feature.dashboard.parent.ParentHome
 import com.schoolapp.feature.dashboard.supervisor.SupervisorLoader
 import com.schoolapp.feature.dashboard.teacher.TeacherDayLoader
@@ -27,6 +28,7 @@ class DashboardViewModel @Inject constructor(
     private val dashboardRepository: DashboardRepository,
     private val supervisorLoader: SupervisorLoader,
     private val teacherDayLoader: TeacherDayLoader,
+    private val financeLoader: FinanceLoader,
     private val clock: AppClock,
 ) : ViewModel() {
 
@@ -71,7 +73,7 @@ class DashboardViewModel @Inject constructor(
                 )
             }
             DashboardMode.PARENT -> loadParent(session, refreshing)
-            DashboardMode.WELCOME -> _uiState.value = session.toWelcome()
+            DashboardMode.WELCOME -> loadWelcome(session, refreshing)
         }
     }
 
@@ -92,6 +94,18 @@ class DashboardViewModel @Inject constructor(
             is AppResult.Success -> DashboardUiState.Parent(child = child, home = ParentHome.from(result.data))
             is AppResult.Failure -> DashboardUiState.Parent(child = child, home = kept, error = result.error)
         }
+    }
+
+    /** Welcome card at once; the finance card (accountant and other `fees.view` roles) follows when loaded. */
+    private suspend fun loadWelcome(session: SessionContext, refreshing: Boolean) {
+        val kept = (_uiState.value as? DashboardUiState.Welcome)?.finance
+        val welcome = session.toWelcome()
+        if (!financeLoader.shows(session)) {
+            _uiState.value = welcome
+            return
+        }
+        _uiState.value = welcome.copy(finance = kept, isRefreshing = refreshing)
+        _uiState.value = welcome.copy(finance = financeLoader.load(session, today()))
     }
 
     private fun showProgress(refreshing: Boolean) {

@@ -12,14 +12,32 @@ interface DiarySeed {
   homework?: string;
 }
 
-const MATH_TOPICS = ['Fractions: adding like fractions', 'Fractions: unlike denominators', 'Decimals: place value', 'Decimals: rounding', 'Word problems with decimals'];
-const ENG_TOPICS = ['Reading: The Honest Woodcutter', 'Grammar: adjectives', 'Writing: a short letter', 'Spelling list 7', 'Comprehension practice'];
+const MATH_TOPICS = [
+  'Fractions: adding like fractions',
+  'Fractions: unlike denominators',
+  'Decimals: place value',
+  'Decimals: rounding',
+  'Word problems with decimals',
+];
+const ENG_TOPICS = [
+  'Reading: The Honest Woodcutter',
+  'Grammar: adjectives',
+  'Writing: a short letter',
+  'Spelling list 7',
+  'Comprehension practice',
+];
 
-async function upsertEntry(prisma: SeedClient, ctx: DailyContext, seed: DiarySeed): Promise<string> {
+async function upsertEntry(
+  prisma: SeedClient,
+  ctx: DailyContext,
+  seed: DiarySeed,
+): Promise<string> {
   const sectionId = ctx.org.sections.get(seed.section)!;
   const subjectId = ctx.org.subjects.get(seed.subject)!;
   const existing = await prisma.diaryEntry.findUnique({
-    where: { sectionId_subjectId_date: { sectionId, subjectId, date: seed.date } },
+    where: {
+      sectionId_subjectId_date: { sectionId, subjectId, date: seed.date },
+    },
   });
   if (existing) return existing.id;
   const author = userId(ctx, seed.author);
@@ -35,7 +53,10 @@ async function upsertEntry(prisma: SeedClient, ctx: DailyContext, seed: DiarySee
       homework: seed.homework,
       status: seed.status,
       authorId: author,
-      publishedAt: seed.status === 'PUBLISHED' ? new Date(seed.date.getTime() + 8 * 3600_000) : null,
+      publishedAt:
+        seed.status === 'PUBLISHED'
+          ? new Date(seed.date.getTime() + 8 * 3600_000)
+          : null,
       publishedById: seed.status === 'PUBLISHED' ? author : null,
     },
   });
@@ -43,7 +64,10 @@ async function upsertEntry(prisma: SeedClient, ctx: DailyContext, seed: DiarySee
 }
 
 /** Last 5 school days of Maths (5-A, 5-B) and English (5-A); a helper draft; a probation entry in review. */
-export async function seedDiary(prisma: SeedClient, ctx: DailyContext): Promise<void> {
+export async function seedDiary(
+  prisma: SeedClient,
+  ctx: DailyContext,
+): Promise<void> {
   const days = ctx.days.slice(0, 5);
   for (const [i, date] of days.entries()) {
     for (const section of ['5-A', '5-B']) {
@@ -87,7 +111,9 @@ export async function seedDiary(prisma: SeedClient, ctx: DailyContext): Promise<
     topics: ENG_TOPICS[0],
     homework: 'Read pages 12–14.',
   });
-  const held = await prisma.approvalRequest.findFirst({ where: { entityId: pendingId, type: 'PROBATION_REVIEW' } });
+  const held = await prisma.approvalRequest.findFirst({
+    where: { entityId: pendingId, type: 'PROBATION_REVIEW' },
+  });
   if (held) return;
   const staffId = ctx.staff.get('newteacher@eschool.local')!;
   const approval = await prisma.approvalRequest.create({
@@ -99,9 +125,24 @@ export async function seedDiary(prisma: SeedClient, ctx: DailyContext): Promise<
       branchId: ctx.org.branchId,
       requestedById: userId(ctx, 'newteacher@eschool.local'),
       title: `Diary ${latest.toISOString().slice(0, 10)}`,
-      payload: { action: 'diary.publish', payload: { entryId: pendingId }, staffId, onBehalfOfStaffId: staffId },
-      steps: { create: [{ order: 1, approverUserId: userId(ctx, 'coordinator@eschool.local') }] },
+      payload: {
+        action: 'diary.publish',
+        payload: { entryId: pendingId },
+        staffId,
+        onBehalfOfStaffId: staffId,
+      },
+      steps: {
+        create: [
+          {
+            order: 1,
+            approverUserId: userId(ctx, 'coordinator@eschool.local'),
+          },
+        ],
+      },
     },
   });
-  await prisma.diaryEntry.update({ where: { id: pendingId }, data: { approvalId: approval.id } });
+  await prisma.diaryEntry.update({
+    where: { id: pendingId },
+    data: { approvalId: approval.id },
+  });
 }

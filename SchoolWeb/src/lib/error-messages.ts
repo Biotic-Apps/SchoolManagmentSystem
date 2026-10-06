@@ -15,10 +15,14 @@ const FRIENDLY: Record<string, string> = {
   RECORD_LOCKED: "This record is locked and can no longer be changed.",
   RATE_LIMITED: "Too many requests. Wait a moment and try again.",
   NETWORK_ERROR: "Cannot reach the server. Check your connection and try again.",
+  CLEARANCE_REQUIRED: "Clearance is pending: settle dues and return issued items first.",
+  GATEWAY_DISABLED: "Online payment is not available for this school yet.",
+  DAY_CLOSED: "This day's collection is closed; back-dated cash payments are blocked.",
+  NEGATIVE_STOCK: "Not enough stock for this movement.",
 };
 
 // For these codes the server message is more specific than the generic text.
-const SERVER_MESSAGE_CODES = new Set(["CONFLICT", "RECORD_LOCKED"]);
+const SERVER_MESSAGE_CODES = new Set(["CONFLICT", "RECORD_LOCKED", "CLEARANCE_REQUIRED", "NEGATIVE_STOCK"]);
 
 const FALLBACK = "Something went wrong. Please try again.";
 

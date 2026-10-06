@@ -53,19 +53,19 @@ Definition of Done per module: schema + migration · API with permission/scope g
 - [x] Push notifications (FCM)
 
 ## Phase 4 — Finance & results
-- [ ] Exams & grading
-- [ ] Marks entry & results approval
-- [ ] Report cards
-- [ ] Pass/repeat & promotion
-- [ ] Fee structures & invoices
-- [ ] Payments, proof verification, receipts, gateway adapter
-- [ ] Concessions, refunds, reversals
-- [ ] Dues & daily collections
-- [ ] Payroll & payslips
-- [ ] Expenses & vendors
-- [ ] Inventory & purchasing
-- [ ] Certificates
-- [ ] Reports & exports
+- [x] Exams & grading
+- [x] Marks entry & results approval
+- [x] Report cards
+- [x] Pass/repeat & promotion
+- [x] Fee structures & invoices
+- [x] Payments, proof verification, receipts, gateway adapter
+- [x] Concessions, refunds, reversals
+- [x] Dues & daily collections
+- [x] Payroll & payslips
+- [x] Expenses & vendors
+- [x] Inventory & purchasing
+- [x] Certificates
+- [x] Reports & exports
 
 ## Phase 5 — Hardening & parity
 - [ ] Settings & branding
@@ -77,6 +77,14 @@ Definition of Done per module: schema + migration · API with permission/scope g
 
 ## Phase 6 — Pilot & rollout
 - [ ] Pilot branch
+
+## Phase 4 notes
+- API: 324 unit + 62 e2e tests; migration phase4_finance_results (43 tables, append-only triggers on ledger_entries/stock_movements, money CHECKs). GET /jobs/:id for all background jobs. Deviations in docs/api/phase4-contract.md.
+- Verified live: parent fee summary/invoices/results, cash payment allocates oldest-first (due 6,200 → 5,200), teacher cannot read others' payslips (403), finance dashboard.
+- Integration fixes: accountant lacked branches.view/staff.view (fees/payroll pages unusable); principal given exams.submit (proxy marks); next-due amount read from balanceMinor (web + Android); Android fee flags aligned to proofUploadEnabled/onlineGatewayEnabled; results seed used subject codes instead of names; parent Progress page double header.
+- Parent menu now includes Certificates (docs/navigation.md, web, Android).
+- Android: 291 unit tests; FLAG_SECURE on salary screens; installed on phone without crash.
+- Not yet: real online gateways (JazzCash/Easypaisa — only ManualGateway), fee plan archiving, payroll adjustment cancel, mid-month salary pro-rata, section capacity check on promotion apply, end-to-end e2e for results compute→publish.
 
 ## Phase 3 notes
 - API: 150 unit + 47 e2e tests; migration phase3_daily_operations. School date/time now follow APP_TIMEZONE (default Asia/Karachi) instead of UTC/server time.

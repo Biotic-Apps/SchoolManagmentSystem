@@ -11,6 +11,13 @@ export const NOTIFICATION_CATEGORIES = [
   'PICKUP',
   'LEAVE',
   'APPROVAL',
+  'EXAM',
+  'RESULT',
+  'FEE',
+  'PAYROLL',
+  'EXPENSE',
+  'INVENTORY',
+  'CERTIFICATE',
 ] as const;
 
 export type NotificationCategory = (typeof NOTIFICATION_CATEGORIES)[number];

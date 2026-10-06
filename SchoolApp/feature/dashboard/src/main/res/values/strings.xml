@@ -76,4 +76,12 @@
     <string name="dashboard_link_health">Health card</string>
     <string name="dashboard_link_pickup">Pickup &amp; early leave</string>
     <string name="dashboard_link_leave">Request leave</string>
+    <string name="dashboard_finance_title">Finance this month</string>
+    <string name="dashboard_finance_collected">Collected</string>
+    <string name="dashboard_finance_outstanding">Outstanding</string>
+    <string name="dashboard_finance_overdue">Overdue</string>
+    <string name="dashboard_finance_rate">Collection rate</string>
+    <string name="dashboard_finance_today">Collected today</string>
+    <string name="dashboard_finance_expenses">Expenses</string>
+    <string name="dashboard_finance_payroll">Payroll</string>
 </resources>

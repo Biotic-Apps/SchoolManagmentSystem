@@ -109,6 +109,14 @@ model Student {
   pickupPersons     PickupPerson[]
   earlyLeaves       EarlyLeave[]
   departures        Departure[]
+  marks             Mark[]                @relation("StudentMarks")
+  examResults       ExamResult[]          @relation("StudentResults")
+  progressNotes     ProgressNote[]        @relation("StudentProgressNotes")
+  promotions        PromotionDecision[]   @relation("StudentPromotions")
+  invoices          Invoice[]             @relation("StudentInvoices")
+  ledgerEntries     LedgerEntry[]         @relation("StudentLedger")
+  payments          Payment[]             @relation("StudentPayments")
+  certificates      Certificate[]         @relation("StudentCertificates")
 
   @@unique([schoolId, admissionNo])
   @@index([schoolId, status])

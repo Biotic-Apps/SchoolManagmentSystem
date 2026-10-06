@@ -1,7 +1,7 @@
 # SchoolApi
 
 NestJS 11 + Prisma 7 (PostgreSQL 16) + BullMQ (Redis) API for the eSchool Management System.
-Design: [../docs/architecture.md](../docs/architecture.md) §5, [databaseManagement.md](../docs/databaseManagement.md), [security.md](../docs/security.md). Phase 1 API: [../docs/api/phase1-contract.md](../docs/api/phase1-contract.md); Phase 2 API: [../docs/api/phase2-contract.md](../docs/api/phase2-contract.md); Phase 3 API: [../docs/api/phase3-contract.md](../docs/api/phase3-contract.md).
+Design: [../docs/architecture.md](../docs/architecture.md) §5, [databaseManagement.md](../docs/databaseManagement.md), [security.md](../docs/security.md). Phase 1 API: [../docs/api/phase1-contract.md](../docs/api/phase1-contract.md); Phase 2 API: [../docs/api/phase2-contract.md](../docs/api/phase2-contract.md); Phase 3 API: [../docs/api/phase3-contract.md](../docs/api/phase3-contract.md); Phase 4 API: [../docs/api/phase4-contract.md](../docs/api/phase4-contract.md).
 
 ## Local run (no Docker, Postgres or Redis install needed)
 ```bash
@@ -43,10 +43,13 @@ Push, email and SMS channels log messages in development and mark deliveries `FA
 ## Layout
 ```
 prisma/schema/        base, identity, organisation, audit, jobs, people, staff, documents, admissions, academics-plan,
-                      attendance (+leave, staff attendance), engagement (diary, activities, notices, messaging), welfare
+                      attendance (+leave, staff attendance), engagement (diary, activities, notices, messaging), welfare,
+                      results, finance, payroll, procurement, certificates (+generated documents, async tasks)
 prisma/migrations/    phase1_init (+ partial unique indexes), phase1_integrity (audit append-only trigger, CHECKs),
                       phase2_people_academics (+ partial uniques: one active enrollment, one primary guardian, one class teacher; CHECKs),
-                      phase3_daily_operations (+ partial uniques: one pending correction per entry, one scheduled meeting per slot)
+                      phase3_daily_operations (+ partial uniques: one pending correction per entry, one scheduled meeting per slot),
+                      phase4_finance_results (append-only triggers on ledger_entries + stock_movements, money CHECKs,
+                      partial uniques: one generated invoice per student+period, one recurring expense copy per month, original certificate serials)
 prisma/seed*          seed entry + small seed steps
 scripts/              embedded PostgreSQL start/stop
 src/config/           zod-validated env + typed AppConfigService
@@ -68,7 +71,14 @@ src/modules/          me, roles, schools, branches (+settings, principal), users
                       documents, students (+enrollment, transfers, ID card PDF job), guardians (+child links, contact change),
                       admissions, staff (+assignments, probation, expiry job), timetable, syllabus (+book lists, delay report job),
                       school-day (shared helpers), attendance (+corrections, lock job), staff-attendance, leave, diary (+missing job),
-                      activities, notices (+expiry job), messaging, complaints (+SLA job), meetings (+reminder job), health, pickup
+                      activities, notices (+expiry job), messaging, complaints (+SLA job), meetings (+reminder job), health, pickup,
+                      tasks (GET /jobs/:id), generated-docs (versioned PDFs on the documents queue), finance-core (ledger, allocation,
+                      invoice money events, approval limits), results (grading, exams, marks, results, report cards, progress, promotions),
+                      fees (+invoice generator, overdue/late-fee job), payments (+proofs, receipts, reversal, refunds, gateways, collections,
+                      finance dashboard), payroll (+calculate job, payslips), expenses (+recurring job), inventory (+purchasing, sales,
+                      low-stock job), certificates (+public verify), reports (catalog, CSV/XLSX/PDF jobs)
 ```
+Money is stored as BigInt minor units (`amount_minor`) and returned as JSON numbers; the student ledger and stock movements
+are append-only (DB triggers) and corrections are new entries with a reason.
 Each module: `controller` (routes + permission) → `service` (rules, scope checks, audit) → `repository` (Prisma, takes a `Scope`).
 Responses are `{ data, meta? }`; errors are `{ error: { code, message, details? } }` with codes from `ErrorCode`.

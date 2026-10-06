@@ -3,6 +3,7 @@
     <string name="messages_shortcut_activities">Activities &amp; consent</string>
     <string name="messages_shortcut_pickup">Pickup &amp; early leave</string>
     <string name="messages_shortcut_health">Health card</string>
+    <string name="messages_shortcut_certificates">Certificates</string>
     <string name="messages_threads_header">Conversations</string>
     <string name="messages_new_message">New message</string>
     <string name="messages_empty_title">No conversations yet</string>

@@ -41,7 +41,7 @@ class ApiCaller @Inject constructor(
             code() == 401 -> AppError.Unauthorized
             code() == 403 -> AppError.Forbidden(apiError?.code)
             apiError?.code == ApiErrorCodes.VALIDATION_FAILED -> AppError.Validation(apiError.message)
-            else -> AppError.Server(code(), apiError?.code, apiError?.message)
+            else -> AppError.Server(code(), apiError?.code, apiError?.message, apiError?.details?.toString())
         }
     }
 }

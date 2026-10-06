@@ -3,11 +3,13 @@ package com.schoolapp.feature.dashboard
 import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.dashboard.DashboardRepository
+import com.schoolapp.core.data.fees.FeesRepository
 import com.schoolapp.core.data.organisation.OrganisationRepository
 import com.schoolapp.core.data.timetable.TimetableRepository
 import com.schoolapp.core.model.dashboard.ChildToday
 import com.schoolapp.core.model.dashboard.DashboardMetric
 import com.schoolapp.core.model.dashboard.TeacherToday
+import com.schoolapp.core.model.fees.FinanceOverview
 import com.schoolapp.core.model.organisation.Section
 import com.schoolapp.core.model.timetable.SectionTimetable
 import com.schoolapp.core.model.timetable.TeacherSlot
@@ -61,3 +63,21 @@ fun organisationWith(sections: List<Section>): OrganisationRepository = Proxy.ne
         else -> error("not used: ${method.name}")
     }
 } as OrganisationRepository
+
+/** Fees stub answering only `financeOverview` (suspend calls arrive with a trailing continuation). */
+class FakeFinanceFees {
+    var result: AppResult<FinanceOverview> = AppResult.Failure(AppError.Network)
+    val calls = mutableListOf<Pair<String?, String?>>()
+
+    val repository: FeesRepository = Proxy.newProxyInstance(
+        FeesRepository::class.java.classLoader, arrayOf(FeesRepository::class.java),
+    ) { _, method, args ->
+        when (method.name) {
+            "financeOverview" -> {
+                calls += args[0] as String? to args[1] as String?
+                result
+            }
+            else -> error("not used: ${method.name}")
+        }
+    } as FeesRepository
+}

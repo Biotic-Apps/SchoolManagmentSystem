@@ -1,0 +1,411 @@
+// Phase 4 §B: fees, invoices, ledger, payments, concessions, refunds, collections.
+// Money: BigInt minor units + currency; never floats.
+
+enum FeeHeadKind {
+  RECURRING
+  ONE_TIME
+
+  @@map("fee_head_kind")
+}
+
+enum FeeFrequency {
+  MONTHLY
+  QUARTERLY
+  TERM
+  YEARLY
+  ONCE
+
+  @@map("fee_frequency")
+}
+
+enum FeePlanStatus {
+  DRAFT
+  APPROVED
+  ARCHIVED
+
+  @@map("fee_plan_status")
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  CANCELLED
+
+  @@map("invoice_status")
+}
+
+enum InvoiceSource {
+  GENERATED
+  ADHOC
+  SALE
+
+  @@map("invoice_source")
+}
+
+// Signed amounts: positive = the student owes more, negative = credit.
+enum LedgerEntryType {
+  CHARGE
+  LATE_FEE
+  CONCESSION
+  PAYMENT
+  REVERSAL
+  REFUND
+  CANCELLATION
+
+  @@map("ledger_entry_type")
+}
+
+enum PaymentMethod {
+  CASH
+  BANK
+  CHEQUE
+  ONLINE
+  WALLET
+  OTHER
+
+  @@map("payment_method")
+}
+
+enum PaymentStatus {
+  RECORDED
+  REVERSAL_PENDING
+  REVERSED
+
+  @@map("payment_status")
+}
+
+enum ProofStatus {
+  SUBMITTED
+  VERIFIED
+  REJECTED
+
+  @@map("proof_status")
+}
+
+enum ConcessionType {
+  PERCENT
+  FIXED
+
+  @@map("concession_type")
+}
+
+enum FinanceRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@map("finance_request_status")
+}
+
+model FeeHead {
+  id         String       @id @default(uuid(7)) @db.Uuid
+  schoolId   String       @map("school_id") @db.Uuid
+  code       String
+  name       String
+  kind       FeeHeadKind
+  refundable Boolean      @default(false)
+  system     Boolean      @default(false)
+  status     RecordStatus @default(ACTIVE)
+  createdAt  DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  planItems    FeePlanItem[]
+  invoiceLines InvoiceLine[]
+
+  @@unique([schoolId, code])
+  @@map("fee_heads")
+}
+
+model FeePlan {
+  id               String        @id @default(uuid(7)) @db.Uuid
+  schoolId         String        @map("school_id") @db.Uuid
+  branchId         String        @map("branch_id") @db.Uuid
+  sessionId        String        @map("session_id") @db.Uuid
+  classId          String        @map("class_id") @db.Uuid
+  name             String
+  status           FeePlanStatus @default(DRAFT)
+  lateFeeMinor     BigInt?       @map("late_fee_minor")
+  lateFeeAfterDays Int?          @map("late_fee_after_days")
+  revision         Int           @default(1)
+  // Items + late fee as last approved; the generator only reads this.
+  approvedSnapshot Json?         @map("approved_snapshot")
+  approvedById     String?       @map("approved_by_id") @db.Uuid
+  approvedAt       DateTime?     @map("approved_at") @db.Timestamptz(3)
+  createdById      String        @map("created_by_id") @db.Uuid
+  updatedById      String?       @map("updated_by_id") @db.Uuid
+  createdAt        DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  items FeePlanItem[]
+
+  @@unique([sessionId, classId, name])
+  @@index([branchId, sessionId])
+  @@map("fee_plans")
+}
+
+model FeePlanItem {
+  id          String       @id @default(uuid(7)) @db.Uuid
+  planId      String       @map("plan_id") @db.Uuid
+  feeHeadId   String       @map("fee_head_id") @db.Uuid
+  amountMinor BigInt       @map("amount_minor")
+  frequency   FeeFrequency
+  dueDay      Int          @map("due_day")
+
+  plan    FeePlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  feeHead FeeHead @relation(fields: [feeHeadId], references: [id], onDelete: Restrict)
+
+  @@index([planId])
+  @@index([feeHeadId])
+  @@map("fee_plan_items")
+}
+
+model Invoice {
+  id               String        @id @default(uuid(7)) @db.Uuid
+  invoiceNo        String        @unique @map("invoice_no")
+  schoolId         String        @map("school_id") @db.Uuid
+  branchId         String        @map("branch_id") @db.Uuid
+  sessionId        String        @map("session_id") @db.Uuid
+  studentId        String        @map("student_id") @db.Uuid
+  sectionId        String?       @map("section_id") @db.Uuid
+  classId          String?       @map("class_id") @db.Uuid
+  period           String?       @db.VarChar(7)
+  source           InvoiceSource @default(GENERATED)
+  status           InvoiceStatus @default(DRAFT)
+  issueDate        DateTime?     @map("issue_date") @db.Date
+  dueDate          DateTime      @map("due_date") @db.Date
+  subtotalMinor    BigInt        @default(0) @map("subtotal_minor")
+  concessionMinor  BigInt        @default(0) @map("concession_minor")
+  lateFeeMinor     BigInt        @default(0) @map("late_fee_minor")
+  totalMinor       BigInt        @default(0) @map("total_minor")
+  paidMinor        BigInt        @default(0) @map("paid_minor")
+  currency         String        @default("PKR") @db.Char(3)
+  planId           String?       @map("plan_id") @db.Uuid
+  lateFeeRule      Json?         @map("late_fee_rule")
+  cancelReason     String?       @map("cancel_reason")
+  cancelApprovalId String?       @map("cancel_approval_id") @db.Uuid
+  cancelledAt      DateTime?     @map("cancelled_at") @db.Timestamptz(3)
+  issuedById       String?       @map("issued_by_id") @db.Uuid
+  createdById      String?       @map("created_by_id") @db.Uuid
+  version          Int           @default(0)
+  createdAt        DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  student     Student             @relation("StudentInvoices", fields: [studentId], references: [id], onDelete: Restrict)
+  lines       InvoiceLine[]
+  concessions InvoiceConcession[]
+  allocations PaymentAllocation[]
+  proofs      PaymentProof[]
+
+  @@unique([studentId, period], map: "invoices_one_generated_per_period", where: raw("source = 'GENERATED'::invoice_source AND status <> 'CANCELLED'::invoice_status"))
+  @@index([branchId, status, dueDate])
+  @@index([branchId, period])
+  @@index([studentId, dueDate])
+  @@map("invoices")
+}
+
+model InvoiceLine {
+  id          String  @id @default(uuid(7)) @db.Uuid
+  invoiceId   String  @map("invoice_id") @db.Uuid
+  feeHeadId   String  @map("fee_head_id") @db.Uuid
+  description String
+  amountMinor BigInt  @map("amount_minor")
+  refType     String? @map("ref_type")
+  refId       String? @map("ref_id") @db.Uuid
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  feeHead FeeHead @relation(fields: [feeHeadId], references: [id], onDelete: Restrict)
+
+  @@index([invoiceId])
+  @@index([feeHeadId])
+  @@index([refType, refId])
+  @@map("invoice_lines")
+}
+
+model InvoiceConcession {
+  id           String @id @default(uuid(7)) @db.Uuid
+  invoiceId    String @map("invoice_id") @db.Uuid
+  concessionId String @map("concession_id") @db.Uuid
+  amountMinor  BigInt @map("amount_minor")
+
+  invoice    Invoice    @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  concession Concession @relation(fields: [concessionId], references: [id], onDelete: Restrict)
+
+  @@unique([invoiceId, concessionId])
+  @@map("invoice_concessions")
+}
+
+// Append-only (trigger). Balance of a student = SUM(amount_minor).
+model LedgerEntry {
+  id          String          @id @default(uuid(7)) @db.Uuid
+  schoolId    String          @map("school_id") @db.Uuid
+  branchId    String          @map("branch_id") @db.Uuid
+  studentId   String          @map("student_id") @db.Uuid
+  invoiceId   String?         @map("invoice_id") @db.Uuid
+  paymentId   String?         @map("payment_id") @db.Uuid
+  type        LedgerEntryType
+  amountMinor BigInt          @map("amount_minor")
+  currency    String          @default("PKR") @db.Char(3)
+  refType     String          @map("ref_type")
+  refId       String          @map("ref_id") @db.Uuid
+  reversesId  String?         @map("reverses_id") @db.Uuid
+  reason      String?
+  createdById String?         @map("created_by_id") @db.Uuid
+  createdAt   DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  student Student @relation("StudentLedger", fields: [studentId], references: [id], onDelete: Restrict)
+
+  @@index([studentId, createdAt])
+  @@index([branchId, createdAt])
+  @@index([invoiceId])
+  @@index([paymentId])
+  @@index([refType, refId])
+  @@map("ledger_entries")
+}
+
+model PaymentProof {
+  id            String        @id @default(uuid(7)) @db.Uuid
+  schoolId      String        @map("school_id") @db.Uuid
+  branchId      String        @map("branch_id") @db.Uuid
+  studentId     String        @map("student_id") @db.Uuid
+  invoiceId     String        @map("invoice_id") @db.Uuid
+  amountMinor   BigInt        @map("amount_minor")
+  paidOn        DateTime      @map("paid_on") @db.Date
+  method        PaymentMethod
+  reference     String
+  fileId        String        @map("file_id") @db.Uuid
+  status        ProofStatus   @default(SUBMITTED)
+  submittedById String        @map("submitted_by_id") @db.Uuid
+  decidedById   String?       @map("decided_by_id") @db.Uuid
+  decidedAt     DateTime?     @map("decided_at") @db.Timestamptz(3)
+  note          String?
+  rejectReason  String?       @map("reject_reason")
+  paymentId     String?       @unique @map("payment_id") @db.Uuid
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+
+  @@index([branchId, status])
+  @@index([invoiceId])
+  @@map("payment_proofs")
+}
+
+model Payment {
+  id                 String        @id @default(uuid(7)) @db.Uuid
+  receiptNo          String        @unique @map("receipt_no")
+  schoolId           String        @map("school_id") @db.Uuid
+  branchId           String        @map("branch_id") @db.Uuid
+  studentId          String        @map("student_id") @db.Uuid
+  amountMinor        BigInt        @map("amount_minor")
+  // Part not allocated to invoices (advance credit), reduced by later allocations/refunds.
+  unallocatedMinor   BigInt        @default(0) @map("unallocated_minor")
+  currency           String        @default("PKR") @db.Char(3)
+  method             PaymentMethod
+  reference          String?
+  receivedOn         DateTime      @map("received_on") @db.Date
+  receivedById       String        @map("received_by_id") @db.Uuid
+  status             PaymentStatus @default(RECORDED)
+  gateway            String?
+  gatewayRef         String?       @map("gateway_ref")
+  proofId            String?       @map("proof_id") @db.Uuid
+  reversalReason     String?       @map("reversal_reason")
+  reversalApprovalId String?       @map("reversal_approval_id") @db.Uuid
+  reversedAt         DateTime?     @map("reversed_at") @db.Timestamptz(3)
+  createdAt          DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  student     Student             @relation("StudentPayments", fields: [studentId], references: [id], onDelete: Restrict)
+  allocations PaymentAllocation[]
+  refunds     Refund[]
+
+  @@index([branchId, receivedOn])
+  @@index([studentId, receivedOn])
+  @@index([receivedById, receivedOn])
+  @@map("payments")
+}
+
+model PaymentAllocation {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  paymentId   String   @map("payment_id") @db.Uuid
+  invoiceId   String   @map("invoice_id") @db.Uuid
+  amountMinor BigInt   @map("amount_minor")
+  reversed    Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+
+  @@index([paymentId])
+  @@index([invoiceId])
+  @@map("payment_allocations")
+}
+
+model Concession {
+  id            String               @id @default(uuid(7)) @db.Uuid
+  schoolId      String               @map("school_id") @db.Uuid
+  branchId      String               @map("branch_id") @db.Uuid
+  studentId     String               @map("student_id") @db.Uuid
+  feeHeadId     String?              @map("fee_head_id") @db.Uuid
+  type          ConcessionType
+  // PERCENT: whole percent 1–100; FIXED: amount in minor units per invoice.
+  value         BigInt
+  fromPeriod    String               @map("from_period") @db.VarChar(7)
+  toPeriod      String?              @map("to_period") @db.VarChar(7)
+  reason        String
+  estimateMinor BigInt               @map("estimate_minor")
+  status        FinanceRequestStatus @default(PENDING)
+  approvalId    String?              @map("approval_id") @db.Uuid
+  requestedById String               @map("requested_by_id") @db.Uuid
+  decidedAt     DateTime?            @map("decided_at") @db.Timestamptz(3)
+  createdAt     DateTime             @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime             @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  applications InvoiceConcession[]
+
+  @@index([studentId, status])
+  @@index([branchId, status])
+  @@map("concessions")
+}
+
+model Refund {
+  id            String               @id @default(uuid(7)) @db.Uuid
+  schoolId      String               @map("school_id") @db.Uuid
+  branchId      String               @map("branch_id") @db.Uuid
+  studentId     String               @map("student_id") @db.Uuid
+  paymentId     String               @map("payment_id") @db.Uuid
+  amountMinor   BigInt               @map("amount_minor")
+  method        PaymentMethod
+  reason        String
+  status        FinanceRequestStatus @default(PENDING)
+  approvalId    String?              @map("approval_id") @db.Uuid
+  requestedById String               @map("requested_by_id") @db.Uuid
+  decidedAt     DateTime?            @map("decided_at") @db.Timestamptz(3)
+  createdAt     DateTime             @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime             @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+
+  @@index([paymentId])
+  @@index([branchId, status])
+  @@map("refunds")
+}
+
+model DailyCollection {
+  id                String   @id @default(uuid(7)) @db.Uuid
+  schoolId          String   @map("school_id") @db.Uuid
+  branchId          String   @map("branch_id") @db.Uuid
+  date              DateTime @db.Date
+  totals            Json
+  cashExpectedMinor BigInt   @map("cash_expected_minor")
+  cashCountedMinor  BigInt   @map("cash_counted_minor")
+  differenceMinor   BigInt   @map("difference_minor")
+  note              String?
+  closedById        String   @map("closed_by_id") @db.Uuid
+  closedAt          DateTime @default(now()) @map("closed_at") @db.Timestamptz(3)
+
+  @@unique([branchId, date])
+  @@map("daily_collections")
+}

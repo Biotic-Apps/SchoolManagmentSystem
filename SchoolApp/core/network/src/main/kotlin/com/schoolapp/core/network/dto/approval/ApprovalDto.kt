@@ -18,4 +18,5 @@ data class ApprovalDto(
     val createdAt: String? = null,
     val steps: List<ApprovalStepDto>? = null,
     val payload: JsonObject? = null,
+    val amountMinor: Long? = null,
 )

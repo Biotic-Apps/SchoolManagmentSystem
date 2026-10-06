@@ -1,0 +1,323 @@
+// Phase 4 §A: grading, exams, marks, results, report cards, progress, promotion.
+
+enum GradingSchemeStatus {
+  DRAFT
+  APPROVED
+
+  @@map("grading_scheme_status")
+}
+
+enum ExamType {
+  TERM
+  MIDTERM
+  UNIT_TEST
+  FINAL
+
+  @@map("exam_type")
+}
+
+enum ExamStatus {
+  DRAFT
+  SCHEDULED
+  MARKS_OPEN
+  MARKS_CLOSED
+  RESULTS_APPROVED
+  PUBLISHED
+
+  @@map("exam_status")
+}
+
+enum MarkSheetStatus {
+  NOT_ENTERED
+  DRAFT
+  SUBMITTED
+  ACCEPTED
+  RETURNED
+
+  @@map("mark_sheet_status")
+}
+
+enum ProgressCategory {
+  HOMEWORK
+  BEHAVIOUR
+  LEARNING
+  ACHIEVEMENT
+
+  @@map("progress_category")
+}
+
+enum HomeworkCompletion {
+  DONE
+  PARTIAL
+  NOT_DONE
+
+  @@map("homework_completion")
+}
+
+enum PromotionDecisionKind {
+  PROMOTE
+  REPEAT
+  CONDITIONAL
+  GRADUATE
+
+  @@map("promotion_decision_kind")
+}
+
+enum PromotionStatus {
+  SUGGESTED
+  CONFIRMED
+  APPLIED
+
+  @@map("promotion_status")
+}
+
+model GradingScheme {
+  id           String              @id @default(uuid(7)) @db.Uuid
+  schoolId     String              @map("school_id") @db.Uuid
+  sessionId    String              @map("session_id") @db.Uuid
+  name         String
+  passPercent  Int                 @map("pass_percent")
+  status       GradingSchemeStatus @default(DRAFT)
+  approvedById String?             @map("approved_by_id") @db.Uuid
+  approvedAt   DateTime?           @map("approved_at") @db.Timestamptz(3)
+  createdById  String              @map("created_by_id") @db.Uuid
+  createdAt    DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime            @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  bands GradeBand[]
+  exams Exam[]
+
+  @@unique([sessionId, name])
+  @@index([schoolId])
+  @@map("grading_schemes")
+}
+
+// Whole percents; bands are contiguous (next.min = prev.max + 1) and cover 0–100.
+model GradeBand {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  schemeId   String   @map("scheme_id") @db.Uuid
+  grade      String
+  minPercent Int      @map("min_percent")
+  maxPercent Int      @map("max_percent")
+  remark     String?
+  gradePoint Decimal? @map("grade_point") @db.Decimal(4, 2)
+
+  scheme GradingScheme @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+
+  @@unique([schemeId, grade])
+  @@map("grade_bands")
+}
+
+model Exam {
+  id              String     @id @default(uuid(7)) @db.Uuid
+  schoolId        String     @map("school_id") @db.Uuid
+  branchId        String     @map("branch_id") @db.Uuid
+  sessionId       String     @map("session_id") @db.Uuid
+  termId          String?    @map("term_id") @db.Uuid
+  name            String
+  type            ExamType
+  gradingSchemeId String     @map("grading_scheme_id") @db.Uuid
+  weightPercent   Int?       @map("weight_percent")
+  classIds        String[]   @map("class_ids") @db.Uuid
+  status          ExamStatus @default(DRAFT)
+  approvalId      String?    @map("approval_id") @db.Uuid
+  computedAt      DateTime?  @map("computed_at") @db.Timestamptz(3)
+  publishedAt     DateTime?  @map("published_at") @db.Timestamptz(3)
+  publishedById   String?    @map("published_by_id") @db.Uuid
+  createdById     String     @map("created_by_id") @db.Uuid
+  version         Int        @default(0)
+  createdAt       DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime   @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  gradingScheme GradingScheme @relation(fields: [gradingSchemeId], references: [id], onDelete: Restrict)
+  papers        ExamPaper[]
+  markSheets    MarkSheet[]
+  results       ExamResult[]
+
+  @@unique([branchId, sessionId, name])
+  @@index([branchId, sessionId, status])
+  @@index([gradingSchemeId])
+  @@map("exams")
+}
+
+// exam_subjects: one paper per class and subject.
+model ExamPaper {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  examId    String   @map("exam_id") @db.Uuid
+  classId   String   @map("class_id") @db.Uuid
+  subjectId String   @map("subject_id") @db.Uuid
+  date      DateTime @db.Date
+  startTime String   @map("start_time") @db.VarChar(5)
+  endTime   String   @map("end_time") @db.VarChar(5)
+  maxMarks  Int      @map("max_marks")
+  passMarks Int      @map("pass_marks")
+  roomId    String?  @map("room_id") @db.Uuid
+
+  exam       Exam        @relation(fields: [examId], references: [id], onDelete: Cascade)
+  markSheets MarkSheet[]
+
+  @@unique([examId, classId, subjectId])
+  @@index([date])
+  @@map("exam_papers")
+}
+
+model MarkSheet {
+  id                String          @id @default(uuid(7)) @db.Uuid
+  schoolId          String          @map("school_id") @db.Uuid
+  branchId          String          @map("branch_id") @db.Uuid
+  examId            String          @map("exam_id") @db.Uuid
+  paperId           String          @map("paper_id") @db.Uuid
+  sectionId         String          @map("section_id") @db.Uuid
+  subjectId         String          @map("subject_id") @db.Uuid
+  status            MarkSheetStatus @default(NOT_ENTERED)
+  teacherStaffId    String?         @map("teacher_staff_id") @db.Uuid
+  enteredById       String?         @map("entered_by_id") @db.Uuid
+  onBehalfOfStaffId String?         @map("on_behalf_of_staff_id") @db.Uuid
+  submittedById     String?         @map("submitted_by_id") @db.Uuid
+  submittedAt       DateTime?       @map("submitted_at") @db.Timestamptz(3)
+  decidedById       String?         @map("decided_by_id") @db.Uuid
+  decidedAt         DateTime?       @map("decided_at") @db.Timestamptz(3)
+  comment           String?
+  approvalId        String?         @map("approval_id") @db.Uuid
+  version           Int             @default(0)
+  createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  exam  Exam      @relation(fields: [examId], references: [id], onDelete: Cascade)
+  paper ExamPaper @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  marks Mark[]
+
+  @@unique([paperId, sectionId])
+  @@index([examId, status])
+  @@index([sectionId, subjectId])
+  @@map("mark_sheets")
+}
+
+// marks NULL and absent false = pending (never zero).
+model Mark {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  markSheetId String   @map("mark_sheet_id") @db.Uuid
+  studentId   String   @map("student_id") @db.Uuid
+  marks       Decimal? @db.Decimal(6, 2)
+  absent      Boolean  @default(false)
+  remark      String?
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  markSheet MarkSheet @relation(fields: [markSheetId], references: [id], onDelete: Cascade)
+  student   Student   @relation("StudentMarks", fields: [studentId], references: [id], onDelete: Restrict)
+
+  @@unique([markSheetId, studentId])
+  @@index([studentId])
+  @@map("marks")
+}
+
+model ExamResult {
+  id            String   @id @default(uuid(7)) @db.Uuid
+  schoolId      String   @map("school_id") @db.Uuid
+  branchId      String   @map("branch_id") @db.Uuid
+  examId        String   @map("exam_id") @db.Uuid
+  studentId     String   @map("student_id") @db.Uuid
+  sectionId     String   @map("section_id") @db.Uuid
+  classId       String   @map("class_id") @db.Uuid
+  totalMarks    Decimal  @map("total_marks") @db.Decimal(8, 2)
+  maxTotal      Int      @map("max_total")
+  percent       Decimal  @db.Decimal(5, 2)
+  grade         String
+  position      Int?
+  passed        Boolean
+  remarks       String?
+  teacherRemark String?  @map("teacher_remark")
+  subjects      Json
+  computedAt    DateTime @default(now()) @map("computed_at") @db.Timestamptz(3)
+
+  exam        Exam         @relation(fields: [examId], references: [id], onDelete: Cascade)
+  student     Student      @relation("StudentResults", fields: [studentId], references: [id], onDelete: Restrict)
+  reportCards ReportCard[]
+
+  @@unique([examId, studentId])
+  @@index([studentId])
+  @@index([sectionId])
+  @@map("exam_results")
+}
+
+model ReportCard {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  resultId   String   @map("result_id") @db.Uuid
+  examId     String   @map("exam_id") @db.Uuid
+  studentId  String   @map("student_id") @db.Uuid
+  version    Int
+  documentId String?  @map("document_id") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  result ExamResult @relation(fields: [resultId], references: [id], onDelete: Cascade)
+
+  @@unique([resultId, version])
+  @@index([studentId, examId])
+  @@map("report_cards")
+}
+
+model ProgressNote {
+  id                String           @id @default(uuid(7)) @db.Uuid
+  schoolId          String           @map("school_id") @db.Uuid
+  branchId          String           @map("branch_id") @db.Uuid
+  studentId         String           @map("student_id") @db.Uuid
+  sectionId         String           @map("section_id") @db.Uuid
+  category          ProgressCategory
+  note              String
+  visibleToParent   Boolean          @map("visible_to_parent")
+  authorId          String           @map("author_id") @db.Uuid
+  onBehalfOfStaffId String?          @map("on_behalf_of_staff_id") @db.Uuid
+  createdAt         DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  student Student @relation("StudentProgressNotes", fields: [studentId], references: [id], onDelete: Restrict)
+
+  @@index([studentId, createdAt])
+  @@map("progress_notes")
+}
+
+model HomeworkStatus {
+  id           String             @id @default(uuid(7)) @db.Uuid
+  diaryEntryId String             @map("diary_entry_id") @db.Uuid
+  studentId    String             @map("student_id") @db.Uuid
+  status       HomeworkCompletion
+  markedById   String             @map("marked_by_id") @db.Uuid
+  createdAt    DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@unique([diaryEntryId, studentId])
+  @@index([studentId])
+  @@map("homework_statuses")
+}
+
+model PromotionDecision {
+  id              String                @id @default(uuid(7)) @db.Uuid
+  schoolId        String                @map("school_id") @db.Uuid
+  branchId        String                @map("branch_id") @db.Uuid
+  studentId       String                @map("student_id") @db.Uuid
+  fromSessionId   String                @map("from_session_id") @db.Uuid
+  toSessionId     String                @map("to_session_id") @db.Uuid
+  fromSectionId   String                @map("from_section_id") @db.Uuid
+  fromClassId     String                @map("from_class_id") @db.Uuid
+  toClassId       String?               @map("to_class_id") @db.Uuid
+  toSectionId     String?               @map("to_section_id") @db.Uuid
+  suggested       PromotionDecisionKind
+  decision        PromotionDecisionKind
+  status          PromotionStatus       @default(SUGGESTED)
+  percent         Decimal?              @db.Decimal(5, 2)
+  failedSubjects  Int                   @default(0) @map("failed_subjects")
+  basis           Json?
+  reason          String?
+  overriddenById  String?               @map("overridden_by_id") @db.Uuid
+  approvalId      String?               @map("approval_id") @db.Uuid
+  effectiveDate   DateTime?             @map("effective_date") @db.Date
+  appliedAt       DateTime?             @map("applied_at") @db.Timestamptz(3)
+  newEnrollmentId String?               @map("new_enrollment_id") @db.Uuid
+  createdAt       DateTime              @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime              @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  student Student @relation("StudentPromotions", fields: [studentId], references: [id], onDelete: Restrict)
+
+  @@unique([studentId, fromSessionId])
+  @@index([branchId, fromSessionId, status])
+  @@map("promotion_decisions")
+}

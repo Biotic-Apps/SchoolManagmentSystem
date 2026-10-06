@@ -2,7 +2,10 @@ import type { SeedClient } from './client';
 import { type DailyContext, userId } from './demo-daily-context';
 
 /** Allergy profile in 5-A, a minor incident, verified pickup persons, one early-leave request today. */
-export async function seedSafety(prisma: SeedClient, ctx: DailyContext): Promise<void> {
+export async function seedSafety(
+  prisma: SeedClient,
+  ctx: DailyContext,
+): Promise<void> {
   const fiveA = ctx.students.get('5-A')!;
   const allergic = fiveA[2];
   await prisma.studentHealthProfile.upsert({
@@ -15,17 +18,32 @@ export async function seedSafety(prisma: SeedClient, ctx: DailyContext): Promise
     data: {
       bloodGroup: 'B+',
       allergies: 'Peanuts',
-      allergyList: [{ name: 'Peanuts', severity: 'SEVERE', reaction: 'Swelling, breathing difficulty' }],
+      allergyList: [
+        {
+          name: 'Peanuts',
+          severity: 'SEVERE',
+          reaction: 'Swelling, breathing difficulty',
+        },
+      ],
       instructions: 'Carries an inhaler; no peanut snacks.',
       notes: 'Carries an inhaler; no peanut snacks.',
-      emergencyContacts: [{ name: 'Mr. Guardian', relation: 'FATHER', phone: '+923001234567', priority: 1 }],
+      emergencyContacts: [
+        {
+          name: 'Mr. Guardian',
+          relation: 'FATHER',
+          phone: '+923001234567',
+          priority: 1,
+        },
+      ],
     },
   });
 
   const principal = userId(ctx, 'principal@eschool.local');
   const teacher = userId(ctx, 'teacher@eschool.local');
   const minor = fiveA[4];
-  if (!(await prisma.healthIncident.findFirst({ where: { studentId: minor.id } }))) {
+  if (
+    !(await prisma.healthIncident.findFirst({ where: { studentId: minor.id } }))
+  ) {
     await prisma.healthIncident.create({
       data: {
         schoolId: ctx.org.schoolId,
@@ -45,7 +63,8 @@ export async function seedSafety(prisma: SeedClient, ctx: DailyContext): Promise
   const parentUser = userId(ctx, 'parent@eschool.local');
   const children = [fiveA[0], ctx.students.get('4-B')![0]];
   for (const child of children) {
-    if (await prisma.pickupPerson.findFirst({ where: { studentId: child.id } })) continue;
+    if (await prisma.pickupPerson.findFirst({ where: { studentId: child.id } }))
+      continue;
     await prisma.pickupPerson.create({
       data: {
         schoolId: ctx.org.schoolId,
@@ -63,8 +82,15 @@ export async function seedSafety(prisma: SeedClient, ctx: DailyContext): Promise
   }
 
   const omar = children[1];
-  if (await prisma.earlyLeave.findFirst({ where: { studentId: omar.id, date: ctx.today } })) return;
-  const person = await prisma.pickupPerson.findFirstOrThrow({ where: { studentId: omar.id } });
+  if (
+    await prisma.earlyLeave.findFirst({
+      where: { studentId: omar.id, date: ctx.today },
+    })
+  )
+    return;
+  const person = await prisma.pickupPerson.findFirstOrThrow({
+    where: { studentId: omar.id },
+  });
   const leave = await prisma.earlyLeave.create({
     data: {
       schoolId: ctx.org.schoolId,
@@ -91,5 +117,8 @@ export async function seedSafety(prisma: SeedClient, ctx: DailyContext): Promise
       steps: { create: [{ order: 1, approverRole: 'PRINCIPAL' }] },
     },
   });
-  await prisma.earlyLeave.update({ where: { id: leave.id }, data: { approvalId: approval.id } });
+  await prisma.earlyLeave.update({
+    where: { id: leave.id },
+    data: { approvalId: approval.id },
+  });
 }

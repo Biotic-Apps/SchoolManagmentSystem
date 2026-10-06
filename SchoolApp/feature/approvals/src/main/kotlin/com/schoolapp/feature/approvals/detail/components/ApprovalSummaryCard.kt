@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.schoolapp.core.designsystem.component.AppCard
 import com.schoolapp.core.designsystem.component.KeyValueRow
+import com.schoolapp.core.designsystem.component.MoneyRow
 import com.schoolapp.core.designsystem.component.SectionHeader
 import com.schoolapp.core.designsystem.component.StatusChip
 import com.schoolapp.core.model.approval.ApprovalDecision
@@ -28,6 +29,7 @@ internal fun ApprovalSummaryCard(request: ApprovalRequest, modifier: Modifier = 
         KeyValueRow(stringResource(R.string.approvals_requested_by), request.requestedByName)
         KeyValueRow(stringResource(R.string.approvals_requested_at), formatTimestamp(request.createdAt))
         request.currentStep?.let { KeyValueRow(stringResource(R.string.approvals_current_step), it.toString()) }
+        request.amountMinor?.let { MoneyRow(stringResource(R.string.approvals_amount), it, emphasized = true) }
     }
 }
 

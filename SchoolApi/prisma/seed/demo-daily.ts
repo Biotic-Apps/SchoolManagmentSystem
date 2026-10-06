@@ -10,7 +10,10 @@ import type { DemoOrg } from './demo-people';
 import { seedSafety } from './demo-safety';
 
 /** Phase 3 §14 demo data; every step is idempotent. */
-export async function seedDailyOperations(prisma: SeedClient, org: DemoOrg): Promise<void> {
+export async function seedDailyOperations(
+  prisma: SeedClient,
+  org: DemoOrg,
+): Promise<void> {
   const ctx = await loadDailyContext(prisma, org);
   await seedAttendance(prisma, ctx);
   await seedDiary(prisma, ctx);

@@ -13,4 +13,6 @@ data class ApprovalRequest(
     val steps: List<ApprovalStep> = emptyList(),
     /** Flattened request payload (key -> display value) for the type-specific summary. */
     val details: List<Pair<String, String>> = emptyList(),
+    /** Money amount of financial requests (minor units), when the server sets one. */
+    val amountMinor: Long? = null,
 )

@@ -10,21 +10,58 @@ export interface StaffSeed {
 }
 
 export const DEMO_STAFF: StaffSeed[] = [
-  { email: 'teacher@eschool.local', employeeNo: 'EMP-001', designation: 'TEACHER' },
-  { email: 'coordinator@eschool.local', employeeNo: 'EMP-002', designation: 'COORDINATOR' },
-  { email: 'accountant@eschool.local', employeeNo: 'EMP-003', designation: 'ACCOUNTANT' },
-  { email: 'teacher2@eschool.local', employeeNo: 'EMP-004', designation: 'TEACHER' },
-  { email: 'teacher3@eschool.local', employeeNo: 'EMP-005', designation: 'TEACHER' },
-  { email: 'newteacher@eschool.local', employeeNo: 'EMP-006', designation: 'TEACHER' },
-  { email: 'teacherparent@eschool.local', employeeNo: 'EMP-007', designation: 'TEACHER' },
-  { email: 'helper@eschool.local', employeeNo: 'EMP-008', designation: 'HELPER' },
+  {
+    email: 'teacher@eschool.local',
+    employeeNo: 'EMP-001',
+    designation: 'TEACHER',
+  },
+  {
+    email: 'coordinator@eschool.local',
+    employeeNo: 'EMP-002',
+    designation: 'COORDINATOR',
+  },
+  {
+    email: 'accountant@eschool.local',
+    employeeNo: 'EMP-003',
+    designation: 'ACCOUNTANT',
+  },
+  {
+    email: 'teacher2@eschool.local',
+    employeeNo: 'EMP-004',
+    designation: 'TEACHER',
+  },
+  {
+    email: 'teacher3@eschool.local',
+    employeeNo: 'EMP-005',
+    designation: 'TEACHER',
+  },
+  {
+    email: 'newteacher@eschool.local',
+    employeeNo: 'EMP-006',
+    designation: 'TEACHER',
+  },
+  {
+    email: 'teacherparent@eschool.local',
+    employeeNo: 'EMP-007',
+    designation: 'TEACHER',
+  },
+  {
+    email: 'helper@eschool.local',
+    employeeNo: 'EMP-008',
+    designation: 'HELPER',
+  },
 ];
 
 /** Staff record per demo login (idempotent by user). Returns staff id by email. */
-export async function seedStaff(prisma: SeedClient, org: DemoOrg): Promise<Map<string, string>> {
+export async function seedStaff(
+  prisma: SeedClient,
+  org: DemoOrg,
+): Promise<Map<string, string>> {
   const ids = new Map<string, string>();
   for (const seed of DEMO_STAFF) {
-    const user = await prisma.user.findUniqueOrThrow({ where: { email: seed.email } });
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { email: seed.email },
+    });
     const staff = await prisma.staff.upsert({
       where: { userId: user.id },
       create: {
@@ -41,7 +78,9 @@ export async function seedStaff(prisma: SeedClient, org: DemoOrg): Promise<Map<s
     });
     ids.set(seed.email, staff.id);
   }
-  const coordinator = await prisma.user.findUniqueOrThrow({ where: { email: 'coordinator@eschool.local' } });
+  const coordinator = await prisma.user.findUniqueOrThrow({
+    where: { email: 'coordinator@eschool.local' },
+  });
   await prisma.staff.update({
     where: { id: ids.get('newteacher@eschool.local') },
     data: { requiresReview: true, reviewerUserId: coordinator.id },
@@ -71,7 +110,9 @@ export async function ensureStaffAssignment(
     where: { staffId, kind: seed.kind, sectionId, subjectId, endedAt: null },
   });
   if (found) return;
-  const staff = await prisma.staff.findUniqueOrThrow({ where: { id: staffId } });
+  const staff = await prisma.staff.findUniqueOrThrow({
+    where: { id: staffId },
+  });
   await prisma.$transaction(async (tx) => {
     const roleAssignmentId = await createRoleAssignment(tx, {
       userId: staff.userId!,
@@ -93,11 +134,16 @@ export async function ensureStaffAssignment(
         sectionId,
         subjectId,
         roleAssignmentId,
-        responsibleStaffId: seed.responsibleEmail ? staffIds.get(seed.responsibleEmail) : null,
+        responsibleStaffId: seed.responsibleEmail
+          ? staffIds.get(seed.responsibleEmail)
+          : null,
       },
     });
     if (seed.kind === 'CLASS_TEACHER' && sectionId) {
-      await tx.section.update({ where: { id: sectionId }, data: { classTeacherStaffId: staffId } });
+      await tx.section.update({
+        where: { id: sectionId },
+        data: { classTeacherStaffId: staffId },
+      });
     }
   });
 }
@@ -130,17 +176,39 @@ export async function seedAssignments(
   staffIds: Map<string, string>,
 ): Promise<void> {
   const seeds: AssignmentSeed[] = [
-    { staffEmail: 'teacher@eschool.local', kind: 'CLASS_TEACHER', section: '5-A' },
-    { staffEmail: 'teacher2@eschool.local', kind: 'CLASS_TEACHER', section: '5-B' },
-    { staffEmail: 'teacher3@eschool.local', kind: 'CLASS_TEACHER', section: '4-A' },
-    { staffEmail: 'newteacher@eschool.local', kind: 'CLASS_TEACHER', section: '4-B' },
+    {
+      staffEmail: 'teacher@eschool.local',
+      kind: 'CLASS_TEACHER',
+      section: '5-A',
+    },
+    {
+      staffEmail: 'teacher2@eschool.local',
+      kind: 'CLASS_TEACHER',
+      section: '5-B',
+    },
+    {
+      staffEmail: 'teacher3@eschool.local',
+      kind: 'CLASS_TEACHER',
+      section: '4-A',
+    },
+    {
+      staffEmail: 'newteacher@eschool.local',
+      kind: 'CLASS_TEACHER',
+      section: '4-B',
+    },
     { staffEmail: 'coordinator@eschool.local', kind: 'COORDINATOR' },
-    { staffEmail: 'helper@eschool.local', kind: 'HELPER', section: '5-A', responsibleEmail: 'teacher@eschool.local' },
+    {
+      staffEmail: 'helper@eschool.local',
+      kind: 'HELPER',
+      section: '5-A',
+      responsibleEmail: 'teacher@eschool.local',
+    },
   ];
   for (const [section, subjects] of Object.entries(CLASS5_TEACHERS)) {
     for (const [subject, staffEmail] of Object.entries(subjects)) {
       seeds.push({ staffEmail, kind: 'SUBJECT_TEACHER', section, subject });
     }
   }
-  for (const seed of seeds) await ensureStaffAssignment(prisma, org, staffIds, seed);
+  for (const seed of seeds)
+    await ensureStaffAssignment(prisma, org, staffIds, seed);
 }

@@ -57,6 +57,6 @@ Both clients keep the same catalogue. Ids, labels and permission keys must be id
 - **TEACHER**: dashboard, classes (label "My Classes & Students"), timetable, attendance, diary, syllabus, activities, exams, progress, messages, meetings, complaints, my_salary, profile
 - **HELPER**: dashboard, classes, attendance, diary, activities, complaints, my_salary, profile
 - **ACCOUNTANT**: dashboard, students, fees, payroll, expenses, inventory, complaints, reports, my_salary, profile
-- **PARENT** (child switcher on top): dashboard (label "Home"), students (label "Child Profile"), diary, attendance, progress (label "Progress & Results"), syllabus, timetable (label "Timetable, Calendar & Activities"), fees (label "Fees, Dues & Receipts"), messages (label "Messages, Notices & Requests"), meetings, complaints, profile
+- **PARENT** (child switcher on top): dashboard (label "Home"), students (label "Child Profile"), diary, attendance, progress (label "Progress & Results"), syllabus, timetable (label "Timetable, Calendar & Activities"), fees (label "Fees, Dues & Receipts"), certificates, messages (label "Messages, Notices & Requests"), meetings, complaints, profile
 
 Label overrides per role live next to the catalogue in each client (`labelFor(role, id)`).

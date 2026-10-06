@@ -24,6 +24,11 @@ import com.schoolapp.core.data.meetings.MeetingsRepository
 import com.schoolapp.core.data.health.HealthRepository
 import com.schoolapp.core.data.pickup.PickupRepository
 import com.schoolapp.core.data.notifications.NotificationPreferencesRepository
+import com.schoolapp.core.data.exams.ExamsRepository
+import com.schoolapp.core.data.progress.ProgressRepository
+import com.schoolapp.core.data.fees.FeesRepository
+import com.schoolapp.core.data.payroll.PayrollRepository
+import com.schoolapp.core.data.certificates.CertificatesRepository
 import com.schoolapp.ui.LoginFooterContent
 import dagger.Binds
 import dagger.Module
@@ -105,6 +110,21 @@ interface DemoModule {
 
     @Binds
     fun bindNotificationPreferencesRepository(impl: DemoAwareNotificationPreferencesRepository): NotificationPreferencesRepository
+
+    @Binds
+    fun bindExamsRepository(impl: DemoAwareExamsRepository): ExamsRepository
+
+    @Binds
+    fun bindProgressRepository(impl: DemoAwareProgressRepository): ProgressRepository
+
+    @Binds
+    fun bindFeesRepository(impl: DemoAwareFeesRepository): FeesRepository
+
+    @Binds
+    fun bindPayrollRepository(impl: DemoAwarePayrollRepository): PayrollRepository
+
+    @Binds
+    fun bindCertificatesRepository(impl: DemoAwareCertificatesRepository): CertificatesRepository
 
     @Binds
     fun bindLoginFooter(impl: DemoLoginFooter): LoginFooterContent

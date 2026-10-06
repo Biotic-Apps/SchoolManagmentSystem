@@ -12,12 +12,17 @@ function statusFor(student: number, day: number): AttendanceStatus {
 }
 
 /** 5-A: today SUBMITTED, the previous 10 school days LOCKED; 5-B today stays UNMARKED. */
-export async function seedAttendance(prisma: SeedClient, ctx: DailyContext): Promise<void> {
+export async function seedAttendance(
+  prisma: SeedClient,
+  ctx: DailyContext,
+): Promise<void> {
   const sectionId = ctx.org.sections.get('5-A')!;
   const teacher = userId(ctx, 'teacher@eschool.local');
   const students = ctx.students.get('5-A') ?? [];
   for (const [d, date] of ctx.days.entries()) {
-    const exists = await prisma.attendanceRegister.findUnique({ where: { sectionId_date: { sectionId, date } } });
+    const exists = await prisma.attendanceRegister.findUnique({
+      where: { sectionId_date: { sectionId, date } },
+    });
     if (exists) continue;
     const isToday = date.getTime() === ctx.today.getTime();
     await prisma.attendanceRegister.create({

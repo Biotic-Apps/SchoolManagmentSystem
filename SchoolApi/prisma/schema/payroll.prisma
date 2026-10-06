@@ -1,0 +1,161 @@
+// Phase 4 §C: payroll. Structures are append-only history rows.
+
+enum PayrollRunStatus {
+  DRAFT
+  CALCULATED
+  REVIEWED
+  APPROVED
+  PARTIALLY_PAID
+  PAID
+  CLOSED
+
+  @@map("payroll_run_status")
+}
+
+enum PayrollAdjustmentKind {
+  BONUS
+  DEDUCTION
+  ADVANCE
+  ARREAR
+
+  @@map("payroll_adjustment_kind")
+}
+
+enum PayrollAdjustmentStatus {
+  PENDING
+  APPLIED
+  CANCELLED
+
+  @@map("payroll_adjustment_status")
+}
+
+enum PayrollLineStatus {
+  UNPAID
+  PARTIALLY_PAID
+  PAID
+
+  @@map("payroll_line_status")
+}
+
+model SalaryStructure {
+  id            String   @id @default(uuid(7)) @db.Uuid
+  schoolId      String   @map("school_id") @db.Uuid
+  branchId      String   @map("branch_id") @db.Uuid
+  staffId       String   @map("staff_id") @db.Uuid
+  effectiveFrom String   @map("effective_from") @db.VarChar(7)
+  basicMinor    BigInt   @map("basic_minor")
+  allowances    Json
+  deductions    Json
+  reason        String?
+  createdById   String   @map("created_by_id") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  staff Staff @relation("StaffSalaryStructures", fields: [staffId], references: [id], onDelete: Restrict)
+
+  @@index([staffId, effectiveFrom])
+  @@map("salary_structures")
+}
+
+model PayrollAdjustment {
+  id          String                  @id @default(uuid(7)) @db.Uuid
+  schoolId    String                  @map("school_id") @db.Uuid
+  branchId    String                  @map("branch_id") @db.Uuid
+  staffId     String                  @map("staff_id") @db.Uuid
+  month       String                  @db.VarChar(7)
+  kind        PayrollAdjustmentKind
+  amountMinor BigInt                  @map("amount_minor")
+  reason      String
+  status      PayrollAdjustmentStatus @default(PENDING)
+  runId       String?                 @map("run_id") @db.Uuid
+  createdById String                  @map("created_by_id") @db.Uuid
+  createdAt   DateTime                @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime                @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  staff Staff @relation("StaffPayrollAdjustments", fields: [staffId], references: [id], onDelete: Restrict)
+
+  @@index([staffId, month])
+  @@index([branchId, month])
+  @@map("payroll_adjustments")
+}
+
+model PayrollRun {
+  id                 String           @id @default(uuid(7)) @db.Uuid
+  schoolId           String           @map("school_id") @db.Uuid
+  branchId           String           @map("branch_id") @db.Uuid
+  month              String           @db.VarChar(7)
+  status             PayrollRunStatus @default(DRAFT)
+  approvalId         String?          @map("approval_id") @db.Uuid
+  // Own-salary lines routed to SUPER_ADMIN (approval ids still pending).
+  pendingApprovalIds String[]         @default([]) @map("pending_approval_ids") @db.Uuid
+  calculatedAt       DateTime?        @map("calculated_at") @db.Timestamptz(3)
+  calculatedById     String?          @map("calculated_by_id") @db.Uuid
+  reviewedById       String?          @map("reviewed_by_id") @db.Uuid
+  reviewedAt         DateTime?        @map("reviewed_at") @db.Timestamptz(3)
+  approvedById       String?          @map("approved_by_id") @db.Uuid
+  approvedAt         DateTime?        @map("approved_at") @db.Timestamptz(3)
+  closedById         String?          @map("closed_by_id") @db.Uuid
+  closedAt           DateTime?        @map("closed_at") @db.Timestamptz(3)
+  createdById        String           @map("created_by_id") @db.Uuid
+  version            Int              @default(0)
+  createdAt          DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  lines    PayrollLine[]
+  payments PayrollPayment[]
+
+  @@unique([branchId, month])
+  @@index([schoolId])
+  @@map("payroll_runs")
+}
+
+model PayrollLine {
+  id                  String            @id @default(uuid(7)) @db.Uuid
+  runId               String            @map("run_id") @db.Uuid
+  staffId             String            @map("staff_id") @db.Uuid
+  designation         String
+  structureId         String?           @map("structure_id") @db.Uuid
+  basicMinor          BigInt            @map("basic_minor")
+  allowancesMinor     BigInt            @map("allowances_minor")
+  deductionsMinor     BigInt            @map("deductions_minor")
+  workingDays         Int               @map("working_days")
+  unpaidLeaveDays     Decimal           @map("unpaid_leave_days") @db.Decimal(5, 1)
+  leaveDeductionMinor BigInt            @map("leave_deduction_minor")
+  adjustmentsMinor    BigInt            @map("adjustments_minor")
+  netMinor            BigInt            @map("net_minor")
+  paidMinor           BigInt            @default(0) @map("paid_minor")
+  status              PayrollLineStatus @default(UNPAID)
+  // Approval route: BRANCH (run approver) or SUPER_ADMIN (approver's own salary).
+  route               String            @default("BRANCH")
+  approvalId          String?           @map("approval_id") @db.Uuid
+  detail              Json
+  createdAt           DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  run      PayrollRun       @relation(fields: [runId], references: [id], onDelete: Cascade)
+  staff    Staff            @relation("StaffPayrollLines", fields: [staffId], references: [id], onDelete: Restrict)
+  payments PayrollPayment[]
+
+  @@unique([runId, staffId])
+  @@index([staffId])
+  @@map("payroll_lines")
+}
+
+model PayrollPayment {
+  id          String        @id @default(uuid(7)) @db.Uuid
+  runId       String        @map("run_id") @db.Uuid
+  lineId      String        @map("line_id") @db.Uuid
+  staffId     String        @map("staff_id") @db.Uuid
+  amountMinor BigInt        @map("amount_minor")
+  method      PaymentMethod
+  reference   String?
+  paidOn      DateTime      @map("paid_on") @db.Date
+  paidById    String        @map("paid_by_id") @db.Uuid
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  run  PayrollRun  @relation(fields: [runId], references: [id], onDelete: Restrict)
+  line PayrollLine @relation(fields: [lineId], references: [id], onDelete: Restrict)
+
+  @@index([runId])
+  @@index([lineId])
+  @@map("payroll_payments")
+}

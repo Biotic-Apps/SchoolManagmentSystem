@@ -1,4 +1,7 @@
-import type { ComplaintCategory, ComplaintStatus } from '../../src/generated/prisma/client';
+import type {
+  ComplaintCategory,
+  ComplaintStatus,
+} from '../../src/generated/prisma/client';
 import type { SeedClient } from './client';
 import { type DailyContext, userId } from './demo-daily-context';
 import { bumpSequence } from './demo-people';
@@ -25,7 +28,8 @@ const SEEDS: ComplaintSeed[] = [
     role: 'PARENT',
     category: 'ACADEMIC',
     subject: 'Maths homework is too long',
-    description: 'Ayesha spends more than two hours on Maths homework every day.',
+    description:
+      'Ayesha spends more than two hours on Maths homework every day.',
     status: 'ASSIGNED',
     assignee: 'teacher@eschool.local',
     student: '5-A',
@@ -61,7 +65,8 @@ const SEEDS: ComplaintSeed[] = [
     role: 'PARENT',
     category: 'TRANSPORT',
     subject: 'Van arrives late',
-    description: 'The school van arrived 30 minutes late on Monday. وین دیر سے آئی۔',
+    description:
+      'The school van arrived 30 minutes late on Monday. وین دیر سے آئی۔',
     status: 'CLOSED',
     assignee: 'principal@eschool.local',
     student: '4-B',
@@ -70,7 +75,10 @@ const SEEDS: ComplaintSeed[] = [
 ];
 
 /** Four complaints in different states, one overdue. */
-export async function seedComplaints(prisma: SeedClient, ctx: DailyContext): Promise<void> {
+export async function seedComplaints(
+  prisma: SeedClient,
+  ctx: DailyContext,
+): Promise<void> {
   const year = new Date().getFullYear();
   for (const seed of SEEDS) {
     const ticketNo = `CMP-${year}-${String(seed.ticket).padStart(4, '0')}`;
@@ -96,11 +104,21 @@ export async function seedComplaints(prisma: SeedClient, ctx: DailyContext): Pro
         closedAt: seed.status === 'CLOSED' ? new Date(now - 3600_000) : null,
         updates: {
           create: resolved
-            ? [{ authorId: userId(ctx, seed.assignee), message: 'Looked into it and fixed the issue.', status: 'RESOLVED' }]
+            ? [
+                {
+                  authorId: userId(ctx, seed.assignee),
+                  message: 'Looked into it and fixed the issue.',
+                  status: 'RESOLVED',
+                },
+              ]
             : [],
         },
       },
     });
   }
-  await bumpSequence(prisma, `complaint:${ctx.org.schoolId}:${year}`, SEEDS.length + 1);
+  await bumpSequence(
+    prisma,
+    `complaint:${ctx.org.schoolId}:${year}`,
+    SEEDS.length + 1,
+  );
 }

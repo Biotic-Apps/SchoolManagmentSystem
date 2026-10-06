@@ -67,6 +67,11 @@ dependencies {
     implementation(projects.feature.meetings)
     implementation(projects.feature.health)
     implementation(projects.feature.pickup)
+    implementation(projects.feature.exams)
+    implementation(projects.feature.progress)
+    implementation(projects.feature.fees)
+    implementation(projects.feature.payroll)
+    implementation(projects.feature.certificates)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

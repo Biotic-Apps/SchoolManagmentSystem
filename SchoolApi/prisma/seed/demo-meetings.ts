@@ -8,9 +8,14 @@ const TIMES = [
 ];
 
 /** teacher@ slots on the next school days of this week; one booked by parent@. */
-export async function seedMeetings(prisma: SeedClient, ctx: DailyContext): Promise<void> {
+export async function seedMeetings(
+  prisma: SeedClient,
+  ctx: DailyContext,
+): Promise<void> {
   const staffUserId = userId(ctx, 'teacher@eschool.local');
-  const dates = [1, 2, 3].map((n) => addDays(ctx.today, n)).filter((d) => d.getUTCDay() !== 0);
+  const dates = [1, 2, 3]
+    .map((n) => addDays(ctx.today, n))
+    .filter((d) => d.getUTCDay() !== 0);
   let first: string | null = null;
   for (const date of dates) {
     for (const [startTime, endTime] of TIMES) {
@@ -31,9 +36,15 @@ export async function seedMeetings(prisma: SeedClient, ctx: DailyContext): Promi
       first ??= slot.id;
     }
   }
-  if (!first || (await prisma.meeting.findFirst({ where: { slotId: first } }))) return;
-  const slot = await prisma.meetingSlot.update({ where: { id: first }, data: { status: 'BOOKED' } });
-  const parent = await prisma.guardian.findUniqueOrThrow({ where: { userId: userId(ctx, 'parent@eschool.local') } });
+  if (!first || (await prisma.meeting.findFirst({ where: { slotId: first } })))
+    return;
+  const slot = await prisma.meetingSlot.update({
+    where: { id: first },
+    data: { status: 'BOOKED' },
+  });
+  const parent = await prisma.guardian.findUniqueOrThrow({
+    where: { userId: userId(ctx, 'parent@eschool.local') },
+  });
   await prisma.meeting.create({
     data: {
       schoolId: ctx.org.schoolId,

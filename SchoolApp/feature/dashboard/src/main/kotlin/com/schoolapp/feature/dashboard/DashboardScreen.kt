@@ -11,7 +11,9 @@ import com.schoolapp.core.designsystem.theme.SchoolTheme
 import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.dashboard.DashboardMetric
 import com.schoolapp.core.ui.appErrorMessage
+import com.schoolapp.feature.dashboard.components.FinanceCard
 import com.schoolapp.feature.dashboard.components.ParentHomeContent
+import com.schoolapp.feature.dashboard.components.financeAction
 import com.schoolapp.feature.dashboard.components.SupervisorGrid
 import com.schoolapp.feature.dashboard.components.TeacherTodayContent
 import com.schoolapp.feature.dashboard.components.WelcomeCard
@@ -29,7 +31,14 @@ fun DashboardScreen(
     when (state) {
         DashboardUiState.Loading -> LoadingState(modifier)
         is DashboardUiState.Error -> ErrorState(appErrorMessage(state.error), modifier, onRetry = onRefresh)
-        is DashboardUiState.Welcome -> ScreenColumn(modifier) { item(key = "welcome") { WelcomeCard(state) } }
+        is DashboardUiState.Welcome -> RefreshBox(state.isRefreshing, onRefresh, modifier) {
+            ScreenColumn {
+                item(key = "welcome") { WelcomeCard(state) }
+                state.finance?.let { finance ->
+                    item(key = "finance") { FinanceCard(finance, onClick = financeAction(onOpenMenu, canOpenMenu)) }
+                }
+            }
+        }
         is DashboardUiState.Supervisor -> RefreshBox(state.isRefreshing, onRefresh, modifier) {
             SupervisorGrid(state, onOpenMenu, onOpen, canOpenMenu)
         }

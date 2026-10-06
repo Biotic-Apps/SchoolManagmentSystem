@@ -7,6 +7,23 @@ export const BRANCH_SETTING_DEFAULTS: Readonly<Record<string, unknown>> = {
   'notices.requireApproval': true,
   'messaging.reviewProbation': false,
   'complaints.slaHours': 48,
+  'fees.proofUpload': true,
+  'fees.onlineGateway': 'NONE',
+  'fees.receiptFooter': '',
+  // Phase 4 §H: per approval type, { ROLE: amountMinor } a role may approve alone.
+  'approval.limits.CONCESSION': { PRINCIPAL: 2_500_000 },
+  'approval.limits.REFUND': { PRINCIPAL: 2_500_000 },
+  'approval.limits.EXPENSE': { PRINCIPAL: 10_000_000 },
+  'approval.limits.PURCHASE_ORDER': { PRINCIPAL: 10_000_000 },
+  'exams.positionsEnabled': true,
+  'promotion.minPassPercent': 33,
+};
+
+/** Online gateways known to the registry ("NONE" disables online payment). */
+export const ONLINE_GATEWAYS = ['NONE', 'MANUAL'] as const;
+
+const FREE_TEXT_SETTINGS: Record<string, number> = {
+  'fees.receiptFooter': 300,
 };
 
 const HH_MM = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -18,6 +35,23 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> =>
 export function validateSetting(key: string, value: unknown): string | null {
   if (!(key in BRANCH_SETTING_DEFAULTS)) return `Unknown setting ${key}`;
   const fallback = BRANCH_SETTING_DEFAULTS[key];
+  if (key in FREE_TEXT_SETTINGS) {
+    return typeof value === 'string' && value.length <= FREE_TEXT_SETTINGS[key]
+      ? null
+      : `${key} must be text of at most ${FREE_TEXT_SETTINGS[key]} characters`;
+  }
+  if (key === 'fees.onlineGateway') {
+    return ONLINE_GATEWAYS.includes(value as (typeof ONLINE_GATEWAYS)[number])
+      ? null
+      : `${key} must be one of ${ONLINE_GATEWAYS.join(', ')}`;
+  }
+  if (key === 'promotion.minPassPercent') {
+    return Number.isInteger(value) &&
+      (value as number) >= 0 &&
+      (value as number) <= 100
+      ? null
+      : `${key} must be a whole percent 0-100`;
+  }
   if (typeof fallback === 'string') {
     return typeof value === 'string' && HH_MM.test(value)
       ? null

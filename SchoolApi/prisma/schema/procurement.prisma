@@ -1,0 +1,291 @@
+// Phase 4 §D–E: expenses, vendors, inventory, purchasing.
+
+enum ExpenseStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  PARTIALLY_PAID
+  PAID
+
+  @@map("expense_status")
+}
+
+enum ItemCategory {
+  FURNITURE
+  COMPUTER
+  STATIONERY
+  UNIFORM
+  BOOK
+  SPORTS
+  OTHER
+
+  @@map("item_category")
+}
+
+// Quantity is stored signed: IN/TRANSFER_IN > 0, ISSUE/TRANSFER_OUT < 0, ADJUST either.
+enum StockMovementType {
+  IN
+  ISSUE
+  ADJUST
+  TRANSFER_OUT
+  TRANSFER_IN
+
+  @@map("stock_movement_type")
+}
+
+enum AssetCondition {
+  NEW
+  GOOD
+  FAIR
+  POOR
+  DISPOSED
+
+  @@map("asset_condition")
+}
+
+enum PurchaseRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ORDERED
+
+  @@map("purchase_request_status")
+}
+
+enum PurchaseOrderStatus {
+  ORDERED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  BILLED
+
+  @@map("purchase_order_status")
+}
+
+model Vendor {
+  id            String       @id @default(uuid(7)) @db.Uuid
+  schoolId      String       @map("school_id") @db.Uuid
+  name          String
+  contactPerson String?      @map("contact_person")
+  phone         String?
+  email         String?
+  address       String?
+  ntn           String?
+  status        RecordStatus @default(ACTIVE)
+  createdById   String       @map("created_by_id") @db.Uuid
+  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  expenses       Expense[]
+  purchaseOrders PurchaseOrder[]
+
+  @@unique([schoolId, name])
+  @@map("vendors")
+}
+
+model ExpenseCategory {
+  id        String       @id @default(uuid(7)) @db.Uuid
+  schoolId  String       @map("school_id") @db.Uuid
+  code      String
+  name      String
+  status    RecordStatus @default(ACTIVE)
+  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  expenses Expense[]
+
+  @@unique([schoolId, code])
+  @@map("expense_categories")
+}
+
+model Expense {
+  id                String        @id @default(uuid(7)) @db.Uuid
+  schoolId          String        @map("school_id") @db.Uuid
+  branchId          String        @map("branch_id") @db.Uuid
+  categoryId        String        @map("category_id") @db.Uuid
+  vendorId          String?       @map("vendor_id") @db.Uuid
+  title             String
+  amountMinor       BigInt        @map("amount_minor")
+  paidMinor         BigInt        @default(0) @map("paid_minor")
+  currency          String        @default("PKR") @db.Char(3)
+  billDate          DateTime      @map("bill_date") @db.Date
+  dueDate           DateTime?     @map("due_date") @db.Date
+  billFileId        String?       @map("bill_file_id") @db.Uuid
+  recurringMonthly  Boolean       @default(false) @map("recurring_monthly")
+  recurringUntil    String?       @map("recurring_until") @db.VarChar(7)
+  // Recurring copies point at the template expense and carry their month.
+  recurringParentId String?       @map("recurring_parent_id") @db.Uuid
+  recurringPeriod   String?       @map("recurring_period") @db.VarChar(7)
+  purchaseOrderId   String?       @unique @map("purchase_order_id") @db.Uuid
+  notes             String?
+  status            ExpenseStatus @default(DRAFT)
+  approvalId        String?       @map("approval_id") @db.Uuid
+  createdById       String        @map("created_by_id") @db.Uuid
+  createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  category ExpenseCategory  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  vendor   Vendor?          @relation(fields: [vendorId], references: [id], onDelete: Restrict)
+  payments ExpensePayment[]
+
+  @@unique([recurringParentId, recurringPeriod], map: "expenses_one_recurring_copy_per_month", where: raw("recurring_parent_id IS NOT NULL"))
+  @@index([branchId, status])
+  @@index([branchId, billDate])
+  @@index([categoryId])
+  @@index([vendorId])
+  @@map("expenses")
+}
+
+model ExpensePayment {
+  id          String        @id @default(uuid(7)) @db.Uuid
+  expenseId   String        @map("expense_id") @db.Uuid
+  amountMinor BigInt        @map("amount_minor")
+  method      PaymentMethod
+  reference   String?
+  paidOn      DateTime      @map("paid_on") @db.Date
+  paidById    String        @map("paid_by_id") @db.Uuid
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  expense Expense @relation(fields: [expenseId], references: [id], onDelete: Restrict)
+
+  @@index([expenseId])
+  @@map("expense_payments")
+}
+
+model InventoryItem {
+  id             String       @id @default(uuid(7)) @db.Uuid
+  schoolId       String       @map("school_id") @db.Uuid
+  sku            String
+  name           String
+  category       ItemCategory
+  unit           String
+  reorderLevel   Int          @map("reorder_level")
+  isAsset        Boolean      @map("is_asset")
+  saleable       Boolean
+  salePriceMinor BigInt?      @map("sale_price_minor")
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  movements StockMovement[]
+  assets    Asset[]
+
+  @@unique([schoolId, sku])
+  @@map("inventory_items")
+}
+
+// Append-only (trigger). Stock of an item in a branch = SUM(quantity).
+model StockMovement {
+  id          String            @id @default(uuid(7)) @db.Uuid
+  schoolId    String            @map("school_id") @db.Uuid
+  branchId    String            @map("branch_id") @db.Uuid
+  itemId      String            @map("item_id") @db.Uuid
+  type        StockMovementType
+  quantity    Int
+  issuedTo    String?           @map("issued_to")
+  studentId   String?           @map("student_id") @db.Uuid
+  reason      String?
+  refType     String?           @map("ref_type")
+  refId       String?           @map("ref_id") @db.Uuid
+  createdById String            @map("created_by_id") @db.Uuid
+  createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  item InventoryItem @relation(fields: [itemId], references: [id], onDelete: Restrict)
+
+  @@index([branchId, itemId])
+  @@index([studentId])
+  @@index([refType, refId])
+  @@map("stock_movements")
+}
+
+model Asset {
+  id          String         @id @default(uuid(7)) @db.Uuid
+  schoolId    String         @map("school_id") @db.Uuid
+  branchId    String         @map("branch_id") @db.Uuid
+  itemId      String         @map("item_id") @db.Uuid
+  tag         String
+  location    String
+  condition   AssetCondition
+  assignedTo  String?        @map("assigned_to")
+  createdById String         @map("created_by_id") @db.Uuid
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  item InventoryItem @relation(fields: [itemId], references: [id], onDelete: Restrict)
+
+  @@unique([schoolId, tag])
+  @@index([branchId])
+  @@map("assets")
+}
+
+model PurchaseRequest {
+  id                  String                @id @default(uuid(7)) @db.Uuid
+  requestNo           String                @unique @map("request_no")
+  schoolId            String                @map("school_id") @db.Uuid
+  branchId            String                @map("branch_id") @db.Uuid
+  reason              String
+  lines               Json
+  estimatedTotalMinor BigInt                @map("estimated_total_minor")
+  status              PurchaseRequestStatus @default(PENDING)
+  approvalId          String?               @map("approval_id") @db.Uuid
+  requestedById       String                @map("requested_by_id") @db.Uuid
+  decidedAt           DateTime?             @map("decided_at") @db.Timestamptz(3)
+  createdAt           DateTime              @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime              @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  order PurchaseOrder?
+
+  @@index([branchId, status])
+  @@map("purchase_requests")
+}
+
+model PurchaseOrder {
+  id          String              @id @default(uuid(7)) @db.Uuid
+  poNo        String              @unique @map("po_no")
+  schoolId    String              @map("school_id") @db.Uuid
+  branchId    String              @map("branch_id") @db.Uuid
+  requestId   String              @unique @map("request_id") @db.Uuid
+  vendorId    String              @map("vendor_id") @db.Uuid
+  status      PurchaseOrderStatus @default(ORDERED)
+  totalMinor  BigInt              @map("total_minor")
+  expectedOn  DateTime?           @map("expected_on") @db.Date
+  createdById String              @map("created_by_id") @db.Uuid
+  createdAt   DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime            @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  request  PurchaseRequest     @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  vendor   Vendor              @relation(fields: [vendorId], references: [id], onDelete: Restrict)
+  lines    PurchaseOrderLine[]
+  receipts GoodsReceipt[]
+
+  @@index([branchId, status])
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderLine {
+  id             String @id @default(uuid(7)) @db.Uuid
+  orderId        String @map("order_id") @db.Uuid
+  itemId         String @map("item_id") @db.Uuid
+  quantity       Int
+  unitPriceMinor BigInt @map("unit_price_minor")
+  receivedQty    Int    @default(0) @map("received_qty")
+
+  order PurchaseOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@unique([orderId, itemId])
+  @@map("purchase_order_lines")
+}
+
+model GoodsReceipt {
+  id           String   @id @default(uuid(7)) @db.Uuid
+  orderId      String   @map("order_id") @db.Uuid
+  receivedOn   DateTime @map("received_on") @db.Date
+  lines        Json
+  receivedById String   @map("received_by_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  order PurchaseOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@map("goods_receipts")
+}

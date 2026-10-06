@@ -3,7 +3,7 @@
 import { PageHeader } from "@/components/shared/PageHeader";
 import { MyAttendanceSection } from "./MyAttendanceSection";
 import { MyLeaveSection } from "./MyLeaveSection";
-import { SalaryPlaceholderCard } from "./SalaryPlaceholderCard";
+import { MySalarySection } from "./MySalarySection";
 
 export function MyAttendancePage() {
   return (
@@ -14,7 +14,7 @@ export function MyAttendancePage() {
       />
       <MyAttendanceSection />
       <MyLeaveSection />
-      <SalaryPlaceholderCard />
+      <MySalarySection />
     </>
   );
 }

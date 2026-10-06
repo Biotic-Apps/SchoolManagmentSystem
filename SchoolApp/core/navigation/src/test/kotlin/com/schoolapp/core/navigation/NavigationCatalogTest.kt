@@ -70,6 +70,9 @@ class NavigationCatalogTest {
         assertEquals("Home", parentMenu.first { it.id == MenuIds.DASHBOARD }.label)
         assertEquals("Child Profile", parentMenu.first { it.id == MenuIds.STUDENTS }.label)
         assertEquals("Fees, Dues & Receipts", parentMenu.first { it.id == MenuIds.FEES }.label)
+        assertEquals("Certificates", parentMenu.first { it.id == MenuIds.CERTIFICATES }.label)
+        val ids = parentMenu.map { it.id }
+        assertEquals(ids.indexOf(MenuIds.FEES) + 1, ids.indexOf(MenuIds.CERTIFICATES))
 
         val principalMenu = NavigationCatalog.menuFor(session(RoleKey.PRINCIPAL, "branches.view"))
         assertEquals("Branch & Calendar", principalMenu.single().label)
@@ -89,6 +92,6 @@ class NavigationCatalogTest {
         assertEquals(30, NavigationCatalog.defaultOrder(RoleKey.SUPER_ADMIN).size)
         assertEquals(27, NavigationCatalog.defaultOrder(RoleKey.PRINCIPAL).size)
         assertEquals(14, NavigationCatalog.defaultOrder(RoleKey.TEACHER).size)
-        assertEquals(12, NavigationCatalog.defaultOrder(RoleKey.PARENT).size)
+        assertEquals(13, NavigationCatalog.defaultOrder(RoleKey.PARENT).size)
     }
 }

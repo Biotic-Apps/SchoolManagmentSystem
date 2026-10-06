@@ -1,0 +1,50 @@
+<resources>
+    <string name="certificates_title">Certificates</string>
+    <string name="certificates_type_school_leaving">School leaving certificate</string>
+    <string name="certificates_type_transfer">Transfer certificate</string>
+    <string name="certificates_type_character">Character certificate</string>
+    <string name="certificates_type_attendance">Attendance certificate</string>
+    <string name="certificates_type_achievement">Achievement certificate</string>
+    <string name="certificates_status_requested">Requested</string>
+    <string name="certificates_status_approved">Approved</string>
+    <string name="certificates_status_rejected">Rejected</string>
+    <string name="certificates_status_issued">Issued</string>
+    <string name="certificates_filter_all">All</string>
+
+    <string name="certificates_serial">Serial</string>
+    <string name="certificates_purpose">Purpose</string>
+    <string name="certificates_requested_on">Requested on</string>
+    <string name="certificates_requested_by">Requested by</string>
+    <string name="certificates_issued_on">Issued on</string>
+    <string name="certificates_rejection_reason">Reason</string>
+    <string name="certificates_student">Student</string>
+    <string name="certificates_duplicate">Duplicate copy</string>
+    <string name="certificates_download">Download</string>
+    <string name="certificates_class_section">%1$s-%2$s</string>
+
+    <string name="certificates_no_child">No child linked</string>
+    <string name="certificates_no_child_message">Certificates for your children appear here once a child is linked to your account.</string>
+    <string name="certificates_empty">No certificate requests</string>
+    <string name="certificates_empty_parent_message">Request a leaving, transfer, character, attendance or achievement certificate for %1$s.</string>
+    <string name="certificates_empty_review_message">Requests matching this filter appear here.</string>
+    <string name="certificates_request">Request certificate</string>
+    <string name="certificates_request_for">For %1$s</string>
+    <string name="certificates_type">Certificate type</string>
+    <string name="certificates_type_required">Choose a certificate type</string>
+    <string name="certificates_purpose_optional">Purpose (optional)</string>
+    <string name="certificates_clearance_note">Needs clearance: no outstanding fees and all issued items returned</string>
+    <string name="certificates_send_request">Send request</string>
+    <string name="certificates_requested_message">Request sent. The school office will review it.</string>
+
+    <string name="certificates_approve">Approve</string>
+    <string name="certificates_reject">Reject</string>
+    <string name="certificates_reject_title">Reject request</string>
+    <string name="certificates_reject_reason">Reason</string>
+    <string name="certificates_reject_reason_required">Give a reason for rejecting</string>
+    <string name="certificates_clearance_needed">Clearance needed</string>
+    <string name="certificates_outstanding_fees">Outstanding fees %1$s</string>
+    <string name="certificates_unreturned_item">Not returned: %1$s</string>
+    <string name="certificates_approved_message">Request approved</string>
+    <string name="certificates_rejected_message">Request rejected</string>
+    <string name="certificates_issue_on_web">Issuing the certificate PDF is done on the web portal after approval.</string>
+</resources>

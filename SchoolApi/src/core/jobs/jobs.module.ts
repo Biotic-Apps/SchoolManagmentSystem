@@ -17,6 +17,7 @@ import { registerQueues } from './register-queues';
 import { DocumentsWorker } from './workers/documents.worker';
 import { MaintenanceWorker } from './workers/maintenance.worker';
 import { NotificationsWorker } from './workers/notifications.worker';
+import { PayrollWorker } from './workers/payroll.worker';
 import { ReportsWorker } from './workers/reports.worker';
 
 const SHARED = [JobProcessorRegistry, JobRunner];
@@ -56,6 +57,7 @@ export class JobsModule {
         NotificationsWorker,
         DocumentsWorker,
         ReportsWorker,
+        PayrollWorker,
         MaintenanceWorker,
       ],
       exports: EXPORTS,

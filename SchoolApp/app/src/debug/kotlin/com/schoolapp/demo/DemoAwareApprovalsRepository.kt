@@ -4,6 +4,8 @@ import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.approvals.ApprovalsRepository
 import com.schoolapp.core.data.approvals.DefaultApprovalsRepository
+import com.schoolapp.core.model.RoleKey
+import com.schoolapp.core.model.RoleRef
 import com.schoolapp.core.model.approval.ApprovalDecision
 import com.schoolapp.core.model.approval.ApprovalRequest
 import com.schoolapp.core.model.approval.ApprovalStatus
@@ -21,14 +23,19 @@ class DemoAwareApprovalsRepository @Inject constructor(
     private val auth: DemoAwareAuthRepository,
 ) : ApprovalsRepository {
 
-    private val demoItems = MutableStateFlow(DemoPhase2Approvals.items + DemoData.approvals)
+    private val phase4 = DemoPhase4Approvals.items
+    private val phase4Ids = phase4.map { it.id }.toSet()
+    private val demoItems = MutableStateFlow(phase4 + DemoPhase2Approvals.items + DemoData.approvals)
     private val demoChanges = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     override val changes: Flow<Unit> = merge(real.changes, demoChanges)
 
     override suspend fun inbox(status: ApprovalStatus?): AppResult<List<ApprovalRequest>> =
         if (auth.isDemoActive) {
-            AppResult.Success(demoItems.value.filter { status == null || it.status == status })
+            val role = auth.demoSession.value?.activeRole
+            AppResult.Success(
+                demoItems.value.filter { (it.id !in phase4Ids || role in PHASE4_APPROVERS) && (status == null || it.status == status) },
+            )
         } else {
             real.inbox(status)
         }
@@ -50,5 +57,8 @@ class DemoAwareApprovalsRepository @Inject constructor(
 
     private companion object {
         const val NOT_FOUND = 404
+
+        /** Finance & results requests go to the principal (super admin sees all). */
+        val PHASE4_APPROVERS: Set<RoleRef> = setOf(RoleKey.PRINCIPAL, RoleKey.SUPER_ADMIN)
     }
 }

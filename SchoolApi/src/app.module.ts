@@ -44,6 +44,17 @@ import { StudentsModule } from './modules/students/students.module';
 import { SyllabusModule } from './modules/syllabus/syllabus.module';
 import { TimetableModule } from './modules/timetable/timetable.module';
 import { UsersModule } from './modules/users/users.module';
+import { TasksModule } from './modules/tasks/tasks.module';
+import { GeneratedDocsModule } from './modules/generated-docs/generated-docs.module';
+import { FinanceCoreModule } from './modules/finance-core/finance-core.module';
+import { ResultsModule } from './modules/results/results.module';
+import { FeesModule } from './modules/fees/fees.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { PayrollModule } from './modules/payroll/payroll.module';
+import { ExpensesModule } from './modules/expenses/expenses.module';
+import { InventoryModule } from './modules/inventory/inventory.module';
+import { CertificatesModule } from './modules/certificates/certificates.module';
+import { ReportsModule } from './modules/reports/reports.module';
 
 @Module({
   imports: [
@@ -92,6 +103,17 @@ import { UsersModule } from './modules/users/users.module';
     ActivitiesModule,
     NoticesModule,
     MessagingModule,
+    TasksModule,
+    GeneratedDocsModule,
+    FinanceCoreModule,
+    ResultsModule,
+    FeesModule,
+    PaymentsModule,
+    PayrollModule,
+    ExpensesModule,
+    InventoryModule,
+    CertificatesModule,
+    ReportsModule,
   ],
 })
 export class AppModule {}

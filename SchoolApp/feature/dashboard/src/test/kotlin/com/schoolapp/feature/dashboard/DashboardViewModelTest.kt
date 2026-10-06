@@ -23,6 +23,7 @@ import com.schoolapp.core.navigation.DiaryEditorDestination
 import com.schoolapp.core.testing.FakeAuthRepository
 import com.schoolapp.core.testing.MainDispatcherRule
 import com.schoolapp.core.testing.TestSessions
+import com.schoolapp.feature.dashboard.finance.FinanceLoader
 import com.schoolapp.feature.dashboard.parent.attendanceChip
 import com.schoolapp.feature.dashboard.supervisor.SupervisorLoader
 import com.schoolapp.feature.dashboard.teacher.TeacherDayLoader
@@ -43,6 +44,7 @@ class DashboardViewModelTest {
     private val clock = AppClock { LocalDateTime.of(2026, 10, 6, 8, 45) }
     private val today = "2026-10-06"
     private val repository = FakeDashboardRepository()
+    private val fees = FakeFinanceFees()
 
     private fun viewModel(
         auth: FakeAuthRepository,
@@ -52,7 +54,8 @@ class DashboardViewModelTest {
         val periods = TodayPeriodsLoader(FakeTimetableRepository(week), clock)
         val scoped = ScopedSections(auth, organisationWith(sections))
         return DashboardViewModel(
-            auth, repository, SupervisorLoader(repository), TeacherDayLoader(repository, periods, scoped, clock), clock,
+            auth, repository, SupervisorLoader(repository, FinanceLoader(fees.repository)),
+            TeacherDayLoader(repository, periods, scoped, clock), FinanceLoader(fees.repository), clock,
         )
     }
 
@@ -230,5 +233,57 @@ class DashboardViewModelTest {
         assertEquals("c1", state.child?.id)
         assertNull(state.home)
         assertEquals(AppError.Network, state.error)
+    }
+
+    // Finance tiles
+
+    private val overview = com.schoolapp.core.model.fees.FinanceOverview(
+        billedMinor = 50_000_000, collectedMinor = 41_000_000, outstandingMinor = 9_000_000, overdueMinor = 3_500_000,
+        collectionRate = 82.0, expensesMinor = 6_000_000, payrollMinor = 40_000_000, todayCollectedMinor = 1_250_000,
+    )
+
+    @Test
+    fun principal_with_fees_view_gets_the_month_finance_card() {
+        fees.result = AppResult.Success(overview)
+        val vm = viewModel(FakeAuthRepository(TestSessions.session(RoleKey.PRINCIPAL, "dashboard.view", "fees.view")))
+        val finance = (vm.uiState.value as DashboardUiState.Supervisor).finance
+        assertEquals(listOf<Pair<String?, String?>>("b1" to "2026-10"), fees.calls)
+        assertEquals("2026-10", finance?.month)
+        assertEquals(41_000_000L, finance?.overview?.collectedMinor)
+        assertNull(finance?.error)
+    }
+
+    @Test
+    fun finance_failure_stays_inside_the_card() {
+        fees.result = AppResult.Failure(AppError.Network)
+        repository.summaryResult = AppResult.Success(listOf(DashboardMetric("students", 420)))
+        val vm = viewModel(FakeAuthRepository(TestSessions.session(RoleKey.PRINCIPAL, "dashboard.view", "fees.view")))
+        val state = vm.uiState.value as DashboardUiState.Supervisor
+        assertEquals(AppError.Network, state.finance?.error)
+        assertNull(state.finance?.overview)
+        assertEquals(1, state.metrics.size)
+    }
+
+    @Test
+    fun finance_card_is_hidden_without_fees_view() {
+        val vm = viewModel(FakeAuthRepository(TestSessions.session(RoleKey.PRINCIPAL, "dashboard.view")))
+        assertNull((vm.uiState.value as DashboardUiState.Supervisor).finance)
+        assertTrue(fees.calls.isEmpty())
+    }
+
+    @Test
+    fun accountant_gets_welcome_with_finance_and_card_links_to_fees() {
+        fees.result = AppResult.Success(overview)
+        val vm = viewModel(FakeAuthRepository(TestSessions.session(RoleKey.ACCOUNTANT, "fees.view")))
+        val state = vm.uiState.value as DashboardUiState.Welcome
+        assertEquals(overview, state.finance?.overview)
+
+        var opened: String? = null
+        val action = com.schoolapp.feature.dashboard.components.financeAction({ opened = it }, { it == "fees" })
+        action?.invoke()
+        assertEquals("fees", opened)
+        assertNull(com.schoolapp.feature.dashboard.components.financeAction({}, { false }))
+        assertEquals("82%", com.schoolapp.feature.dashboard.finance.collectionRateLabel(82.4))
+        assertEquals("October 2026", com.schoolapp.feature.dashboard.finance.financeMonthLabel("2026-10"))
     }
 }

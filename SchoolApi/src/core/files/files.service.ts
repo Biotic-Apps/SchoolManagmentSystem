@@ -17,6 +17,12 @@ const IMAGE_PURPOSES = new Set<FilePurpose>([
   'STAFF_PHOTO',
 ]);
 
+/** Payslips: owner or payroll staff; reports: owner only; others: school readers. */
+function canSharePurpose(purpose: FilePurpose, user: AuthUser): boolean {
+  if (purpose === 'PAYSLIP') return user.permissions.has('payroll.view');
+  return purpose !== 'REPORT';
+}
+
 @Injectable()
 export class FilesService {
   constructor(
@@ -76,8 +82,9 @@ export class FilesService {
     const allowed =
       file &&
       (file.uploadedById === user.id ||
-        scope.global ||
-        (file.schoolId !== null && scope.canReadSchool(file.schoolId)));
+        (canSharePurpose(file.purpose, user) &&
+          (scope.global ||
+            (file.schoolId !== null && scope.canReadSchool(file.schoolId)))));
     if (!allowed) throw notFound('File');
     return this.signer.sign(file.id);
   }

@@ -31,4 +31,14 @@
     <string name="approvals_details_diary">Diary entry for review</string>
     <string name="approvals_details_activity">Activity for approval</string>
     <string name="approvals_details_notice">Notice for approval</string>
+    <string name="approvals_details_result_publish">Results for publishing</string>
+    <string name="approvals_details_promotion">Promotion</string>
+    <string name="approvals_details_concession">Fee concession</string>
+    <string name="approvals_details_refund">Refund</string>
+    <string name="approvals_details_payment_reversal">Payment reversal</string>
+    <string name="approvals_details_payroll">Payroll run</string>
+    <string name="approvals_details_expense">Expense</string>
+    <string name="approvals_details_purchase_order">Purchase request</string>
+    <string name="approvals_details_certificate">Certificate request</string>
+    <string name="approvals_amount">Amount</string>
 </resources>
