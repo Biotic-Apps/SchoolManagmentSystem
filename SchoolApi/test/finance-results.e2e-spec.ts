@@ -262,7 +262,14 @@ describe('Finance and results (e2e)', () => {
 
     it('reverses a payment with a new counter-entry and restores the balance', async () => {
       const debtor = await prisma.invoice.findFirstOrThrow({
-        where: { branchId, status: 'OVERDUE', paidMinor: 0 },
+        // A seeded tuition invoice (other suites may add small or opening invoices).
+        where: {
+          branchId,
+          status: 'OVERDUE',
+          paidMinor: 0,
+          source: 'GENERATED',
+          totalMinor: { gte: 100_000 },
+        },
         orderBy: { dueDate: 'asc' },
       });
       const before = await ledger(debtor.studentId);

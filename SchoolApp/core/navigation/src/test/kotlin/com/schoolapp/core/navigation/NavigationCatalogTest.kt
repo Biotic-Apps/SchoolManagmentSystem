@@ -90,7 +90,7 @@ class NavigationCatalogTest {
     @Test
     fun menu_sizes_match_navigation_doc() {
         assertEquals(30, NavigationCatalog.defaultOrder(RoleKey.SUPER_ADMIN).size)
-        assertEquals(27, NavigationCatalog.defaultOrder(RoleKey.PRINCIPAL).size)
+        assertEquals(28, NavigationCatalog.defaultOrder(RoleKey.PRINCIPAL).size)
         assertEquals(14, NavigationCatalog.defaultOrder(RoleKey.TEACHER).size)
         assertEquals(13, NavigationCatalog.defaultOrder(RoleKey.PARENT).size)
     }

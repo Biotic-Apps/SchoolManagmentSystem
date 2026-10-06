@@ -1,4 +1,4 @@
-import { Eye, KeyRound, Pencil, UserCheck, UserX } from "lucide-react";
+import { Eye, KeyRound, LockOpen, Pencil, UserCheck, UserX } from "lucide-react";
 import type { DataTableColumn } from "@/components/shared/DataTable";
 import { RowActions } from "@/components/shared/RowActions";
 import { StatusBadge } from "@/components/shared/StatusBadge";
@@ -12,7 +12,14 @@ export interface UserRowHandlers {
   onEdit?: (user: UserSummary) => void;
   onToggleStatus?: (user: UserSummary) => void;
   onResetPassword?: (user: UserSummary) => void;
+  onUnlock?: (user: UserSummary) => void;
   currentUserId: string | null;
+}
+
+// Older APIs do not report the lock, so the action stays available there.
+function mayBeLocked(user: UserSummary): boolean {
+  if (user.lockedUntil === undefined) return true;
+  return !!user.lockedUntil && new Date(user.lockedUntil).getTime() > Date.now();
 }
 
 export function userColumns(handlers: UserRowHandlers): DataTableColumn<UserSummary>[] {
@@ -41,7 +48,16 @@ export function userColumns(handlers: UserRowHandlers): DataTableColumn<UserSumm
       ),
     },
     { id: "branches", header: "Branches", cell: (row) => row.branchNames.join(", ") || EMPTY_VALUE },
-    { id: "status", header: "Status", cell: (row) => <StatusBadge status={row.status} /> },
+    {
+      id: "status",
+      header: "Status",
+      cell: (row) => (
+        <span className="flex flex-wrap gap-1">
+          <StatusBadge status={row.status} />
+          {row.lockedUntil && mayBeLocked(row) && <StatusBadge status="LOCKED" label="Locked" />}
+        </span>
+      ),
+    },
     { id: "login", header: "Last sign-in", cell: (row) => formatDateTime(row.lastLoginAt), className: "whitespace-nowrap" },
     {
       id: "actions",
@@ -61,6 +77,13 @@ export function userColumns(handlers: UserRowHandlers): DataTableColumn<UserSumm
                 icon: KeyRound,
                 onSelect: () => handlers.onResetPassword?.(row),
                 hidden: !handlers.onResetPassword || isSelf,
+              },
+              {
+                id: "unlock",
+                label: "Unlock account",
+                icon: LockOpen,
+                onSelect: () => handlers.onUnlock?.(row),
+                hidden: !handlers.onUnlock || isSelf || !mayBeLocked(row),
               },
               {
                 id: "status",

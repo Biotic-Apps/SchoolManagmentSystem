@@ -4,6 +4,7 @@ import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.data.auth.AuthState
+import com.schoolapp.core.data.auth.LoginOutcome
 import com.schoolapp.core.model.RoleAssignment
 import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.RoleRef
@@ -18,7 +19,11 @@ import kotlinx.coroutines.flow.map
 class FakeAuthRepository : AuthRepository {
     val sessionState = MutableStateFlow<SessionContext?>(null)
     val loginCalls = mutableListOf<Pair<String, String>>()
+    val verifyCalls = mutableListOf<Pair<String, String>>()
+    val resetRequests = mutableListOf<String>()
+    val resetCalls = mutableListOf<Pair<String, String>>()
     var nextError: AppError? = null
+    var challengeId: String? = null
     var gate: CompletableDeferred<Unit>? = null
 
     override val authState: Flow<AuthState> =
@@ -26,17 +31,33 @@ class FakeAuthRepository : AuthRepository {
 
     override val session: Flow<SessionContext?> = sessionState
 
-    override suspend fun login(identifier: String, password: String): AppResult<Unit> {
+    override suspend fun login(identifier: String, password: String): AppResult<LoginOutcome> {
         loginCalls += identifier to password
         gate?.await()
         nextError?.let { return AppResult.Failure(it) }
-        sessionState.value = SessionContext(
-            user = User("u1", "Sara Ali"),
-            assignments = listOf(RoleAssignment("a1", RoleKey.TEACHER, ScopeType.SECTION)),
-            activeRole = RoleKey.TEACHER,
-            permissions = emptySet(),
-        )
+        challengeId?.let { return AppResult.Success(LoginOutcome.TwoFactorRequired(it)) }
+        signIn()
+        return AppResult.Success(LoginOutcome.SignedIn)
+    }
+
+    override suspend fun verifyTwoFactor(challengeId: String, code: String): AppResult<Unit> {
+        verifyCalls += challengeId to code
+        gate?.await()
+        nextError?.let { return AppResult.Failure(it) }
+        signIn()
         return AppResult.Success(Unit)
+    }
+
+    override suspend fun requestPasswordReset(identifier: String): AppResult<Unit> {
+        resetRequests += identifier
+        gate?.await()
+        return nextError?.let { AppResult.Failure(it) } ?: AppResult.Success(Unit)
+    }
+
+    override suspend fun resetPassword(token: String, newPassword: String): AppResult<Unit> {
+        resetCalls += token to newPassword
+        gate?.await()
+        return nextError?.let { AppResult.Failure(it) } ?: AppResult.Success(Unit)
     }
 
     override suspend fun refreshSession(): AppResult<Unit> =
@@ -54,4 +75,13 @@ class FakeAuthRepository : AuthRepository {
     }
 
     override suspend fun logoutAll(): AppResult<Unit> = AppResult.Success(Unit).also { logout() }
+
+    private fun signIn() {
+        sessionState.value = SessionContext(
+            user = User("u1", "Sara Ali"),
+            assignments = listOf(RoleAssignment("a1", RoleKey.TEACHER, ScopeType.SECTION)),
+            activeRole = RoleKey.TEACHER,
+            permissions = emptySet(),
+        )
+    }
 }

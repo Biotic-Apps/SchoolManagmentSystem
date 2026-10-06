@@ -5,10 +5,10 @@ import { FormField, errorId } from "@/components/shared/FormField";
 import { InlineNotice } from "@/components/shared/InlineNotice";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { useLoginForm } from "../use-login-form";
+import type { useLoginForm } from "../use-login-form";
 
-export function LoginForm() {
-  const { register, errors, submit, submitting, serverError, notice } = useLoginForm();
+export function LoginForm({ login }: { login: ReturnType<typeof useLoginForm> }) {
+  const { register, errors, submit, submitting, serverError, notice } = login;
 
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-5">

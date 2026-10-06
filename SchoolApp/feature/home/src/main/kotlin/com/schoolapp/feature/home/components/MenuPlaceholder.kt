@@ -19,6 +19,7 @@ import com.schoolapp.feature.home.R
 /** Modules managed on the web panel only; the app explains where to find them. */
 private val WebOnlyModules = setOf(
     MenuIds.SCHOOLS, MenuIds.USERS, MenuIds.ROLES, MenuIds.EXPENSES, MenuIds.INVENTORY, MenuIds.REPORTS,
+    MenuIds.SETTINGS,
 )
 
 /** Destination for web-only modules and modules that are not built yet. */

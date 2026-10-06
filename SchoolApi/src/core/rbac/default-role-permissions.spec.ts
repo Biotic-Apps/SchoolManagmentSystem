@@ -93,6 +93,7 @@ const DEFAULT_MENUS: Record<RoleKey, string[]> = {
     'certificates',
     'approvals',
     'reports',
+    'settings',
     'profile',
   ],
   [RoleKey.COORDINATOR]: SUPERVISOR_MENU,

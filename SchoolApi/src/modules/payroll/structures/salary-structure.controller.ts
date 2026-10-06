@@ -30,10 +30,11 @@ export class SalaryStructureController {
   @RequirePermission('payroll.view')
   @ApiData(SalaryStructuresDto)
   get(
+    @CurrentUser() user: AuthUser,
     @CurrentScope() scope: Scope,
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<SalaryStructuresDto> {
-    return this.structures.get(scope, id);
+    return this.structures.get(user, scope, id);
   }
 
   /** Appends a new structure row (history is never edited). */

@@ -10,6 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.designsystem.component.AppScaffold
 import com.schoolapp.core.designsystem.component.AppTopBar
 import com.schoolapp.core.designsystem.component.BackButton
+import com.schoolapp.core.ui.SecureWindowEffect
 import com.schoolapp.feature.health.R
 
 @Composable
@@ -19,6 +20,7 @@ internal fun ReportIncidentRoute(
     viewModel: ReportIncidentViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    SecureWindowEffect()
     AppScaffold(
         modifier = modifier,
         topBar = { AppTopBar(title = stringResource(R.string.health_report_title), navigationIcon = { BackButton(onBack) }) },

@@ -19,8 +19,23 @@ export class MeChildDto {
   sessionName!: string;
 }
 
+export class MeTwoFactorDto {
+  enabled!: boolean;
+  /** A held role is in the school's twoFactorRequiredFor. */
+  required!: boolean;
+}
+
+/** `user` plus the 2FA flags (web reads them from here). */
+export class MeSessionUserDto extends MeUserDto {
+  twoFactorEnabled!: boolean;
+  twoFactorRequired!: boolean;
+}
+
 export class MeDto {
-  user!: MeUserDto;
+  user!: MeSessionUserDto;
+  twoFactor!: MeTwoFactorDto;
+  /** Strictest idle timeout of the user's schools (web idle logout). */
+  sessionTimeoutMinutes!: number;
   activeRole!: string;
   roles!: string[];
   permissions!: string[];

@@ -1,8 +1,9 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsIn,
   IsInt,
   IsOptional,
@@ -120,6 +121,19 @@ export class FeePlanQueryDto {
   @IsOptional()
   @IsIn(Object.values(FeePlanStatus))
   status?: FeePlanStatus;
+
+  /** ARCHIVED plans are listed only with this flag or `status=ARCHIVED`. */
+  @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true')
+  @IsBoolean()
+  includeArchived?: boolean;
+}
+
+export class ArchiveFeePlanDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  reason?: string;
 }
 
 export class FeePlanItemDto {

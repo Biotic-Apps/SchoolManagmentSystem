@@ -101,4 +101,51 @@ describe('validateEnv', () => {
 
     expect(run).toThrow(/must differ/);
   });
+
+  const productionEnv = {
+    ...validEnv,
+    NODE_ENV: 'production',
+    BACKUP_ENCRYPTION_KEY: Buffer.alloc(32, 1).toString('base64'),
+  };
+
+  it('accepts a complete production environment', () => {
+    expect(validateEnv(productionEnv).NODE_ENV).toBe('production');
+  });
+
+  it('requires BACKUP_ENCRYPTION_KEY in production', () => {
+    const env: Record<string, string> = { ...productionEnv };
+    delete env.BACKUP_ENCRYPTION_KEY;
+    expect(() => validateEnv(env)).toThrow(/BACKUP_ENCRYPTION_KEY/);
+    expect(validateEnv({ ...env, NODE_ENV: 'development' }).NODE_ENV).toBe(
+      'development',
+    );
+  });
+
+  it('rejects backup keys that are not 32 base64 bytes', () => {
+    const run = (key: string) => () =>
+      validateEnv({ ...productionEnv, BACKUP_ENCRYPTION_KEY: key });
+    expect(run(Buffer.alloc(16, 1).toString('base64'))).toThrow(
+      /BACKUP_ENCRYPTION_KEY/,
+    );
+    expect(run('not base64 at all!')).toThrow(/BACKUP_ENCRYPTION_KEY/);
+  });
+
+  it('requires bucket and credentials only for the s3 driver', () => {
+    const local: Record<string, string> = { ...validEnv };
+    delete local.S3_BUCKET;
+    delete local.S3_ACCESS_KEY;
+    delete local.S3_ENDPOINT;
+    expect(validateEnv(local).STORAGE_DRIVER).toBe('local');
+    expect(() => validateEnv({ ...local, STORAGE_DRIVER: 's3' })).toThrow(
+      /S3_BUCKET/,
+    );
+  });
+
+  it('defaults Phase 5 settings', () => {
+    const env = validateEnv(validEnv);
+    expect(env.BACKUP_RETENTION_DAILY).toBe(30);
+    expect(env.BACKUP_RETENTION_MONTHLY).toBe(12);
+    expect(env.TOTP_ISSUER).toBe('eSchool');
+    expect(env.CLAMAV_PORT).toBe(3310);
+  });
 });

@@ -6,7 +6,7 @@ import { useActiveBranches } from "@/features/branches/api";
 import { paginationFrom } from "@/lib/pagination";
 import { useDialogState } from "@/lib/use-dialog-state";
 import { useListState } from "@/lib/use-list-state";
-import { useUsers } from "./api";
+import { useUnlockUser, useUsers } from "./api";
 import type { CreatedUser, UserSummary } from "./types";
 import { userColumns } from "./user-columns";
 
@@ -35,6 +35,8 @@ export function useUsersPage() {
   const statusTarget = useDialogState<UserSummary>();
   const resetTarget = useDialogState<UserSummary>();
   const detail = useDialogState<UserSummary>();
+  const unlockTarget = useDialogState<UserSummary>();
+  const unlock = useUnlockUser();
   const [revealed, setRevealed] = useState<RevealedPassword | null>(null);
 
   const canEdit = can("users.edit");
@@ -45,9 +47,10 @@ export function useUsersPage() {
         onEdit: canEdit ? edit.show : undefined,
         onToggleStatus: canEdit ? statusTarget.show : undefined,
         onResetPassword: canEdit ? resetTarget.show : undefined,
+        onUnlock: canEdit ? unlockTarget.show : undefined,
         currentUserId,
       }),
-    [detail.show, edit.show, statusTarget.show, resetTarget.show, canEdit, currentUserId],
+    [detail.show, edit.show, statusTarget.show, resetTarget.show, unlockTarget.show, canEdit, currentUserId],
   );
 
   const onCreated = (user: CreatedUser) => {
@@ -72,6 +75,11 @@ export function useUsersPage() {
     statusTarget,
     resetTarget,
     detail,
+    unlockTarget,
+    unlocking: unlock.isPending,
+    confirmUnlock: () => {
+      if (unlockTarget.item) unlock.mutate(unlockTarget.item.id, { onSuccess: unlockTarget.close });
+    },
     revealed,
     clearRevealed: () => setRevealed(null),
     onCreated,

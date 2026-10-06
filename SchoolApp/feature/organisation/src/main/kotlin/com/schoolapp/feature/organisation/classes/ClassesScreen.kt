@@ -1,5 +1,8 @@
 package com.schoolapp.feature.organisation.classes
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
@@ -17,11 +20,14 @@ import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.ListItemRow
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.theme.SchoolTheme
 import com.schoolapp.core.model.organisation.BranchOption
 import com.schoolapp.core.model.organisation.Section
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.organisation.R
+import com.schoolapp.feature.organisation.components.PullableState
+import com.schoolapp.feature.organisation.components.RefreshErrorBanner
 import com.schoolapp.feature.organisation.scope.BranchScopeBar
 import com.schoolapp.feature.organisation.scope.ScopedPane
 
@@ -31,6 +37,7 @@ fun ClassesScreen(
     onTabSelected: (ClassesTab) -> Unit,
     onBranchSelected: (String) -> Unit,
     onRetry: () -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ScopedPane(modifier) {
@@ -44,36 +51,52 @@ fun ClassesScreen(
             onSelect = { onTabSelected(ClassesTab.entries[it]) },
         )
         BranchScopeBar(state.branches, state.selectedBranchId, onBranchSelected)
-        val listModifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)
-        when {
-            state.isLoading -> LoadingState()
-            state.error != null -> ErrorState(appErrorMessage(state.error), onRetry = onRetry)
-            state.tab == ClassesTab.SECTIONS -> DataList(
-                items = state.sections,
-                key = { it.id },
-                modifier = listModifier,
-                emptyContent = { EmptyState(stringResource(R.string.org_sections_empty), message = state.sessionName) },
-            ) { SectionRow(it) }
-            state.tab == ClassesTab.CLASSES -> DataList(
-                items = state.classes,
-                key = { it.id },
-                modifier = listModifier,
-                emptyContent = { EmptyState(stringResource(R.string.org_classes_empty)) },
-            ) { item ->
-                ListItemRow(
-                    title = item.name,
-                    supporting = pluralStringResource(R.plurals.org_class_subjects, item.subjectCount, item.subjectCount),
-                    leadingIcon = Icons.Outlined.Layers,
-                )
+        if (state.isLoading) {
+            LoadingState()
+        } else {
+            RefreshBox(state.isRefreshing, onRefresh, Modifier.fillMaxWidth().weight(1f)) {
+                if (state.error != null && !state.hasContent) {
+                    PullableState { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
+                } else {
+                    Column(Modifier.fillMaxSize()) {
+                        RefreshErrorBanner(state.error, Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp))
+                        ClassesTabContent(state)
+                    }
+                }
             }
-            else -> DataList(
-                items = state.subjects,
-                key = { it.id },
-                modifier = listModifier,
-                emptyContent = { EmptyState(stringResource(R.string.org_subjects_empty)) },
-            ) { item ->
-                ListItemRow(title = item.name, supporting = item.code, leadingIcon = Icons.AutoMirrored.Outlined.MenuBook)
-            }
+        }
+    }
+}
+
+@Composable
+private fun ClassesTabContent(state: ClassesUiState) {
+    val listModifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)
+    when (state.tab) {
+        ClassesTab.SECTIONS -> DataList(
+            items = state.sections,
+            key = { it.id },
+            modifier = listModifier,
+            emptyContent = { PullableState { EmptyState(stringResource(R.string.org_sections_empty), message = state.sessionName) } },
+        ) { SectionRow(it) }
+        ClassesTab.CLASSES -> DataList(
+            items = state.classes,
+            key = { it.id },
+            modifier = listModifier,
+            emptyContent = { PullableState { EmptyState(stringResource(R.string.org_classes_empty)) } },
+        ) { item ->
+            ListItemRow(
+                title = item.name,
+                supporting = pluralStringResource(R.plurals.org_class_subjects, item.subjectCount, item.subjectCount),
+                leadingIcon = Icons.Outlined.Layers,
+            )
+        }
+        ClassesTab.SUBJECTS -> DataList(
+            items = state.subjects,
+            key = { it.id },
+            modifier = listModifier,
+            emptyContent = { PullableState { EmptyState(stringResource(R.string.org_subjects_empty)) } },
+        ) { item ->
+            ListItemRow(title = item.name, supporting = item.code, leadingIcon = Icons.AutoMirrored.Outlined.MenuBook)
         }
     }
 }
@@ -99,6 +122,6 @@ private fun ClassesScreenPreview() = SchoolTheme {
             selectedBranchId = "b1",
             sections = listOf(Section("1", "c5", "Class 5", "A", 35, "Room 12", 0, "ACTIVE")),
         ),
-        onTabSelected = {}, onBranchSelected = {}, onRetry = {},
+        onTabSelected = {}, onBranchSelected = {}, onRetry = {}, onRefresh = {},
     )
 }

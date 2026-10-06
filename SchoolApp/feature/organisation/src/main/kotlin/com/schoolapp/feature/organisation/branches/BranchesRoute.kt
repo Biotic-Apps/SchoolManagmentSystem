@@ -17,6 +17,7 @@ fun BranchesRoute(
     BranchesScreen(
         state = state,
         onRetry = viewModel::load,
+        onRefresh = viewModel::refresh,
         onOpenBranch = onOpenBranch,
         modifier = modifier,
         calendarContent = { SessionsCalendarRoute() },

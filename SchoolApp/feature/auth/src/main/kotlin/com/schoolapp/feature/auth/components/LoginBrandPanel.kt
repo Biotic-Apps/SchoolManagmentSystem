@@ -12,15 +12,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.designsystem.theme.SchoolTheme
+import com.schoolapp.feature.auth.branding.LoginBrandUiState
 
 /** Left pane on expanded widths. */
 @Composable
-internal fun LoginBrandPanel(modifier: Modifier = Modifier) {
+internal fun LoginBrandPanel(brand: LoginBrandUiState, modifier: Modifier = Modifier) {
     Box(modifier.background(AppColors.Selected).padding(32.dp), contentAlignment = Alignment.Center) {
-        LoginHeader(Modifier.widthIn(max = 360.dp))
+        LoginHeader(brand, Modifier.widthIn(max = 360.dp))
     }
 }
 
 @Preview(widthDp = 480, heightDp = 640)
 @Composable
-private fun LoginBrandPanelPreview() = SchoolTheme { LoginBrandPanel(Modifier.fillMaxSize()) }
+private fun LoginBrandPanelPreview() = SchoolTheme { LoginBrandPanel(LoginBrandUiState(), Modifier.fillMaxSize()) }

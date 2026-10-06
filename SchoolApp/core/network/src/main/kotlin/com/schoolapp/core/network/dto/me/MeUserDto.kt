@@ -9,4 +9,5 @@ data class MeUserDto(
     val email: String? = null,
     val phone: String? = null,
     val mustChangePassword: Boolean = false,
+    val twoFactorEnabled: Boolean = false,
 )

@@ -12,11 +12,21 @@ const UNREACHABLE: UpstreamResult = {
   payload: { error: { code: "NETWORK_ERROR", message: "Cannot reach the server." } },
 };
 
+/**
+ * Only the right-most X-Forwarded-For entry is passed on: it is the one our own reverse proxy appended,
+ * while anything to its left is client-supplied and could be used to dodge the API's per-IP limits.
+ */
+function clientIp(request: NextRequest): string | null {
+  const entries = (request.headers.get("x-forwarded-for") ?? "").split(",").map((value) => value.trim()).filter(Boolean);
+  const last = entries.at(-1);
+  return last && /^[0-9a-fA-F:.]{2,45}$/.test(last) ? last : null;
+}
+
 /** Headers the API needs for device/IP tracking and rate limits. */
 export function forwardedHeaders(request: NextRequest, withAuth = false): Record<string, string> {
   const headers: Record<string, string> = {};
   const userAgent = request.headers.get("user-agent");
-  const forwardedFor = request.headers.get("x-forwarded-for");
+  const forwardedFor = clientIp(request);
   const authorization = request.headers.get("authorization");
   if (userAgent) headers["User-Agent"] = userAgent;
   if (forwardedFor) headers["X-Forwarded-For"] = forwardedFor;

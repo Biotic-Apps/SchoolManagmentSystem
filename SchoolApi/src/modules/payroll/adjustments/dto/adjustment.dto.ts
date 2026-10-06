@@ -81,4 +81,16 @@ export class AdjustmentDto {
   status!: PayrollAdjustmentStatus;
   runId!: string | null;
   createdAt!: string;
+  cancelledAt!: string | null;
+  cancelReason!: string | null;
+  @ApiProperty({ type: IdNameDto, nullable: true })
+  cancelledBy!: IdNameDto | null;
+}
+
+export class CancelAdjustmentDto {
+  @ApiProperty({ minLength: 3, maxLength: 500 })
+  @IsString()
+  @MinLength(3)
+  @MaxLength(500)
+  reason!: string;
 }

@@ -2,6 +2,7 @@ package com.schoolapp.demo
 
 import com.schoolapp.core.data.approvals.ApprovalsRepository
 import com.schoolapp.core.data.auth.AuthRepository
+import com.schoolapp.core.data.branding.BrandingRepository
 import com.schoolapp.core.data.dashboard.DashboardRepository
 import com.schoolapp.core.data.notifications.NotificationsRepository
 import com.schoolapp.core.data.organisation.OrganisationRepository
@@ -125,6 +126,9 @@ interface DemoModule {
 
     @Binds
     fun bindCertificatesRepository(impl: DemoAwareCertificatesRepository): CertificatesRepository
+
+    @Binds
+    fun bindBrandingRepository(impl: DemoAwareBrandingRepository): BrandingRepository
 
     @Binds
     fun bindLoginFooter(impl: DemoLoginFooter): LoginFooterContent

@@ -6,9 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.organisation.OrganisationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,16 +25,32 @@ class BranchDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(BranchDetailUiState())
     val uiState: StateFlow<BranchDetailUiState> = _uiState.asStateFlow()
 
+    private var loadJob: Job? = null
+
     init {
         load()
     }
 
     fun load() {
         _uiState.value = BranchDetailUiState(isLoading = true)
-        viewModelScope.launch {
-            _uiState.value = when (val result = repository.branchOverview(branchId)) {
-                is AppResult.Success -> BranchDetailUiState(isLoading = false, overview = result.data)
-                is AppResult.Failure -> BranchDetailUiState(isLoading = false, error = result.error)
+        fetch()
+    }
+
+    /** Keeps the shown overview while reloading; a failure leaves it in place. */
+    fun refresh() {
+        _uiState.update { it.copy(isRefreshing = true) }
+        fetch()
+    }
+
+    private fun fetch() {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
+            val result = repository.branchOverview(branchId)
+            _uiState.update {
+                when (result) {
+                    is AppResult.Success -> BranchDetailUiState(isLoading = false, overview = result.data)
+                    is AppResult.Failure -> it.copy(isLoading = false, isRefreshing = false, error = result.error)
+                }
             }
         }
     }

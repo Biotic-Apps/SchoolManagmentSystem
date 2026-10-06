@@ -28,7 +28,14 @@ export class DiaryMapper {
   async toDtos(rows: DiaryRow[]): Promise<DiaryEntryDto[]> {
     const ids = [...new Set(rows.flatMap((r) => r.attachmentFileIds))];
     const files = ids.length
-      ? await this.prisma.file.findMany({ where: { id: { in: ids } } })
+      ? await this.prisma.file.findMany({
+          // Archived or quarantined files are never signed.
+          where: {
+            id: { in: ids },
+            archivedAt: null,
+            scanStatus: { notIn: ['INFECTED', 'FAILED'] },
+          },
+        })
       : [];
     const byId = new Map(files.map((f) => [f.id, f]));
     return rows.map((row) => ({

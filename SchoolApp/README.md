@@ -54,6 +54,17 @@ Seeded demo accounts (dev API only): `admin@eschool.local`, `principal@eschool.l
 `teacher@eschool.local`, `accountant@eschool.local`, `parent@eschool.local`, `teacherparent@eschool.local`
 — password `Demo@1234`.
 
+## Release hardening
+
+| Gradle property | Effect |
+|---|---|
+| `schoolapp.pin.host` | API host to pin (release only; empty = pinning off) |
+| `schoolapp.pin.sha256` | Comma list of SPKI SHA-256 pins (`sha256/…=`), at least 2 (current + backup); the build fails with fewer |
+| `schoolapp.release.debugSigning=true` | Signs `assembleRelease` with the debug key so the R8 build can be installed locally |
+
+Get a pin: `openssl s_client -connect api.host:443 </dev/null | openssl x509 -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64`.
+Release builds use R8 and ship a startup profile (`app/src/main/baseline-prof.txt`, installed by `profileinstaller`). The launch screen uses the SplashScreen API and stays only until the stored session has been read.
+
 ## Debug-only role preview
 
 Debug builds show **Preview a role** under the login form. It opens the role shell with local sample data (no server),

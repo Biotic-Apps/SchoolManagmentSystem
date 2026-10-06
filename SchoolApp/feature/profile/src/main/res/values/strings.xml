@@ -11,6 +11,10 @@
     <string name="profile_change_password_hint">Signs out your other devices</string>
     <string name="profile_devices">Devices and sessions</string>
     <string name="profile_devices_hint">See where you are signed in</string>
+    <string name="profile_two_factor">Two-step verification</string>
+    <string name="profile_two_factor_hint">Set up or change it on the web panel.</string>
+    <string name="profile_two_factor_on">On</string>
+    <string name="profile_two_factor_off">Off</string>
     <string name="profile_error_required">This field is required</string>
     <string name="profile_error_name_short">Enter at least 2 characters</string>
     <string name="profile_error_email">Enter a valid email address</string>

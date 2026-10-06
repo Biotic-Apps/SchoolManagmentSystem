@@ -7,6 +7,7 @@ import { ErrorCode } from '../../common/errors/error-code.enum';
 import type { AuthenticatedRequest } from '../../common/types/auth-user';
 import { AccessContextService } from '../../rbac/access/access-context.service';
 import { AuthStateCache } from '../auth-state.cache';
+import { UserAuthPolicyService } from '../policy/user-auth-policy.service';
 import { TokenService } from '../token.service';
 import { ALLOW_PENDING_PASSWORD_KEY } from './allow-pending-password.decorator';
 
@@ -26,6 +27,7 @@ export class JwtAuthGuard implements CanActivate {
     private readonly tokens: TokenService,
     private readonly state: AuthStateCache,
     private readonly access: AccessContextService,
+    private readonly policies: UserAuthPolicyService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -67,6 +69,17 @@ export class JwtAuthGuard implements CanActivate {
       claims.sub,
       typeof header === 'string' ? header.trim() : undefined,
     );
+    // Same exemptions as a pending password change: /auth/* and /me.
+    if (
+      !allowPending &&
+      !state.twoFactorEnabled &&
+      (await this.policies.twoFactorRequired(claims.sub, access.allAssignments))
+    ) {
+      throw new AppError(
+        ErrorCode.TWO_FACTOR_SETUP_REQUIRED,
+        'Turn on two-factor sign-in to continue',
+      );
+    }
     request.user = {
       id: claims.sub,
       sessionId: claims.sid,

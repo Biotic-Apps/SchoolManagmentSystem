@@ -7,4 +7,5 @@ data class User(
     val phone: String? = null,
     val avatarUrl: String? = null,
     val mustChangePassword: Boolean = false,
+    val twoFactorEnabled: Boolean = false,
 )

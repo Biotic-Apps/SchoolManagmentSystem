@@ -97,6 +97,7 @@ export class CertificatesService {
     scope: Scope,
     query: CertificateQueryDto,
   ): Promise<PageResult<CertificateDto>> {
+    scope.assertGuardianStudent(query.studentId);
     const where: Prisma.CertificateWhereInput = {
       AND: [
         scope.guardian

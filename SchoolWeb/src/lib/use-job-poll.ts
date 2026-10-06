@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { hasErrorCode } from "./api-error";
 import { http } from "./http";
 
-export type JobState = "QUEUED" | "RUNNING" | "COMPLETED" | "FAILED";
+export type JobState = "QUEUED" | "RUNNING" | "DONE" | "COMPLETED" | "FAILED";
 
 export interface JobStatus {
   id: string;
@@ -11,9 +11,11 @@ export interface JobStatus {
   /** 0–100 when the job reports it. */
   progress?: number | null;
   error?: string | null;
+  result?: ({ fileUrl?: string | null; count?: number } & Record<string, unknown>) | null;
 }
 
-const DONE: JobState[] = ["COMPLETED", "FAILED"];
+const FINISHED: JobState[] = ["DONE", "COMPLETED", "FAILED"];
+const SUCCEEDED: JobState[] = ["DONE", "COMPLETED"];
 
 /**
  * Polls GET /jobs/:id for a background job started by the API ({ jobId }).
@@ -37,12 +39,12 @@ export function useJobPoll(jobId: string | null, invalidate: QueryKey[] = []) {
     refetchInterval: (state) => {
       const data = state.state.data;
       if (data === null) return false;
-      return data && DONE.includes(data.status) ? false : 2000;
+      return data && FINISHED.includes(data.status) ? false : 2000;
     },
   });
 
   const job = query.data ?? null;
-  const finished = !!job && DONE.includes(job.status);
+  const finished = !!job && FINISHED.includes(job.status);
   const untracked = !!jobId && query.data === null;
 
   useEffect(() => {
@@ -61,7 +63,7 @@ export function useJobPoll(jobId: string | null, invalidate: QueryKey[] = []) {
   return {
     job,
     running: !!jobId && !finished && !untracked && !query.error,
-    completed: job?.status === "COMPLETED",
+    completed: !!job && SUCCEEDED.includes(job.status),
     failed: job?.status === "FAILED" || !!query.error,
     untracked,
   };

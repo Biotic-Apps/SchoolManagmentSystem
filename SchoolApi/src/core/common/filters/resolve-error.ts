@@ -38,6 +38,19 @@ function fromHttpException(exception: HttpException): ResolvedError {
   return { status, body: errorBody(codeForStatus(status), text) };
 }
 
+/** body-parser errors (oversized / malformed body): 4xx, never a 500. */
+function fromBodyParser(exception: unknown): ResolvedError | null {
+  const { type, status } = (exception ?? {}) as {
+    type?: unknown;
+    status?: unknown;
+  };
+  if (typeof type !== 'string' || !type.startsWith('entity.')) return null;
+  if (typeof status !== 'number' || status < 400 || status >= 500) return null;
+  const message =
+    status === 413 ? 'Request body is too large' : 'Malformed request body';
+  return { status, body: errorBody(codeForStatus(status), message) };
+}
+
 export function resolveError(exception: unknown): ResolvedError {
   if (exception instanceof AppError) {
     return {
@@ -57,5 +70,5 @@ export function resolveError(exception: unknown): ResolvedError {
       };
     }
   }
-  return INTERNAL;
+  return fromBodyParser(exception) ?? INTERNAL;
 }

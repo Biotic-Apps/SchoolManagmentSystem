@@ -31,6 +31,7 @@ export class InvoiceReader {
     scope: Scope,
     query: InvoiceQueryDto,
   ): Promise<PageResult<InvoiceDto>> {
+    scope.assertGuardianStudent(query.studentId);
     if (query.branchId && !scope.guardian) {
       await this.access.readBranch(scope, query.branchId);
     }

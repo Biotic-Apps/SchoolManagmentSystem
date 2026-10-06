@@ -107,6 +107,18 @@ export class UsersController {
     return this.users.setStatus(user, scope, id, 'ACTIVE');
   }
 
+  @Post(':id/unlock')
+  @HttpCode(200)
+  @RequirePermission('users.edit')
+  @ApiData(UserDetailDto)
+  unlock(
+    @CurrentUser() user: AuthUser,
+    @CurrentScope() scope: Scope,
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<UserDetailDto> {
+    return this.users.unlock(user, scope, id);
+  }
+
   @Post(':id/reset-password')
   @HttpCode(200)
   @RequirePermission('users.edit')

@@ -41,6 +41,7 @@ enum InvoiceSource {
   GENERATED
   ADHOC
   SALE
+  OPENING
 
   @@map("invoice_source")
 }

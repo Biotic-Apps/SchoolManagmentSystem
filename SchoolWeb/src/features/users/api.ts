@@ -64,6 +64,14 @@ export function useUserStatus() {
   });
 }
 
+export function useUnlockUser() {
+  return useApiMutation({
+    mutationFn: (id: string) => http.post(`/users/${id}/unlock`),
+    invalidate: [userKeys.all],
+    success: "Account unlocked. The user can sign in again.",
+  });
+}
+
 export function useResetPassword() {
   return useApiMutation({
     mutationFn: async (id: string) =>

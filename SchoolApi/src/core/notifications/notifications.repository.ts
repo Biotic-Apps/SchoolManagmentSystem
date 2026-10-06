@@ -1,17 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import type { NotificationChannel } from '../../generated/prisma/client';
+import type {
+  NotificationChannel,
+  Prisma,
+} from '../../generated/prisma/client';
 import { toJson } from '../common/prisma-json';
 import { toSkipTake } from '../common/pagination/paginate';
 import type { PaginationQueryDto } from '../common/pagination/pagination-query.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import type { NotifyInput } from './notification-jobs';
 
+/** Rows whose in-app delivery was switched off by the school stay out of the inbox. */
+const HIDDEN_FROM_INBOX: Prisma.NotificationWhereInput = {
+  deliveries: { none: { channel: 'IN_APP', status: 'SKIPPED' } },
+};
+
 @Injectable()
 export class NotificationsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async list(userId: string, unreadOnly: boolean, page: PaginationQueryDto) {
-    const where = { userId, ...(unreadOnly && { readAt: null }) };
+    const where: Prisma.NotificationWhereInput = {
+      userId,
+      ...(unreadOnly && { readAt: null }),
+      ...HIDDEN_FROM_INBOX,
+    };
     const [rows, total] = await Promise.all([
       this.prisma.notification.findMany({
         where,
@@ -65,12 +77,17 @@ export class NotificationsRepository {
     return new Set(rows.map((row) => row.userId));
   }
 
-  /** Stores the in-app row (delivered) plus pending rows for other channels. */
+  /**
+   * Stores the in-app row (delivered, or SKIPPED + already read when the
+   * school turned in-app off for the category) plus pending external rows.
+   */
   createWithDeliveries(
     userId: string,
     input: NotifyInput,
     channels: NotificationChannel[],
+    inApp = true,
   ) {
+    const now = new Date();
     return this.prisma.notification.create({
       data: {
         userId,
@@ -78,14 +95,12 @@ export class NotificationsRepository {
         title: input.title,
         body: input.body,
         data: input.data ? toJson(input.data) : undefined,
+        readAt: inApp ? undefined : now,
         deliveries: {
           create: [
-            {
-              channel: 'IN_APP',
-              status: 'SENT',
-              attempts: 1,
-              sentAt: new Date(),
-            },
+            inApp
+              ? { channel: 'IN_APP', status: 'SENT', attempts: 1, sentAt: now }
+              : { channel: 'IN_APP', status: 'SKIPPED' },
             ...channels.map((channel) => ({ channel })),
           ],
         },

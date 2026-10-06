@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { isSameOrigin, newCsrfToken } from "@/server/csrf";
 import { deviceName } from "@/server/device-name";
-import { errorResponse, readTokens, tokenResponse, upstreamError } from "@/server/token-response";
+import { errorResponse, readTokens, readTwoFactorChallenge, tokenResponse, upstreamError } from "@/server/token-response";
 import { forwardedHeaders, postToApi } from "@/server/upstream";
 
 async function readCredentials(request: NextRequest) {
@@ -25,5 +25,6 @@ export async function POST(request: NextRequest) {
     forwardedHeaders(request),
   );
   const tokens = readTokens(result);
-  return tokens ? tokenResponse(tokens, newCsrfToken()) : upstreamError(result);
+  if (tokens) return tokenResponse(tokens, newCsrfToken());
+  return readTwoFactorChallenge(result) ?? upstreamError(result);
 }

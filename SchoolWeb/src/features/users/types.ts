@@ -11,6 +11,8 @@ export interface UserSummary {
   roles: string[];
   branchNames: string[];
   lastLoginAt: string | null;
+  /** Phase 5: set while the account is locked after failed sign-ins (absent on older APIs). */
+  lockedUntil?: string | null;
 }
 
 export interface UserDetail extends UserSummary {

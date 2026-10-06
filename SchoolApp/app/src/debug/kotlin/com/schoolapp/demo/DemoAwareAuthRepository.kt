@@ -4,6 +4,7 @@ import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.data.auth.AuthState
 import com.schoolapp.core.data.auth.DefaultAuthRepository
+import com.schoolapp.core.data.auth.LoginOutcome
 import com.schoolapp.core.model.RoleRef
 import com.schoolapp.core.model.SessionContext
 import com.schoolapp.core.model.User
@@ -43,10 +44,19 @@ class DemoAwareAuthRepository @Inject constructor(
 
     fun updateDemoUser(transform: (User) -> User) = demo.update { it?.copy(user = transform(it.user)) }
 
-    override suspend fun login(identifier: String, password: String): AppResult<Unit> {
+    override suspend fun login(identifier: String, password: String): AppResult<LoginOutcome> {
         demo.value = null
         return real.login(identifier, password)
     }
+
+    override suspend fun verifyTwoFactor(challengeId: String, code: String): AppResult<Unit> =
+        if (isDemoActive) AppResult.Success(Unit) else real.verifyTwoFactor(challengeId, code)
+
+    override suspend fun requestPasswordReset(identifier: String): AppResult<Unit> =
+        real.requestPasswordReset(identifier)
+
+    override suspend fun resetPassword(token: String, newPassword: String): AppResult<Unit> =
+        if (isDemoActive) AppResult.Success(Unit) else real.resetPassword(token, newPassword)
 
     override suspend fun refreshSession(): AppResult<Unit> =
         if (isDemoActive) AppResult.Success(Unit) else real.refreshSession()

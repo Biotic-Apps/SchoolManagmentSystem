@@ -1,4 +1,5 @@
 import com.schoolapp.buildlogic.ApiEndpoints
+import com.schoolapp.buildlogic.CertificatePins
 
 plugins {
     alias(libs.plugins.schoolapp.android.library)
@@ -12,9 +13,14 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "API_BASE_URL", "\"${ApiEndpoints.debugBaseUrl(providers).get()}\"")
+            buildConfigField("String", "CERT_PIN_HOST", "\"\"")
+            buildConfigField("String", "CERT_PINS", "\"\"")
         }
         release {
+            val pins = CertificatePins.release(providers)
             buildConfigField("String", "API_BASE_URL", "\"${ApiEndpoints.releaseBaseUrl(providers).get()}\"")
+            buildConfigField("String", "CERT_PIN_HOST", "\"${pins.host}\"")
+            buildConfigField("String", "CERT_PINS", "\"${pins.pins}\"")
         }
     }
 }

@@ -18,6 +18,7 @@ import type {
   ApplyPromotionsResultDto,
   SkippedPromotionDto,
 } from './dto/promotion.dto';
+import { countBy, overCapacity } from './promotion-capacity';
 import { PromotionScope } from './promotion-scope';
 import { resolveTargetSection } from './target-section';
 
@@ -126,7 +127,32 @@ export class PromotionApplyService {
       throw conflict('Some students have no section in the new session', {
         decisions: problems,
       });
+    await this.assertCapacity(plan);
     return plan;
+  }
+
+  /** Section.capacity (null = unlimited) vs active + incoming; 409 before any change. */
+  private async assertCapacity(plan: Planned[]): Promise<void> {
+    const incoming = countBy(plan, (p) => p.sectionId);
+    const ids = [...incoming.keys()];
+    if (ids.length === 0) return;
+    const [targets, active] = await Promise.all([
+      this.prisma.section.findMany({
+        where: { id: { in: ids } },
+        select: { id: true, capacity: true },
+      }),
+      this.prisma.enrollment.groupBy({
+        by: ['sectionId'],
+        where: { sectionId: { in: ids }, status: 'ACTIVE' },
+        _count: { _all: true },
+      }),
+    ]);
+    const current = new Map(active.map((g) => [g.sectionId, g._count._all]));
+    const sections = overCapacity(targets, current, incoming);
+    if (sections.length > 0)
+      throw conflict('Target sections would exceed their capacity', {
+        sections,
+      });
   }
 
   private async applyOne(

@@ -150,7 +150,14 @@
                   "type": "object",
                   "properties": {
                     "data": {
-                      "$ref": "#/components/schemas/AuthTokensDto"
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/AuthTokensDto"
+                        },
+                        {
+                          "$ref": "#/components/schemas/TwoFactorChallengeDto"
+                        }
+                      ]
                     }
                   }
                 }
@@ -461,6 +468,232 @@
                   "properties": {
                     "data": {
                       "$ref": "#/components/schemas/OkDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/2fa": {
+      "get": {
+        "operationId": "TwoFactorController_status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/TwoFactorStatusDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/2fa/setup": {
+      "post": {
+        "operationId": "TwoFactorController_setup",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/TwoFactorSetupDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/2fa/enable": {
+      "post": {
+        "operationId": "TwoFactorController_enable",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnableTwoFactorDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/RecoveryCodesDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/2fa/disable": {
+      "post": {
+        "operationId": "TwoFactorController_disable",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisableTwoFactorDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/OkDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/2fa/recovery-codes/regenerate": {
+      "post": {
+        "operationId": "TwoFactorController_regenerate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TwoFactorCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/RecoveryCodesDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/2fa/verify": {
+      "post": {
+        "operationId": "TwoFactorController_verify",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyTwoFactorDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AuthTokensDto"
                     }
                   }
                 }
@@ -2485,6 +2718,46 @@
     "/api/v1/users/{id}/enable": {
       "post": {
         "operationId": "UsersController_enable",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/UserDetailDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/users/{id}/unlock": {
+      "post": {
+        "operationId": "UsersController_unlock",
         "parameters": [
           {
             "name": "id",
@@ -14895,6 +15168,15 @@
                 "ARCHIVED"
               ]
             }
+          },
+          {
+            "name": "includeArchived",
+            "required": false,
+            "in": "query",
+            "description": "ARCHIVED plans are listed only with this flag or `status=ARCHIVED`.",
+            "schema": {
+              "type": "boolean"
+            }
           }
         ],
         "responses": {
@@ -15039,6 +15321,56 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FeePlanDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/v1/fee-plans/{id}/archive": {
+      "post": {
+        "operationId": "FeeStructureController_archivePlan",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArchiveFeePlanDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "",
@@ -17003,6 +17335,56 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AdjustmentDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "payroll"
+        ]
+      }
+    },
+    "/api/v1/payroll/adjustments/{id}/cancel": {
+      "post": {
+        "operationId": "AdjustmentsController_cancel",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelAdjustmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AdjustmentDto"
+                    }
+                  }
                 }
               }
             }
@@ -19841,6 +20223,1171 @@
           "reports"
         ]
       }
+    },
+    "/api/v1/settings/school/{schoolId}": {
+      "get": {
+        "operationId": "SchoolSettingsController_get",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SchoolSettingsDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "settings"
+        ]
+      },
+      "patch": {
+        "operationId": "SchoolSettingsController_update",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSchoolSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SchoolSettingsDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/api/v1/settings/notifications": {
+      "get": {
+        "operationId": "SchoolConfigController_getNotifications",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/NotificationSettingsDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "settings"
+        ]
+      },
+      "patch": {
+        "operationId": "SchoolConfigController_updateNotifications",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNotificationSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/NotificationSettingsDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/api/v1/settings/policies": {
+      "get": {
+        "operationId": "SchoolConfigController_getPolicies",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PoliciesDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "settings"
+        ]
+      },
+      "patch": {
+        "operationId": "SchoolConfigController_updatePolicies",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePoliciesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PoliciesDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/api/v1/branding": {
+      "get": {
+        "operationId": "BrandingController_get",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": false,
+            "in": "query",
+            "description": "Default school if omitted",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BrandingDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/api/v1/support/notifications/failed": {
+      "get": {
+        "operationId": "SupportController_failed",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "schoolId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "channel",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "EMAIL",
+                "SMS",
+                "PUSH"
+              ]
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date",
+              "example": "2026-04-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date",
+              "example": "2026-04-01",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/FailedNotificationDto"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer"
+                        },
+                        "pageSize": {
+                          "type": "integer"
+                        },
+                        "total": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "support"
+        ]
+      }
+    },
+    "/api/v1/support/notifications/failed/resend-all": {
+      "post": {
+        "operationId": "SupportController_resendAll",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FailedNotificationQueryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ResendResultDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "support"
+        ]
+      }
+    },
+    "/api/v1/support/notifications/failed/{id}/resend": {
+      "post": {
+        "operationId": "SupportController_resend",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FailedNotificationDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "support"
+        ]
+      }
+    },
+    "/api/v1/support/jobs": {
+      "get": {
+        "operationId": "SupportController_jobRuns",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "queue",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "notifications",
+                "documents",
+                "reports",
+                "imports",
+                "payroll",
+                "maintenance"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "RUNNING",
+                "DONE",
+                "FAILED"
+              ]
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date",
+              "example": "2026-04-01",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/JobRunDto"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer"
+                        },
+                        "pageSize": {
+                          "type": "integer"
+                        },
+                        "total": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "support"
+        ]
+      }
+    },
+    "/api/v1/support/jobs/{id}/retry": {
+      "post": {
+        "operationId": "SupportController_retry",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/JobRunDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "support"
+        ]
+      }
+    },
+    "/api/v1/support/health": {
+      "get": {
+        "operationId": "SupportController_health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SystemHealthDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "support"
+        ]
+      }
+    },
+    "/api/v1/backups": {
+      "get": {
+        "operationId": "BackupsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BackupRunDto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "backups"
+        ]
+      },
+      "post": {
+        "operationId": "BackupsController_create",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BackupJobDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupJobDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "backups"
+        ]
+      }
+    },
+    "/api/v1/backups/{id}/verify": {
+      "post": {
+        "operationId": "BackupsController_verify",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BackupJobDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "backups"
+        ]
+      }
+    },
+    "/api/v1/backups/{id}/download": {
+      "get": {
+        "operationId": "BackupsController_download",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BackupDownloadDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "backups"
+        ]
+      }
+    },
+    "/api/v1/backups/{id}/content": {
+      "get": {
+        "operationId": "BackupsController_content",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "exp",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "sig",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Target of signed download links (local storage); the signature authorizes.",
+        "tags": [
+          "backups"
+        ]
+      }
+    },
+    "/api/v1/imports/templates/{kind}": {
+      "get": {
+        "operationId": "ImportsController_template",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "STUDENTS",
+                "GUARDIANS",
+                "STAFF",
+                "OPENING_BALANCES",
+                "FEE_PLANS"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/v1/imports": {
+      "post": {
+        "operationId": "ImportsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file",
+                  "kind",
+                  "branchId",
+                  "sessionId"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "STUDENTS",
+                      "GUARDIANS",
+                      "STAFF",
+                      "OPENING_BALANCES",
+                      "FEE_PLANS"
+                    ]
+                  },
+                  "branchId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sessionId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ImportCreatedDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportCreatedDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "imports"
+        ]
+      },
+      "get": {
+        "operationId": "ImportsController_list",
+        "parameters": [
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ImportSummaryDto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/v1/imports/{id}": {
+      "get": {
+        "operationId": "ImportsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ImportDetailDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/v1/imports/{id}/commit": {
+      "post": {
+        "operationId": "ImportsController_commit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitImportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ImportDetailDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/v1/imports/{id}/revert": {
+      "post": {
+        "operationId": "ImportsController_revert",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ImportDetailDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "imports"
+        ]
+      }
     }
   },
   "info": {
@@ -19947,6 +21494,22 @@
           "refreshToken",
           "accessExpiresIn",
           "mustChangePassword"
+        ]
+      },
+      "TwoFactorChallengeDto": {
+        "type": "object",
+        "properties": {
+          "twoFactorRequired": {
+            "type": "boolean"
+          },
+          "challengeId": {
+            "type": "string",
+            "description": "Valid for 5 minutes and 5 attempts."
+          }
+        },
+        "required": [
+          "twoFactorRequired",
+          "challengeId"
         ]
       },
       "LoginDto": {
@@ -20102,6 +21665,110 @@
           "createdAt",
           "lastUsedAt",
           "current"
+        ]
+      },
+      "TwoFactorStatusDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean",
+            "description": "A role of the user is in the school's twoFactorRequiredFor."
+          }
+        },
+        "required": [
+          "enabled",
+          "required"
+        ]
+      },
+      "TwoFactorSetupDto": {
+        "type": "object",
+        "properties": {
+          "otpauthUrl": {
+            "type": "string",
+            "description": "For the QR code."
+          },
+          "secret": {
+            "type": "string",
+            "description": "Base32, for manual entry."
+          }
+        },
+        "required": [
+          "otpauthUrl",
+          "secret"
+        ]
+      },
+      "RecoveryCodesDto": {
+        "type": "object",
+        "properties": {
+          "recoveryCodes": {
+            "description": "Shown once; each code works a single time.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "recoveryCodes"
+        ]
+      },
+      "EnableTwoFactorDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^\\s*\\d{3}\\s?\\d{3}\\s*$"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "DisableTwoFactorDto": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "password",
+          "code"
+        ]
+      },
+      "TwoFactorCodeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "VerifyTwoFactorDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "challengeId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "code",
+          "challengeId"
         ]
       },
       "NotificationDto": {
@@ -20482,9 +22149,15 @@
           "version"
         ]
       },
-      "MeUserDto": {
+      "MeSessionUserDto": {
         "type": "object",
         "properties": {
+          "twoFactorEnabled": {
+            "type": "boolean"
+          },
+          "twoFactorRequired": {
+            "type": "boolean"
+          },
           "id": {
             "type": "string"
           },
@@ -20504,11 +22177,29 @@
           }
         },
         "required": [
+          "twoFactorEnabled",
+          "twoFactorRequired",
           "id",
           "name",
           "email",
           "phone",
           "mustChangePassword"
+        ]
+      },
+      "MeTwoFactorDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean",
+            "description": "A held role is in the school's twoFactorRequiredFor."
+          }
+        },
+        "required": [
+          "enabled",
+          "required"
         ]
       },
       "AssignmentDto": {
@@ -20612,7 +22303,14 @@
         "type": "object",
         "properties": {
           "user": {
-            "$ref": "#/components/schemas/MeUserDto"
+            "$ref": "#/components/schemas/MeSessionUserDto"
+          },
+          "twoFactor": {
+            "$ref": "#/components/schemas/MeTwoFactorDto"
+          },
+          "sessionTimeoutMinutes": {
+            "type": "number",
+            "description": "Strictest idle timeout of the user's schools (web idle logout)."
           },
           "activeRole": {
             "type": "string"
@@ -20645,11 +22343,42 @@
         },
         "required": [
           "user",
+          "twoFactor",
+          "sessionTimeoutMinutes",
           "activeRole",
           "roles",
           "permissions",
           "assignments",
           "children"
+        ]
+      },
+      "MeUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "mustChangePassword": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "phone",
+          "mustChangePassword"
         ]
       },
       "UpdateMeDto": {
@@ -21165,6 +22894,11 @@
           "lastLoginAt": {
             "type": "string",
             "nullable": true
+          },
+          "lockedUntil": {
+            "type": "string",
+            "nullable": true,
+            "description": "Set while sign-in is locked after failed attempts (POST /users/:id/unlock)."
           }
         },
         "required": [
@@ -21175,7 +22909,8 @@
           "status",
           "roles",
           "branchNames",
-          "lastLoginAt"
+          "lastLoginAt",
+          "lockedUntil"
         ]
       },
       "CreatedUserDto": {
@@ -21218,6 +22953,11 @@
             "type": "string",
             "nullable": true
           },
+          "lockedUntil": {
+            "type": "string",
+            "nullable": true,
+            "description": "Set while sign-in is locked after failed attempts (POST /users/:id/unlock)."
+          },
           "temporaryPassword": {
             "type": "string",
             "description": "Only when the server generated the password. Shown once."
@@ -21244,6 +22984,7 @@
           "roles",
           "branchNames",
           "lastLoginAt",
+          "lockedUntil",
           "assignments",
           "mustChangePassword",
           "createdAt"
@@ -21369,6 +23110,11 @@
             "type": "string",
             "nullable": true
           },
+          "lockedUntil": {
+            "type": "string",
+            "nullable": true,
+            "description": "Set while sign-in is locked after failed attempts (POST /users/:id/unlock)."
+          },
           "assignments": {
             "type": "array",
             "items": {
@@ -21391,6 +23137,7 @@
           "roles",
           "branchNames",
           "lastLoginAt",
+          "lockedUntil",
           "assignments",
           "mustChangePassword",
           "createdAt"
@@ -31440,6 +33187,15 @@
           }
         }
       },
+      "ArchiveFeePlanDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      },
       "InvoiceJobDto": {
         "type": "object",
         "properties": {
@@ -31628,7 +33384,8 @@
             "enum": [
               "GENERATED",
               "ADHOC",
-              "SALE"
+              "SALE",
+              "OPENING"
             ],
             "type": "string"
           },
@@ -33314,6 +35071,15 @@
             ],
             "type": "string"
           },
+          "cancelledBy": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IdNameDto"
+              }
+            ]
+          },
           "id": {
             "type": "string"
           },
@@ -33341,12 +35107,21 @@
           },
           "createdAt": {
             "type": "string"
+          },
+          "cancelledAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "cancelReason": {
+            "type": "string",
+            "nullable": true
           }
         },
         "required": [
           "kind",
           "signedMinor",
           "status",
+          "cancelledBy",
           "id",
           "staffId",
           "staff",
@@ -33355,7 +35130,9 @@
           "amountMinor",
           "reason",
           "runId",
-          "createdAt"
+          "createdAt",
+          "cancelledAt",
+          "cancelReason"
         ]
       },
       "CreateAdjustmentDto": {
@@ -33396,6 +35173,19 @@
           "month",
           "kind",
           "amountMinor",
+          "reason"
+        ]
+      },
+      "CancelAdjustmentDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500
+          }
+        },
+        "required": [
           "reason"
         ]
       },
@@ -35821,6 +37611,1182 @@
           "status",
           "fileUrl"
         ]
+      },
+      "SchoolSettingsDto": {
+        "type": "object",
+        "properties": {
+          "schoolId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "logoFileId": {
+            "type": "string",
+            "nullable": true
+          },
+          "logoUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "5-minute link"
+          },
+          "primaryColor": {
+            "type": "string",
+            "example": "#7A2944"
+          },
+          "accentSoftColor": {
+            "type": "string",
+            "example": "#F6EAF0"
+          },
+          "appName": {
+            "type": "string",
+            "example": "eSchool"
+          },
+          "receiptFooter": {
+            "type": "string",
+            "nullable": true
+          },
+          "reportCardFooter": {
+            "type": "string",
+            "nullable": true
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Asia/Karachi"
+          },
+          "currency": {
+            "type": "string",
+            "example": "PKR"
+          },
+          "locale": {
+            "type": "string",
+            "example": "en-PK"
+          }
+        },
+        "required": [
+          "schoolId",
+          "displayName",
+          "logoFileId",
+          "logoUrl",
+          "primaryColor",
+          "accentSoftColor",
+          "appName",
+          "receiptFooter",
+          "reportCardFooter",
+          "timezone",
+          "currency",
+          "locale"
+        ]
+      },
+      "UpdateSchoolSettingsDto": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "logoFileId": {
+            "type": "string",
+            "nullable": true,
+            "format": "uuid"
+          },
+          "primaryColor": {
+            "type": "string",
+            "description": "Format and contrast are checked in the service (message has the ratio).",
+            "maxLength": 16,
+            "example": "#7A2944"
+          },
+          "accentSoftColor": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "example": "#F6EAF0"
+          },
+          "appName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "example": "eSchool"
+          },
+          "receiptFooter": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 300
+          },
+          "reportCardFooter": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 300
+          },
+          "timezone": {
+            "type": "string",
+            "description": "IANA zone; checked in the service.",
+            "maxLength": 64,
+            "example": "Asia/Karachi"
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "example": "PKR"
+          },
+          "locale": {
+            "type": "string",
+            "maxLength": 20,
+            "example": "en-PK"
+          }
+        }
+      },
+      "EmailSwitchDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "fromName": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 60
+          }
+        },
+        "required": [
+          "enabled",
+          "fromName"
+        ]
+      },
+      "SmsSwitchDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "senderId": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 20
+          }
+        },
+        "required": [
+          "enabled",
+          "senderId"
+        ]
+      },
+      "PushSwitchDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "enabled"
+        ]
+      },
+      "CategoryChannelsDto": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "ATTENDANCE",
+              "DIARY",
+              "ACTIVITY",
+              "CONSENT",
+              "NOTICE",
+              "MESSAGE",
+              "COMPLAINT",
+              "MEETING",
+              "HEALTH",
+              "PICKUP",
+              "LEAVE",
+              "APPROVAL",
+              "EXAM",
+              "RESULT",
+              "FEE",
+              "PAYROLL",
+              "EXPENSE",
+              "INVENTORY",
+              "CERTIFICATE"
+            ]
+          },
+          "email": {
+            "type": "boolean"
+          },
+          "sms": {
+            "type": "boolean"
+          },
+          "push": {
+            "type": "boolean"
+          },
+          "inApp": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "category",
+          "email",
+          "sms",
+          "push",
+          "inApp"
+        ]
+      },
+      "NotificationSettingsDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "$ref": "#/components/schemas/EmailSwitchDto"
+          },
+          "sms": {
+            "$ref": "#/components/schemas/SmsSwitchDto"
+          },
+          "push": {
+            "$ref": "#/components/schemas/PushSwitchDto"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryChannelsDto"
+            }
+          }
+        },
+        "required": [
+          "email",
+          "sms",
+          "push",
+          "categories"
+        ]
+      },
+      "UpdateNotificationSettingsDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "$ref": "#/components/schemas/EmailSwitchDto"
+          },
+          "sms": {
+            "$ref": "#/components/schemas/SmsSwitchDto"
+          },
+          "push": {
+            "$ref": "#/components/schemas/PushSwitchDto"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryChannelsDto"
+            }
+          }
+        }
+      },
+      "LateFeeDefaultDto": {
+        "type": "object",
+        "properties": {
+          "amountMinor": {
+            "type": "number",
+            "minimum": 0
+          },
+          "afterDays": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 365
+          }
+        },
+        "required": [
+          "amountMinor",
+          "afterDays"
+        ]
+      },
+      "PasswordPolicyDto": {
+        "type": "object",
+        "properties": {
+          "minLength": {
+            "type": "number",
+            "minimum": 8,
+            "maximum": 64
+          },
+          "requireDigit": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PoliciesDto": {
+        "type": "object",
+        "properties": {
+          "attendanceLockTime": {
+            "type": "string",
+            "example": "11:00"
+          },
+          "diaryModeration": {
+            "type": "boolean"
+          },
+          "gradingDefault": {
+            "type": "string",
+            "nullable": true
+          },
+          "feeLateFeeDefault": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LateFeeDefaultDto"
+              }
+            ]
+          },
+          "approvalLimits": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            },
+            "example": {
+              "CONCESSION": 2500000
+            }
+          },
+          "passwordPolicy": {
+            "$ref": "#/components/schemas/PasswordPolicyDto"
+          },
+          "sessionTimeoutMinutes": {
+            "type": "number"
+          },
+          "twoFactorRequiredFor": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "SUPER_ADMIN",
+                "PRINCIPAL",
+                "COORDINATOR",
+                "HEAD_TEACHER",
+                "TEACHER",
+                "HELPER",
+                "ACCOUNTANT",
+                "PARENT"
+              ]
+            }
+          }
+        },
+        "required": [
+          "attendanceLockTime",
+          "diaryModeration",
+          "gradingDefault",
+          "feeLateFeeDefault",
+          "approvalLimits",
+          "passwordPolicy",
+          "sessionTimeoutMinutes",
+          "twoFactorRequiredFor"
+        ]
+      },
+      "UpdatePoliciesDto": {
+        "type": "object",
+        "properties": {
+          "attendanceLockTime": {
+            "type": "string",
+            "example": "11:00"
+          },
+          "diaryModeration": {
+            "type": "boolean"
+          },
+          "gradingDefault": {
+            "type": "string",
+            "nullable": true,
+            "format": "uuid"
+          },
+          "feeLateFeeDefault": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LateFeeDefaultDto"
+              }
+            ]
+          },
+          "approvalLimits": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            },
+            "description": "Keys and amounts are checked in the service.",
+            "example": {
+              "CONCESSION": 2500000
+            }
+          },
+          "passwordPolicy": {
+            "$ref": "#/components/schemas/PasswordPolicyDto"
+          },
+          "sessionTimeoutMinutes": {
+            "type": "number",
+            "minimum": 5,
+            "maximum": 1440
+          },
+          "twoFactorRequiredFor": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "SUPER_ADMIN",
+                "PRINCIPAL",
+                "COORDINATOR",
+                "HEAD_TEACHER",
+                "TEACHER",
+                "HELPER",
+                "ACCOUNTANT",
+                "PARENT"
+              ]
+            }
+          }
+        }
+      },
+      "BrandingDto": {
+        "type": "object",
+        "properties": {
+          "schoolName": {
+            "type": "string"
+          },
+          "logoUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "5-minute link"
+          },
+          "primaryColor": {
+            "type": "string",
+            "example": "#7A2944"
+          },
+          "accentSoftColor": {
+            "type": "string",
+            "example": "#F6EAF0"
+          },
+          "appName": {
+            "type": "string",
+            "example": "eSchool"
+          }
+        },
+        "required": [
+          "schoolName",
+          "logoUrl",
+          "primaryColor",
+          "accentSoftColor",
+          "appName"
+        ]
+      },
+      "FailedRecipientDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "contact": {
+            "type": "string",
+            "nullable": true,
+            "example": "a*****@school.pk"
+          }
+        },
+        "required": [
+          "userId",
+          "name",
+          "contact"
+        ]
+      },
+      "FailedNotificationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Delivery id"
+          },
+          "recipient": {
+            "$ref": "#/components/schemas/FailedRecipientDto"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "EMAIL",
+              "SMS",
+              "PUSH"
+            ]
+          },
+          "category": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "SENT",
+              "FAILED",
+              "SKIPPED"
+            ]
+          },
+          "attempts": {
+            "type": "number"
+          },
+          "lastError": {
+            "type": "string",
+            "nullable": true
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "recipient",
+          "channel",
+          "category",
+          "title",
+          "status",
+          "attempts",
+          "lastError",
+          "at"
+        ]
+      },
+      "ResendResultDto": {
+        "type": "object",
+        "properties": {
+          "resent": {
+            "type": "number"
+          },
+          "failed": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "resent",
+          "failed"
+        ]
+      },
+      "FailedNotificationQueryDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "default": 1,
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "default": 20,
+            "minimum": 1,
+            "maximum": 100
+          },
+          "schoolId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "channel": {
+            "enum": [
+              "EMAIL",
+              "SMS",
+              "PUSH"
+            ],
+            "type": "string"
+          },
+          "from": {
+            "type": "string",
+            "example": "2026-04-01",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "example": "2026-04-01",
+            "format": "date"
+          }
+        }
+      },
+      "JobRunDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "queue": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "RUNNING",
+              "DONE",
+              "FAILED"
+            ],
+            "type": "string"
+          },
+          "attempts": {
+            "type": "number"
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finishedAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "retriedAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "retryable": {
+            "type": "boolean",
+            "description": "FAILED, input stored and not retried yet"
+          }
+        },
+        "required": [
+          "id",
+          "queue",
+          "name",
+          "status",
+          "attempts",
+          "error",
+          "startedAt",
+          "finishedAt",
+          "retriedAt",
+          "retryable"
+        ]
+      },
+      "QueueHealthDto": {
+        "type": "object",
+        "properties": {
+          "driver": {
+            "enum": [
+              "bullmq",
+              "inline"
+            ],
+            "type": "string"
+          },
+          "waiting": {
+            "type": "number"
+          },
+          "failed": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "driver",
+          "waiting",
+          "failed"
+        ]
+      },
+      "StorageHealthDto": {
+        "type": "object",
+        "properties": {
+          "driver": {
+            "type": "string",
+            "enum": [
+              "local",
+              "s3"
+            ]
+          },
+          "ok": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "driver",
+          "ok"
+        ]
+      },
+      "LastBackupDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "finishedAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "RUNNING",
+              "DONE",
+              "FAILED"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "finishedAt",
+          "status"
+        ]
+      },
+      "SystemHealthDto": {
+        "type": "object",
+        "properties": {
+          "db": {
+            "enum": [
+              "ok",
+              "error"
+            ],
+            "type": "string"
+          },
+          "queue": {
+            "$ref": "#/components/schemas/QueueHealthDto"
+          },
+          "storage": {
+            "$ref": "#/components/schemas/StorageHealthDto"
+          },
+          "lastBackup": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LastBackupDto"
+              }
+            ]
+          },
+          "lastRestoreVerified": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "db",
+          "queue",
+          "storage",
+          "lastBackup",
+          "lastRestoreVerified",
+          "version"
+        ]
+      },
+      "BackupCheckDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "expected": {
+            "type": "object"
+          },
+          "actual": {
+            "type": "object"
+          },
+          "ok": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "expected",
+          "actual",
+          "ok"
+        ]
+      },
+      "BackupVerifyDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "FAILED",
+              "RUNNING",
+              "NOT_RUN",
+              "PASSED"
+            ]
+          },
+          "at": {
+            "type": "string",
+            "nullable": true,
+            "description": "When the restore check passed (or, if it failed, when it started)."
+          },
+          "checks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BackupCheckDto"
+            }
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "status",
+          "at",
+          "checks",
+          "error"
+        ]
+      },
+      "BackupRunDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "startedAt": {
+            "type": "string"
+          },
+          "finishedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "FAILED",
+              "RUNNING",
+              "DONE"
+            ]
+          },
+          "sizeBytes": {
+            "type": "number",
+            "nullable": true
+          },
+          "checksumSha256": {
+            "type": "string",
+            "nullable": true
+          },
+          "encrypted": {
+            "type": "boolean"
+          },
+          "storageKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "format": {
+            "type": "string",
+            "description": "\"pg_dump\", \"copy\", or \"pending\" before the job picked one."
+          },
+          "trigger": {
+            "type": "string",
+            "enum": [
+              "MANUAL",
+              "SCHEDULED"
+            ]
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          },
+          "prunedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "verify": {
+            "$ref": "#/components/schemas/BackupVerifyDto"
+          }
+        },
+        "required": [
+          "id",
+          "startedAt",
+          "finishedAt",
+          "status",
+          "sizeBytes",
+          "checksumSha256",
+          "encrypted",
+          "storageKey",
+          "format",
+          "trigger",
+          "error",
+          "prunedAt",
+          "verify"
+        ]
+      },
+      "BackupJobDto": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId"
+        ]
+      },
+      "BackupDownloadDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "expiresAt"
+        ]
+      },
+      "ImportCreatedDto": {
+        "type": "object",
+        "properties": {
+          "importId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "importId"
+        ]
+      },
+      "ImportTotalsDto": {
+        "type": "object",
+        "properties": {
+          "rows": {
+            "type": "number"
+          },
+          "valid": {
+            "type": "number"
+          },
+          "invalid": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "rows",
+          "valid",
+          "invalid"
+        ]
+      },
+      "ImportPersonDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "ImportSummaryDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "enum": [
+              "STUDENTS",
+              "GUARDIANS",
+              "STAFF",
+              "OPENING_BALANCES",
+              "FEE_PLANS"
+            ],
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "VALIDATING",
+              "READY",
+              "INVALID",
+              "COMMITTING",
+              "COMMITTED",
+              "REVERTED",
+              "FAILED"
+            ],
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "branchId": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/ImportTotalsDto"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "startedAt": {
+            "type": "string",
+            "description": "Same as createdAt (web history column)."
+          },
+          "startedBy": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImportPersonDto"
+              }
+            ]
+          },
+          "committedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "revertedAt": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "kind",
+          "status",
+          "id",
+          "branchId",
+          "sessionId",
+          "fileName",
+          "totals",
+          "createdAt",
+          "startedAt",
+          "startedBy",
+          "committedAt",
+          "revertedAt"
+        ]
+      },
+      "ImportRowErrorDto": {
+        "type": "object",
+        "properties": {
+          "row": {
+            "type": "number"
+          },
+          "column": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "row",
+          "column",
+          "message"
+        ]
+      },
+      "ImportDetailDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "enum": [
+              "STUDENTS",
+              "GUARDIANS",
+              "STAFF",
+              "OPENING_BALANCES",
+              "FEE_PLANS"
+            ],
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "VALIDATING",
+              "READY",
+              "INVALID",
+              "COMMITTING",
+              "COMMITTED",
+              "REVERTED",
+              "FAILED"
+            ],
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportRowErrorDto"
+            }
+          },
+          "preview": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "reconciliation": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string"
+          },
+          "branchId": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/ImportTotalsDto"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "startedAt": {
+            "type": "string",
+            "description": "Same as createdAt (web history column)."
+          },
+          "startedBy": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImportPersonDto"
+              }
+            ]
+          },
+          "committedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "revertedAt": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "kind",
+          "status",
+          "errors",
+          "preview",
+          "error",
+          "id",
+          "branchId",
+          "sessionId",
+          "fileName",
+          "totals",
+          "createdAt",
+          "startedAt",
+          "startedBy",
+          "committedAt",
+          "revertedAt"
+        ]
+      },
+      "CommitImportDto": {
+        "type": "object",
+        "properties": {
+          "skipInvalid": {
+            "type": "boolean"
+          }
+        }
       }
     }
   }

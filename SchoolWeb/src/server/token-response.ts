@@ -11,6 +11,14 @@ interface AuthTokens {
 
 const NO_STORE = { "Cache-Control": "no-store" };
 
+/** Login answers `{ twoFactorRequired, challengeId }` instead of tokens when 2FA is on (phase5-contract §B). */
+export function readTwoFactorChallenge({ status, payload }: UpstreamResult): NextResponse | null {
+  if (status < 200 || status >= 300) return null;
+  const data = (payload as { data?: { twoFactorRequired?: boolean; challengeId?: string } } | null)?.data;
+  if (!data?.twoFactorRequired || typeof data.challengeId !== "string") return null;
+  return NextResponse.json({ data: { twoFactorRequired: true, challengeId: data.challengeId } }, { headers: NO_STORE });
+}
+
 export function readTokens({ status, payload }: UpstreamResult): AuthTokens | null {
   if (status < 200 || status >= 300) return null;
   const data = (payload as { data?: Partial<AuthTokens> } | null)?.data;

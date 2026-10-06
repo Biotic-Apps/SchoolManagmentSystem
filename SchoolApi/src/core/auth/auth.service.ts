@@ -1,30 +1,23 @@
-import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
-import type { ClientPlatform, User } from '../../generated/prisma/client';
-import { AppConfigService } from '../../config/app-config.service';
 import { AuditService } from '../audit/audit.service';
 import { AppError } from '../common/errors/app-error';
 import { ErrorCode } from '../common/errors/error-code.enum';
 import { AccessCache } from '../rbac/access/access-cache';
-import { AuthStateCache } from './auth-state.cache';
-import type { AuthTokensDto } from './dto/auth-tokens.dto';
+import type { AuthTokensDto, LoginResultDto } from './dto/auth-tokens.dto';
 import { parseIdentifier } from './identifier';
-import { lockoutUntil, MAX_FAILED_LOGINS } from './lockout-policy';
+import { LockoutService } from './lockout.service';
 import { PasswordHasher } from './password/password-hasher';
-import {
-  RefreshSessionRepository,
-  type NewSession,
-} from './sessions/refresh-session.repository';
+import { UserAuthPolicyService } from './policy/user-auth-policy.service';
+import { RefreshSessionRepository } from './sessions/refresh-session.repository';
+import { SessionIssuer, type ClientInfo } from './sessions/session-issuer';
 import { SessionsService } from './sessions/sessions.service';
 import { TokenService } from './token.service';
+import { TwoFactorLoginService } from './two-factor/two-factor-login.service';
 import { UserAccountRepository } from './user-account.repository';
 
-export interface ClientInfo {
-  platform: ClientPlatform;
-  deviceName?: string;
-  ip?: string;
-  userAgent?: string;
-}
+export type { ClientInfo } from './sessions/session-issuer';
+
+const IDLE_GRACE_MS = 60_000;
 
 const fail = (code: ErrorCode, message: string, details?: unknown) =>
   new AppError(code, message, details);
@@ -37,36 +30,40 @@ export class AuthService {
     private readonly sessionsService: SessionsService,
     private readonly tokens: TokenService,
     private readonly hasher: PasswordHasher,
-    private readonly state: AuthStateCache,
+    private readonly lockout: LockoutService,
     private readonly access: AccessCache,
     private readonly audit: AuditService,
-    private readonly config: AppConfigService,
+    private readonly issuer: SessionIssuer,
+    private readonly twoFactor: TwoFactorLoginService,
+    private readonly policies: UserAuthPolicyService,
   ) {}
 
+  /**
+   * Password step. Accounts with 2FA get a challenge instead of tokens; the
+   * failure counter is only reset once the second factor succeeds.
+   */
   async login(
     identifier: string,
     password: string,
     client: ClientInfo,
-  ): Promise<AuthTokensDto> {
+  ): Promise<LoginResultDto> {
     const user = await this.users.findByIdentifier(parseIdentifier(identifier));
     if (!user) {
       await this.hasher.verifyDummy(password);
       throw fail(ErrorCode.INVALID_CREDENTIALS, 'Invalid credentials');
     }
-    const now = new Date();
-    if (user.lockedUntil && user.lockedUntil > now) {
-      throw fail(ErrorCode.ACCOUNT_LOCKED, 'Account temporarily locked', {
-        lockedUntil: user.lockedUntil.toISOString(),
-      });
-    }
+    this.lockout.assertNotLocked(user);
     if (!(await this.hasher.verify(user.passwordHash, password))) {
-      await this.registerFailure(user, now);
+      await this.lockout.registerFailure(user.id);
     }
     if (user.status === 'DISABLED') {
       throw fail(ErrorCode.ACCOUNT_DISABLED, 'Account is disabled');
     }
     if ((await this.access.assignments(user.id)).length === 0) {
       throw fail(ErrorCode.FORBIDDEN, 'No active role assignment');
+    }
+    if (await this.twoFactor.isEnabled(user.id)) {
+      return this.twoFactor.challenge(user, client);
     }
 
     await this.users.recordLogin(user.id);
@@ -77,7 +74,7 @@ export class AuthService {
       actorId: user.id,
       after: { platform: client.platform, deviceName: client.deviceName },
     });
-    return this.startSession(user, randomUUID(), client);
+    return this.issuer.start(user, client);
   }
 
   async refresh(
@@ -103,11 +100,14 @@ export class AuthService {
     if (user.status === 'DISABLED') {
       throw fail(ErrorCode.ACCOUNT_DISABLED, 'Account is disabled');
     }
+    if (session.platform === 'WEB') {
+      await this.assertNotIdle(user.id, session.familyId, session.lastUsedAt);
+    }
 
     const token = this.tokens.newOpaqueToken();
     const rotated = await this.sessions.rotate(
       session.id,
-      this.newSession(user.id, session.familyId, token, {
+      this.issuer.newSession(user.id, session.familyId, token, {
         platform: session.platform,
         deviceName: session.deviceName ?? undefined,
         ip: client.ip ?? session.ip ?? undefined,
@@ -118,7 +118,7 @@ export class AuthService {
       await this.revokeForReuse(session.familyId, session.userId);
       throw fail(ErrorCode.SESSION_REVOKED, 'Session has been revoked');
     }
-    return this.tokensFor(user, session.familyId, token);
+    return this.issuer.tokensFor(user, session.familyId, token);
   }
 
   /** Revokes the current session, and the one of `refreshToken` if it is the user's. */
@@ -142,17 +142,34 @@ export class AuthService {
     });
   }
 
-  private async registerFailure(user: User, now: Date): Promise<never> {
-    const failures = user.failedLoginCount + 1;
-    if (failures >= MAX_FAILED_LOGINS) {
-      const until = lockoutUntil(now);
-      await this.users.recordFailure(user.id, 0, until);
-      throw fail(ErrorCode.ACCOUNT_LOCKED, 'Too many failed attempts', {
-        lockedUntil: until.toISOString(),
-      });
-    }
-    await this.users.recordFailure(user.id, failures, null);
-    throw fail(ErrorCode.INVALID_CREDENTIALS, 'Invalid credentials');
+  /**
+   * School sessionTimeoutMinutes for web sessions. Each rotation creates a
+   * new row, so the head row's lastUsedAt is the time of the last refresh.
+   * Clients only refresh when the access token runs out, so the server can
+   * not see idleness shorter than the access TTL (the web UI logs out
+   * earlier on its own); one minute of grace absorbs network delay.
+   */
+  private async assertNotIdle(
+    userId: string,
+    familyId: string,
+    lastUsedAt: Date,
+  ): Promise<void> {
+    const { sessionTimeoutMinutes } = await this.policies.forUser(userId);
+    const limitMs =
+      Math.max(sessionTimeoutMinutes * 60, this.tokens.accessTtlSeconds) *
+        1000 +
+      IDLE_GRACE_MS;
+    if (Date.now() - lastUsedAt.getTime() <= limitMs) return;
+    await this.sessionsService.revokeFamily(familyId);
+    // recordNow: the request fails, so staged entries would be dropped.
+    await this.audit.recordNow({
+      action: 'auth.session_timeout',
+      entityType: 'User',
+      entityId: userId,
+      actorId: userId,
+      after: { familyId, sessionTimeoutMinutes },
+    });
+    throw fail(ErrorCode.SESSION_REVOKED, 'Session timed out');
   }
 
   private async revokeForReuse(
@@ -160,62 +177,12 @@ export class AuthService {
     userId: string,
   ): Promise<void> {
     await this.sessionsService.revokeFamily(familyId);
-    this.audit.stage({
+    await this.audit.recordNow({
       action: 'auth.refresh_reuse_detected',
       entityType: 'User',
       entityId: userId,
       actorId: userId,
       after: { familyId },
     });
-  }
-
-  private async startSession(
-    user: User,
-    familyId: string,
-    client: ClientInfo,
-  ): Promise<AuthTokensDto> {
-    const token = this.tokens.newOpaqueToken();
-    await this.sessions.create(
-      this.newSession(user.id, familyId, token, client),
-    );
-    await this.state.invalidateUser(user.id);
-    return this.tokensFor(user, familyId, token);
-  }
-
-  private newSession(
-    userId: string,
-    familyId: string,
-    token: string,
-    client: ClientInfo,
-  ): NewSession {
-    const days = this.config.get('REFRESH_TTL_DAYS');
-    return {
-      userId,
-      familyId,
-      tokenHash: this.tokens.hash(token),
-      deviceName: client.deviceName?.slice(0, 100) ?? null,
-      platform: client.platform,
-      ip: client.ip ?? null,
-      userAgent: client.userAgent ?? null,
-      expiresAt: new Date(Date.now() + days * 86_400_000),
-    };
-  }
-
-  private async tokensFor(
-    user: User,
-    familyId: string,
-    refreshToken: string,
-  ): Promise<AuthTokensDto> {
-    const accessToken = await this.tokens.signAccess({
-      sub: user.id,
-      sid: familyId,
-      ver: user.tokenVersion,
-    });
-    return {
-      accessToken,
-      refreshToken,
-      accessExpiresIn: this.tokens.accessTtlSeconds,
-      mustChangePassword: user.mustChangePassword,
-    };
   }
 }

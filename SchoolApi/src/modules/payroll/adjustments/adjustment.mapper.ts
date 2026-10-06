@@ -1,5 +1,6 @@
 import type { Prisma } from '../../../generated/prisma/client';
 import { adjustmentSign } from '../calculation/payroll-calc';
+import type { IdNameDto } from '../../../core/common/dto/id-name.dto';
 import type { AdjustmentDto } from './dto/adjustment.dto';
 
 export const ADJUSTMENT_INCLUDE = {
@@ -10,7 +11,13 @@ export type AdjustmentRow = Prisma.PayrollAdjustmentGetPayload<{
   include: typeof ADJUSTMENT_INCLUDE;
 }>;
 
-export function toAdjustmentDto(row: AdjustmentRow): AdjustmentDto {
+/** `cancelledBy` users by id (no relation on the model). */
+export type CancellerNames = ReadonlyMap<string, IdNameDto>;
+
+export function toAdjustmentDto(
+  row: AdjustmentRow,
+  cancellers: CancellerNames = new Map(),
+): AdjustmentDto {
   return {
     id: row.id,
     staffId: row.staffId,
@@ -24,5 +31,13 @@ export function toAdjustmentDto(row: AdjustmentRow): AdjustmentDto {
     status: row.status,
     runId: row.runId,
     createdAt: row.createdAt.toISOString(),
+    cancelledAt: row.cancelledAt?.toISOString() ?? null,
+    cancelReason: row.cancelReason,
+    cancelledBy: row.cancelledById
+      ? (cancellers.get(row.cancelledById) ?? {
+          id: row.cancelledById,
+          name: '',
+        })
+      : null,
   };
 }

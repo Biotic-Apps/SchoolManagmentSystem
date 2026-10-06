@@ -23,18 +23,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppScaffold
 import com.schoolapp.core.designsystem.theme.SchoolTheme
+import com.schoolapp.feature.auth.branding.LoginBrandUiState
 import com.schoolapp.feature.auth.components.LoginBrandPanel
 import com.schoolapp.feature.auth.components.LoginForm
 import com.schoolapp.feature.auth.components.LoginHeader
+import com.schoolapp.feature.auth.components.TwoFactorForm
 
 private val TwoPaneMinWidth = 840.dp
 
 @Composable
 fun LoginScreen(
     state: LoginUiState,
-    onIdentifierChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onSubmit: () -> Unit,
+    brand: LoginBrandUiState,
+    actions: LoginActions,
     modifier: Modifier = Modifier,
     footer: @Composable () -> Unit = {},
 ) {
@@ -53,15 +54,18 @@ fun LoginScreen(
                         modifier = Modifier.widthIn(max = 440.dp).fillMaxWidth().padding(24.dp),
                         verticalArrangement = Arrangement.spacedBy(24.dp),
                     ) {
-                        if (!twoPane) LoginHeader()
-                        LoginForm(state, onIdentifierChange, onPasswordChange, onSubmit)
+                        if (!twoPane) LoginHeader(brand)
+                        when (state.step) {
+                            LoginStep.PASSWORD -> LoginForm(state, actions)
+                            LoginStep.TWO_FACTOR -> TwoFactorForm(state, actions)
+                        }
                         footer()
                     }
                 }
             }
             if (twoPane) {
                 Row(Modifier.fillMaxSize()) {
-                    LoginBrandPanel(Modifier.weight(1f).fillMaxHeight())
+                    LoginBrandPanel(brand, Modifier.weight(1f).fillMaxHeight())
                     formColumn(Modifier.weight(1f).fillMaxHeight())
                 }
             } else {
@@ -74,11 +78,21 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 private fun LoginScreenPreview() = SchoolTheme {
-    LoginScreen(LoginUiState(identifier = "teacher@school.pk"), {}, {}, {})
+    LoginScreen(LoginUiState(identifier = "teacher@school.pk"), LoginBrandUiState(), LoginActions())
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LoginScreenTwoFactorPreview() = SchoolTheme {
+    LoginScreen(
+        LoginUiState(step = LoginStep.TWO_FACTOR, failure = LoginFailure.INVALID_CODE),
+        LoginBrandUiState(name = "Green Valley School"),
+        LoginActions(),
+    )
 }
 
 @Preview(showBackground = true, widthDp = 1024, heightDp = 640)
 @Composable
 private fun LoginScreenExpandedPreview() = SchoolTheme {
-    LoginScreen(LoginUiState(failure = LoginFailure.INVALID_CREDENTIALS), {}, {}, {})
+    LoginScreen(LoginUiState(failure = LoginFailure.INVALID_CREDENTIALS), LoginBrandUiState(), LoginActions())
 }

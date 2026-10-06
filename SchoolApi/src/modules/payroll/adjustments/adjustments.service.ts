@@ -12,7 +12,11 @@ import { PrismaService } from '../../../core/prisma/prisma.service';
 import type { Scope } from '../../../core/rbac/scope/scope';
 import { PayrollAccess } from '../payroll-access.service';
 import { APPROVED_STATUSES } from '../runs/run-status';
-import { ADJUSTMENT_INCLUDE, toAdjustmentDto } from './adjustment.mapper';
+import {
+  ADJUSTMENT_INCLUDE,
+  toAdjustmentDto,
+  type CancellerNames,
+} from './adjustment.mapper';
 import type {
   AdjustmentDto,
   AdjustmentQueryDto,
@@ -48,7 +52,28 @@ export class AdjustmentsService {
       }),
       this.prisma.payrollAdjustment.count({ where }),
     ]);
-    return toPageResult(rows.map(toAdjustmentDto), total, query);
+    const cancellers = await this.cancellers(rows);
+    return toPageResult(
+      rows.map((row) => toAdjustmentDto(row, cancellers)),
+      total,
+      query,
+    );
+  }
+
+  async cancellers(
+    rows: { cancelledById: string | null }[],
+  ): Promise<CancellerNames> {
+    const ids = [
+      ...new Set(
+        rows.flatMap((r) => (r.cancelledById ? [r.cancelledById] : [])),
+      ),
+    ];
+    if (ids.length === 0) return new Map();
+    const users = await this.prisma.user.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, name: true },
+    });
+    return new Map(users.map((u) => [u.id, u]));
   }
 
   async create(

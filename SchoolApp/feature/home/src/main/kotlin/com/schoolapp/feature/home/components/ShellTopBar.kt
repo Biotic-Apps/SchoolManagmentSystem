@@ -46,6 +46,7 @@ internal fun ShellTopBar(
         title = title,
         subtitle = if (compact && state.showChildSwitcher) activeChildName ?: state.userName else state.userName,
         modifier = modifier,
+        navigationIcon = { ShellBrandMark(state.brand) },
         actions = {
             if (state.showChildSwitcher) {
                 ChildSwitcher(

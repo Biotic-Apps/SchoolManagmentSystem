@@ -17,6 +17,7 @@ fun ClassesRoute(
         onTabSelected = viewModel::onTabSelected,
         onBranchSelected = viewModel::onBranchSelected,
         onRetry = viewModel::load,
+        onRefresh = viewModel::refresh,
         modifier = modifier,
     )
 }

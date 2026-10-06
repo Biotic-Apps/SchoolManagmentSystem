@@ -2,8 +2,10 @@ package com.schoolapp.core.testing
 
 import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
+import com.schoolapp.core.common.result.map
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.data.auth.AuthState
+import com.schoolapp.core.data.auth.LoginOutcome
 import com.schoolapp.core.model.RoleRef
 import com.schoolapp.core.model.SessionContext
 import kotlinx.coroutines.flow.Flow
@@ -13,7 +15,11 @@ import kotlinx.coroutines.flow.map
 class FakeAuthRepository(initial: SessionContext? = null) : AuthRepository {
     val sessionState = MutableStateFlow(initial)
     val changePasswordCalls = mutableListOf<Pair<String, String>>()
+    val resetRequests = mutableListOf<String>()
+    val resetCalls = mutableListOf<Pair<String, String>>()
+    val verifyCalls = mutableListOf<Pair<String, String>>()
     var nextError: AppError? = null
+    var nextLoginOutcome: LoginOutcome = LoginOutcome.SignedIn
     var refreshCalls = 0
 
     override val authState: Flow<AuthState> =
@@ -21,7 +27,23 @@ class FakeAuthRepository(initial: SessionContext? = null) : AuthRepository {
 
     override val session: Flow<SessionContext?> = sessionState
 
-    override suspend fun login(identifier: String, password: String): AppResult<Unit> = result()
+    override suspend fun login(identifier: String, password: String): AppResult<LoginOutcome> =
+        result().map { nextLoginOutcome }
+
+    override suspend fun verifyTwoFactor(challengeId: String, code: String): AppResult<Unit> {
+        verifyCalls += challengeId to code
+        return result()
+    }
+
+    override suspend fun requestPasswordReset(identifier: String): AppResult<Unit> {
+        resetRequests += identifier
+        return result()
+    }
+
+    override suspend fun resetPassword(token: String, newPassword: String): AppResult<Unit> {
+        resetCalls += token to newPassword
+        return result()
+    }
 
     override suspend fun refreshSession(): AppResult<Unit> {
         refreshCalls++

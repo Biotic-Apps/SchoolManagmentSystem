@@ -28,6 +28,7 @@ import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.model.health.Incident
 import com.schoolapp.core.navigation.HealthCardDestination
+import com.schoolapp.core.ui.SecureWindowEffect
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.health.R
 import com.schoolapp.feature.health.ReportIncidentDestination
@@ -41,6 +42,7 @@ internal fun HealthMenuRoute(
     viewModel: HealthMenuViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    SecureWindowEffect()
     Box(modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
             AppTabs(

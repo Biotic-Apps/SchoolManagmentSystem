@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { AuditService } from '../../core/audit/audit.service';
 import { normalizePhone } from '../../core/auth/identifier';
 import { PasswordHasher } from '../../core/auth/password/password-hasher';
-import { assertPasswordPolicy } from '../../core/auth/password/password-policy';
+import { PasswordPolicyService } from '../../core/auth/password/password-policy.service';
+import { schoolIdsOf } from '../../core/auth/policy/user-auth-policy.service';
 import { generateTemporaryPassword } from '../../core/auth/password/temporary-password';
 import { forbidden, invalid, notFound } from '../../core/common/errors/errors';
 import type { PageResult } from '../../core/common/pagination/page-result';
@@ -37,6 +38,7 @@ export class UsersService {
     private readonly hasher: PasswordHasher,
     private readonly userAccess: UserAccessService,
     private readonly audit: AuditService,
+    private readonly passwordPolicy: PasswordPolicyService,
   ) {}
 
   async list(
@@ -67,7 +69,14 @@ export class UsersService {
 
     const generated = !dto.password;
     const password = dto.password ?? generateTemporaryPassword();
-    assertPasswordPolicy(password);
+    // A chosen password must meet the policy of the schools it is created in;
+    // a generated one is temporary (mustChangePassword) and meets the baseline.
+    if (dto.password) {
+      await this.passwordPolicy.assertForSchools(
+        schoolIdsOf(resolved.map((r) => r.target)),
+        dto.password,
+      );
+    }
     const row = await this.repository.create(
       {
         name: dto.name.trim(),
@@ -149,6 +158,22 @@ export class UsersService {
       entityId: id,
     });
     return { temporaryPassword };
+  }
+
+  /** Clears a sign-in lockout (failed attempts and lockedUntil). */
+  async unlock(
+    user: AuthUser,
+    scope: Scope,
+    id: string,
+  ): Promise<UserDetailDto> {
+    if (id === user.id) throw forbidden('You cannot unlock your own account');
+    const before = await this.find(scope, id);
+    const row = await this.repository.update(id, {
+      failedLoginCount: 0,
+      lockedUntil: null,
+      updatedById: user.id,
+    });
+    return this.audited('user.unlock', before, row);
   }
 
   async find(scope: Scope, id: string): Promise<UserRow> {

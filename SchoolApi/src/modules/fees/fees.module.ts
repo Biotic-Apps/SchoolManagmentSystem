@@ -25,6 +25,7 @@ import { FeeAccessService } from './shared/fee-access.service';
 import { FeeStructureController } from './structure/fee-structure.controller';
 import { FeeHeadsService } from './structure/fee-heads.service';
 import { FeePlanReader } from './structure/fee-plan-reader.service';
+import { FeePlanArchiveService } from './structure/fee-plan-archive.service';
 import { FeePlansService } from './structure/fee-plans.service';
 import { FeeSummaryService } from './student-fees/fee-summary.service';
 import { StudentFeesController } from './student-fees/student-fees.controller';
@@ -44,6 +45,7 @@ import { StudentLedgerService } from './student-fees/student-ledger.service';
     FeeHeadsService,
     FeePlanReader,
     FeePlansService,
+    FeePlanArchiveService,
     GenerationContextService,
     ActivityFeesService,
     InvoiceGeneratorService,

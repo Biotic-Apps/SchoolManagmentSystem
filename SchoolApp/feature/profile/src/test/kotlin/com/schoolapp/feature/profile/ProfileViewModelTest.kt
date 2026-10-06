@@ -94,4 +94,12 @@ class ProfileViewModelTest {
         assertEquals("taken@school.pk", state.form.email)
         assertTrue(state.hasChanges)
     }
+
+    @Test
+    fun two_factor_status_follows_the_session_user() {
+        assertFalse(viewModel.uiState.value.twoFactorEnabled)
+        val session = auth.sessionState.value!!
+        auth.sessionState.value = session.copy(user = session.user.copy(twoFactorEnabled = true))
+        assertTrue(viewModel.uiState.value.twoFactorEnabled)
+    }
 }

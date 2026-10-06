@@ -9,4 +9,6 @@ Object.assign(process.env, {
   THROTTLE_LIMIT: '100000',
   AUTH_THROTTLE_LIMIT: '100000',
   STORAGE_LOCAL_DIR: 'storage/test',
+  // Test-only key (32 zero-padded bytes); never used outside e2e.
+  BACKUP_ENCRYPTION_KEY: Buffer.alloc(32, 7).toString('base64'),
 });

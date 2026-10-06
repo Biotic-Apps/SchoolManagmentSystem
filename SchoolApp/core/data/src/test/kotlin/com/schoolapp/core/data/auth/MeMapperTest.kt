@@ -8,6 +8,7 @@ import com.schoolapp.core.network.dto.me.ChildDto
 import com.schoolapp.core.network.dto.me.MeDto
 import com.schoolapp.core.network.dto.me.MeUserDto
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -67,5 +68,12 @@ class MeMapperTest {
     @Test
     fun returns_null_without_any_role() {
         assertNull(me.copy(activeRole = null, roles = emptyList(), assignments = emptyList()).toSessionContext(null))
+    }
+
+    @Test
+    fun two_factor_flag_maps_to_user_and_defaults_to_off() {
+        assertFalse(me.toSessionContext(null)!!.user.twoFactorEnabled)
+        val enabled = me.copy(user = me.user.copy(twoFactorEnabled = true))
+        assertTrue(enabled.toSessionContext(null)!!.user.twoFactorEnabled)
     }
 }

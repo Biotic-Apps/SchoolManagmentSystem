@@ -3,7 +3,7 @@ import { SESSION_COOKIE } from "@/lib/auth-cookie-names";
 import { buildCsp } from "@/lib/csp";
 
 const isDev = process.env.NODE_ENV === "development";
-const PUBLIC_PATHS = ["/login"];
+const PUBLIC_PATHS = ["/login", "/forgot-password", "/reset-password"];
 
 // Dev-only shell preview (NEXT_PUBLIC_DEMO_ROLE) has no session cookie.
 const demoMode = isDev && !!process.env.NEXT_PUBLIC_DEMO_ROLE;

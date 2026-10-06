@@ -4,7 +4,7 @@ import com.schoolapp.core.model.RoleKey
 
 /** Per-role label overrides (docs/navigation.md); anything absent uses the catalogue label. */
 internal val RoleLabelOverrides: Map<RoleKey, Map<String, String>> = mapOf(
-    RoleKey.PRINCIPAL to mapOf(MenuIds.BRANCHES to "Branch & Calendar"),
+    RoleKey.PRINCIPAL to mapOf(MenuIds.BRANCHES to "Branch & Calendar", MenuIds.SETTINGS to "Settings"),
     RoleKey.TEACHER to mapOf(MenuIds.CLASSES to "My Classes & Students"),
     RoleKey.PARENT to mapOf(
         MenuIds.DASHBOARD to "Home",

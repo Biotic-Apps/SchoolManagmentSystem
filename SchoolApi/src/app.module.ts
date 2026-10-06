@@ -55,6 +55,11 @@ import { ExpensesModule } from './modules/expenses/expenses.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { CertificatesModule } from './modules/certificates/certificates.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { SchoolSettingsCoreModule } from './core/school-settings/school-settings-core.module';
+import { SettingsModule } from './modules/settings/settings.module';
+import { SupportModule } from './modules/support/support.module';
+import { BackupsModule } from './modules/backups/backups.module';
+import { ImportsModule } from './modules/imports/imports.module';
 
 @Module({
   imports: [
@@ -114,6 +119,11 @@ import { ReportsModule } from './modules/reports/reports.module';
     InventoryModule,
     CertificatesModule,
     ReportsModule,
+    SchoolSettingsCoreModule,
+    SettingsModule,
+    SupportModule,
+    BackupsModule,
+    ImportsModule,
   ],
 })
 export class AppModule {}

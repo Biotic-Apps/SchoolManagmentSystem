@@ -1,7 +1,7 @@
 # SchoolApi
 
 NestJS 11 + Prisma 7 (PostgreSQL 16) + BullMQ (Redis) API for the eSchool Management System.
-Design: [../docs/architecture.md](../docs/architecture.md) §5, [databaseManagement.md](../docs/databaseManagement.md), [security.md](../docs/security.md). Phase 1 API: [../docs/api/phase1-contract.md](../docs/api/phase1-contract.md); Phase 2 API: [../docs/api/phase2-contract.md](../docs/api/phase2-contract.md); Phase 3 API: [../docs/api/phase3-contract.md](../docs/api/phase3-contract.md); Phase 4 API: [../docs/api/phase4-contract.md](../docs/api/phase4-contract.md).
+Design: [../docs/architecture.md](../docs/architecture.md) §5, [databaseManagement.md](../docs/databaseManagement.md), [security.md](../docs/security.md). Phase 1 API: [../docs/api/phase1-contract.md](../docs/api/phase1-contract.md); Phase 2 API: [../docs/api/phase2-contract.md](../docs/api/phase2-contract.md); Phase 3 API: [../docs/api/phase3-contract.md](../docs/api/phase3-contract.md); Phase 4 API: [../docs/api/phase4-contract.md](../docs/api/phase4-contract.md); Phase 5 API: [../docs/api/phase5-contract.md](../docs/api/phase5-contract.md). Security review: [../docs/security-review.md](../docs/security-review.md).
 
 ## Local run (no Docker, Postgres or Redis install needed)
 ```bash
@@ -15,7 +15,7 @@ npm run start:dev           # API on http://localhost:3000, Swagger UI at /docs
 Stop the database with Ctrl+C in terminal 1 or `npm run db:local:stop`. The first `db:local` initialises the cluster and creates the `eschool` and `eschool_test` databases.
 
 Demo accounts (password `Demo@1234`): `admin@`, `principal@`, `coordinator@`, `teacher@`, `teacher2@`, `teacher3@`, `newteacher@` (on probation, reviewed by the coordinator), `accountant@`, `parent@` (2 children), `teacherparent@eschool.local`.
-Demo data: 40 students in Class 4–5 with guardians, staff assignments, bell schedule and published 5-A/5-B timetables, Class 5 book list, 5-A syllabus plans, an admissions pipeline. The local database uses the WIN1252 encoding, so keep stored text ASCII-safe in dev.
+Demo data: 40 students in Class 4–5 with guardians, staff assignments, bell schedule and published 5-A/5-B timetables, Class 5 book list, 5-A syllabus plans, an admissions pipeline. The local database is UTF-8 (Urdu names work).
 Production seeds only the catalogue, system roles and the super admin from `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`.
 
 ## Drivers
@@ -23,9 +23,19 @@ Production seeds only the catalogue, system roles and the super admin from `SEED
 |---|---|---|
 | `JOBS_DRIVER` | `bullmq` (default) / `inline` | `inline` runs the same processors after the response, no Redis; rejected in production. Runs are recorded in `job_runs`. |
 | `CACHE_DRIVER` | `redis` (default) / `memory` | Token-version, session and assignment caches plus throttling counters; `memory` rejected in production. |
-| `STORAGE_DRIVER` | `local` (default) / `s3` | Only `local` is implemented (files under `STORAGE_LOCAL_DIR`, served via HMAC-signed 5-minute URLs). The `StorageDriver` interface is in place; selecting `s3` fails at startup until the S3 driver is written. |
+| `STORAGE_DRIVER` | `local` (default) / `s3` | `local`: files under `STORAGE_LOCAL_DIR`. `s3`: AWS S3 / MinIO / R2 (`S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_REGION`, optional `S3_ENDPOINT` + `S3_FORCE_PATH_STYLE`), SSE-AES256 on upload. Files are always served through HMAC-signed 5-minute API URLs; S3 presigned URLs are used for backup downloads. |
+| `CLAMAV_HOST` / `CLAMAV_PORT` | unset / `3310` | When set, every upload is scanned via clamd INSTREAM before it is stored (infected → 400, scanner error → 503, nothing stored). Unset: files stay `scan_status=PENDING` (not scanned). Images are always re-encoded with sharp (EXIF stripped, max 2048 px, JPEG or PNG). |
 
 Push, email and SMS channels log messages in development and mark deliveries `FAILED` ("provider not configured") in production until real providers are added.
+
+## Phase 5 operations
+- **Settings & branding**: `GET /branding` (public) feeds the login screen; `/settings/school|notifications|policies` (principal read-only, super admin edits). Policies drive password rules, the web session idle timeout (`sessionTimeoutMinutes`, enforced on WEB refresh) and `twoFactorRequiredFor`.
+- **Two-factor sign-in**: TOTP (`/auth/2fa/setup|enable|disable|verify`, 10 single-use recovery codes). Secrets are encrypted with `TWO_FACTOR_ENCRYPTION_KEY` (32 bytes base64; unset = derived from `JWT_REFRESH_SECRET`, so rotating that secret resets 2FA). Locked accounts: `POST /users/:id/unlock`.
+- **Backups**: nightly 02:00 (`maintenance.backupNightly`), weekly restore check Sunday 03:30, retention `BACKUP_RETENTION_DAILY` daily + `BACKUP_RETENTION_MONTHLY` monthly. Every dump is AES-256-GCM encrypted with `BACKUP_ENCRYPTION_KEY` (required in production; store it separately from the backup bucket). Format `pg_dump -Fc` when `PG_DUMP_PATH`/`pg_dump` exists; otherwise (development only — embedded-postgres ships no `pg_dump`) a built-in COPY dump. Verify restores into `<db>_restore_check` (needs CREATEDB) and compares row counts, ledger totals, per-student ledger hash, latest audit id and migrations. Manual: `POST /backups`, `POST /backups/:id/verify` (super admin).
+- **Imports**: `GET /imports/templates/:kind` (XLSX with an Instructions sheet) → `POST /imports` (xlsx/csv) → `GET /imports/:id` (errors + preview) → `POST /imports/:id/commit` (`skipInvalid`) → `POST /imports/:id/revert` while nothing references the data. Kinds: STUDENTS, GUARDIANS, STAFF, OPENING_BALANCES, FEE_PLANS. Sample: `prisma/seed/fixtures/students.xlsx`.
+- **Support**: `/support/notifications/failed` (+resend), `/support/jobs` (+retry), `/support/health` — super admin only.
+- **Proxies**: set `TRUSTED_PROXIES` (IPs/CIDRs) to the web BFF / load balancer so rate limits and audit see the real client IP (unset = loopback in dev, nobody in production).
+- **audit_logs** is range-partitioned by month; `maintenance.auditPartitions` (daily) keeps the next two months ready.
 
 ## Scripts
 | Script | What |
@@ -49,7 +59,8 @@ prisma/migrations/    phase1_init (+ partial unique indexes), phase1_integrity (
                       phase2_people_academics (+ partial uniques: one active enrollment, one primary guardian, one class teacher; CHECKs),
                       phase3_daily_operations (+ partial uniques: one pending correction per entry, one scheduled meeting per slot),
                       phase4_finance_results (append-only triggers on ledger_entries + stock_movements, money CHECKs,
-                      partial uniques: one generated invoice per student+period, one recurring expense copy per month, original certificate serials)
+                      partial uniques: one generated invoice per student+period, one recurring expense copy per month, original certificate serials),
+                      phase5_hardening (settings, 2FA, backups, imports; audit_logs monthly partitions + audit_logs_ensure_partition())
 prisma/seed*          seed entry + small seed steps
 scripts/              embedded PostgreSQL start/stop
 src/config/           zod-validated env + typed AppConfigService
@@ -76,7 +87,8 @@ src/modules/          me, roles, schools, branches (+settings, principal), users
                       invoice money events, approval limits), results (grading, exams, marks, results, report cards, progress, promotions),
                       fees (+invoice generator, overdue/late-fee job), payments (+proofs, receipts, reversal, refunds, gateways, collections,
                       finance dashboard), payroll (+calculate job, payslips), expenses (+recurring job), inventory (+purchasing, sales,
-                      low-stock job), certificates (+public verify), reports (catalog, CSV/XLSX/PDF jobs)
+                      low-stock job), certificates (+public verify), reports (catalog, CSV/XLSX/PDF jobs), settings (+branding),
+                      support, backups (+nightly/weekly jobs), imports
 ```
 Money is stored as BigInt minor units (`amount_minor`) and returned as JSON numbers; the student ledger and stock movements
 are append-only (DB triggers) and corrections are new entries with a reason.

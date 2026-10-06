@@ -112,4 +112,17 @@ class LoginViewModelTest {
         LoginViewModel(repository, handle).onIdentifierChange("teacher@school.pk")
         assertEquals("teacher@school.pk", LoginViewModel(repository, handle).uiState.value.identifier)
     }
+
+    @Test
+    fun two_factor_required_moves_to_code_step_and_clears_password() {
+        repository.challengeId = "ch1"
+        fill("principal@school.pk", "secret")
+        viewModel.onSubmit()
+        val state = viewModel.uiState.value
+        assertEquals(LoginStep.TWO_FACTOR, state.step)
+        assertEquals(TwoFactorMode.AUTHENTICATOR, state.twoFactor.mode)
+        assertEquals("", state.password)
+        assertFalse(state.isSubmitting)
+        assertNull(repository.sessionState.value)
+    }
 }

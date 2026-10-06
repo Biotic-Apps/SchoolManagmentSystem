@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.schoolapp.core.common.dispatcher.DefaultDispatcher
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.auth.AuthRepository
+import com.schoolapp.core.data.branding.BrandingRepository
 import com.schoolapp.core.data.notifications.NotificationsRepository
 import com.schoolapp.core.model.RoleRef
 import com.schoolapp.core.model.SessionContext
@@ -14,7 +15,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -27,6 +30,7 @@ import javax.inject.Inject
 class RoleShellViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     notificationsRepository: NotificationsRepository,
+    private val brandingRepository: BrandingRepository,
     @DefaultDispatcher compute: CoroutineDispatcher,
 ) : ViewModel() {
 
@@ -36,9 +40,19 @@ class RoleShellViewModel @Inject constructor(
         authRepository.session.filterNotNull().map { it.toReady() }.flowOn(compute),
         notificationsRepository.unreadCount.onStart { emit(0) },
         switchStatus,
-    ) { ready, unread, status ->
-        ready.copy(unreadCount = unread, isSwitching = status.inProgress, switchFailed = status.failed)
+        brandingRepository.branding.map { it.toShellBrand() }.distinctUntilChanged().flowOn(compute),
+    ) { ready, unread, status, brand ->
+        ready.copy(unreadCount = unread, isSwitching = status.inProgress, switchFailed = status.failed, brand = brand)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RoleShellUiState.Loading)
+
+    init {
+        viewModelScope.launch {
+            authRepository.session.filterNotNull()
+                .map { it.activeRole to it.brandingSchoolId() }
+                .distinctUntilChanged()
+                .collectLatest { (_, schoolId) -> brandingRepository.refresh(schoolId) }
+        }
+    }
 
     fun onRoleSelected(role: RoleRef) {
         if (switchStatus.value.inProgress) return

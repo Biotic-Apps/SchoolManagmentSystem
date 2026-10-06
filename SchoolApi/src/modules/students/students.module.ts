@@ -43,6 +43,7 @@ import { TransfersService } from './transfers/transfers.service';
     StudentMapper,
     StudentRegistrationService,
     GuardianWriter,
+    EnrollmentWriter,
     SectionAccessService,
   ],
 })

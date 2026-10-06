@@ -5,10 +5,15 @@ import { ErrorCode } from '../common/errors/error-code.enum';
 import type { AccessCache } from '../rbac/access/access-cache';
 import type { AuthStateCache } from './auth-state.cache';
 import { AuthService } from './auth.service';
+import type { AuthTokensDto } from './dto/auth-tokens.dto';
+import { LockoutService } from './lockout.service';
 import type { PasswordHasher } from './password/password-hasher';
+import type { UserAuthPolicyService } from './policy/user-auth-policy.service';
 import type { RefreshSessionRepository } from './sessions/refresh-session.repository';
+import { SessionIssuer } from './sessions/session-issuer';
 import type { SessionsService } from './sessions/sessions.service';
 import type { TokenService } from './token.service';
+import type { TwoFactorLoginService } from './two-factor/two-factor-login.service';
 import type { UserAccountRepository } from './user-account.repository';
 
 const user = (overrides: Partial<User> = {}): User =>
@@ -33,6 +38,7 @@ const session = (overrides = {}) => ({
   userAgent: null,
   revokedAt: null as Date | null,
   replacedById: null as string | null,
+  lastUsedAt: new Date(),
   expiresAt: new Date(Date.now() + 60_000),
   ...overrides,
 });
@@ -41,7 +47,8 @@ function setup() {
   const users = {
     findByIdentifier: jest.fn(),
     findById: jest.fn(),
-    recordFailure: jest.fn(),
+    incrementFailures: jest.fn(),
+    lock: jest.fn().mockResolvedValue(true),
     recordLogin: jest.fn(),
   };
   const sessions = {
@@ -61,18 +68,48 @@ function setup() {
   };
   const hasher = { verify: jest.fn(), verifyDummy: jest.fn() };
   const access = { assignments: jest.fn().mockResolvedValue([{ id: 'a1' }]) };
+  const audit = { stage: jest.fn(), recordNow: jest.fn() };
+  const twoFactor = {
+    isEnabled: jest.fn().mockResolvedValue(false),
+    challenge: jest
+      .fn()
+      .mockResolvedValue({ twoFactorRequired: true, challengeId: 'c1' }),
+  };
+  const policies = {
+    forUser: jest.fn().mockResolvedValue({ sessionTimeoutMinutes: 30 }),
+  };
+  const issuer = new SessionIssuer(
+    sessions as unknown as RefreshSessionRepository,
+    tokens as unknown as TokenService,
+    { invalidateUser: jest.fn() } as unknown as AuthStateCache,
+    { get: () => 30 } as unknown as AppConfigService,
+  );
   const service = new AuthService(
     users as unknown as UserAccountRepository,
     sessions as unknown as RefreshSessionRepository,
     sessionsService as unknown as SessionsService,
     tokens as unknown as TokenService,
     hasher as unknown as PasswordHasher,
-    { invalidateUser: jest.fn() } as unknown as AuthStateCache,
+    new LockoutService(
+      users as unknown as UserAccountRepository,
+      audit as unknown as AuditService,
+    ),
     access as unknown as AccessCache,
-    { stage: jest.fn() } as unknown as AuditService,
-    { get: () => 30 } as unknown as AppConfigService,
+    audit as unknown as AuditService,
+    issuer,
+    twoFactor as unknown as TwoFactorLoginService,
+    policies as unknown as UserAuthPolicyService,
   );
-  return { service, users, sessions, sessionsService, hasher, tokens };
+  return {
+    service,
+    users,
+    sessions,
+    sessionsService,
+    hasher,
+    twoFactor,
+    policies,
+    audit,
+  };
 }
 
 const codeOf = (promise: Promise<unknown>) =>
@@ -103,7 +140,7 @@ describe('AuthService', () => {
     });
 
     it('revokes the whole family when a rotated token is reused', async () => {
-      const { service, sessions, sessionsService } = setup();
+      const { service, sessions, sessionsService, audit } = setup();
       sessions.findByHash.mockResolvedValue(
         session({ revokedAt: new Date(), replacedById: 's2' }),
       );
@@ -113,6 +150,10 @@ describe('AuthService', () => {
       );
       expect(sessionsService.revokeFamily).toHaveBeenCalledWith('fam1');
       expect(sessions.rotate).not.toHaveBeenCalled();
+      // Written at once: the failing request would drop staged entries.
+      expect(audit.recordNow).toHaveBeenCalledWith(
+        expect.objectContaining({ action: 'auth.refresh_reuse_detected' }),
+      );
     });
 
     it('treats a lost rotation race as reuse', async () => {
@@ -142,28 +183,31 @@ describe('AuthService', () => {
     it('counts a failed attempt', async () => {
       const { service, users, hasher } = setup();
       users.findByIdentifier.mockResolvedValue(user({ failedLoginCount: 2 }));
+      users.incrementFailures.mockResolvedValue(3);
       hasher.verify.mockResolvedValue(false);
 
       expect(
         await codeOf(service.login('a@b.c', 'bad', { platform: 'WEB' })),
       ).toBe(ErrorCode.INVALID_CREDENTIALS);
-      expect(users.recordFailure).toHaveBeenCalledWith('u1', 3, null);
+      expect(users.incrementFailures).toHaveBeenCalledWith('u1');
+      expect(users.lock).not.toHaveBeenCalled();
     });
 
     it('locks the account on the fifth failure', async () => {
       const { service, users, hasher } = setup();
       users.findByIdentifier.mockResolvedValue(user({ failedLoginCount: 4 }));
+      users.incrementFailures.mockResolvedValue(5);
       hasher.verify.mockResolvedValue(false);
 
       expect(
         await codeOf(service.login('a@b.c', 'bad', { platform: 'WEB' })),
       ).toBe(ErrorCode.ACCOUNT_LOCKED);
-      const [, count, until] = users.recordFailure.mock.calls[0] as [
+      const [, threshold, until] = users.lock.mock.calls[0] as [
         string,
         number,
         Date,
       ];
-      expect(count).toBe(0);
+      expect(threshold).toBe(5);
       expect(until.getTime() - Date.now()).toBeGreaterThan(14 * 60_000);
     });
 
@@ -205,7 +249,81 @@ describe('AuthService', () => {
           tokenHash: 'h:new-token',
         }),
       );
-      expect(tokens.mustChangePassword).toBe(false);
+      expect((tokens as AuthTokensDto).mustChangePassword).toBe(false);
+    });
+
+    it('returns a 2FA challenge without resetting the counter', async () => {
+      const { service, users, hasher, sessions, twoFactor } = setup();
+      users.findByIdentifier.mockResolvedValue(user({ failedLoginCount: 3 }));
+      hasher.verify.mockResolvedValue(true);
+      twoFactor.isEnabled.mockResolvedValue(true);
+
+      const result = await service.login('a@b.c', 'right', {
+        platform: 'WEB',
+      });
+
+      expect(result).toEqual({ twoFactorRequired: true, challengeId: 'c1' });
+      expect(users.recordLogin).not.toHaveBeenCalled();
+      expect(sessions.create).not.toHaveBeenCalled();
+    });
+
+    it('never reaches the 2FA step with a wrong password', async () => {
+      const { service, users, hasher, twoFactor } = setup();
+      users.findByIdentifier.mockResolvedValue(user());
+      users.incrementFailures.mockResolvedValue(1);
+      hasher.verify.mockResolvedValue(false);
+      twoFactor.isEnabled.mockResolvedValue(true);
+
+      expect(
+        await codeOf(service.login('a@b.c', 'bad', { platform: 'WEB' })),
+      ).toBe(ErrorCode.INVALID_CREDENTIALS);
+      expect(twoFactor.challenge).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('web idle timeout', () => {
+    it('revokes a web session idle longer than the school timeout', async () => {
+      const { service, users, sessions, sessionsService, audit } = setup();
+      sessions.findByHash.mockResolvedValue(
+        session({ lastUsedAt: new Date(Date.now() - 32 * 60_000) }),
+      );
+      users.findById.mockResolvedValue(user());
+
+      expect(await codeOf(service.refresh('t', {}))).toBe(
+        ErrorCode.SESSION_REVOKED,
+      );
+      expect(sessionsService.revokeFamily).toHaveBeenCalledWith('fam1');
+      expect(sessions.rotate).not.toHaveBeenCalled();
+      expect(audit.recordNow).toHaveBeenCalledWith(
+        expect.objectContaining({ action: 'auth.session_timeout' }),
+      );
+    });
+
+    it('never limits below the access-token lifetime', async () => {
+      const { service, users, sessions, policies } = setup();
+      policies.forUser.mockResolvedValue({ sessionTimeoutMinutes: 5 });
+      sessions.findByHash.mockResolvedValue(
+        session({ lastUsedAt: new Date(Date.now() - 14 * 60_000) }),
+      );
+      users.findById.mockResolvedValue(user());
+      sessions.rotate.mockResolvedValue(true);
+
+      await expect(service.refresh('t', {})).resolves.toBeDefined();
+    });
+
+    it('does not idle-limit Android sessions', async () => {
+      const { service, users, sessions, policies } = setup();
+      sessions.findByHash.mockResolvedValue(
+        session({
+          platform: 'ANDROID',
+          lastUsedAt: new Date(Date.now() - 5 * 86_400_000),
+        }),
+      );
+      users.findById.mockResolvedValue(user());
+      sessions.rotate.mockResolvedValue(true);
+
+      await expect(service.refresh('t', {})).resolves.toBeDefined();
+      expect(policies.forUser).not.toHaveBeenCalled();
     });
   });
 });

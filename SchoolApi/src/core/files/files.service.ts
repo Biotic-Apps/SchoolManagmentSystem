@@ -1,26 +1,28 @@
-import { createHash, randomUUID } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
-import type { FilePurpose } from '../../generated/prisma/client';
+import type { File, FilePurpose } from '../../generated/prisma/client';
 import { AuditService } from '../audit/audit.service';
+import { AppError } from '../common/errors/app-error';
+import { ErrorCode } from '../common/errors/error-code.enum';
 import { invalid, notFound } from '../common/errors/errors';
 import type { AuthUser } from '../common/types/auth-user';
 import type { Scope } from '../rbac/scope/scope';
 import type { FileUploadedDto } from './dto/file-uploaded.dto';
+import { canAccessFile } from './file-access.policy';
 import { FilesRepository } from './files.repository';
 import { StorageDriver } from './storage/storage-driver';
-import { checkUpload, type UploadCandidate } from './upload-policy';
+import { UploadPipeline } from './upload-pipeline';
+import type { UploadCandidate } from './upload-policy';
 import { UrlSigner, type SignedUrl } from './url-signer';
 
-const IMAGE_PURPOSES = new Set<FilePurpose>([
-  'SCHOOL_LOGO',
-  'STUDENT_PHOTO',
-  'STAFF_PHOTO',
-]);
-
-/** Payslips: owner or payroll staff; reports: owner only; others: school readers. */
-function canSharePurpose(purpose: FilePurpose, user: AuthUser): boolean {
-  if (purpose === 'PAYSLIP') return user.permissions.has('payroll.view');
-  return purpose !== 'REPORT';
+/** INFECTED (or a failed scan) is never served. PENDING = not scanned. */
+export function assertServable(file: Pick<File, 'scanStatus'>): void {
+  if (file.scanStatus === 'INFECTED' || file.scanStatus === 'FAILED') {
+    throw new AppError(
+      ErrorCode.FILE_UNAVAILABLE,
+      'File is unavailable (failed antivirus check)',
+    );
+  }
 }
 
 @Injectable()
@@ -30,6 +32,7 @@ export class FilesService {
     private readonly storage: StorageDriver,
     private readonly signer: UrlSigner,
     private readonly audit: AuditService,
+    private readonly pipeline: UploadPipeline,
   ) {}
 
   async upload(
@@ -39,30 +42,38 @@ export class FilesService {
     purpose: FilePurpose,
   ): Promise<FileUploadedDto> {
     if (!file) throw invalid('file is required');
-    const extension = checkUpload(file, IMAGE_PURPOSES.has(purpose));
     const id = randomUUID();
-    const now = new Date();
-    const storageKey = `${now.getUTCFullYear()}/${now.getUTCMonth() + 1}/${id}.${extension}`;
-    await this.storage.put(storageKey, file.buffer, file.mimetype);
-
     const schools = [...scope.memberSchoolIds];
+    const schoolId = schools.length === 1 ? schools[0] : null;
+    const prepared = await this.pipeline.prepare(file, purpose, schoolId, id);
+    const now = new Date();
+    const storageKey = `${now.getUTCFullYear()}/${now.getUTCMonth() + 1}/${id}.${prepared.extension}`;
+    await this.storage.put(storageKey, prepared.buffer, prepared.mime);
+
     const row = await this.repository.create({
       id,
-      schoolId: schools.length === 1 ? schools[0] : null,
+      schoolId,
       purpose,
       storageKey,
-      originalName: file.originalname.slice(0, 200),
-      mime: file.mimetype,
-      size: file.size,
-      sha256: createHash('sha256').update(file.buffer).digest('hex'),
+      originalName: prepared.originalName,
+      mime: prepared.mime,
+      size: prepared.buffer.length,
+      sha256: prepared.sha256,
       uploadedById: user.id,
+      scanStatus: prepared.scanStatus,
     });
     this.audit.stage({
       action: 'file.upload',
       entityType: 'File',
       entityId: row.id,
       schoolId: row.schoolId,
-      after: { purpose, mime: row.mime, size: row.size, sha256: row.sha256 },
+      after: {
+        purpose,
+        mime: row.mime,
+        size: row.size,
+        sha256: row.sha256,
+        scanStatus: row.scanStatus,
+      },
     });
     return {
       id: row.id,
@@ -72,27 +83,54 @@ export class FilesService {
     };
   }
 
-  /** Uploader, or anyone who can read the owning school. */
+  /** See canAccessFile; anything else looks like 404. */
   async signedUrl(
     user: AuthUser,
     scope: Scope,
     id: string,
   ): Promise<SignedUrl> {
     const file = await this.repository.findActive(id);
-    const allowed =
-      file &&
-      (file.uploadedById === user.id ||
-        (canSharePurpose(file.purpose, user) &&
-          (scope.global ||
-            (file.schoolId !== null && scope.canReadSchool(file.schoolId)))));
+    if (!file) throw notFound('File');
+    const managedBranchSchoolIds = scope.global
+      ? new Set<string>()
+      : await this.repository.schoolsOfBranches([...scope.branchIds]);
+    const allowed = canAccessFile(file, {
+      userId: user.id,
+      permissions: user.permissions,
+      scope,
+      managedBranchSchoolIds,
+    });
     if (!allowed) throw notFound('File');
+    if (!(await this.importBranchAllowed(file, user.id, scope))) {
+      throw notFound('File');
+    }
+    assertServable(file);
     return this.signer.sign(file.id);
+  }
+
+  /**
+   * Import spreadsheets hold bulk PII: besides the import permission the
+   * caller must manage the branch the import belongs to (or be the uploader).
+   */
+  private async importBranchAllowed(
+    file: { id: string; purpose: string; uploadedById: string },
+    userId: string,
+    scope: Scope,
+  ): Promise<boolean> {
+    if (file.purpose !== 'IMPORT') return true;
+    if (file.uploadedById === userId || scope.global) return true;
+    const batch = await this.repository.importBranchOf(file.id);
+    return (
+      batch !== null &&
+      scope.canManageBranch({ id: batch.branchId, schoolId: batch.schoolId })
+    );
   }
 
   async open(id: string, exp: number, sig: string) {
     if (!this.signer.verify(id, exp, sig)) throw notFound('File');
     const file = await this.repository.findActive(id);
     if (!file) throw notFound('File');
+    assertServable(file);
     return { file, stream: await this.storage.read(file.storageKey) };
   }
 }

@@ -18,6 +18,7 @@ data class ProfileUiState(
     val emailError: ProfileFieldError? = null,
     val phoneError: ProfileFieldError? = null,
     val roles: List<RoleSummary> = emptyList(),
+    val twoFactorEnabled: Boolean = false,
     val isSaving: Boolean = false,
     val saveError: AppError? = null,
     val saved: Boolean = false,

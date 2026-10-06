@@ -10,9 +10,10 @@ import { AuthStateCache } from '../auth-state.cache';
 import { parseIdentifier } from '../identifier';
 import { SessionsService } from '../sessions/sessions.service';
 import { TokenService } from '../token.service';
+import { LockoutService } from '../lockout.service';
 import { UserAccountRepository } from '../user-account.repository';
 import { PasswordHasher } from './password-hasher';
-import { assertPasswordPolicy } from './password-policy';
+import { PasswordPolicyService } from './password-policy.service';
 
 const RESET_TTL_MINUTES = 30;
 
@@ -30,6 +31,8 @@ export class PasswordService {
     private readonly notifications: NotificationService,
     private readonly audit: AuditService,
     private readonly config: AppConfigService,
+    private readonly policy: PasswordPolicyService,
+    private readonly lockout: LockoutService,
   ) {}
 
   /** Always succeeds from the caller's view (no user enumeration). */
@@ -57,13 +60,14 @@ export class PasswordService {
   }
 
   async reset(token: string, newPassword: string): Promise<void> {
-    assertPasswordPolicy(newPassword);
     const record = await this.prisma.passwordResetToken.findUnique({
       where: { tokenHash: this.tokens.hash(token) },
     });
     if (!record || record.usedAt || record.expiresAt <= new Date()) {
       throw invalid('Invalid or expired reset token');
     }
+    // Checked before the token is claimed so a rejected password can be retried.
+    await this.policy.assertForUser(record.userId, newPassword);
     const claimed = await this.prisma.passwordResetToken.updateMany({
       where: { id: record.id, usedAt: null },
       data: { usedAt: new Date() },
@@ -91,16 +95,22 @@ export class PasswordService {
     newPassword: string,
   ): Promise<void> {
     const user = await this.users.findById(userId);
-    if (
-      !user ||
-      !(await this.hasher.verify(user.passwordHash, currentPassword))
-    ) {
+    if (!user) {
       throw new AppError(
         ErrorCode.INVALID_CREDENTIALS,
         'Current password is incorrect',
       );
     }
-    assertPasswordPolicy(newPassword);
+    // A stolen access token must not allow guessing the password: wrong
+    // current passwords count toward the account lockout (security.md §1).
+    this.lockout.assertNotLocked(user);
+    if (!(await this.hasher.verify(user.passwordHash, currentPassword))) {
+      await this.lockout.registerFailure(
+        userId,
+        'Current password is incorrect',
+      );
+    }
+    await this.policy.assertForUser(userId, newPassword);
     if (currentPassword === newPassword) {
       throw invalid('New password must differ from the current one');
     }

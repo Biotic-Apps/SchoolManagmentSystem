@@ -4,6 +4,7 @@ import { EmailChannel } from './channels/email.channel';
 import { PushChannel } from './channels/push.channel';
 import { SmsChannel } from './channels/sms.channel';
 import { DirectMessageProcessor } from './jobs/direct-message.processor';
+import { RecipientSwitches } from './jobs/recipient-switches';
 import { SendNotificationProcessor } from './jobs/send-notification.processor';
 import { NotificationInboxService } from './notification-inbox.service';
 import { NotificationService } from './notification.service';
@@ -23,10 +24,11 @@ import { NotificationPreferencesService } from './preferences/notification-prefe
     NotificationsRepository,
     NotificationService,
     NotificationInboxService,
+    RecipientSwitches,
     SendNotificationProcessor,
     DirectMessageProcessor,
     NotificationPreferencesService,
   ],
-  exports: [NotificationService],
+  exports: [NotificationService, ChannelRegistry, NotificationsRepository],
 })
 export class NotificationsModule {}

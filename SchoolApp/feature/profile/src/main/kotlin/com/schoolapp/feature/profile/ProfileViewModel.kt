@@ -77,6 +77,7 @@ class ProfileViewModel @Inject constructor(
                 original = fields,
                 form = if (keepEdits) state.form else fields,
                 roles = roles,
+                twoFactorEnabled = session.user.twoFactorEnabled,
             )
         }
     }

@@ -4,6 +4,8 @@ import com.schoolapp.core.data.approvals.ApprovalsRepository
 import com.schoolapp.core.data.approvals.DefaultApprovalsRepository
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.data.auth.DefaultAuthRepository
+import com.schoolapp.core.data.branding.BrandingRepository
+import com.schoolapp.core.data.branding.DefaultBrandingRepository
 import com.schoolapp.core.data.dashboard.DashboardRepository
 import com.schoolapp.core.data.dashboard.DefaultDashboardRepository
 import com.schoolapp.core.data.notifications.DefaultNotificationsRepository
@@ -152,4 +154,7 @@ interface RepositoryModule {
 
     @Binds
     fun bindCertificatesRepository(impl: DefaultCertificatesRepository): CertificatesRepository
+
+    @Binds
+    fun bindBrandingRepository(impl: DefaultBrandingRepository): BrandingRepository
 }

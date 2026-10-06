@@ -111,6 +111,7 @@ export class ThreadsService {
     scope: Scope,
     query: ThreadQueryDto,
   ): Promise<PageResult<ThreadDto>> {
+    scope.assertGuardianStudent(query.studentId);
     if (query.scope === 'branch') return this.branchList(user, scope, query);
     const where: Prisma.MessageThreadWhereInput = {
       studentId: query.studentId,

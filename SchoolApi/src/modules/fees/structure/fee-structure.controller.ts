@@ -22,12 +22,14 @@ import {
   FeeHeadQueryDto,
 } from './dto/fee-head.dto';
 import {
+  ArchiveFeePlanDto,
   CreateFeePlanDto,
   FeePlanDto,
   FeePlanQueryDto,
   UpdateFeePlanDto,
 } from './dto/fee-plan.dto';
 import { FeeHeadsService } from './fee-heads.service';
+import { FeePlanArchiveService } from './fee-plan-archive.service';
 import { FeePlanReader } from './fee-plan-reader.service';
 import { FeePlansService } from './fee-plans.service';
 
@@ -39,6 +41,7 @@ export class FeeStructureController {
     private readonly heads: FeeHeadsService,
     private readonly plans: FeePlansService,
     private readonly reader: FeePlanReader,
+    private readonly archiver: FeePlanArchiveService,
   ) {}
 
   @Get('fee-heads')
@@ -104,5 +107,18 @@ export class FeeStructureController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<FeePlanDto> {
     return this.plans.approve(user, scope, id);
+  }
+
+  @Post('fee-plans/:id/archive')
+  @HttpCode(200)
+  @RequirePermission('fees.edit', 'fees.approve')
+  @ApiData(FeePlanDto)
+  archivePlan(
+    @CurrentUser() user: AuthUser,
+    @CurrentScope() scope: Scope,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: ArchiveFeePlanDto,
+  ): Promise<FeePlanDto> {
+    return this.archiver.archive(user, scope, id, body.reason);
   }
 }

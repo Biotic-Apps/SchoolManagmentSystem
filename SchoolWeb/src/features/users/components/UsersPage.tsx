@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { DataTable } from "@/components/shared/DataTable";
 import { FilterBar } from "@/components/shared/FilterBar";
 import { FilterSelect } from "@/components/shared/FilterSelect";
@@ -70,6 +71,15 @@ export function UsersPage() {
       <UserStatusDialog user={page.statusTarget.item} onClose={page.statusTarget.close} />
       <ResetPasswordDialog user={page.resetTarget.item} onClose={page.resetTarget.close} onReset={page.onPasswordReset} />
       <UserDetailDrawer user={page.detail.item} onClose={page.detail.close} />
+      <ConfirmDialog
+        open={!!page.unlockTarget.item}
+        onOpenChange={page.unlockTarget.onOpenChange}
+        title={`Unlock ${page.unlockTarget.item?.name ?? "this account"}?`}
+        description="Clears the lock after too many failed sign-ins so the user can try again now."
+        confirmLabel="Unlock account"
+        loading={page.unlocking}
+        onConfirm={page.confirmUnlock}
+      />
       <SecretRevealDialog
         secret={page.revealed?.password ?? null}
         title={page.revealed?.title ?? ""}

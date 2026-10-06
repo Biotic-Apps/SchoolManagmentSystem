@@ -51,6 +51,8 @@ export const SPECIAL_PERMISSIONS = [
   'people.sensitive.view',
   'audit.view',
   'fees.concession.approve',
+  // Phase 5 §E: data import for managed branches (principal) without full settings.edit.
+  'settings.import',
 ] as const;
 
 export type PermissionModule = (typeof PERMISSION_MODULES)[number];

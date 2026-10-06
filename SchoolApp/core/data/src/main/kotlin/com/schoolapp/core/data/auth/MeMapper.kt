@@ -34,7 +34,14 @@ internal fun MeDto.toSessionContext(preferredChildId: String?): SessionContext? 
 }
 
 private fun MeUserDto.toModel() =
-    User(id = id, fullName = name, email = email, phone = phone, mustChangePassword = mustChangePassword)
+    User(
+        id = id,
+        fullName = name,
+        email = email,
+        phone = phone,
+        mustChangePassword = mustChangePassword,
+        twoFactorEnabled = twoFactorEnabled,
+    )
 
 private fun AssignmentDto.toModel(): RoleAssignment? {
     val scope = ScopeType.entries.firstOrNull { it.name == scopeType } ?: return null

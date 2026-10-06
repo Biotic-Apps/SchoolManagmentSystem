@@ -3,7 +3,7 @@ import { CSRF_COOKIE, CSRF_HEADER } from "@/lib/auth-cookie-names";
 import { readCookie } from "@/lib/cookies";
 import { parseEnvelope } from "@/lib/envelope";
 import type { LoginInput } from "./schemas";
-import type { WebTokens } from "./types";
+import type { LoginResult, WebTokens } from "./types";
 
 // Calls the Next.js BFF (src/app/api/auth/*), which owns the refresh-token cookie.
 async function bffPost<T>(path: string, body?: unknown, accessToken?: string | null): Promise<T> {
@@ -26,8 +26,12 @@ async function bffPost<T>(path: string, body?: unknown, accessToken?: string | n
   return (await parseEnvelope<T>(response)).data;
 }
 
-export function loginRequest(input: LoginInput): Promise<WebTokens> {
-  return bffPost<WebTokens>("login", input);
+export function loginRequest(input: LoginInput): Promise<LoginResult> {
+  return bffPost<LoginResult>("login", input);
+}
+
+export function verifyTwoFactorRequest(challengeId: string, code: string): Promise<WebTokens> {
+  return bffPost<WebTokens>("2fa/verify", { challengeId, code });
 }
 
 export async function logoutRequest(accessToken: string | null): Promise<void> {

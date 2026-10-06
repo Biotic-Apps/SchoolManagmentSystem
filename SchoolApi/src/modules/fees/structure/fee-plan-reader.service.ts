@@ -29,7 +29,9 @@ export class FeePlanReader {
       branchId: query.branchId,
       sessionId: query.sessionId,
       classId: query.classId,
-      status: query.status,
+      status:
+        query.status ??
+        (query.includeArchived ? undefined : { not: 'ARCHIVED' }),
     };
     const rows = await this.prisma.feePlan.findMany({
       where,

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AdjustmentsController } from './adjustments/adjustments.controller';
+import { AdjustmentCancelService } from './adjustments/adjustment-cancel.service';
 import { AdjustmentsService } from './adjustments/adjustments.service';
 import { PayrollPayslipsProcessor } from './approval/jobs/payroll-payslips.processor';
 import {
@@ -35,6 +36,7 @@ import { SalaryStructureService } from './structures/salary-structure.service';
     PayrollAccess,
     SalaryStructureService,
     AdjustmentsService,
+    AdjustmentCancelService,
     RunsService,
     RunViewService,
     RunWorkflowService,

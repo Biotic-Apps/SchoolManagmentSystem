@@ -24,6 +24,8 @@ export const ERROR_STATUS: Record<ErrorCode, HttpStatus> = {
   [ErrorCode.APPROVAL_REQUIRED]: HttpStatus.CONFLICT,
   [ErrorCode.PAYLOAD_TOO_LARGE]: HttpStatus.PAYLOAD_TOO_LARGE,
   [ErrorCode.RATE_LIMITED]: HttpStatus.TOO_MANY_REQUESTS,
+  [ErrorCode.TWO_FACTOR_SETUP_REQUIRED]: HttpStatus.FORBIDDEN,
+  [ErrorCode.FILE_UNAVAILABLE]: HttpStatus.GONE,
   [ErrorCode.INTERNAL_ERROR]: HttpStatus.INTERNAL_SERVER_ERROR,
 };
 

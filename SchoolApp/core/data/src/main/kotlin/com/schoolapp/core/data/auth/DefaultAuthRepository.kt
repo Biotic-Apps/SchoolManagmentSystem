@@ -16,8 +16,11 @@ import com.schoolapp.core.network.ApiCaller
 import com.schoolapp.core.network.api.AuthApi
 import com.schoolapp.core.network.api.MeApi
 import com.schoolapp.core.network.dto.auth.ChangePasswordRequestDto
+import com.schoolapp.core.network.dto.auth.ForgotPasswordRequestDto
 import com.schoolapp.core.network.dto.auth.LoginRequestDto
 import com.schoolapp.core.network.dto.auth.RefreshRequestDto
+import com.schoolapp.core.network.dto.auth.ResetPasswordRequestDto
+import com.schoolapp.core.network.dto.auth.TwoFactorVerifyRequestDto
 import com.schoolapp.core.network.dto.me.MeDto
 import com.schoolapp.core.network.model.ApiErrorCodes
 import kotlinx.coroutines.CoroutineDispatcher
@@ -67,15 +70,45 @@ class DefaultAuthRepository @Inject constructor(
     override val session: Flow<SessionContext?> =
         authState.map { (it as? AuthState.SignedIn)?.session }.distinctUntilChanged()
 
-    override suspend fun login(identifier: String, password: String): AppResult<Unit> {
+    override suspend fun login(identifier: String, password: String): AppResult<LoginOutcome> {
         val request = LoginRequestDto(identifier.trim(), password, LoginRequestDto.PLATFORM_ANDROID, deviceName)
-        val tokens = when (val result = apiCaller.call { authApi.login(request).data }) {
+        val response = when (val result = apiCaller.call { authApi.login(request).data }) {
             is AppResult.Failure -> return result
             is AppResult.Success -> result.data
         }
+        if (response.twoFactorRequired) {
+            val challengeId = response.challengeId?.takeIf { it.isNotBlank() }
+                ?: return AppResult.Failure(AppError.Unknown(IllegalStateException("2FA challenge without id")))
+            return AppResult.Success(LoginOutcome.TwoFactorRequired(challengeId))
+        }
+        val access = response.accessToken
+        val refresh = response.refreshToken
+        if (access.isNullOrBlank() || refresh.isNullOrBlank()) {
+            return AppResult.Failure(AppError.Unknown(IllegalStateException("Login response without tokens")))
+        }
+        return startSession(AuthTokens(access, refresh), response.mustChangePassword).map { LoginOutcome.SignedIn }
+    }
+
+    override suspend fun verifyTwoFactor(challengeId: String, code: String): AppResult<Unit> {
+        val body = TwoFactorVerifyRequestDto(challengeId, code)
+        val tokens = when (val result = apiCaller.call { authApi.verifyTwoFactor(body).data }) {
+            is AppResult.Failure -> return result
+            is AppResult.Success -> result.data
+        }
+        return startSession(AuthTokens(tokens.accessToken, tokens.refreshToken), tokens.mustChangePassword)
+    }
+
+    override suspend fun requestPasswordReset(identifier: String): AppResult<Unit> =
+        apiCaller.call { authApi.forgotPassword(ForgotPasswordRequestDto(identifier.trim())) }
+
+    override suspend fun resetPassword(token: String, newPassword: String): AppResult<Unit> =
+        apiCaller.call { authApi.resetPassword(ResetPasswordRequestDto(token.trim(), newPassword)) }
+
+    /** Stores fresh tokens and loads `/me`; shared by password sign-in and the 2FA step. */
+    private suspend fun startSession(tokens: AuthTokens, mustChangePassword: Boolean): AppResult<Unit> {
         sessionStore.setActiveRole(null)
-        sessionStore.setMustChangePassword(tokens.mustChangePassword)
-        sessionStore.saveTokens(AuthTokens(tokens.accessToken, tokens.refreshToken))
+        sessionStore.setMustChangePassword(mustChangePassword)
+        sessionStore.saveTokens(tokens)
         return when (val me = loadMe(isNewLogin = true)) {
             is AppResult.Success -> AppResult.Success(Unit)
             is AppResult.Failure -> if (me.error.code == ApiErrorCodes.PASSWORD_CHANGE_REQUIRED) {

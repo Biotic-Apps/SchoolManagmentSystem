@@ -19,10 +19,11 @@ import type { AuthUser } from '../common/types/auth-user';
 import { AuthThrottle } from '../throttling/auth-throttle.decorator';
 import { AuthService } from './auth.service';
 import { clientIp, userAgent } from './client-info';
-import { AuthTokensDto } from './dto/auth-tokens.dto';
+import { AuthTokensDto, type LoginResultDto } from './dto/auth-tokens.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { DeviceSessionDto } from './dto/device-session.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ApiLoginResult } from './dto/login-result.decorator';
 import { LoginDto } from './dto/login.dto';
 import { LogoutDto } from './dto/logout.dto';
 import { RefreshDto } from './dto/refresh.dto';
@@ -46,8 +47,8 @@ export class AuthController {
   @AuthThrottle()
   @Post('login')
   @HttpCode(200)
-  @ApiData(AuthTokensDto)
-  login(@Body() body: LoginDto, @Req() req: Request): Promise<AuthTokensDto> {
+  @ApiLoginResult()
+  login(@Body() body: LoginDto, @Req() req: Request): Promise<LoginResultDto> {
     return this.auth.login(body.identifier, body.password, {
       platform: body.platform,
       deviceName: body.deviceName,
@@ -110,6 +111,7 @@ export class AuthController {
     return OK;
   }
 
+  @AuthThrottle()
   @Post('password/change')
   @HttpCode(200)
   @ApiData(OkDto)

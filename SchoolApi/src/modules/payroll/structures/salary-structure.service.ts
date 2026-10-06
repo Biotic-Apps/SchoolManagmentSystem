@@ -24,8 +24,26 @@ export class SalaryStructureService {
     private readonly audit: AuditService,
   ) {}
 
-  async get(scope: Scope, staffId: string): Promise<SalaryStructuresDto> {
-    await this.access.staff(scope, staffId);
+  async get(
+    user: AuthUser,
+    scope: Scope,
+    staffId: string,
+  ): Promise<SalaryStructuresDto> {
+    const staff = await this.access.staff(scope, staffId);
+    if (staff.userId !== user.id) {
+      // security.md §5: reads of another person's pay are logged.
+      await this.audit.recordNow({
+        action: 'payroll.salary_structure_read',
+        entityType: 'Staff',
+        entityId: staff.id,
+        schoolId: staff.schoolId,
+        branchId: staff.branchId,
+      });
+    }
+    return this.history(staffId);
+  }
+
+  private async history(staffId: string): Promise<SalaryStructuresDto> {
     const rows = sortStructures(
       await this.prisma.salaryStructure.findMany({ where: { staffId } }),
     );
@@ -75,6 +93,6 @@ export class SalaryStructureService {
         reason: row.reason,
       },
     });
-    return this.get(scope, staffId);
+    return this.history(staffId);
   }
 }

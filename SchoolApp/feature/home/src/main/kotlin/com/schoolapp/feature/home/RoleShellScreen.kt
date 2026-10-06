@@ -70,7 +70,7 @@ fun RoleShellScreen(
         }
         val (primary, overflow) = state.menu.splitForLayout(layout)
         var showMore by rememberSaveable { mutableStateOf(false) }
-        val title = state.menu.firstOrNull { it.id == currentId }?.label ?: stringResource(R.string.home_title)
+        val title = state.menu.firstOrNull { it.id == currentId }?.label ?: state.brand.name ?: stringResource(R.string.home_title)
 
         Row(modifier.fillMaxSize()) {
             when (layout) {

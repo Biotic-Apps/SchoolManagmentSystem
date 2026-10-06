@@ -9,6 +9,7 @@ import com.schoolapp.core.model.organisation.CalendarEvent
 @Immutable
 data class SessionsCalendarUiState(
     val isLoading: Boolean = true,
+    val isRefreshing: Boolean = false,
     val branches: List<BranchOption> = emptyList(),
     val selectedBranchId: String? = null,
     val sessions: List<AcademicSession> = emptyList(),
@@ -16,4 +17,5 @@ data class SessionsCalendarUiState(
     val error: AppError? = null,
 ) {
     val activeSession: AcademicSession? get() = sessions.firstOrNull { it.isActive }
+    val hasContent: Boolean get() = sessions.isNotEmpty()
 }

@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AuditService } from '../../core/audit/audit.service';
+import { UserAuthPolicyService } from '../../core/auth/policy/user-auth-policy.service';
+import { TwoFactorService } from '../../core/auth/two-factor/two-factor.service';
 import { normalizePhone } from '../../core/auth/identifier';
 import type { AuthUser } from '../../core/common/types/auth-user';
 import { UrlSigner } from '../../core/files/url-signer';
@@ -17,15 +19,25 @@ export class MeService {
     private readonly access: AccessCache,
     private readonly signer: UrlSigner,
     private readonly audit: AuditService,
+    private readonly twoFactor: TwoFactorService,
+    private readonly policies: UserAuthPolicyService,
   ) {}
 
   async get(user: AuthUser): Promise<MeDto> {
-    const [profile, assignments] = await Promise.all([
+    const [profile, assignments, twoFactor, policies] = await Promise.all([
       this.repository.findUser(user.id),
       this.access.assignments(user.id),
+      this.twoFactor.status(user.id),
+      this.policies.forUser(user.id),
     ]);
     return {
-      user: profile,
+      user: {
+        ...profile,
+        twoFactorEnabled: twoFactor.enabled,
+        twoFactorRequired: twoFactor.required,
+      },
+      twoFactor,
+      sessionTimeoutMinutes: policies.sessionTimeoutMinutes,
       activeRole: user.activeRole,
       roles: user.roles,
       permissions: [...user.permissions].sort(),

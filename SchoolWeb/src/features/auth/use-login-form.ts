@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
@@ -11,6 +12,7 @@ import { useRedirectIfSignedIn } from "./use-require-session";
 const REASON_NOTICE: Record<string, string> = {
   idle: `You were signed out after ${IDLE_TIMEOUT_MINUTES} minutes without activity.`,
   expired: "Your session has ended. Please sign in again.",
+  reset: "Your password was changed. Sign in with the new password.",
 };
 
 export function useLoginForm() {
@@ -22,7 +24,17 @@ export function useLoginForm() {
     defaultValues: { identifier: "", password: "" },
   });
 
-  const submit = form.handleSubmit((values) => mutation.mutate(values));
+  const [challengeId, setChallengeId] = useState<string | null>(null);
+
+  const submit = form.handleSubmit((values) =>
+    mutation.mutate(values, { onSuccess: (challenge) => setChallengeId(challenge?.challengeId ?? null) }),
+  );
+
+  const backToPassword = () => {
+    setChallengeId(null);
+    mutation.reset();
+    form.setValue("password", "");
+  };
 
   return {
     register: form.register,
@@ -31,5 +43,7 @@ export function useLoginForm() {
     submitting: mutation.isPending,
     serverError: mutation.error ? errorMessage(mutation.error) : null,
     notice: mutation.error ? null : (REASON_NOTICE[params.get("reason") ?? ""] ?? null),
+    challengeId,
+    backToPassword,
   };
 }

@@ -11,6 +11,7 @@ import com.schoolapp.core.model.organisation.Subject
 data class ClassesUiState(
     val tab: ClassesTab = ClassesTab.SECTIONS,
     val isLoading: Boolean = true,
+    val isRefreshing: Boolean = false,
     val branches: List<BranchOption> = emptyList(),
     val selectedBranchId: String? = null,
     val sessionName: String? = null,
@@ -18,4 +19,6 @@ data class ClassesUiState(
     val classes: List<SchoolClass> = emptyList(),
     val subjects: List<Subject> = emptyList(),
     val error: AppError? = null,
-)
+) {
+    val hasContent: Boolean get() = sections.isNotEmpty() || classes.isNotEmpty() || subjects.isNotEmpty()
+}

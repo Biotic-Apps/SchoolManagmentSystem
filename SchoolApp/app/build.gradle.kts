@@ -21,6 +21,10 @@ android {
             optimization {
                 enable = true
             }
+            // Local verification only (-Pschoolapp.release.debugSigning=true): installable R8 build.
+            if (providers.gradleProperty("schoolapp.release.debugSigning").orNull == "true") {
+                signingConfig = signingConfigs.getByName("debug")
+            }
         }
     }
 }
@@ -74,6 +78,8 @@ dependencies {
     implementation(projects.feature.certificates)
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.profileinstaller)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)

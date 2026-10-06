@@ -34,7 +34,13 @@ fun ProfileScreen(
         item(key = "form") { ProfileForm(state, onNameChange, onEmailChange, onPhoneChange, onSave) }
         if (state.roles.isNotEmpty()) item(key = "roles") { RolesCard(state.roles) }
         item(key = "notifications") { NotificationsCard(onNotificationPreferences) }
-        item(key = "security") { SecurityCard(onChangePassword = onChangePassword, onDeviceSessions = onDeviceSessions) }
+        item(key = "security") {
+            SecurityCard(
+                twoFactorEnabled = state.twoFactorEnabled,
+                onChangePassword = onChangePassword,
+                onDeviceSessions = onDeviceSessions,
+            )
+        }
     }
 }
 

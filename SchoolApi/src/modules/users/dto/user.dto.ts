@@ -10,6 +10,8 @@ export class UserSummaryDto {
   roles!: string[];
   branchNames!: string[];
   lastLoginAt!: string | null;
+  /** Set while sign-in is locked after failed attempts (POST /users/:id/unlock). */
+  lockedUntil!: string | null;
 }
 
 export class UserDetailDto extends UserSummaryDto {

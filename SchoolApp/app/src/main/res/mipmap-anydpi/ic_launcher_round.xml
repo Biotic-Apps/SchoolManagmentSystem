@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 7.x (no adaptive icons). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path android:fillColor="@color/brand_primary" android:pathData="M24,2A22,22 0,1 1,24 46A22,22 0,1 1,24 2Z" />
+    <group
+        android:scaleX="1.4"
+        android:scaleY="1.4"
+        android:translateX="7.2"
+        android:translateY="7.55">
+        <path android:fillColor="#FFFFFFFF" android:pathData="@string/brand_mark_board" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="@string/brand_mark_base" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="@string/brand_mark_tassel" />
+    </group>
+</vector>

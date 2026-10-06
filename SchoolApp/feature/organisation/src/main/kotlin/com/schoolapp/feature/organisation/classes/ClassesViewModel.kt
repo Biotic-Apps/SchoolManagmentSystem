@@ -41,25 +41,51 @@ class ClassesViewModel @Inject constructor(
 
     fun load() {
         _uiState.update { it.copy(isLoading = true, error = null) }
+        loadOptions(refreshing = false)
+    }
+
+    /** Reloads the selected branch while its lists stay visible; a failure keeps them. */
+    fun refresh() {
+        _uiState.update { it.copy(isRefreshing = true) }
+        val branchId = _uiState.value.selectedBranchId
+        if (branchId == null) loadOptions(refreshing = true) else fetchBranch(branchId, refreshing = true)
+    }
+
+    fun onBranchSelected(branchId: String) = fetchBranch(branchId, refreshing = false)
+
+    private fun loadOptions(refreshing: Boolean) {
         viewModelScope.launch {
             when (val result = optionsLoader.load()) {
-                is AppResult.Failure -> _uiState.update { it.copy(isLoading = false, error = result.error) }
+                is AppResult.Failure -> _uiState.update { it.copy(isLoading = false, isRefreshing = false, error = result.error) }
                 is AppResult.Success -> {
                     val options = result.data
                     val selected = savedStateHandle.get<String>(KEY_BRANCH)?.takeIf { id -> options.branches.any { it.id == id } }
                         ?: options.preferredId?.takeIf { id -> options.branches.any { it.id == id } }
                         ?: options.branches.firstOrNull()?.id
                     _uiState.update { it.copy(branches = options.branches) }
-                    if (selected == null) _uiState.update { it.copy(isLoading = false) } else onBranchSelected(selected)
+                    if (selected == null) {
+                        _uiState.update { it.copy(isLoading = false, isRefreshing = false, error = null) }
+                    } else {
+                        fetchBranch(selected, refreshing)
+                    }
                 }
             }
         }
     }
 
-    fun onBranchSelected(branchId: String) {
+    private fun fetchBranch(branchId: String, refreshing: Boolean) {
         savedStateHandle[KEY_BRANCH] = branchId
         val schoolId = _uiState.value.branches.firstOrNull { it.id == branchId }?.schoolId
-        _uiState.update { it.copy(selectedBranchId = branchId, isLoading = true, error = null) }
+        _uiState.update {
+            if (refreshing) {
+                it.copy(selectedBranchId = branchId, isRefreshing = true)
+            } else {
+                it.copy(
+                    selectedBranchId = branchId, isLoading = true, error = null,
+                    sessionName = null, sections = emptyList(), classes = emptyList(), subjects = emptyList(),
+                )
+            }
+        }
         branchJob?.cancel()
         branchJob = viewModelScope.launch {
             val classes = async { repository.classes(schoolId) }
@@ -70,10 +96,12 @@ class ClassesViewModel @Inject constructor(
             val error = results.firstNotNullOfOrNull { (it as? AppResult.Failure)?.error }
             _uiState.update { state ->
                 if (error != null) {
-                    state.copy(isLoading = false, error = error)
+                    state.copy(isLoading = false, isRefreshing = false, error = error)
                 } else {
                     state.copy(
                         isLoading = false,
+                        isRefreshing = false,
+                        error = null,
                         sessionName = active?.name,
                         sections = sections.dataOrEmpty(),
                         classes = classes.await().dataOrEmpty(),

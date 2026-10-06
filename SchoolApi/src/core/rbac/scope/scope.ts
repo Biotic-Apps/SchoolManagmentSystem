@@ -139,6 +139,13 @@ export class Scope {
     return this.studentIds.has(studentId);
   }
 
+  /** Guardians filtering by a student who is not theirs get 404 (security.md §2.5). */
+  assertGuardianStudent(studentId: string | undefined): void {
+    if (this.guardian && studentId && !this.studentIds.has(studentId)) {
+      throw notFound('Student');
+    }
+  }
+
   sectionAccess(): SectionAccess {
     return {
       all: this.global,

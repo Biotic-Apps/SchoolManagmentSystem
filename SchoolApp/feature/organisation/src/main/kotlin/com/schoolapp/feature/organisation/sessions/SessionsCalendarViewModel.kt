@@ -33,29 +33,52 @@ class SessionsCalendarViewModel @Inject constructor(
 
     fun load() {
         _uiState.update { it.copy(isLoading = true, error = null) }
+        loadOptions(refreshing = false)
+    }
+
+    /** Reloads the selected branch while sessions and events stay visible; a failure keeps them. */
+    fun refresh() {
+        _uiState.update { it.copy(isRefreshing = true) }
+        val branchId = _uiState.value.selectedBranchId
+        if (branchId == null) loadOptions(refreshing = true) else fetchBranch(branchId, refreshing = true)
+    }
+
+    fun onBranchSelected(branchId: String) = fetchBranch(branchId, refreshing = false)
+
+    private fun loadOptions(refreshing: Boolean) {
         viewModelScope.launch {
             when (val result = optionsLoader.load()) {
-                is AppResult.Failure -> _uiState.update { it.copy(isLoading = false, error = result.error) }
+                is AppResult.Failure -> _uiState.update { it.copy(isLoading = false, isRefreshing = false, error = result.error) }
                 is AppResult.Success -> {
                     val options = result.data
                     val selected = savedStateHandle.get<String>(KEY_BRANCH)?.takeIf { id -> options.branches.any { it.id == id } }
                         ?: options.preferredId?.takeIf { id -> options.branches.any { it.id == id } }
                         ?: options.branches.firstOrNull()?.id
                     _uiState.update { it.copy(branches = options.branches) }
-                    if (selected == null) _uiState.update { it.copy(isLoading = false) } else onBranchSelected(selected)
+                    if (selected == null) {
+                        _uiState.update { it.copy(isLoading = false, isRefreshing = false, error = null) }
+                    } else {
+                        fetchBranch(selected, refreshing)
+                    }
                 }
             }
         }
     }
 
-    fun onBranchSelected(branchId: String) {
+    private fun fetchBranch(branchId: String, refreshing: Boolean) {
         savedStateHandle[KEY_BRANCH] = branchId
-        _uiState.update { it.copy(selectedBranchId = branchId, isLoading = true, error = null) }
+        _uiState.update {
+            if (refreshing) {
+                it.copy(selectedBranchId = branchId, isRefreshing = true)
+            } else {
+                it.copy(selectedBranchId = branchId, isLoading = true, error = null, sessions = emptyList(), events = emptyList())
+            }
+        }
         branchJob?.cancel()
         branchJob = viewModelScope.launch {
             val sessions = when (val result = repository.sessions(branchId)) {
                 is AppResult.Failure -> {
-                    _uiState.update { it.copy(isLoading = false, error = result.error) }
+                    _uiState.update { it.copy(isLoading = false, isRefreshing = false, error = result.error) }
                     return@launch
                 }
                 is AppResult.Success -> result.data
@@ -64,8 +87,8 @@ class SessionsCalendarViewModel @Inject constructor(
             val events = repository.calendar(branchId, active?.startDate, active?.endDate)
             _uiState.update {
                 when (events) {
-                    is AppResult.Success -> it.copy(isLoading = false, sessions = sessions, events = events.data)
-                    is AppResult.Failure -> it.copy(isLoading = false, error = events.error)
+                    is AppResult.Success -> it.copy(isLoading = false, isRefreshing = false, error = null, sessions = sessions, events = events.data)
+                    is AppResult.Failure -> it.copy(isLoading = false, isRefreshing = false, error = events.error)
                 }
             }
         }

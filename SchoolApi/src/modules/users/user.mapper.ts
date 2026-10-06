@@ -35,6 +35,10 @@ export function toUserSummary(row: UserRow): UserSummaryDto {
     roles: sortRoleKeys(row.roleAssignments.map((a) => a.role.key)),
     branchNames: [...new Set(branchNames)].sort(),
     lastLoginAt: row.lastLoginAt?.toISOString() ?? null,
+    lockedUntil:
+      row.lockedUntil && row.lockedUntil > new Date()
+        ? row.lockedUntil.toISOString()
+        : null,
   };
 }
 

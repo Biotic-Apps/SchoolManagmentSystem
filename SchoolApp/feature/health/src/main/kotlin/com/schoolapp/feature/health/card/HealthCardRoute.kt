@@ -24,6 +24,7 @@ import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.SecondaryButton
 import com.schoolapp.core.designsystem.component.SectionHeader
 import com.schoolapp.core.designsystem.component.StatusTone
+import com.schoolapp.core.ui.SecureWindowEffect
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.core.ui.rememberExternalActions
 import com.schoolapp.feature.health.R
@@ -39,6 +40,7 @@ internal fun HealthCardRoute(
     viewModel: HealthCardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    SecureWindowEffect()
     AppScaffold(
         modifier = modifier,
         topBar = {

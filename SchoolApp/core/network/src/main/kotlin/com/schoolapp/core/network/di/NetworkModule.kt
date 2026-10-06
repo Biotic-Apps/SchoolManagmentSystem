@@ -4,6 +4,7 @@ import com.schoolapp.core.network.BuildConfig
 import com.schoolapp.core.network.NetworkJson
 import com.schoolapp.core.network.api.ApprovalsApi
 import com.schoolapp.core.network.api.AuthApi
+import com.schoolapp.core.network.api.BrandingApi
 import com.schoolapp.core.network.api.DashboardApi
 import com.schoolapp.core.network.api.MeApi
 import com.schoolapp.core.network.api.NotificationsApi
@@ -34,6 +35,8 @@ import com.schoolapp.core.network.api.PayrollApi
 import com.schoolapp.core.network.api.CertificatesApi
 import com.schoolapp.core.network.auth.AuthInterceptor
 import com.schoolapp.core.network.auth.TokenAuthenticator
+import com.schoolapp.core.network.security.CertificatePinning
+import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -77,6 +80,7 @@ internal object NetworkModule {
         .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
         .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
         .addInterceptor(logging)
+        .apply { CertificatePinning.pinnerOrNull(BuildConfig.CERT_PIN_HOST, BuildConfig.CERT_PINS)?.let { certificatePinner(it) } }
         .build()
 
     @Provides
@@ -93,7 +97,7 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(@AuthClient client: OkHttpClient, json: Json, @ApiBaseUrl baseUrl: String): Retrofit =
+    fun provideRetrofit(@AuthClient client: Lazy<OkHttpClient>, json: Json, @ApiBaseUrl baseUrl: String): Retrofit =
         retrofit(client, json, baseUrl)
 
     @Provides
@@ -214,12 +218,17 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRefreshApi(@RefreshClient client: OkHttpClient, json: Json, @ApiBaseUrl baseUrl: String): RefreshApi =
+    fun provideBrandingApi(retrofit: Retrofit): BrandingApi = retrofit.create(BrandingApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideRefreshApi(@RefreshClient client: Lazy<OkHttpClient>, json: Json, @ApiBaseUrl baseUrl: String): RefreshApi =
         retrofit(client, json, baseUrl).create(RefreshApi::class.java)
 
-    private fun retrofit(client: OkHttpClient, json: Json, baseUrl: String): Retrofit = Retrofit.Builder()
+    /** The OkHttp client is built on the first call (an IO thread), not while the graph is created on main. */
+    private fun retrofit(client: Lazy<OkHttpClient>, json: Json, baseUrl: String): Retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
-        .client(client)
+        .callFactory { client.get().newCall(it) }
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
 }

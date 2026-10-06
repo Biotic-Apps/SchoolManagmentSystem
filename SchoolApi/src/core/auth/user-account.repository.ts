@@ -6,6 +6,7 @@ export interface UserAuthState {
   status: 'ACTIVE' | 'DISABLED';
   tokenVersion: number;
   mustChangePassword: boolean;
+  twoFactorEnabled: boolean;
 }
 
 @Injectable()
@@ -25,21 +26,37 @@ export class UserAccountRepository {
   }
 
   async findState(id: string): Promise<UserAuthState | null> {
-    return this.prisma.user.findUnique({
+    const row = await this.prisma.user.findUnique({
       where: { id },
-      select: { status: true, tokenVersion: true, mustChangePassword: true },
+      select: {
+        status: true,
+        tokenVersion: true,
+        mustChangePassword: true,
+        twoFactor: { select: { enabledAt: true } },
+      },
     });
+    if (!row) return null;
+    const { twoFactor, ...state } = row;
+    return { ...state, twoFactorEnabled: !!twoFactor?.enabledAt };
   }
 
-  recordFailure(
-    id: string,
-    failedLoginCount: number,
-    lockedUntil: Date | null,
-  ) {
-    return this.prisma.user.update({
+  /** Atomically adds one failed attempt; returns the new count. */
+  async incrementFailures(id: string): Promise<number> {
+    const row = await this.prisma.user.update({
       where: { id },
-      data: { failedLoginCount, lockedUntil },
+      data: { failedLoginCount: { increment: 1 } },
+      select: { failedLoginCount: true },
     });
+    return row.failedLoginCount;
+  }
+
+  /** Locks once the threshold is reached (counter restarts after the lock). */
+  async lock(id: string, threshold: number, until: Date): Promise<boolean> {
+    const result = await this.prisma.user.updateMany({
+      where: { id, failedLoginCount: { gte: threshold } },
+      data: { failedLoginCount: 0, lockedUntil: until },
+    });
+    return result.count > 0;
   }
 
   recordLogin(id: string) {

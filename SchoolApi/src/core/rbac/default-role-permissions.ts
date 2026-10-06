@@ -28,7 +28,16 @@ const PRINCIPAL: PermissionKey[] = [
   ...grant('progress', 'view', 'edit'),
   ...grant('activities', 'view', 'add', 'edit', 'approve', 'publish'),
   ...grant('notices', 'view', 'add', 'edit', 'publish'),
-  ...grant('exams', 'view', 'add', 'edit', 'submit', 'approve', 'publish', 'export'),
+  ...grant(
+    'exams',
+    'view',
+    'add',
+    'edit',
+    'submit',
+    'approve',
+    'publish',
+    'export',
+  ),
   ...grant('fees', 'view', 'approve', 'export'),
   ...grant('payroll', 'view', 'approve'),
   ...grant('expenses', 'view', 'approve'),
@@ -41,6 +50,9 @@ const PRINCIPAL: PermissionKey[] = [
   ...grant('certificates', 'view', 'add', 'approve'),
   ...grant('approvals', 'view', 'approve'),
   ...grant('reports', 'view', 'export'),
+  // Phase 5: read-only own-school settings (not backups/support) + branch imports.
+  ...viewOnly('settings'),
+  'settings.import',
   ...OWN_PROFILE,
   'teacherwork.proxy',
   'audit.view',
@@ -99,7 +111,14 @@ const HELPER: PermissionKey[] = [
 ];
 
 const ACCOUNTANT: PermissionKey[] = [
-  ...viewOnly('dashboard', 'branches', 'sessions', 'classes', 'students', 'staff'),
+  ...viewOnly(
+    'dashboard',
+    'branches',
+    'sessions',
+    'classes',
+    'students',
+    'staff',
+  ),
   // Accountant prepares, records and verifies (security.md §2.1).
   ...grant('fees', 'view', 'add', 'edit', 'submit', 'approve', 'export'),
   ...grant('payroll', 'view', 'add', 'edit', 'submit', 'export'),

@@ -102,6 +102,17 @@ const TONE_BY_STATUS: Record<string, BadgeTone> = {
   FAIR: "warning",
   POOR: "error",
   DISPOSED: "neutral",
+  // Phase 5: backups, imports, support.
+  PASSED: "success",
+  NOT_RUN: "neutral",
+  VALIDATING: "info",
+  INVALID: "error",
+  COMMITTING: "info",
+  COMMITTED: "success",
+  REVERTED: "neutral",
+  OK: "success",
+  DEGRADED: "warning",
+  DOWN: "error",
 };
 
 export function statusTone(status: string): BadgeTone {

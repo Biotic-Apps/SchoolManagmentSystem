@@ -35,6 +35,7 @@ export const BUILT_MODULES: ReadonlySet<NavId> = new Set<NavId>([
   "inventory",
   "certificates",
   "reports",
+  "settings",
 ]);
 
 // Delivery phase for each menu module, per docs/PROGRESS.md.

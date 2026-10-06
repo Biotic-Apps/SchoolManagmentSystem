@@ -25,6 +25,7 @@ export class ConcessionReader {
     scope: Scope,
     query: ConcessionQueryDto,
   ): Promise<PageResult<ConcessionDto>> {
+    scope.assertGuardianStudent(query.studentId);
     if (query.branchId && !scope.guardian)
       await this.access.readBranch(scope, query.branchId);
     const visible: Prisma.ConcessionWhereInput = scope.guardian

@@ -121,7 +121,7 @@ export const ROLE_MENUS: Record<RoleKey, readonly NavId[]> = {
     "dashboard", "branches", "classes", "students", "admissions", "guardians", "staff", "timetable",
     "attendance", "diary", "syllabus", "activities", "notices", "exams", "fees", "payroll",
     "expenses", "inventory", "health", "pickup", "messages", "meetings", "complaints",
-    "certificates", "approvals", "reports", "profile",
+    "certificates", "approvals", "reports", "settings", "profile",
   ],
   COORDINATOR: SUPERVISOR_MENU,
   HEAD_TEACHER: SUPERVISOR_MENU,
@@ -141,7 +141,7 @@ export const ROLE_MENUS: Record<RoleKey, readonly NavId[]> = {
 };
 
 const LABEL_OVERRIDES: Partial<Record<RoleKey, Partial<Record<NavId, string>>>> = {
-  PRINCIPAL: { branches: "Branch & Calendar" },
+  PRINCIPAL: { branches: "Branch & Calendar", settings: "Settings" },
   TEACHER: { classes: "My Classes & Students" },
   PARENT: {
     dashboard: "Home",

@@ -52,7 +52,7 @@ Both clients keep the same catalogue. Ids, labels and permission keys must be id
 ## Default menus by role (order)
 
 - **SUPER_ADMIN**: dashboard, schools, branches, users, roles, sessions, classes, students, admissions, guardians, staff, timetable, syllabus, diary, activities, notices, attendance, exams, fees, payroll, expenses, inventory, health, pickup, complaints, certificates, approvals, reports, settings, profile
-- **PRINCIPAL**: dashboard, branches (label "Branch & Calendar"), classes, students, admissions, guardians, staff, timetable, attendance, diary, syllabus, activities, notices, exams, fees, payroll, expenses, inventory, health, pickup, messages, meetings, complaints, certificates, approvals, reports, profile
+- **PRINCIPAL**: dashboard, branches (label "Branch & Calendar"), classes, students, admissions, guardians, staff, timetable, attendance, diary, syllabus, activities, notices, exams, fees, payroll, expenses, inventory, health, pickup, messages, meetings, complaints, certificates, approvals, reports, settings (label "Settings"), profile
 - **COORDINATOR / HEAD_TEACHER**: dashboard, classes, students, staff, timetable, attendance, diary, syllabus, activities, exams, progress, health, pickup, messages, meetings, complaints, approvals, my_salary, profile
 - **TEACHER**: dashboard, classes (label "My Classes & Students"), timetable, attendance, diary, syllabus, activities, exams, progress, messages, meetings, complaints, my_salary, profile
 - **HELPER**: dashboard, classes, attendance, diary, activities, complaints, my_salary, profile

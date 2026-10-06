@@ -19,6 +19,7 @@ import { MaintenanceWorker } from './workers/maintenance.worker';
 import { NotificationsWorker } from './workers/notifications.worker';
 import { PayrollWorker } from './workers/payroll.worker';
 import { ReportsWorker } from './workers/reports.worker';
+import { ImportsWorker } from './workers/imports.worker';
 
 const SHARED = [JobProcessorRegistry, JobRunner];
 const EXPORTS = [JobDispatcher, JobScheduler, JobProcessorRegistry];
@@ -57,6 +58,7 @@ export class JobsModule {
         NotificationsWorker,
         DocumentsWorker,
         ReportsWorker,
+        ImportsWorker,
         PayrollWorker,
         MaintenanceWorker,
       ],

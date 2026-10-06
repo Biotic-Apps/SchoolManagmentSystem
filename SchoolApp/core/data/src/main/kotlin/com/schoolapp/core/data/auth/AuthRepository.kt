@@ -11,7 +11,15 @@ interface AuthRepository {
     /** Current signed-in context, or null when signed out or a password change is pending. */
     val session: Flow<SessionContext?>
 
-    suspend fun login(identifier: String, password: String): AppResult<Unit>
+    suspend fun login(identifier: String, password: String): AppResult<LoginOutcome>
+
+    /** Completes a [LoginOutcome.TwoFactorRequired] sign-in with a TOTP or recovery [code]. */
+    suspend fun verifyTwoFactor(challengeId: String, code: String): AppResult<Unit>
+
+    /** Always answers neutrally on the server side; the caller must not reveal whether the account exists. */
+    suspend fun requestPasswordReset(identifier: String): AppResult<Unit>
+
+    suspend fun resetPassword(token: String, newPassword: String): AppResult<Unit>
 
     /** Re-fetches `/me` so role/permission changes apply; ends the session if the server rejects it. */
     suspend fun refreshSession(): AppResult<Unit>

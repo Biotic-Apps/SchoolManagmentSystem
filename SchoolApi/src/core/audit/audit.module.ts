@@ -5,6 +5,7 @@ import { AuditController } from './audit.controller';
 import { AuditInterceptor } from './audit.interceptor';
 import { AuditRepository } from './audit.repository';
 import { AuditService } from './audit.service';
+import { AuditPartitionsProcessor } from './jobs/audit-partitions.processor';
 
 @Global()
 @Module({
@@ -13,6 +14,7 @@ import { AuditService } from './audit.service';
     AuditService,
     AuditRepository,
     AuditQueryService,
+    AuditPartitionsProcessor,
     { provide: APP_INTERCEPTOR, useClass: AuditInterceptor },
   ],
   exports: [AuditService],

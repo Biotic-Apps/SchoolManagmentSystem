@@ -24,7 +24,8 @@ export class IdCardController {
 
   @Post()
   @HttpCode(200)
-  @RequirePermission('students.view')
+  // Rendering a new card version is a change: staff who manage the student.
+  @RequirePermission('students.edit')
   @ApiData(IdCardJobDto)
   request(
     @CurrentUser() user: AuthUser,

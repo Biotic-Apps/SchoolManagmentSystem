@@ -26,7 +26,7 @@ export class IdCardService {
     scope: Scope,
     studentId: string,
   ): Promise<IdCardJobDto> {
-    const student = await this.access.read(scope, studentId);
+    const student = await this.access.manage(scope, studentId);
     const pending = await this.prisma.idCard.findFirst({
       where: { studentId, status: 'PENDING' },
       orderBy: { version: 'desc' },

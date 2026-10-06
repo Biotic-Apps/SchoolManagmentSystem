@@ -4,6 +4,9 @@ export interface SessionUser {
   email: string | null;
   phone: string | null;
   mustChangePassword: boolean;
+  /** Phase 5: TOTP two-step sign-in state (absent on older APIs). */
+  twoFactorEnabled?: boolean;
+  twoFactorRequired?: boolean;
 }
 
 export type ScopeType = "GLOBAL" | "SCHOOL" | "BRANCH" | "SECTION" | "SUBJECT_SECTION" | "SELF" | "GUARDIAN";
@@ -47,6 +50,18 @@ export interface WebTokens {
   accessToken: string;
   accessExpiresIn: number;
   mustChangePassword: boolean;
+}
+
+/** Login answer when the account has two-factor sign-in on. */
+export interface TwoFactorChallenge {
+  twoFactorRequired: true;
+  challengeId: string;
+}
+
+export type LoginResult = WebTokens | TwoFactorChallenge;
+
+export function isTwoFactorChallenge(result: LoginResult): result is TwoFactorChallenge {
+  return "twoFactorRequired" in result && result.twoFactorRequired === true;
 }
 
 export type AuthStatus = "loading" | "anonymous" | "password-change" | "authenticated";

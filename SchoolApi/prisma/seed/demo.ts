@@ -9,6 +9,7 @@ import { seedPeriods, seedTimetables } from './demo-timetable';
 import { seedDailyOperations } from './demo-daily';
 import { seedOrganisation } from './demo-org';
 import { seedFinanceAndResults } from './demo-phase4';
+import { seedSchoolSettings } from './demo-settings';
 import type { SystemRoleIds } from './system-roles';
 import { ensureAssignment, ensureUser } from './users';
 
@@ -29,6 +30,7 @@ const BRANCH_STAFF = [
 export async function seedDemo(prisma: SeedClient, roles: SystemRoleIds): Promise<void> {
   const org = await seedOrganisation(prisma);
   await seedAcademics(prisma, org);
+  await seedSchoolSettings(prisma, org.school.id);
   const place = { schoolId: org.school.id, branchId: org.branch.id };
 
   const admin = await ensureUser(prisma, { email: 'admin@eschool.local', name: 'Demo Admin', password: PASSWORD, resetPassword: true });

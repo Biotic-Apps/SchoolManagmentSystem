@@ -1,0 +1,25 @@
+# Startup profile (hand-written): app launch → session check → login or role shell → dashboard.
+# Compose, AndroidX, Room and DataStore ship their own profiles; these rules add our startup path.
+HSPLcom/schoolapp/SchoolApplication;->**(**)**
+HSPLcom/schoolapp/Hilt_SchoolApplication;->**(**)**
+HSPLcom/schoolapp/MainActivity;->**(**)**
+HSPLcom/schoolapp/Hilt_MainActivity;->**(**)**
+HSPLcom/schoolapp/AppViewModel*;->**(**)**
+HSPLcom/schoolapp/AppUiState*;->**(**)**
+HSPLcom/schoolapp/startup/**;->**(**)**
+HSPLcom/schoolapp/navigation/**;->**(**)**
+HSPLcom/schoolapp/DaggerSchoolApplication_HiltComponents_SingletonC*;->**(**)**
+HSPLcom/schoolapp/core/common/**;->**(**)**
+HSPLcom/schoolapp/core/model/**;->**(**)**
+HSPLcom/schoolapp/core/designsystem/**;->**(**)**
+HSPLcom/schoolapp/core/navigation/**;->**(**)**
+HSPLcom/schoolapp/core/ui/**;->**(**)**
+HSPLcom/schoolapp/core/datastore/**;->**(**)**
+HSPLcom/schoolapp/core/database/**;->**(**)**
+HSPLcom/schoolapp/core/network/**;->**(**)**
+HSPLcom/schoolapp/core/data/auth/**;->**(**)**
+HSPLcom/schoolapp/core/data/branding/**;->**(**)**
+HSPLcom/schoolapp/feature/auth/**;->**(**)**
+HSPLcom/schoolapp/feature/home/**;->**(**)**
+HSPLcom/schoolapp/feature/dashboard/**;->**(**)**
+Lcom/schoolapp/**;

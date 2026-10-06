@@ -1,0 +1,180 @@
+// Phase 5 (hardening): school settings, two-factor sign-in, backups, imports.
+
+model SchoolSetting {
+  schoolId         String   @id @map("school_id") @db.Uuid
+  displayName      String?  @map("display_name")
+  appName          String   @default("eSchool") @map("app_name")
+  primaryColor     String   @default("#7A2944") @map("primary_color") @db.VarChar(7)
+  accentSoftColor  String   @default("#F6EAF0") @map("accent_soft_color") @db.VarChar(7)
+  receiptFooter    String?  @map("receipt_footer")
+  reportCardFooter String?  @map("report_card_footer")
+  timezone         String   @default("Asia/Karachi")
+  currency         String   @default("PKR") @db.Char(3)
+  locale           String   @default("en-PK")
+  /// Channel switches + per-category defaults (phase5-contract §A).
+  notifications    Json     @default("{}")
+  /// School-wide policies; branch settings still override per branch.
+  policies         Json     @default("{}")
+  updatedById      String?  @map("updated_by_id") @db.Uuid
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+
+  @@map("school_settings")
+}
+
+// TOTP secret is stored encrypted (AES-256-GCM); enabledAt null = set up but not confirmed.
+model UserTwoFactor {
+  userId       String    @id @map("user_id") @db.Uuid
+  secretEnc    String    @map("secret_enc")
+  enabledAt    DateTime? @map("enabled_at") @db.Timestamptz(3)
+  /// Last accepted TOTP time step (a code is accepted once).
+  lastUsedStep BigInt?   @map("last_used_step")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation("UserTwoFactor", fields: [userId], references: [id], onDelete: Restrict)
+
+  @@map("user_two_factor")
+}
+
+model TwoFactorRecoveryCode {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  codeHash  String    @unique @map("code_hash")
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation("UserRecoveryCodes", fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@map("two_factor_recovery_codes")
+}
+
+// Password accepted, second factor pending (5 minutes, 5 attempts).
+model TwoFactorChallenge {
+  id         String         @id @default(uuid(7)) @db.Uuid
+  userId     String         @map("user_id") @db.Uuid
+  platform   ClientPlatform
+  deviceName String?        @map("device_name")
+  ip         String?
+  userAgent  String?        @map("user_agent")
+  attempts   Int            @default(0)
+  expiresAt  DateTime       @map("expires_at") @db.Timestamptz(3)
+  consumedAt DateTime?      @map("consumed_at") @db.Timestamptz(3)
+  createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation("UserTwoFactorChallenges", fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("two_factor_challenges")
+}
+
+enum BackupRunStatus {
+  RUNNING
+  DONE
+  FAILED
+
+  @@map("backup_run_status")
+}
+
+enum BackupVerifyStatus {
+  NOT_RUN
+  RUNNING
+  PASSED
+  FAILED
+
+  @@map("backup_verify_status")
+}
+
+enum BackupTrigger {
+  MANUAL
+  SCHEDULED
+
+  @@map("backup_trigger")
+}
+
+model BackupRun {
+  id              String             @id @default(uuid(7)) @db.Uuid
+  trigger         BackupTrigger
+  /// "pg_dump" (custom format) or "copy" (built-in COPY dump, dev fallback).
+  format          String
+  status          BackupRunStatus    @default(RUNNING)
+  startedAt       DateTime           @default(now()) @map("started_at") @db.Timestamptz(3)
+  finishedAt      DateTime?          @map("finished_at") @db.Timestamptz(3)
+  sizeBytes       BigInt?            @map("size_bytes")
+  checksumSha256  String?            @map("checksum_sha256") @db.Char(64)
+  encrypted       Boolean            @default(true)
+  storageKey      String?            @unique @map("storage_key")
+  /// Row counts, ledger totals, latest audit id and migrations at backup time.
+  sourceStats     Json?              @map("source_stats")
+  error           String?
+  requestedById   String?            @map("requested_by_id") @db.Uuid
+  verifyStatus    BackupVerifyStatus @default(NOT_RUN) @map("verify_status")
+  verifyStartedAt DateTime?          @map("verify_started_at") @db.Timestamptz(3)
+  verifiedAt      DateTime?          @map("restore_verified_at") @db.Timestamptz(3)
+  verifyChecks    Json?              @map("verify_checks")
+  verifyError     String?            @map("verify_error")
+  /// Set when retention removed the stored object.
+  prunedAt        DateTime?          @map("pruned_at") @db.Timestamptz(3)
+
+  @@index([status, startedAt])
+  @@map("backup_runs")
+}
+
+enum ImportKind {
+  STUDENTS
+  GUARDIANS
+  STAFF
+  OPENING_BALANCES
+  FEE_PLANS
+
+  @@map("import_kind")
+}
+
+enum ImportStatus {
+  VALIDATING
+  READY
+  INVALID
+  COMMITTING
+  COMMITTED
+  REVERTED
+  FAILED
+
+  @@map("import_status")
+}
+
+model ImportBatch {
+  id             String       @id @default(uuid(7)) @db.Uuid
+  schoolId       String       @map("school_id") @db.Uuid
+  branchId       String       @map("branch_id") @db.Uuid
+  sessionId      String?      @map("session_id") @db.Uuid
+  kind           ImportKind
+  status         ImportStatus @default(VALIDATING)
+  fileId         String?      @map("file_id") @db.Uuid
+  fileName       String       @map("file_name")
+  totals         Json         @default("{}")
+  /// First 500 `{ row, column, message }`.
+  errors         Json         @default("[]")
+  preview        Json         @default("[]")
+  /// Parsed, normalised rows with their validity (input to commit).
+  rows           Json?
+  /// Ids created by commit, per entity, used by revert.
+  created        Json?
+  reconciliation Json?
+  skipInvalid    Boolean      @default(false) @map("skip_invalid")
+  error          String?
+  createdById    String       @map("created_by_id") @db.Uuid
+  committedById  String?      @map("committed_by_id") @db.Uuid
+  committedAt    DateTime?    @map("committed_at") @db.Timestamptz(3)
+  revertedById   String?      @map("reverted_by_id") @db.Uuid
+  revertedAt     DateTime?    @map("reverted_at") @db.Timestamptz(3)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([branchId, createdAt])
+  @@index([schoolId, createdAt])
+  @@map("import_batches")
+}

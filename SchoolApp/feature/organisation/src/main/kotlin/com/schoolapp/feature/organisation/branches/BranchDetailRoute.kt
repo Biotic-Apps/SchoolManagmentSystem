@@ -1,5 +1,6 @@
 package com.schoolapp.feature.organisation.branches
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -12,9 +13,11 @@ import com.schoolapp.core.designsystem.component.AppTopBar
 import com.schoolapp.core.designsystem.component.BackButton
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.organisation.R
 import com.schoolapp.feature.organisation.branches.components.BranchOverviewContent
+import com.schoolapp.feature.organisation.components.PullableState
 
 @Composable
 fun BranchDetailRoute(
@@ -23,7 +26,13 @@ fun BranchDetailRoute(
     viewModel: BranchDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    BranchDetailScreen(state = state, onBack = onBack, onRetry = viewModel::load, modifier = modifier)
+    BranchDetailScreen(
+        state = state,
+        onBack = onBack,
+        onRetry = viewModel::load,
+        onRefresh = viewModel::refresh,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -31,6 +40,7 @@ fun BranchDetailScreen(
     state: BranchDetailUiState,
     onBack: () -> Unit,
     onRetry: () -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     AppScaffold(
@@ -43,10 +53,15 @@ fun BranchDetailScreen(
         },
     ) { padding ->
         val body = Modifier.padding(padding)
-        when {
-            state.isLoading -> LoadingState(body)
-            state.error != null -> ErrorState(appErrorMessage(state.error), body, onRetry = onRetry)
-            state.overview != null -> BranchOverviewContent(state.overview, body)
+        if (state.isLoading) {
+            LoadingState(body)
+        } else {
+            RefreshBox(state.isRefreshing, onRefresh, body.fillMaxSize()) {
+                when {
+                    state.overview != null -> BranchOverviewContent(state.overview, refreshError = state.error)
+                    state.error != null -> PullableState { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
+                }
+            }
         }
     }
 }

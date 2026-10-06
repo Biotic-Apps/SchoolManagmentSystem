@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ClassesPage } from "@/features/classes/components/ClassesPage";
+import { ClassesRoute } from "@/features/classes/components/ClassesRoute";
 import { ModuleGuard } from "@/features/modules/components/ModuleGuard";
 
 export const metadata: Metadata = { title: "Classes, Sections & Subjects" };
@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Classes, Sections & Subjects" };
 export default function Page() {
   return (
     <ModuleGuard moduleId="classes">
-      <ClassesPage />
+      <ClassesRoute />
     </ModuleGuard>
   );
 }

@@ -6,10 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.designsystem.theme.SchoolTheme
 import com.schoolapp.navigation.AppNavHost
 import com.schoolapp.navigation.AppShellContent
+import com.schoolapp.startup.SplashGate
 import com.schoolapp.ui.LoginFooterContent
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Optional
@@ -24,6 +26,7 @@ class MainActivity : ComponentActivity() {
     private val viewModel: AppViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen().setKeepOnScreenCondition { SplashGate.keepOnScreen(viewModel.uiState.value) }
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         val footer = loginFooter.orElse(null)
