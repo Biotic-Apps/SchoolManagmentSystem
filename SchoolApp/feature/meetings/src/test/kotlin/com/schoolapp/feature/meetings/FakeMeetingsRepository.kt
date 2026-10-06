@@ -1,0 +1,56 @@
+package com.schoolapp.feature.meetings
+
+import com.schoolapp.core.common.result.AppError
+import com.schoolapp.core.common.result.AppResult
+import com.schoolapp.core.data.meetings.MeetingsRepository
+import com.schoolapp.core.model.common.PersonRef
+import com.schoolapp.core.model.meeting.CompleteMeetingInput
+import com.schoolapp.core.model.meeting.FollowUp
+import com.schoolapp.core.model.meeting.Meeting
+import com.schoolapp.core.model.meeting.MeetingBox
+import com.schoolapp.core.model.meeting.MeetingMode
+import com.schoolapp.core.model.meeting.MeetingSlot
+import com.schoolapp.core.model.meeting.MeetingStatus
+
+internal fun slot(id: String, date: String = "2026-10-08", start: String = "09:00") =
+    MeetingSlot(id, PersonRef("t1", "Ms Sana"), date, start, "09:20", MeetingMode.IN_PERSON, null, "OPEN")
+
+internal fun meeting(id: String = "m1", status: MeetingStatus = MeetingStatus.SCHEDULED) = Meeting(
+    id = id, student = PersonRef("c1", "Ali Khan"), guardian = PersonRef("g1", "Imran Khan"), staff = PersonRef("u1", "Sara Ali"),
+    date = "2026-10-08", startTime = "09:00", endTime = "09:20", mode = MeetingMode.IN_PERSON, location = null,
+    agenda = "Progress", status = status, notes = null, summary = null, followUps = emptyList(),
+)
+
+internal class FakeMeetingsRepository : MeetingsRepository {
+    var slots = listOf(slot("s1"), slot("s2", start = "10:00"), slot("s3", date = "2026-10-09"))
+    var bookError: AppError? = null
+    val slotRequests = mutableListOf<Pair<String, String>>()
+    val bookings = mutableListOf<Triple<String, String, String>>()
+    val completions = mutableListOf<CompleteMeetingInput>()
+    var upcoming = listOf(meeting())
+
+    override suspend fun openSlots(from: String, to: String, staffUserId: String?): AppResult<List<MeetingSlot>> {
+        slotRequests += from to to
+        return AppResult.Success(slots)
+    }
+
+    override suspend fun book(slotId: String, studentId: String, agenda: String): AppResult<Meeting> {
+        bookError?.let { return AppResult.Failure(it) }
+        bookings += Triple(slotId, studentId, agenda)
+        return AppResult.Success(meeting())
+    }
+
+    override suspend fun meetings(box: MeetingBox, studentId: String?) =
+        AppResult.Success(if (box == MeetingBox.UPCOMING) upcoming else emptyList())
+
+    override suspend fun cancel(id: String, reason: String?) = AppResult.Success(meeting(id, MeetingStatus.CANCELLED))
+
+    override suspend fun complete(id: String, input: CompleteMeetingInput): AppResult<Meeting> {
+        completions += input
+        return AppResult.Success(meeting(id, MeetingStatus.COMPLETED).copy(notes = input.notes))
+    }
+
+    override suspend fun markNoShow(id: String) = AppResult.Success(meeting(id, MeetingStatus.NO_SHOW))
+    override suspend fun followUps(): AppResult<List<FollowUp>> = AppResult.Success(emptyList())
+    override suspend fun markFollowUpDone(id: String): AppResult<Unit> = AppResult.Success(Unit)
+}

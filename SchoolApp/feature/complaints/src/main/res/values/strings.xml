@@ -1,0 +1,76 @@
+<resources>
+    <string name="complaints_tab_mine">My complaints</string>
+    <string name="complaints_tab_assigned">Assigned to me</string>
+    <string name="complaints_tab_all">All</string>
+    <string name="complaints_file">File complaint</string>
+    <string name="complaints_empty_title">No complaints</string>
+    <string name="complaints_empty_mine">Complaints you file appear here with their progress.</string>
+    <string name="complaints_empty_assigned">Nothing is assigned to you right now.</string>
+    <string name="complaints_empty_all">No complaints in this branch.</string>
+    <string name="complaints_overdue">Overdue</string>
+    <string name="complaints_escalation_level">Escalation level %1$d</string>
+    <string name="complaints_filed_on">Filed %1$s</string>
+
+    <string name="complaints_category_academic">Academic</string>
+    <string name="complaints_category_staff_behaviour">Staff behaviour</string>
+    <string name="complaints_category_facility">Facility</string>
+    <string name="complaints_category_transport">Transport</string>
+    <string name="complaints_category_fee">Fee</string>
+    <string name="complaints_category_safety">Safety</string>
+    <string name="complaints_category_other">Other</string>
+
+    <string name="complaints_status_submitted">Submitted</string>
+    <string name="complaints_status_assigned">Assigned</string>
+    <string name="complaints_status_in_progress">In progress</string>
+    <string name="complaints_status_resolved">Resolved</string>
+    <string name="complaints_status_closed">Closed</string>
+    <string name="complaints_status_escalated">Escalated</string>
+    <string name="complaints_status_reopened">Reopened</string>
+
+    <string name="complaints_new_title">File complaint</string>
+    <string name="complaints_category">Category</string>
+    <string name="complaints_subject">Subject</string>
+    <string name="complaints_description">Description</string>
+    <string name="complaints_child">About which child</string>
+    <string name="complaints_no_child">Not about a child</string>
+    <string name="complaints_anonymous">File anonymously</string>
+    <string name="complaints_anonymous_help">Only the principal can see who filed it</string>
+    <string name="complaints_attachments">Attachments</string>
+    <string name="complaints_attach">Attach file</string>
+    <string name="complaints_uploading">Uploading attachment…</string>
+    <string name="complaints_required">Required</string>
+    <string name="complaints_pick_category">Pick a category</string>
+    <string name="complaints_submit">Submit complaint</string>
+
+    <string name="complaints_detail_title">Complaint</string>
+    <string name="complaints_sla_due">Response due %1$s</string>
+    <string name="complaints_complainant">Filed by</string>
+    <string name="complaints_anonymous_person">Anonymous</string>
+    <string name="complaints_against">About</string>
+    <string name="complaints_student">Student</string>
+    <string name="complaints_assignee">Assigned to</string>
+    <string name="complaints_unassigned">Not assigned yet</string>
+    <string name="complaints_created">Filed on</string>
+    <string name="complaints_category_label">Category</string>
+    <string name="complaints_timeline">Progress</string>
+    <string name="complaints_no_updates">No updates yet.</string>
+    <string name="complaints_status_changed">Status: %1$s</string>
+    <string name="complaints_system">School</string>
+    <string name="complaints_not_found">This complaint is not available.</string>
+
+    <string name="complaints_add_update">Add update</string>
+    <string name="complaints_add_comment">Add comment</string>
+    <string name="complaints_escalate">Escalate</string>
+    <string name="complaints_close">Close</string>
+    <string name="complaints_reopen">Reopen</string>
+    <string name="complaints_message">Message</string>
+    <string name="complaints_new_status">Change status (optional)</string>
+    <string name="complaints_no_status_change">No change</string>
+    <string name="complaints_reason">Reason</string>
+    <string name="complaints_reason_optional">Reason (optional)</string>
+    <string name="complaints_escalate_help">The complaint moves to the next level (principal, then super admin).</string>
+    <string name="complaints_close_help">Close this complaint if you are satisfied with the resolution.</string>
+    <string name="complaints_reopen_help">Reopen if the issue is not solved. Allowed within 7 days of resolution.</string>
+    <string name="complaints_save">Save</string>
+    <string name="complaints_done">Done</string>
+</resources>

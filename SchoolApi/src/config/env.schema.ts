@@ -26,6 +26,13 @@ export const envSchema = z
       .default('development'),
     PORT: z.coerce.number().int().min(1).max(65535).default(3000),
     APP_URL: z.url().default('http://localhost:3000'),
+    APP_TIMEZONE: z
+      .string()
+      .default('Asia/Karachi')
+      .refine(
+        (tz) => Intl.supportedValuesOf('timeZone').includes(tz) || tz === 'UTC',
+        'Unknown IANA time zone',
+      ),
     DATABASE_URL: z
       .string()
       .regex(/^postgres(ql)?:\/\//, 'must be a postgresql:// URL'),
@@ -54,6 +61,8 @@ export const envSchema = z
     S3_ACCESS_KEY: z.string().min(1),
     S3_SECRET_KEY: z.string().min(1),
     S3_FORCE_PATH_STYLE: booleanString.default(true),
+    /** Firebase service account (JSON text or a file path); unset = push is logged. */
+    FCM_SERVICE_ACCOUNT_JSON: z.string().min(1).optional(),
   })
   .superRefine((env, ctx) => {
     const needsRedis =

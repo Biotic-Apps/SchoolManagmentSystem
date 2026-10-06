@@ -2,26 +2,34 @@ import { Injectable } from '@nestjs/common';
 import type { ApprovalType } from '../../generated/prisma/client';
 import type { ApprovalHandler } from './approval-handler';
 
+const keyOf = (type: ApprovalType, entityType?: string) =>
+  entityType ? `${type}:${entityType}` : type;
+
 @Injectable()
 export class ApprovalHandlerRegistry {
-  private readonly handlers = new Map<ApprovalType, ApprovalHandler>();
+  private readonly handlers = new Map<string, ApprovalHandler>();
 
   register(handler: ApprovalHandler): void {
-    if (this.handlers.has(handler.type)) {
-      throw new Error(
-        `Approval handler for ${handler.type} already registered`,
-      );
+    const key = keyOf(handler.type, handler.entityType);
+    if (this.handlers.has(key)) {
+      throw new Error(`Approval handler for ${key} already registered`);
     }
-    this.handlers.set(handler.type, handler);
+    this.handlers.set(key, handler);
   }
 
-  get(type: ApprovalType): ApprovalHandler {
-    const handler = this.handlers.get(type);
+  /** The entity-specific handler wins over the generic one of the type. */
+  get(type: ApprovalType, entityType?: string): ApprovalHandler {
+    const handler =
+      (entityType && this.handlers.get(keyOf(type, entityType))) ||
+      this.handlers.get(type);
     if (!handler) throw new Error(`No approval handler for ${type}`);
     return handler;
   }
 
-  has(type: ApprovalType): boolean {
-    return this.handlers.has(type);
+  has(type: ApprovalType, entityType?: string): boolean {
+    return (
+      this.handlers.has(type) ||
+      (!!entityType && this.handlers.has(keyOf(type, entityType)))
+    );
   }
 }

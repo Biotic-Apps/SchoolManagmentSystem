@@ -19,6 +19,10 @@ data class SessionContext(
     val activeAssignments: List<RoleAssignment>
         get() = assignments.filter { it.role == activeRole }
 
+    /** Branch of the active role assignment (null for global roles and parents). */
+    val activeBranchId: String?
+        get() = activeAssignments.firstNotNullOfOrNull { it.branchId }
+
     fun has(permission: Permission): Boolean = permission in permissions
 
     fun has(permissionKey: String): Boolean = Permission(permissionKey) in permissions

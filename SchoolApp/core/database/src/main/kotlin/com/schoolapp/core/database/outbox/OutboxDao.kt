@@ -39,6 +39,19 @@ interface OutboxDao {
     @Query("SELECT * FROM outbox WHERE type = :type ORDER BY id ASC")
     fun observeByType(type: String): Flow<List<OutboxEntity>>
 
+    @Query("SELECT * FROM outbox WHERE type LIKE :prefix || '%' ORDER BY id ASC")
+    fun observeByTypePrefix(prefix: String): Flow<List<OutboxEntity>>
+
+    @Query("SELECT * FROM outbox WHERE entity_key = :entityKey ORDER BY id ASC")
+    fun observeByEntityKey(entityKey: String): Flow<List<OutboxEntity>>
+
+    @Query("SELECT * FROM outbox WHERE client_request_id = :clientRequestId LIMIT 1")
+    suspend fun findByClientRequestId(clientRequestId: String): OutboxEntity?
+
+    /** Drops queued and parked rows of one record; a row being sent right now is left alone. */
+    @Query("DELETE FROM outbox WHERE entity_key = :entityKey AND status != 'IN_FLIGHT'")
+    suspend fun deleteByEntityKey(entityKey: String)
+
     @Query("DELETE FROM outbox")
     suspend fun clear()
 }

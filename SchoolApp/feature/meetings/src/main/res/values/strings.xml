@@ -1,0 +1,78 @@
+<resources>
+    <string name="meetings_title">Meeting</string>
+    <string name="meetings_detail_title">Meeting</string>
+    <string name="meetings_upcoming">Upcoming</string>
+    <string name="meetings_past">Past</string>
+    <string name="meetings_follow_ups">Follow-ups</string>
+    <string name="meetings_follow_ups_hint">Assigned to you</string>
+    <string name="meetings_empty_upcoming">No upcoming meetings</string>
+    <string name="meetings_empty_upcoming_hint">Book a meeting with your child\'s teacher.</string>
+    <string name="meetings_empty_past">No past meetings</string>
+    <string name="meetings_empty_follow_ups">No open follow-ups</string>
+    <string name="meetings_no_child">No child linked to your account yet</string>
+    <string name="meetings_not_found">This meeting is no longer available</string>
+
+    <string name="meetings_mode_in_person">In person</string>
+    <string name="meetings_mode_phone">Phone</string>
+    <string name="meetings_mode_video">Video</string>
+    <string name="meetings_status_scheduled">Scheduled</string>
+    <string name="meetings_status_completed">Completed</string>
+    <string name="meetings_status_cancelled">Cancelled</string>
+    <string name="meetings_status_no_show">No-show</string>
+
+    <string name="meetings_guardian">Guardian</string>
+    <string name="meetings_guardian_line">Guardian: %1$s</string>
+    <string name="meetings_staff">With</string>
+    <string name="meetings_date">Date</string>
+    <string name="meetings_time">Time</string>
+    <string name="meetings_mode">Mode</string>
+    <string name="meetings_location">Location</string>
+    <string name="meetings_agenda">Agenda</string>
+    <string name="meetings_agenda_line">Agenda: %1$s</string>
+    <string name="meetings_agenda_hint">What would you like to discuss?</string>
+    <string name="meetings_summary">Summary</string>
+    <string name="meetings_summary_shared">Summary shared with parent</string>
+    <string name="meetings_notes">Meeting notes</string>
+    <string name="meetings_notes_hint">Only staff can see these notes.</string>
+
+    <string name="meetings_book">Book a meeting</string>
+    <string name="meetings_no_slots">No open slots in the next 14 days</string>
+    <string name="meetings_no_slots_hint">Please check again later.</string>
+    <string name="meetings_change_slot">Pick another slot</string>
+    <string name="meetings_confirm_booking">Book meeting</string>
+    <string name="meetings_error_agenda">Enter an agenda</string>
+    <string name="meetings_slot_taken">That slot was just taken, pick another</string>
+    <string name="meetings_booked">Meeting booked. The teacher has been notified.</string>
+    <string name="meetings_back_to_meetings">Back to meetings</string>
+
+    <string name="meetings_complete">Complete</string>
+    <string name="meetings_complete_title">Complete meeting</string>
+    <string name="meetings_share_summary">Share summary with parent</string>
+    <string name="meetings_add_follow_up">Add follow-up</string>
+    <string name="meetings_remove_follow_up">Remove</string>
+    <string name="meetings_follow_up_title">Follow-up</string>
+    <string name="meetings_follow_up_due_date">Due date</string>
+    <string name="meetings_save_complete">Save and complete</string>
+    <string name="meetings_error_notes">Enter the meeting notes</string>
+    <string name="meetings_error_summary">Enter the summary to share</string>
+    <string name="meetings_error_follow_up_title">Enter what needs to be done</string>
+    <string name="meetings_error_follow_up_date">Pick a due date</string>
+
+    <string name="meetings_cancel_meeting">Cancel meeting</string>
+    <string name="meetings_cancel_title">Cancel meeting</string>
+    <string name="meetings_cancel_reason">Reason (optional)</string>
+    <string name="meetings_confirm_cancel">Cancel meeting</string>
+    <string name="meetings_no_show">No-show</string>
+    <string name="meetings_no_show_title">Mark as no-show?</string>
+    <string name="meetings_no_show_message">The guardian did not attend this meeting.</string>
+
+    <string name="meetings_done_completed">Meeting completed</string>
+    <string name="meetings_done_no_show">Marked as no-show</string>
+    <string name="meetings_done_cancelled">Meeting cancelled</string>
+
+    <string name="meetings_mark_done">Mark done</string>
+    <string name="meetings_follow_up_due">Due %1$s</string>
+    <string name="meetings_follow_up_overdue">Overdue · due %1$s</string>
+    <string name="meetings_follow_up_open">Open</string>
+    <string name="meetings_follow_up_done">Done</string>
+</resources>

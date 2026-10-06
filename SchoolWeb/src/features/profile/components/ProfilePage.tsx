@@ -5,6 +5,7 @@ import { useIsParent } from "@/features/auth/use-active-child";
 import { ContactChangeCard } from "./ContactChangeCard";
 import { DeviceSessionsCard } from "./DeviceSessionsCard";
 import { LinkChildCard } from "./LinkChildCard";
+import { NotificationPreferencesCard } from "./NotificationPreferencesCard";
 import { PasswordCard } from "./PasswordCard";
 import { ProfileDetailsCard } from "./ProfileDetailsCard";
 import { RolesCard } from "./RolesCard";
@@ -24,6 +25,7 @@ export function ProfilePage() {
           <ContactChangeCard />
         </div>
       )}
+      <NotificationPreferencesCard />
       <DeviceSessionsCard />
       <RolesCard />
     </>

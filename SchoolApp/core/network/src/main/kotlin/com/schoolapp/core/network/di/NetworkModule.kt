@@ -14,6 +14,18 @@ import com.schoolapp.core.network.api.StaffApi
 import com.schoolapp.core.network.api.TimetableApi
 import com.schoolapp.core.network.api.SyllabusApi
 import com.schoolapp.core.network.api.AdmissionsApi
+import com.schoolapp.core.network.api.ActivitiesApi
+import com.schoolapp.core.network.api.AttendanceApi
+import com.schoolapp.core.network.api.ComplaintsApi
+import com.schoolapp.core.network.api.DevicesApi
+import com.schoolapp.core.network.api.DiaryApi
+import com.schoolapp.core.network.api.FilesApi
+import com.schoolapp.core.network.api.HealthApi
+import com.schoolapp.core.network.api.LeaveApi
+import com.schoolapp.core.network.api.MeetingsApi
+import com.schoolapp.core.network.api.MessagesApi
+import com.schoolapp.core.network.api.NoticesApi
+import com.schoolapp.core.network.api.PickupApi
 import com.schoolapp.core.network.api.RefreshApi
 import com.schoolapp.core.network.auth.AuthInterceptor
 import com.schoolapp.core.network.auth.TokenAuthenticator
@@ -126,6 +138,54 @@ internal object NetworkModule {
     @Provides
     @Singleton
     fun provideAdmissionsApi(retrofit: Retrofit): AdmissionsApi = retrofit.create(AdmissionsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAttendanceApi(retrofit: Retrofit): AttendanceApi = retrofit.create(AttendanceApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideLeaveApi(retrofit: Retrofit): LeaveApi = retrofit.create(LeaveApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideDiaryApi(retrofit: Retrofit): DiaryApi = retrofit.create(DiaryApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideFilesApi(retrofit: Retrofit): FilesApi = retrofit.create(FilesApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideActivitiesApi(retrofit: Retrofit): ActivitiesApi = retrofit.create(ActivitiesApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideNoticesApi(retrofit: Retrofit): NoticesApi = retrofit.create(NoticesApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMessagesApi(retrofit: Retrofit): MessagesApi = retrofit.create(MessagesApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideComplaintsApi(retrofit: Retrofit): ComplaintsApi = retrofit.create(ComplaintsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMeetingsApi(retrofit: Retrofit): MeetingsApi = retrofit.create(MeetingsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideHealthApi(retrofit: Retrofit): HealthApi = retrofit.create(HealthApi::class.java)
+
+    @Provides
+    @Singleton
+    fun providePickupApi(retrofit: Retrofit): PickupApi = retrofit.create(PickupApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideDevicesApi(retrofit: Retrofit): DevicesApi = retrofit.create(DevicesApi::class.java)
 
     @Provides
     @Singleton

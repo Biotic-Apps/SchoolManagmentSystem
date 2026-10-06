@@ -15,7 +15,7 @@ export function ChildSwitcher({ items, value, onChange, className }: ChildSwitch
   if (items.length === 0) return null;
   return (
     <Select value={value ?? undefined} onValueChange={onChange}>
-      <SelectTrigger aria-label="Select child" className={cn("h-10 w-56", className)}>
+      <SelectTrigger aria-label="Select child" className={cn("h-10 w-72 max-w-full", className)}>
         <SelectValue placeholder="Select child" />
       </SelectTrigger>
       <SelectContent>

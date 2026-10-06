@@ -26,6 +26,10 @@ const LABELS: Record<string, string> = {
   note: "Note",
   topicTitle: "Topic",
   onBehalfOf: "On behalf of",
+  // Phase 3: health-record change requests (CONTACT_CHANGE on HEALTH).
+  bloodGroup: "Blood group",
+  emergencyContacts: "Emergency contacts",
+  doctor: "Doctor",
 };
 
 // Keys whose old/new pair is shown as a change (CONTACT_CHANGE).

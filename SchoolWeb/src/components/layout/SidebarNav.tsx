@@ -28,7 +28,7 @@ export function SidebarNav({ items, activeId, onNavigate }: SidebarNavProps) {
           >
             {active && <span aria-hidden className="absolute inset-y-2 left-0 w-[3px] rounded-full bg-primary" />}
             <Icon className="size-[18px] shrink-0" />
-            <span className="truncate">{label}</span>
+            <span className="leading-snug">{label}</span>
           </Link>
         );
       })}

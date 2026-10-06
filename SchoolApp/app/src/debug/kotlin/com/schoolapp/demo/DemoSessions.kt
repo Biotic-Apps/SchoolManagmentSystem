@@ -64,11 +64,27 @@ internal object DemoSessions {
         is CustomRole -> frontDeskPermissions.map(::Permission).toSet()
     }
 
-    /** Action permissions used inside Phase 2 screens (not menu entries). */
+    private val supervisorPhase3 = listOf(
+        "teacherwork.proxy", "attendance.edit", "attendance.submit", "diary.approve", "complaints.view", "pickup.view",
+    )
+
+    /** Action permissions used inside Phase 2 / Phase 3 screens (not menu entries). */
     private val extraPermissions: Map<RoleKey, List<String>> = mapOf(
-        RoleKey.TEACHER to listOf("syllabus.edit", "students.view"),
-        RoleKey.PRINCIPAL to listOf("admissions.approve", "syllabus.approve"),
-        RoleKey.COORDINATOR to listOf("syllabus.approve"),
+        RoleKey.TEACHER to listOf(
+            "syllabus.edit", "students.view",
+            "attendance.edit", "attendance.submit", "diary.edit", "diary.publish", "activities.add", "health.view",
+            "notices.view", "messages.view", "meetings.view",
+        ),
+        RoleKey.HELPER to listOf("attendance.edit", "diary.edit", "health.view"),
+        RoleKey.PRINCIPAL to listOf(
+            "admissions.approve", "syllabus.approve",
+            "attendance.edit", "attendance.submit", "attendance.approve", "teacherwork.proxy", "diary.approve", "diary.edit",
+            "diary.publish", "activities.approve", "activities.add", "notices.add", "notices.publish", "complaints.edit",
+            "health.edit", "pickup.edit", "complaints.view", "pickup.view",
+        ),
+        RoleKey.COORDINATOR to listOf("syllabus.approve") + supervisorPhase3,
+        RoleKey.HEAD_TEACHER to supervisorPhase3,
+        RoleKey.SUPER_ADMIN to listOf("complaints.edit"),
     )
 
     private fun scopeFor(role: RoleRef) = when (role) {

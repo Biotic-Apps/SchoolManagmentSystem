@@ -13,6 +13,8 @@ export const ERROR_STATUS: Record<ErrorCode, HttpStatus> = {
   [ErrorCode.PASSWORD_CHANGE_REQUIRED]: HttpStatus.FORBIDDEN,
   [ErrorCode.NOT_FOUND]: HttpStatus.NOT_FOUND,
   [ErrorCode.CONFLICT]: HttpStatus.CONFLICT,
+  [ErrorCode.ALREADY_SUBMITTED]: HttpStatus.CONFLICT,
+  [ErrorCode.PICKUP_NOT_AUTHORIZED]: HttpStatus.FORBIDDEN,
   [ErrorCode.RECORD_LOCKED]: HttpStatus.LOCKED,
   [ErrorCode.ACCOUNT_LOCKED]: HttpStatus.LOCKED,
   [ErrorCode.APPROVAL_REQUIRED]: HttpStatus.CONFLICT,

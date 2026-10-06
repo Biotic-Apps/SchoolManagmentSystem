@@ -7,6 +7,7 @@ import com.schoolapp.core.designsystem.component.LoadingState
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.theme.SchoolTheme
 import com.schoolapp.core.model.RoleKey
+import com.schoolapp.feature.profile.components.NotificationsCard
 import com.schoolapp.feature.profile.components.ProfileForm
 import com.schoolapp.feature.profile.components.ProfileHeader
 import com.schoolapp.feature.profile.components.RolesCard
@@ -22,6 +23,7 @@ fun ProfileScreen(
     onChangePassword: () -> Unit,
     onDeviceSessions: () -> Unit,
     modifier: Modifier = Modifier,
+    onNotificationPreferences: () -> Unit = {},
 ) {
     if (state.isLoading) {
         LoadingState(modifier)
@@ -31,6 +33,7 @@ fun ProfileScreen(
         item(key = "header") { ProfileHeader(name = state.original.name, email = state.original.email) }
         item(key = "form") { ProfileForm(state, onNameChange, onEmailChange, onPhoneChange, onSave) }
         if (state.roles.isNotEmpty()) item(key = "roles") { RolesCard(state.roles) }
+        item(key = "notifications") { NotificationsCard(onNotificationPreferences) }
         item(key = "security") { SecurityCard(onChangePassword = onChangePassword, onDeviceSessions = onDeviceSessions) }
     }
 }

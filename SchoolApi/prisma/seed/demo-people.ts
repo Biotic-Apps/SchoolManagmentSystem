@@ -39,6 +39,12 @@ const LAST = ['Khan', 'Ahmed', 'Malik', 'Raza', 'Siddiqui', 'Qureshi', 'Butt', '
 const SECTIONS = ['4-A', '4-B', '5-A', '5-B'];
 
 /** parent@ → first child of 5-A and 4-B; teacherparent@ → first child of 4-A. */
+/** parent@'s two children are siblings and share the family name. */
+const NAME_OVERRIDES: Record<string, { firstName: string; lastName: string; gender: 'MALE' | 'FEMALE' }> = {
+  '5-A:0': { firstName: 'Ayesha', lastName: 'Javed', gender: 'FEMALE' },
+  '4-B:0': { firstName: 'Omar', lastName: 'Javed', gender: 'MALE' },
+};
+
 const SPECIAL_GUARDIANS: Record<string, { email: string; phone: string }> = {
   '5-A:0': { email: 'parent@eschool.local', phone: '+923001112233' },
   '4-B:0': { email: 'parent@eschool.local', phone: '+923001112233' },
@@ -81,8 +87,10 @@ export async function seedStudents(prisma: SeedClient, org: DemoOrg): Promise<vo
     for (let i = 0; i < 10; i++) {
       n++;
       const admissionNo = `${org.schoolCode}-2026-${String(n).padStart(4, '0')}`;
-      const firstName = FIRST[n % FIRST.length];
-      const lastName = LAST[(n * 7 + Math.floor(n / 10)) % LAST.length];
+      const override = NAME_OVERRIDES[`${sectionKey}:${i}`];
+      const firstName = override?.firstName ?? FIRST[n % FIRST.length];
+      const lastName = override?.lastName ?? LAST[(n * 7 + Math.floor(n / 10)) % LAST.length];
+      const gender = override?.gender ?? (i % 2 === 0 ? 'MALE' : 'FEMALE');
       const student = await prisma.student.upsert({
         where: { schoolId_admissionNo: { schoolId: org.schoolId, admissionNo } },
         create: {
@@ -91,11 +99,11 @@ export async function seedStudents(prisma: SeedClient, org: DemoOrg): Promise<vo
           firstName,
           lastName,
           dob: new Date(Date.UTC(2026 - level - 5, i % 12, 1 + i)),
-          gender: i % 2 === 0 ? 'MALE' : 'FEMALE',
+          gender,
           admissionDate: new Date('2026-04-01'),
           address: `House ${n}, Street ${i + 1}, Lahore`,
         },
-        update: { firstName, lastName },
+        update: { firstName, lastName, gender },
       });
       const active = await prisma.enrollment.findFirst({ where: { studentId: student.id, status: 'ACTIVE' } });
       if (!active) {

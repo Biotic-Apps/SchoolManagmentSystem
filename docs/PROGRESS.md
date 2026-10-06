@@ -37,20 +37,20 @@ Definition of Done per module: schema + migration · API with permission/scope g
 - [x] Syllabus & books
 
 ## Phase 3 — Daily operations
-- [ ] Student attendance (offline Android)
-- [ ] Staff attendance
-- [ ] Leave
-- [ ] Daily diary & homework (offline drafts)
-- [ ] Supervisor proxy + probation review
-- [ ] Activities, sports, trips, competitions, consent
-- [ ] Notices
-- [ ] Parent–teacher messaging
-- [ ] Complaints
-- [ ] Meetings & appointments
-- [ ] Health & incidents
-- [ ] Pickup & early leave
-- [ ] Principal dashboard & pending lists
-- [ ] Push notifications (FCM)
+- [x] Student attendance (offline Android)
+- [x] Staff attendance
+- [x] Leave
+- [x] Daily diary & homework (offline drafts)
+- [x] Supervisor proxy + probation review
+- [x] Activities, sports, trips, competitions, consent
+- [x] Notices
+- [x] Parent–teacher messaging
+- [x] Complaints
+- [x] Meetings & appointments
+- [x] Health & incidents
+- [x] Pickup & early leave
+- [x] Principal dashboard & pending lists
+- [x] Push notifications (FCM)
 
 ## Phase 4 — Finance & results
 - [ ] Exams & grading
@@ -77,6 +77,13 @@ Definition of Done per module: schema + migration · API with permission/scope g
 
 ## Phase 6 — Pilot & rollout
 - [ ] Pilot branch
+
+## Phase 3 notes
+- API: 150 unit + 47 e2e tests; migration phase3_daily_operations. School date/time now follow APP_TIMEZONE (default Asia/Karachi) instead of UTC/server time.
+- Principal default permissions extended to do teacher work by proxy (attendance/diary/syllabus/progress edit+submit); verified proxy submit records performedBy + onBehalfOf.
+- Web: all Phase 3 screens verified against API; added shared UnsavedChangesGuard (attendance register), /messages/recipients for parent targets; fixed tile/sidebar label truncation, summary table overflow, duplicate parent notices.
+- Android: 202 unit tests; Room DB v1→v2 migration verified on phone (no crash). Push uses a no-op PushTokenProvider until Firebase is configured.
+- Not yet: FCM project setup, staff slot publishing on Android, attachments on incident reports/complaint updates on Android, trip fees → invoices (Phase 4).
 
 ## Phase 2 notes
 - API: 94 unit + 40 e2e tests; migration phase2_people_academics; scope by staff assignments (teacher sees only own sections) and verified guardian links (parent 404 otherwise). Deviations in docs/api/phase2-contract.md.

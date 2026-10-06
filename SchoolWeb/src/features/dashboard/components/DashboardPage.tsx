@@ -1,54 +1,36 @@
 "use client";
 
-import Link from "next/link";
-import { ErrorState } from "@/components/shared/ErrorState";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { ScopePicker } from "@/components/shared/ScopePicker";
-import { StatCard } from "@/components/shared/StatCard";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { focusRing } from "@/components/ui/styles";
-import { cn } from "@/lib/cn";
+import { NoticesFeedCard } from "@/features/notices/components/NoticesFeedCard";
 import { useDashboard } from "../use-dashboard";
+import { AttendanceTodayCard } from "./AttendanceTodayCard";
+import { ChildTodayPanel } from "./ChildTodayPanel";
+import { DashboardScopeBar } from "./DashboardScopeBar";
+import { PendingPanel } from "./PendingPanel";
+import { SummaryStats } from "./SummaryStats";
+import { TeacherTodayPanel } from "./TeacherTodayPanel";
 
 export function DashboardPage() {
-  const { title, greetingName, scope, stats, loading, error, retry } = useDashboard();
+  const dashboard = useDashboard();
+  const isParent = dashboard.view === "parent";
 
   return (
     <>
-      <PageHeader title={title} description={`Welcome, ${greetingName}`} />
-      {scope.showPicker && (
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <ScopePicker
-            value={scope.scope}
-            onChange={scope.setScope}
-            schools={scope.schools}
-            branches={scope.branches}
-            sessions={scope.sessions}
-            hideSchool={scope.hideSchool}
-          />
-          {scope.isFiltered && (
-            <Button variant="ghost" onClick={scope.reset}>
-              Show everything
-            </Button>
-          )}
-        </div>
-      )}
-      {error ? (
-        <Card>
-          <ErrorState error={error} onRetry={retry} />
-        </Card>
+      <PageHeader title={dashboard.title} description={`Welcome, ${dashboard.greetingName}`} />
+      {isParent ? (
+        <ChildTodayPanel />
       ) : (
-        stats.length > 0 && (
-          <section aria-label="Summary" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {stats.map((stat) => (
-              <Link key={stat.key} href={stat.href} className={cn("rounded-card", focusRing)}>
-                <StatCard label={stat.label} icon={stat.icon} value={stat.value} loading={loading} />
-              </Link>
-            ))}
-          </section>
-        )
+        <>
+          <DashboardScopeBar scope={dashboard.scope} />
+          {dashboard.showPending && <PendingPanel branchId={dashboard.scope.scope.branchId} />}
+          {dashboard.view === "teacher" && <TeacherTodayPanel />}
+          {dashboard.attendanceToday && (
+            <AttendanceTodayCard counts={dashboard.attendanceToday} linked={dashboard.canOpenAttendance} />
+          )}
+          <SummaryStats dashboard={dashboard} />
+        </>
       )}
+      {dashboard.showNoticesFeed && <NoticesFeedCard />}
     </>
   );
 }

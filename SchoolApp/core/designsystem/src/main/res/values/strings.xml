@@ -17,4 +17,6 @@
     <string name="ds_search">Search</string>
     <string name="ds_clear_search">Clear search</string>
     <string name="ds_percent">%1$d%%</string>
+    <string name="ds_remove_attachment">Remove %1$s</string>
+    <string name="ds_attachment">Attachment</string>
 </resources>

@@ -10,6 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 fun ProfileRoute(
     onChangePassword: () -> Unit,
     onDeviceSessions: () -> Unit,
+    onNotificationPreferences: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
@@ -22,6 +23,7 @@ fun ProfileRoute(
         onSave = viewModel::onSave,
         onChangePassword = onChangePassword,
         onDeviceSessions = onDeviceSessions,
+        onNotificationPreferences = onNotificationPreferences,
         modifier = modifier,
     )
 }

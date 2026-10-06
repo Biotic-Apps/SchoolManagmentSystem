@@ -57,6 +57,14 @@ export class NotificationsRepository {
     });
   }
 
+  async pushMuted(userIds: string[], category: string): Promise<Set<string>> {
+    const rows = await this.prisma.notificationPreference.findMany({
+      where: { userId: { in: userIds }, category, push: false },
+      select: { userId: true },
+    });
+    return new Set(rows.map((row) => row.userId));
+  }
+
   /** Stores the in-app row (delivered) plus pending rows for other channels. */
   createWithDeliveries(
     userId: string,

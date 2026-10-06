@@ -4,6 +4,7 @@ import { BranchesRepository } from './branches.repository';
 import { BranchesService } from './branches.service';
 import { PrincipalRepository } from './principal/principal.repository';
 import { PrincipalService } from './principal/principal.service';
+import { BranchSettingsReader } from './settings/branch-settings.reader';
 import { BranchSettingsRepository } from './settings/branch-settings.repository';
 import { BranchSettingsService } from './settings/branch-settings.service';
 
@@ -14,9 +15,10 @@ import { BranchSettingsService } from './settings/branch-settings.service';
     BranchesService,
     BranchSettingsRepository,
     BranchSettingsService,
+    BranchSettingsReader,
     PrincipalRepository,
     PrincipalService,
   ],
-  exports: [BranchesService],
+  exports: [BranchesService, BranchSettingsReader],
 })
 export class BranchesModule {}

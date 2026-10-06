@@ -17,6 +17,7 @@ export const DEMO_STAFF: StaffSeed[] = [
   { email: 'teacher3@eschool.local', employeeNo: 'EMP-005', designation: 'TEACHER' },
   { email: 'newteacher@eschool.local', employeeNo: 'EMP-006', designation: 'TEACHER' },
   { email: 'teacherparent@eschool.local', employeeNo: 'EMP-007', designation: 'TEACHER' },
+  { email: 'helper@eschool.local', employeeNo: 'EMP-008', designation: 'HELPER' },
 ];
 
 /** Staff record per demo login (idempotent by user). Returns staff id by email. */
@@ -53,6 +54,7 @@ export interface AssignmentSeed {
   kind: StaffAssignmentKind;
   section?: string;
   subject?: string;
+  responsibleEmail?: string;
 }
 
 /** Creates the staff assignment and its mirrored role assignment once. */
@@ -91,6 +93,7 @@ export async function ensureStaffAssignment(
         sectionId,
         subjectId,
         roleAssignmentId,
+        responsibleStaffId: seed.responsibleEmail ? staffIds.get(seed.responsibleEmail) : null,
       },
     });
     if (seed.kind === 'CLASS_TEACHER' && sectionId) {
@@ -132,6 +135,7 @@ export async function seedAssignments(
     { staffEmail: 'teacher3@eschool.local', kind: 'CLASS_TEACHER', section: '4-A' },
     { staffEmail: 'newteacher@eschool.local', kind: 'CLASS_TEACHER', section: '4-B' },
     { staffEmail: 'coordinator@eschool.local', kind: 'COORDINATOR' },
+    { staffEmail: 'helper@eschool.local', kind: 'HELPER', section: '5-A', responsibleEmail: 'teacher@eschool.local' },
   ];
   for (const [section, subjects] of Object.entries(CLASS5_TEACHERS)) {
     for (const [subject, staffEmail] of Object.entries(subjects)) {

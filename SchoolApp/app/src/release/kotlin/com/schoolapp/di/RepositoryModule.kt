@@ -24,6 +24,30 @@ import com.schoolapp.core.data.syllabus.SyllabusRepository
 import com.schoolapp.core.data.syllabus.DefaultSyllabusRepository
 import com.schoolapp.core.data.admissions.AdmissionsRepository
 import com.schoolapp.core.data.admissions.DefaultAdmissionsRepository
+import com.schoolapp.core.data.attendance.AttendanceRepository
+import com.schoolapp.core.data.attendance.DefaultAttendanceRepository
+import com.schoolapp.core.data.leave.LeaveRepository
+import com.schoolapp.core.data.leave.DefaultLeaveRepository
+import com.schoolapp.core.data.diary.DiaryRepository
+import com.schoolapp.core.data.diary.DefaultDiaryRepository
+import com.schoolapp.core.data.files.FilesRepository
+import com.schoolapp.core.data.files.DefaultFilesRepository
+import com.schoolapp.core.data.activities.ActivitiesRepository
+import com.schoolapp.core.data.activities.DefaultActivitiesRepository
+import com.schoolapp.core.data.notices.NoticesRepository
+import com.schoolapp.core.data.notices.DefaultNoticesRepository
+import com.schoolapp.core.data.messages.MessagesRepository
+import com.schoolapp.core.data.messages.DefaultMessagesRepository
+import com.schoolapp.core.data.complaints.ComplaintsRepository
+import com.schoolapp.core.data.complaints.DefaultComplaintsRepository
+import com.schoolapp.core.data.meetings.MeetingsRepository
+import com.schoolapp.core.data.meetings.DefaultMeetingsRepository
+import com.schoolapp.core.data.health.HealthRepository
+import com.schoolapp.core.data.health.DefaultHealthRepository
+import com.schoolapp.core.data.pickup.PickupRepository
+import com.schoolapp.core.data.pickup.DefaultPickupRepository
+import com.schoolapp.core.data.notifications.NotificationPreferencesRepository
+import com.schoolapp.core.data.notifications.DefaultNotificationPreferencesRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -67,4 +91,40 @@ interface RepositoryModule {
 
     @Binds
     fun bindAdmissionsRepository(impl: DefaultAdmissionsRepository): AdmissionsRepository
+
+    @Binds
+    fun bindAttendanceRepository(impl: DefaultAttendanceRepository): AttendanceRepository
+
+    @Binds
+    fun bindLeaveRepository(impl: DefaultLeaveRepository): LeaveRepository
+
+    @Binds
+    fun bindDiaryRepository(impl: DefaultDiaryRepository): DiaryRepository
+
+    @Binds
+    fun bindFilesRepository(impl: DefaultFilesRepository): FilesRepository
+
+    @Binds
+    fun bindActivitiesRepository(impl: DefaultActivitiesRepository): ActivitiesRepository
+
+    @Binds
+    fun bindNoticesRepository(impl: DefaultNoticesRepository): NoticesRepository
+
+    @Binds
+    fun bindMessagesRepository(impl: DefaultMessagesRepository): MessagesRepository
+
+    @Binds
+    fun bindComplaintsRepository(impl: DefaultComplaintsRepository): ComplaintsRepository
+
+    @Binds
+    fun bindMeetingsRepository(impl: DefaultMeetingsRepository): MeetingsRepository
+
+    @Binds
+    fun bindHealthRepository(impl: DefaultHealthRepository): HealthRepository
+
+    @Binds
+    fun bindPickupRepository(impl: DefaultPickupRepository): PickupRepository
+
+    @Binds
+    fun bindNotificationPreferencesRepository(impl: DefaultNotificationPreferencesRepository): NotificationPreferencesRepository
 }

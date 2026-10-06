@@ -98,6 +98,17 @@ model Student {
   idCards           IdCard[]
   childLinkRequests ChildLinkRequest[]
   application       AdmissionApplication?
+  attendanceEntries AttendanceEntry[]
+  leaveRequests     LeaveRequest[]
+  activityConsents  ActivityConsent[]
+  activityRoles     ActivityParticipant[]
+  messageThreads    MessageThread[]
+  complaints        Complaint[]
+  meetings          Meeting[]
+  healthIncidents   HealthIncident[]
+  pickupPersons     PickupPerson[]
+  earlyLeaves       EarlyLeave[]
+  departures        Departure[]
 
   @@unique([schoolId, admissionNo])
   @@index([schoolId, status])
@@ -106,13 +117,21 @@ model Student {
 }
 
 model StudentHealthProfile {
-  studentId   String   @id @map("student_id") @db.Uuid
-  allergies   String?
-  conditions  String?
-  notes       String?
-  updatedById String?  @map("updated_by_id") @db.Uuid
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  studentId         String   @id @map("student_id") @db.Uuid
+  allergies         String?
+  conditions        String?
+  notes             String?
+  /// Structured profile (contract §10); the text columns above mirror it.
+  bloodGroup        String?  @map("blood_group")
+  allergyList       Json     @default("[]") @map("allergy_list")
+  conditionList     Json     @default("[]") @map("condition_list")
+  medications       Json     @default("[]")
+  instructions      String?
+  doctor            Json?
+  emergencyContacts Json     @default("[]") @map("emergency_contacts")
+  updatedById       String?  @map("updated_by_id") @db.Uuid
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
 
@@ -172,6 +191,8 @@ model Guardian {
   user         User?              @relation("GuardianUser", fields: [userId], references: [id], onDelete: Restrict)
   studentLinks StudentGuardian[]
   linkRequests ChildLinkRequest[]
+  consents     ActivityConsent[]
+  meetings     Meeting[]
 
   @@index([schoolId, phone])
   @@map("guardians")

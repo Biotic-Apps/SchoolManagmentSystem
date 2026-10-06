@@ -1,0 +1,203 @@
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  LEAVE
+  HALF_DAY
+
+  @@map("attendance_status")
+}
+
+enum RegisterStatus {
+  DRAFT
+  SUBMITTED
+  LOCKED
+  PENDING_REVIEW
+
+  @@map("register_status")
+}
+
+enum CorrectionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@map("correction_status")
+}
+
+enum LeaveKind {
+  STUDENT
+  STAFF
+
+  @@map("leave_kind")
+}
+
+enum LeaveType {
+  CASUAL
+  SICK
+  ANNUAL
+  UNPAID
+  OTHER
+
+  @@map("leave_type")
+}
+
+enum LeaveStatus {
+  SUBMITTED
+  APPROVED
+  REJECTED
+  CANCELLED
+
+  @@map("leave_status")
+}
+
+/// One register per section per day; absent register = UNMARKED (never absent).
+model AttendanceRegister {
+  id                String         @id @default(uuid(7)) @db.Uuid
+  schoolId          String         @map("school_id") @db.Uuid
+  branchId          String         @map("branch_id") @db.Uuid
+  sessionId         String         @map("session_id") @db.Uuid
+  sectionId         String         @map("section_id") @db.Uuid
+  date              DateTime       @db.Date
+  status            RegisterStatus @default(DRAFT)
+  version           Int            @default(0)
+  submittedById     String?        @map("submitted_by_id") @db.Uuid
+  submittedAt       DateTime?      @map("submitted_at") @db.Timestamptz(3)
+  onBehalfOfStaffId String?        @map("on_behalf_of_staff_id") @db.Uuid
+  lockedAt          DateTime?      @map("locked_at") @db.Timestamptz(3)
+  pendingApprovalId String?        @map("pending_approval_id") @db.Uuid
+  createdById       String?        @map("created_by_id") @db.Uuid
+  updatedById       String?        @map("updated_by_id") @db.Uuid
+  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  section     Section           @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+  submittedBy User?             @relation("RegisterSubmitter", fields: [submittedById], references: [id], onDelete: Restrict)
+  onBehalfOf  Staff?            @relation("RegisterOnBehalfOf", fields: [onBehalfOfStaffId], references: [id], onDelete: Restrict)
+  entries     AttendanceEntry[]
+
+  @@unique([sectionId, date])
+  @@index([branchId, date])
+  @@index([status, date])
+  @@map("attendance_registers")
+}
+
+model AttendanceEntry {
+  id                 String           @id @default(uuid(7)) @db.Uuid
+  registerId         String           @map("register_id") @db.Uuid
+  studentId          String           @map("student_id") @db.Uuid
+  status             AttendanceStatus
+  remark             String?
+  guardianNotifiedAt DateTime?        @map("guardian_notified_at") @db.Timestamptz(3)
+  createdAt          DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  register    AttendanceRegister     @relation(fields: [registerId], references: [id], onDelete: Cascade)
+  student     Student                @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  corrections AttendanceCorrection[]
+
+  @@unique([registerId, studentId])
+  @@index([studentId])
+  @@map("attendance_entries")
+}
+
+/// Correction requests double as the history of changed entries.
+model AttendanceCorrection {
+  id            String           @id @default(uuid(7)) @db.Uuid
+  entryId       String           @map("entry_id") @db.Uuid
+  oldStatus     AttendanceStatus @map("old_status")
+  newStatus     AttendanceStatus @map("new_status")
+  reason        String
+  status        CorrectionStatus @default(PENDING)
+  approvalId    String?          @map("approval_id") @db.Uuid
+  requestedById String           @map("requested_by_id") @db.Uuid
+  decidedAt     DateTime?        @map("decided_at") @db.Timestamptz(3)
+  createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  entry AttendanceEntry @relation(fields: [entryId], references: [id], onDelete: Restrict)
+
+  @@unique([entryId], map: "attendance_corrections_one_pending", where: raw("status = 'PENDING'::correction_status"))
+  @@index([entryId])
+  @@map("attendance_corrections")
+}
+
+model StaffAttendance {
+  id         String           @id @default(uuid(7)) @db.Uuid
+  schoolId   String           @map("school_id") @db.Uuid
+  branchId   String           @map("branch_id") @db.Uuid
+  staffId    String           @map("staff_id") @db.Uuid
+  date       DateTime         @db.Date
+  status     AttendanceStatus
+  checkIn    String?          @map("check_in") @db.VarChar(5)
+  checkOut   String?          @map("check_out") @db.VarChar(5)
+  remark     String?
+  markedById String?          @map("marked_by_id") @db.Uuid
+  createdAt  DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  staff Staff @relation("StaffAttendanceOf", fields: [staffId], references: [id], onDelete: Restrict)
+
+  @@unique([staffId, date])
+  @@index([branchId, date])
+  @@map("staff_attendance")
+}
+
+model LeaveRequest {
+  id               String      @id @default(uuid(7)) @db.Uuid
+  schoolId         String      @map("school_id") @db.Uuid
+  branchId         String      @map("branch_id") @db.Uuid
+  kind             LeaveKind
+  studentId        String?     @map("student_id") @db.Uuid
+  staffId          String?     @map("staff_id") @db.Uuid
+  sectionId        String?     @map("section_id") @db.Uuid
+  fromDate         DateTime    @map("from_date") @db.Date
+  toDate           DateTime    @map("to_date") @db.Date
+  days             Int
+  type             LeaveType   @default(OTHER)
+  reason           String
+  attachmentFileId String?     @map("attachment_file_id") @db.Uuid
+  status           LeaveStatus @default(SUBMITTED)
+  requestedById    String      @map("requested_by_id") @db.Uuid
+  decidedById      String?     @map("decided_by_id") @db.Uuid
+  decidedAt        DateTime?   @map("decided_at") @db.Timestamptz(3)
+  comment          String?
+  approvalId       String?     @map("approval_id") @db.Uuid
+  createdAt        DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  student     Student? @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  staff       Staff?   @relation("StaffLeave", fields: [staffId], references: [id], onDelete: Restrict)
+  requestedBy User     @relation("LeaveRequester", fields: [requestedById], references: [id], onDelete: Restrict)
+  decidedBy   User?    @relation("LeaveDecider", fields: [decidedById], references: [id], onDelete: Restrict)
+
+  @@index([branchId, status])
+  @@index([studentId, fromDate])
+  @@index([staffId, fromDate])
+  @@index([requestedById])
+  @@map("leave_requests")
+}
+
+/// Marks a once-a-day job (lock, missing diary) as done for a branch.
+model BranchJobMark {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  branchId  String   @map("branch_id") @db.Uuid
+  job       String
+  date      DateTime @db.Date
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@unique([branchId, job, date])
+  @@map("branch_job_marks")
+}
+
+/// Offline idempotency: the same clientRequestId from a user is applied once.
+model ClientRequest {
+  id              String   @id @default(uuid(7)) @db.Uuid
+  userId          String   @map("user_id") @db.Uuid
+  clientRequestId String   @map("client_request_id")
+  action          String
+  entityId        String?  @map("entity_id")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@unique([userId, clientRequestId])
+  @@map("client_requests")
+}

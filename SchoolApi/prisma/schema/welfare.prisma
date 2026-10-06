@@ -1,0 +1,333 @@
+enum ComplaintCategory {
+  ACADEMIC
+  STAFF_BEHAVIOUR
+  FACILITY
+  TRANSPORT
+  FEE
+  SAFETY
+  OTHER
+
+  @@map("complaint_category")
+}
+
+enum ComplaintStatus {
+  SUBMITTED
+  ASSIGNED
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+  ESCALATED
+  REOPENED
+
+  @@map("complaint_status")
+}
+
+enum MeetingMode {
+  IN_PERSON
+  PHONE
+  VIDEO
+
+  @@map("meeting_mode")
+}
+
+enum MeetingSlotStatus {
+  OPEN
+  BOOKED
+  CANCELLED
+
+  @@map("meeting_slot_status")
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+
+  @@map("meeting_status")
+}
+
+enum FollowUpStatus {
+  OPEN
+  DONE
+
+  @@map("follow_up_status")
+}
+
+enum IncidentType {
+  INJURY
+  ILLNESS
+  ALLERGIC_REACTION
+  OTHER
+
+  @@map("incident_type")
+}
+
+enum IncidentSeverity {
+  MINOR
+  MODERATE
+  SERIOUS
+
+  @@map("incident_severity")
+}
+
+enum IncidentStatus {
+  REPORTED
+  PARENT_NOTIFIED
+  CLOSED
+
+  @@map("incident_status")
+}
+
+enum PickupPersonStatus {
+  PENDING_VERIFICATION
+  VERIFIED
+  REVOKED
+
+  @@map("pickup_person_status")
+}
+
+enum EarlyLeaveStatus {
+  REQUESTED
+  APPROVED
+  REJECTED
+  DEPARTED
+
+  @@map("early_leave_status")
+}
+
+model Complaint {
+  id                String            @id @default(uuid(7)) @db.Uuid
+  schoolId          String            @map("school_id") @db.Uuid
+  branchId          String?           @map("branch_id") @db.Uuid
+  ticketNo          String            @unique @map("ticket_no")
+  category          ComplaintCategory
+  subject           String
+  description       String
+  status            ComplaintStatus   @default(SUBMITTED)
+  escalationLevel   Int               @default(0) @map("escalation_level")
+  slaDueAt          DateTime          @map("sla_due_at") @db.Timestamptz(3)
+  complainantId     String            @map("complainant_id") @db.Uuid
+  complainantRole   String            @map("complainant_role")
+  anonymous         Boolean           @default(false)
+  againstUserId     String?           @map("against_user_id") @db.Uuid
+  studentId         String?           @map("student_id") @db.Uuid
+  assigneeId        String?           @map("assignee_id") @db.Uuid
+  attachmentFileIds String[]          @default([]) @map("attachment_file_ids") @db.Uuid
+  resolvedAt        DateTime?         @map("resolved_at") @db.Timestamptz(3)
+  closedAt          DateTime?         @map("closed_at") @db.Timestamptz(3)
+  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  complainant User              @relation("ComplaintComplainant", fields: [complainantId], references: [id], onDelete: Restrict)
+  against     User?             @relation("ComplaintAgainst", fields: [againstUserId], references: [id], onDelete: Restrict)
+  assignee    User?             @relation("ComplaintAssignee", fields: [assigneeId], references: [id], onDelete: Restrict)
+  student     Student?          @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  updates     ComplaintUpdate[]
+
+  @@index([branchId, status])
+  @@index([complainantId])
+  @@index([assigneeId, status])
+  @@index([status, slaDueAt])
+  @@map("complaints")
+}
+
+model ComplaintUpdate {
+  id                String           @id @default(uuid(7)) @db.Uuid
+  complaintId       String           @map("complaint_id") @db.Uuid
+  authorId          String?          @map("author_id") @db.Uuid
+  message           String
+  status            ComplaintStatus?
+  attachmentFileIds String[]         @default([]) @map("attachment_file_ids") @db.Uuid
+  createdAt         DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  complaint Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  author    User?     @relation("ComplaintUpdateAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([complaintId, createdAt])
+  @@map("complaint_updates")
+}
+
+model MeetingSlot {
+  id          String            @id @default(uuid(7)) @db.Uuid
+  schoolId    String            @map("school_id") @db.Uuid
+  branchId    String            @map("branch_id") @db.Uuid
+  staffUserId String            @map("staff_user_id") @db.Uuid
+  date        DateTime          @db.Date
+  startTime   String            @map("start_time") @db.VarChar(5)
+  endTime     String            @map("end_time") @db.VarChar(5)
+  mode        MeetingMode
+  location    String?
+  status      MeetingSlotStatus @default(OPEN)
+  createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  staffUser User      @relation("MeetingSlotOwner", fields: [staffUserId], references: [id], onDelete: Restrict)
+  meetings  Meeting[]
+
+  @@unique([staffUserId, date, startTime])
+  @@index([branchId, date])
+  @@map("meeting_slots")
+}
+
+model Meeting {
+  id            String        @id @default(uuid(7)) @db.Uuid
+  schoolId      String        @map("school_id") @db.Uuid
+  branchId      String        @map("branch_id") @db.Uuid
+  slotId        String?       @map("slot_id") @db.Uuid
+  studentId     String        @map("student_id") @db.Uuid
+  guardianId    String        @map("guardian_id") @db.Uuid
+  staffUserId   String        @map("staff_user_id") @db.Uuid
+  date          DateTime      @db.Date
+  startTime     String        @map("start_time") @db.VarChar(5)
+  endTime       String        @map("end_time") @db.VarChar(5)
+  mode          MeetingMode
+  location      String?
+  agenda        String
+  status        MeetingStatus @default(SCHEDULED)
+  notes         String?
+  summary       String?
+  shareSummary  Boolean       @default(false) @map("share_summary")
+  reason        String?
+  requestedById String        @map("requested_by_id") @db.Uuid
+  reminderAt    DateTime?     @map("reminder_at") @db.Timestamptz(3)
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  slot      MeetingSlot?      @relation(fields: [slotId], references: [id], onDelete: Restrict)
+  student   Student           @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  guardian  Guardian          @relation(fields: [guardianId], references: [id], onDelete: Restrict)
+  staffUser User              @relation("MeetingStaff", fields: [staffUserId], references: [id], onDelete: Restrict)
+  followUps MeetingFollowUp[]
+
+  @@unique([slotId], map: "meetings_one_scheduled_per_slot", where: raw("status = 'SCHEDULED'::meeting_status"))
+  @@index([branchId, date])
+  @@index([staffUserId, date])
+  @@index([guardianId, date])
+  @@map("meetings")
+}
+
+model MeetingFollowUp {
+  id          String         @id @default(uuid(7)) @db.Uuid
+  meetingId   String         @map("meeting_id") @db.Uuid
+  title       String
+  ownerUserId String         @map("owner_user_id") @db.Uuid
+  dueDate     DateTime       @map("due_date") @db.Date
+  status      FollowUpStatus @default(OPEN)
+  doneAt      DateTime?      @map("done_at") @db.Timestamptz(3)
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  owner   User    @relation("FollowUpOwner", fields: [ownerUserId], references: [id], onDelete: Restrict)
+
+  @@index([ownerUserId, status])
+  @@map("meeting_follow_ups")
+}
+
+model HealthIncident {
+  id                String           @id @default(uuid(7)) @db.Uuid
+  schoolId          String           @map("school_id") @db.Uuid
+  branchId          String           @map("branch_id") @db.Uuid
+  studentId         String           @map("student_id") @db.Uuid
+  occurredAt        DateTime         @map("occurred_at") @db.Timestamptz(3)
+  type              IncidentType
+  severity          IncidentSeverity
+  description       String
+  actionTaken       String           @map("action_taken")
+  attachmentFileIds String[]         @default([]) @map("attachment_file_ids") @db.Uuid
+  status            IncidentStatus   @default(REPORTED)
+  reportedById      String           @map("reported_by_id") @db.Uuid
+  closedById        String?          @map("closed_by_id") @db.Uuid
+  closedAt          DateTime?        @map("closed_at") @db.Timestamptz(3)
+  closeNote         String?          @map("close_note")
+  createdAt         DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  student    Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  reportedBy User    @relation("IncidentReporter", fields: [reportedById], references: [id], onDelete: Restrict)
+
+  @@index([branchId, occurredAt])
+  @@index([studentId, occurredAt])
+  @@map("health_incidents")
+}
+
+model PickupPerson {
+  id           String             @id @default(uuid(7)) @db.Uuid
+  schoolId     String             @map("school_id") @db.Uuid
+  studentId    String             @map("student_id") @db.Uuid
+  name         String
+  relation     String
+  cnic         String?
+  phone        String
+  photoFileId  String?            @map("photo_file_id") @db.Uuid
+  status       PickupPersonStatus @default(PENDING_VERIFICATION)
+  addedById    String             @map("added_by_id") @db.Uuid
+  verifiedById String?            @map("verified_by_id") @db.Uuid
+  verifiedAt   DateTime?          @map("verified_at") @db.Timestamptz(3)
+  revokedAt    DateTime?          @map("revoked_at") @db.Timestamptz(3)
+  createdAt    DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
+
+  @@index([studentId, status])
+  @@map("pickup_persons")
+}
+
+model EarlyLeave {
+  id             String           @id @default(uuid(7)) @db.Uuid
+  schoolId       String           @map("school_id") @db.Uuid
+  branchId       String           @map("branch_id") @db.Uuid
+  sectionId      String           @map("section_id") @db.Uuid
+  studentId      String           @map("student_id") @db.Uuid
+  date           DateTime         @db.Date
+  time           String           @db.VarChar(5)
+  reason         String
+  pickupPersonId String?          @map("pickup_person_id") @db.Uuid
+  status         EarlyLeaveStatus @default(REQUESTED)
+  approvalId     String?          @map("approval_id") @db.Uuid
+  requestedById  String           @map("requested_by_id") @db.Uuid
+  decidedById    String?          @map("decided_by_id") @db.Uuid
+  decidedAt      DateTime?        @map("decided_at") @db.Timestamptz(3)
+  comment        String?
+  createdAt      DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
+
+  @@index([branchId, date])
+  @@index([studentId, date])
+  @@map("early_leaves")
+}
+
+model Departure {
+  id             String   @id @default(uuid(7)) @db.Uuid
+  schoolId       String   @map("school_id") @db.Uuid
+  branchId       String   @map("branch_id") @db.Uuid
+  studentId      String   @map("student_id") @db.Uuid
+  earlyLeaveId   String?  @map("early_leave_id") @db.Uuid
+  pickupPersonId String?  @map("pickup_person_id") @db.Uuid
+  guardianId     String?  @map("guardian_id") @db.Uuid
+  pickedUpByName String   @map("picked_up_by_name")
+  at             DateTime @db.Timestamptz(3)
+  recordedById   String   @map("recorded_by_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
+
+  @@index([branchId, at])
+  @@index([studentId, at])
+  @@map("departures")
+}
+
+/// Missing row = push on. Critical categories ignore `push = false`.
+model NotificationPreference {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  category  String
+  push      Boolean  @default(true)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@unique([userId, category])
+  @@map("notification_preferences")
+}

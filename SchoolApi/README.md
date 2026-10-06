@@ -1,7 +1,7 @@
 # SchoolApi
 
 NestJS 11 + Prisma 7 (PostgreSQL 16) + BullMQ (Redis) API for the eSchool Management System.
-Design: [../docs/architecture.md](../docs/architecture.md) §5, [databaseManagement.md](../docs/databaseManagement.md), [security.md](../docs/security.md). Phase 1 API: [../docs/api/phase1-contract.md](../docs/api/phase1-contract.md); Phase 2 API: [../docs/api/phase2-contract.md](../docs/api/phase2-contract.md).
+Design: [../docs/architecture.md](../docs/architecture.md) §5, [databaseManagement.md](../docs/databaseManagement.md), [security.md](../docs/security.md). Phase 1 API: [../docs/api/phase1-contract.md](../docs/api/phase1-contract.md); Phase 2 API: [../docs/api/phase2-contract.md](../docs/api/phase2-contract.md); Phase 3 API: [../docs/api/phase3-contract.md](../docs/api/phase3-contract.md).
 
 ## Local run (no Docker, Postgres or Redis install needed)
 ```bash
@@ -42,9 +42,11 @@ Push, email and SMS channels log messages in development and mark deliveries `FA
 
 ## Layout
 ```
-prisma/schema/        base, identity, organisation, audit, jobs, people, staff, documents, admissions, academics-plan
+prisma/schema/        base, identity, organisation, audit, jobs, people, staff, documents, admissions, academics-plan,
+                      attendance (+leave, staff attendance), engagement (diary, activities, notices, messaging), welfare
 prisma/migrations/    phase1_init (+ partial unique indexes), phase1_integrity (audit append-only trigger, CHECKs),
-                      phase2_people_academics (+ partial uniques: one active enrollment, one primary guardian, one class teacher; CHECKs)
+                      phase2_people_academics (+ partial uniques: one active enrollment, one primary guardian, one class teacher; CHECKs),
+                      phase3_daily_operations (+ partial uniques: one pending correction per entry, one scheduled meeting per slot)
 prisma/seed*          seed entry + small seed steps
 scripts/              embedded PostgreSQL start/stop
 src/config/           zod-validated env + typed AppConfigService
@@ -53,7 +55,8 @@ src/core/auth/        login, refresh rotation + reuse detection, lockout, passwo
 src/core/rbac/        permission catalogue, default role permissions, access context (X-Active-Role), Scope, PolicyGuard
 src/core/audit/       AuditService + interceptor (append-only audit_logs), GET /audit
 src/core/approvals/   generic approval engine (handler registry, steps, amount limits), inbox, reassign job
-src/core/notifications/ in-app rows + delivery rows, channel adapters, jobs
+src/core/notifications/ in-app rows + delivery rows, channel adapters (FCM push when FCM_SERVICE_ACCOUNT_JSON is set), preferences, jobs
+src/core/idempotency/ clientRequestId store for offline (Android) writes
 src/core/files/       upload policy, local storage, signed URLs
 src/core/jobs/        JobDispatcher + JobScheduler (BullMQ | inline), processor registry, JobRunner
 src/core/outbox/      transactional outbox (domain_events) published after commit; sequences/ numbered ids
@@ -63,7 +66,9 @@ src/core/cache/       CacheStore (Redis | memory)
 src/modules/          me, roles, schools, branches (+settings, principal), users (+assignments),
                       academic-sessions (sessions, terms, calendar), academics (classes, subjects, rooms, sections), dashboard,
                       documents, students (+enrollment, transfers, ID card PDF job), guardians (+child links, contact change),
-                      admissions, staff (+assignments, probation, expiry job), timetable, syllabus (+book lists, delay report job)
+                      admissions, staff (+assignments, probation, expiry job), timetable, syllabus (+book lists, delay report job),
+                      school-day (shared helpers), attendance (+corrections, lock job), staff-attendance, leave, diary (+missing job),
+                      activities, notices (+expiry job), messaging, complaints (+SLA job), meetings (+reminder job), health, pickup
 ```
 Each module: `controller` (routes + permission) → `service` (rules, scope checks, audit) → `repository` (Prisma, takes a `Scope`).
 Responses are `{ data, meta? }`; errors are `{ error: { code, message, details? } }` with codes from `ErrorCode`.

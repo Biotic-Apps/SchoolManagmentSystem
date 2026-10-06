@@ -13,6 +13,8 @@ export interface NotifyInput {
   data?: Record<string, unknown>;
   /** External channels in addition to the in-app row. */
   channels?: Exclude<NotificationChannel, 'IN_APP'>[];
+  /** In-app only, no push (e.g. messages outside office hours). */
+  silent?: boolean;
 }
 
 /** One-off message with no stored row (e.g. password reset codes, OTPs). */

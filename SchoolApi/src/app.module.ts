@@ -8,6 +8,7 @@ import { CacheModule } from './core/cache/cache.module';
 import { CommonModule } from './core/common/common.module';
 import { FilesModule } from './core/files/files.module';
 import { HealthModule } from './core/health/health.module';
+import { IdempotencyModule } from './core/idempotency/idempotency.module';
 import { JobsModule } from './core/jobs/jobs.module';
 import { NotificationsModule } from './core/notifications/notifications.module';
 import { OtpModule } from './core/otp/otp.module';
@@ -18,6 +19,17 @@ import { RbacModule } from './core/rbac/rbac.module';
 import { ThrottlingModule } from './core/throttling/throttling.module';
 import { AcademicSessionsModule } from './modules/academic-sessions/academic-sessions.module';
 import { AcademicsModule } from './modules/academics/academics.module';
+import { AttendanceModule } from './modules/attendance/attendance.module';
+import { LeaveModule } from './modules/leave/leave.module';
+import { StaffAttendanceModule } from './modules/staff-attendance/staff-attendance.module';
+import { DiaryModule } from './modules/diary/diary.module';
+import { StudentHealthModule } from './modules/health/health.module';
+import { PickupModule } from './modules/pickup/pickup.module';
+import { ComplaintsModule } from './modules/complaints/complaints.module';
+import { MeetingsModule } from './modules/meetings/meetings.module';
+import { ActivitiesModule } from './modules/activities/activities.module';
+import { MessagingModule } from './modules/messaging/messaging.module';
+import { NoticesModule } from './modules/notices/notices.module';
 import { AdmissionsModule } from './modules/admissions/admissions.module';
 import { BranchesModule } from './modules/branches/branches.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
@@ -25,6 +37,7 @@ import { DocumentsModule } from './modules/documents/documents.module';
 import { GuardiansModule } from './modules/guardians/guardians.module';
 import { MeModule } from './modules/me/me.module';
 import { RolesModule } from './modules/roles/roles.module';
+import { SchoolDayModule } from './modules/school-day/school-day.module';
 import { SchoolsModule } from './modules/schools/schools.module';
 import { StaffModule } from './modules/staff/staff.module';
 import { StudentsModule } from './modules/students/students.module';
@@ -48,6 +61,7 @@ import { UsersModule } from './modules/users/users.module';
     ProbationModule,
     OutboxModule,
     OtpModule,
+    IdempotencyModule,
     AccountsModule,
     FilesModule,
     HealthModule,
@@ -66,6 +80,18 @@ import { UsersModule } from './modules/users/users.module';
     StaffModule,
     TimetableModule,
     SyllabusModule,
+    SchoolDayModule,
+    AttendanceModule,
+    StaffAttendanceModule,
+    LeaveModule,
+    DiaryModule,
+    StudentHealthModule,
+    PickupModule,
+    ComplaintsModule,
+    MeetingsModule,
+    ActivitiesModule,
+    NoticesModule,
+    MessagingModule,
   ],
 })
 export class AppModule {}

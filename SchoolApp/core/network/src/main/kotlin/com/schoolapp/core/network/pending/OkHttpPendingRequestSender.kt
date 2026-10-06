@@ -33,7 +33,7 @@ internal class OkHttpPendingRequestSender @Inject constructor(
             try {
                 client.newCall(request).execute().use { response ->
                     when {
-                        response.isSuccessful -> SendResult.Sent
+                        response.isSuccessful -> SendResult.Sent(response.body.string().ifEmpty { null })
                         response.code in RETRYABLE || response.code >= 500 -> SendResult.Retry("HTTP ${response.code}")
                         else -> SendResult.Rejected(response.code, response.body.string().take(MAX_ERROR_LENGTH))
                     }

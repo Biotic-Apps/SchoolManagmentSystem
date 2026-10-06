@@ -24,6 +24,11 @@ export class AuditService {
     void this.write([entry], {});
   }
 
+  /** Writes at once, also for reads (GET responses are not flushed). */
+  recordNow(entry: AuditEntry): Promise<void> {
+    return this.write([entry], requestContext.getStore() ?? {});
+  }
+
   async flush(context: RequestContext): Promise<void> {
     const entries = context.auditEntries.splice(0);
     if (entries.length > 0) await this.write(entries, context);

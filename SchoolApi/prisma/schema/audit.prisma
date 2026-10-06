@@ -20,6 +20,7 @@ enum ApprovalType {
   CONTACT_CHANGE
   EARLY_LEAVE
   CERTIFICATE
+  NOTICE
 
   @@map("approval_type")
 }

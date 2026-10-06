@@ -1,10 +1,14 @@
 package com.schoolapp.core.network.api
 
 import com.schoolapp.core.network.dto.notification.NotificationDto
+import com.schoolapp.core.network.dto.notification.NotificationPreferenceDto
+import com.schoolapp.core.network.dto.notification.PreferenceInputDto
 import com.schoolapp.core.network.dto.notification.UnreadCountDto
 import com.schoolapp.core.network.model.ApiEnvelope
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -24,4 +28,11 @@ interface NotificationsApi {
 
     @POST("notifications/read-all")
     suspend fun markAllRead()
+
+    @GET("notifications/preferences")
+    suspend fun preferences(): ApiEnvelope<List<NotificationPreferenceDto>>
+
+    /** Plain array body `[{ category, push, inApp? }]`. */
+    @PUT("notifications/preferences")
+    suspend fun updatePreferences(@Body body: List<PreferenceInputDto>): ApiEnvelope<List<NotificationPreferenceDto>>
 }

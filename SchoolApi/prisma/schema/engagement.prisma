@@ -1,0 +1,280 @@
+enum DiaryStatus {
+  DRAFT
+  SUBMITTED
+  PUBLISHED
+  RETURNED
+  PENDING_REVIEW
+
+  @@map("diary_status")
+}
+
+enum ActivityType {
+  EVENT
+  SPORTS
+  TRIP
+  COMPETITION
+  CLUB
+
+  @@map("activity_type")
+}
+
+enum ActivityStatus {
+  PROPOSED
+  APPROVED
+  REJECTED
+  ANNOUNCED
+  ONGOING
+  COMPLETED
+  CANCELLED
+
+  @@map("activity_status")
+}
+
+enum ConsentStatus {
+  PENDING
+  GRANTED
+  DECLINED
+
+  @@map("consent_status")
+}
+
+enum NoticeStatus {
+  DRAFT
+  PENDING_APPROVAL
+  PUBLISHED
+  REJECTED
+  EXPIRED
+
+  @@map("notice_status")
+}
+
+enum MessageStatus {
+  SENT
+  PENDING_REVIEW
+  REJECTED
+
+  @@map("message_status")
+}
+
+model DiaryEntry {
+  id                String      @id @default(uuid(7)) @db.Uuid
+  schoolId          String      @map("school_id") @db.Uuid
+  branchId          String      @map("branch_id") @db.Uuid
+  sessionId         String      @map("session_id") @db.Uuid
+  sectionId         String      @map("section_id") @db.Uuid
+  subjectId         String      @map("subject_id") @db.Uuid
+  date              DateTime    @db.Date
+  topics            String
+  homework          String?
+  dueDate           DateTime?   @map("due_date") @db.Date
+  attachmentFileIds String[]    @default([]) @map("attachment_file_ids") @db.Uuid
+  status            DiaryStatus @default(DRAFT)
+  revision          Int         @default(1)
+  authorId          String      @map("author_id") @db.Uuid
+  onBehalfOfStaffId String?     @map("on_behalf_of_staff_id") @db.Uuid
+  comment           String?
+  approvalId        String?     @map("approval_id") @db.Uuid
+  publishedAt       DateTime?   @map("published_at") @db.Timestamptz(3)
+  publishedById     String?     @map("published_by_id") @db.Uuid
+  createdAt         DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  section    Section         @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+  subject    Subject         @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  author     User            @relation("DiaryAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  onBehalfOf Staff?          @relation("DiaryOnBehalfOf", fields: [onBehalfOfStaffId], references: [id], onDelete: Restrict)
+  revisions  DiaryRevision[]
+
+  @@unique([sectionId, subjectId, date])
+  @@index([branchId, date])
+  @@index([sectionId, date, status])
+  @@map("diary_entries")
+}
+
+/// Previous content of a published entry, kept on every edit.
+model DiaryRevision {
+  id                String    @id @default(uuid(7)) @db.Uuid
+  entryId           String    @map("entry_id") @db.Uuid
+  revision          Int
+  topics            String
+  homework          String?
+  dueDate           DateTime? @map("due_date") @db.Date
+  attachmentFileIds String[]  @default([]) @map("attachment_file_ids") @db.Uuid
+  editedById        String    @map("edited_by_id") @db.Uuid
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  entry DiaryEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  @@unique([entryId, revision])
+  @@map("diary_revisions")
+}
+
+model Activity {
+  id              String         @id @default(uuid(7)) @db.Uuid
+  schoolId        String         @map("school_id") @db.Uuid
+  branchId        String         @map("branch_id") @db.Uuid
+  type            ActivityType
+  title           String
+  description     String
+  startAt         DateTime       @map("start_at") @db.Timestamptz(3)
+  endAt           DateTime       @map("end_at") @db.Timestamptz(3)
+  venue           String?
+  audience        Json
+  consentRequired Boolean        @default(false) @map("consent_required")
+  consentDeadline DateTime?      @map("consent_deadline") @db.Date
+  feeMinor        BigInt?        @map("fee_minor")
+  maxParticipants Int?           @map("max_participants")
+  status          ActivityStatus @default(PROPOSED)
+  reason          String?
+  approvalId      String?        @map("approval_id") @db.Uuid
+  proposedById    String         @map("proposed_by_id") @db.Uuid
+  decidedById     String?        @map("decided_by_id") @db.Uuid
+  decidedAt       DateTime?      @map("decided_at") @db.Timestamptz(3)
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  proposedBy   User                  @relation("ActivityProposer", fields: [proposedById], references: [id], onDelete: Restrict)
+  consents     ActivityConsent[]
+  participants ActivityParticipant[]
+
+  @@index([branchId, startAt])
+  @@index([status])
+  @@map("activities")
+}
+
+/// No response (PENDING) never counts as consent.
+model ActivityConsent {
+  id            String        @id @default(uuid(7)) @db.Uuid
+  activityId    String        @map("activity_id") @db.Uuid
+  studentId     String        @map("student_id") @db.Uuid
+  guardianId    String?       @map("guardian_id") @db.Uuid
+  status        ConsentStatus @default(PENDING)
+  note          String?
+  respondedById String?       @map("responded_by_id") @db.Uuid
+  respondedAt   DateTime?     @map("responded_at") @db.Timestamptz(3)
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  activity Activity  @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  student  Student   @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  guardian Guardian? @relation(fields: [guardianId], references: [id], onDelete: Restrict)
+
+  @@unique([activityId, studentId])
+  @@index([studentId, status])
+  @@map("activity_consents")
+}
+
+model ActivityParticipant {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  activityId String   @map("activity_id") @db.Uuid
+  studentId  String   @map("student_id") @db.Uuid
+  role       String?
+  result     String?
+  position   Int?
+  remarks    String?
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  student  Student  @relation(fields: [studentId], references: [id], onDelete: Restrict)
+
+  @@unique([activityId, studentId])
+  @@index([studentId])
+  @@map("activity_participants")
+}
+
+model Notice {
+  id                String       @id @default(uuid(7)) @db.Uuid
+  schoolId          String       @map("school_id") @db.Uuid
+  branchId          String?      @map("branch_id") @db.Uuid
+  title             String
+  body              String
+  audience          Json
+  attachmentFileIds String[]     @default([]) @map("attachment_file_ids") @db.Uuid
+  expiresOn         DateTime?    @map("expires_on") @db.Date
+  pinned            Boolean      @default(false)
+  status            NoticeStatus @default(DRAFT)
+  authorId          String       @map("author_id") @db.Uuid
+  approvalId        String?      @map("approval_id") @db.Uuid
+  comment           String?
+  publishedAt       DateTime?    @map("published_at") @db.Timestamptz(3)
+  publishedById     String?      @map("published_by_id") @db.Uuid
+  createdAt         DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  author     User              @relation("NoticeAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  recipients NoticeRecipient[]
+
+  @@index([schoolId, status])
+  @@index([branchId, status])
+  @@map("notices")
+}
+
+/// Audience resolved at publish time; doubles as the read receipt.
+model NoticeRecipient {
+  id       String    @id @default(uuid(7)) @db.Uuid
+  noticeId String    @map("notice_id") @db.Uuid
+  userId   String    @map("user_id") @db.Uuid
+  readAt   DateTime? @map("read_at") @db.Timestamptz(3)
+
+  notice Notice @relation(fields: [noticeId], references: [id], onDelete: Cascade)
+
+  @@unique([noticeId, userId])
+  @@index([userId])
+  @@map("notice_recipients")
+}
+
+model MessageThread {
+  id            String   @id @default(uuid(7)) @db.Uuid
+  schoolId      String   @map("school_id") @db.Uuid
+  branchId      String   @map("branch_id") @db.Uuid
+  studentId     String   @map("student_id") @db.Uuid
+  subject       String
+  createdById   String   @map("created_by_id") @db.Uuid
+  closed        Boolean  @default(false)
+  lastMessageAt DateTime @default(now()) @map("last_message_at") @db.Timestamptz(3)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  student      Student             @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  participants ThreadParticipant[]
+  messages     Message[]
+
+  @@index([branchId, lastMessageAt])
+  @@index([studentId])
+  @@map("message_threads")
+}
+
+model ThreadParticipant {
+  id         String    @id @default(uuid(7)) @db.Uuid
+  threadId   String    @map("thread_id") @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  role       String
+  lastReadAt DateTime? @map("last_read_at") @db.Timestamptz(3)
+
+  thread MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  user   User          @relation("ThreadParticipantUser", fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([threadId, userId])
+  @@index([userId])
+  @@map("thread_participants")
+}
+
+model Message {
+  id                String        @id @default(uuid(7)) @db.Uuid
+  threadId          String        @map("thread_id") @db.Uuid
+  senderId          String        @map("sender_id") @db.Uuid
+  senderRole        String        @map("sender_role")
+  body              String
+  attachmentFileIds String[]      @default([]) @map("attachment_file_ids") @db.Uuid
+  status            MessageStatus @default(SENT)
+  deliveredSilently Boolean       @default(false) @map("delivered_silently")
+  pendingApprovalId String?       @map("pending_approval_id") @db.Uuid
+  sentAt            DateTime      @default(now()) @map("sent_at") @db.Timestamptz(3)
+
+  thread MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  sender User          @relation("MessageSender", fields: [senderId], references: [id], onDelete: Restrict)
+
+  @@index([threadId, sentAt])
+  @@map("messages")
+}

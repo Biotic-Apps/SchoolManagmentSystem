@@ -4,7 +4,15 @@ import { useDialogState } from "@/lib/use-dialog-state";
 import { useStudent } from "./api";
 
 export type StudentAction = "edit" | "section" | "transfer" | "withdraw";
-export type StudentTabId = "profile" | "guardians" | "documents" | "enrollments" | "id-card";
+export type StudentTabId =
+  | "profile"
+  | "guardians"
+  | "documents"
+  | "enrollments"
+  | "id-card"
+  | "attendance"
+  | "health"
+  | "pickup";
 
 export function useStudentDetail(studentId: string) {
   const can = useCan();

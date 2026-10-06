@@ -3,6 +3,8 @@ import { ApprovalsRepository } from '../../core/approvals/approvals.repository';
 import { notFound } from '../../core/common/errors/errors';
 import type { AuthUser } from '../../core/common/types/auth-user';
 import type { Scope } from '../../core/rbac/scope/scope';
+import { PrismaService } from '../../core/prisma/prisma.service';
+import { attendanceToday } from './daily/attendance-today';
 import { DashboardRepository } from './dashboard.repository';
 import type { DashboardQueryDto } from './dto/dashboard-query.dto';
 import type { DashboardSummaryDto } from './dto/dashboard-summary.dto';
@@ -12,6 +14,7 @@ export class DashboardService {
   constructor(
     private readonly repository: DashboardRepository,
     private readonly approvals: ApprovalsRepository,
+    private readonly prisma: PrismaService,
   ) {}
 
   async summary(
@@ -36,6 +39,7 @@ export class DashboardService {
       staff,
       pendingAdmissions,
       pendingChildLinks,
+      attendance,
     ] = await Promise.all([
       this.repository.schools(scope, query),
       this.repository.branches(scope, query),
@@ -47,6 +51,7 @@ export class DashboardService {
       this.repository.staff(scope, query),
       this.repository.pendingAdmissions(scope, query),
       this.repository.pendingChildLinks(scope, query),
+      attendanceToday(this.prisma, scope, query.branchId),
     ]);
     return {
       schools,
@@ -59,6 +64,7 @@ export class DashboardService {
       staff,
       pendingAdmissions,
       pendingChildLinks,
+      attendanceToday: attendance,
     };
   }
 }

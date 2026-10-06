@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shared labels -->
+    <string name="pickup_status_pending_verification">Pending verification</string>
+    <string name="pickup_status_verified">Verified</string>
+    <string name="pickup_status_revoked">Revoked</string>
+    <string name="pickup_leave_requested">Requested</string>
+    <string name="pickup_leave_approved">Approved</string>
+    <string name="pickup_leave_rejected">Rejected</string>
+    <string name="pickup_leave_departed">Departed</string>
+    <string name="pickup_leave_departed_at">Departed %1$s</string>
+    <string name="pickup_leave_time">Leaving at %1$s</string>
+    <string name="pickup_leave_reason">Reason: %1$s</string>
+    <string name="pickup_leave_picker">Pickup: %1$s</string>
+    <string name="pickup_leave_requested_by">Requested by %1$s</string>
+    <string name="pickup_required">Required</string>
+
+    <!-- Gate -->
+    <string name="pickup_today">Today, %1$s</string>
+    <string name="pickup_early_leaves">Early leaves</string>
+    <string name="pickup_early_leaves_empty">No early leave requests today</string>
+    <string name="pickup_departures_today">Departures today</string>
+    <string name="pickup_departures_empty">No departures recorded yet today</string>
+    <string name="pickup_departure_picked_by">Picked up by %1$s</string>
+    <string name="pickup_record_departure">Record departure</string>
+    <string name="pickup_record_other">Record departure for another student</string>
+    <string name="pickup_search_students">Search students by name or admission no.</string>
+    <string name="pickup_search_empty">No students match your search</string>
+    <string name="pickup_approve">Approve</string>
+    <string name="pickup_reject">Reject</string>
+
+    <!-- Record departure -->
+    <string name="pickup_record_title">Record departure</string>
+    <string name="pickup_choose_picker">Who is collecting the student?</string>
+    <string name="pickup_pickers_empty">No guardians or pickup persons on record</string>
+    <string name="pickup_pickers_empty_message">Ask the school office to add an authorized person before the student leaves.</string>
+    <string name="pickup_guardian">Guardian</string>
+    <string name="pickup_not_verified">Not verified</string>
+    <string name="pickup_unverified_warning">%1$s is not verified. The departure may be blocked and the principal alerted.</string>
+    <string name="pickup_confirm_departure">Confirm departure</string>
+    <string name="pickup_blocked_title">Pickup blocked</string>
+    <string name="pickup_blocked_message">%1$s is not an authorized picker. The principal has been alerted.</string>
+    <string name="pickup_choose_another">Choose another person</string>
+    <string name="pickup_recorded_title">Departure recorded</string>
+    <string name="pickup_recorded_message">%1$s left with %2$s at %3$s. Guardians have been notified.</string>
+    <string name="pickup_done">Done</string>
+    <string name="pickup_early_leave_linked">For the early leave at %1$s</string>
+
+    <!-- Parent -->
+    <string name="pickup_parent_title">Pickup and early leave</string>
+    <string name="pickup_no_child">No child selected</string>
+    <string name="pickup_no_child_message">Link a child to your account to manage pickups.</string>
+    <string name="pickup_persons">Authorized pickup persons</string>
+    <string name="pickup_persons_subtitle">Only verified people can collect your child</string>
+    <string name="pickup_persons_empty">No pickup persons added yet</string>
+    <string name="pickup_add_person">Add person</string>
+    <string name="pickup_early_leave">Early leave</string>
+    <string name="pickup_early_leave_empty">No early leave requests for today or later</string>
+    <string name="pickup_request_early_leave">Request early leave</string>
+    <string name="pickup_person_added">Sent to the school office for verification</string>
+    <string name="pickup_leave_sent">Early leave requested. The school will confirm it.</string>
+
+    <!-- Add person sheet -->
+    <string name="pickup_person_name">Full name</string>
+    <string name="pickup_person_relation">Relation to child</string>
+    <string name="pickup_person_phone">Phone</string>
+    <string name="pickup_person_cnic">CNIC (optional)</string>
+    <string name="pickup_phone_invalid">Enter a valid phone number</string>
+    <string name="pickup_cnic_invalid">Enter 13 digits, e.g. 35202-1234567-1</string>
+    <string name="pickup_photo">Photo</string>
+    <string name="pickup_add_photo">Add photo</string>
+    <string name="pickup_change_photo">Change photo</string>
+    <string name="pickup_photo_uploading">Uploading photo…</string>
+    <string name="pickup_submit_person">Send for verification</string>
+
+    <!-- Early leave sheet -->
+    <string name="pickup_leave_date">Date</string>
+    <string name="pickup_leave_time_label">Time</string>
+    <string name="pickup_leave_time_title">Leaving time</string>
+    <string name="pickup_leave_reason_label">Reason</string>
+    <string name="pickup_leave_past">The date cannot be in the past</string>
+    <string name="pickup_leave_who">Who will collect (optional)</string>
+    <string name="pickup_leave_who_none">Not decided</string>
+    <string name="pickup_submit_leave">Send request</string>
+</resources>

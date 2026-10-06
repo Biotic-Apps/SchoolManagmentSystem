@@ -69,3 +69,18 @@ including a custom role ("Front Desk") whose menu is built from its permissions.
 - `/me` is reloaded after login and every time the app comes to the foreground, so role/permission changes apply
   without signing out. Role switching sends `X-Active-Role` and reloads `/me`.
 - `mustChangePassword` shows a forced Change Password screen before anything else.
+
+## Push notifications (FCM)
+Push is optional. The app registers a device token with `POST /devices` after sign-in through
+`DeviceRegistrar`, using the `PushTokenProvider` bound in `:core:data` (`PushModule`). Until a Firebase
+project is configured the binding is `NoOpPushTokenProvider` (no token, nothing is sent; in-app
+notifications still work). To enable push: add `app/google-services.json` and the google-services Gradle
+plugin, add `firebase-messaging`, implement `PushTokenProvider` with `FirebaseMessaging.getInstance().token`,
+bind it instead of the no-op, and add a `FirebaseMessagingService` that re-registers on `onNewToken`.
+
+## Offline daily work
+Attendance marks are saved in Room before any network call; draft saves and submits that cannot reach
+the server are queued in the outbox with a `clientRequestId` (also sent as `Idempotency-Key`) and replayed
+in order by `SyncWorker`. A queued register rejected by the server (e.g. `409 ALREADY_SUBMITTED`) is shown
+as "needs review" on the register screen. Diary saves/publishes queue the same way; a publish of an entry
+created offline references the queued save through an outbox ref (`{ref:<clientRequestId>}`).

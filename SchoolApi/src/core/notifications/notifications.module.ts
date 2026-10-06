@@ -9,10 +9,12 @@ import { NotificationInboxService } from './notification-inbox.service';
 import { NotificationService } from './notification.service';
 import { NotificationsController } from './notifications.controller';
 import { NotificationsRepository } from './notifications.repository';
+import { NotificationPreferencesController } from './preferences/notification-preferences.controller';
+import { NotificationPreferencesService } from './preferences/notification-preferences.service';
 
 @Global()
 @Module({
-  controllers: [NotificationsController],
+  controllers: [NotificationsController, NotificationPreferencesController],
   providers: [
     PushChannel,
     EmailChannel,
@@ -23,6 +25,7 @@ import { NotificationsRepository } from './notifications.repository';
     NotificationInboxService,
     SendNotificationProcessor,
     DirectMessageProcessor,
+    NotificationPreferencesService,
   ],
   exports: [NotificationService],
 })

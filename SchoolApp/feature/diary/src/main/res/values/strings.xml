@@ -1,0 +1,84 @@
+<resources>
+    <!-- Date selector -->
+    <string name="diary_date">Date</string>
+    <string name="diary_today_with_date">Today, %1$s</string>
+    <string name="diary_previous_day">Previous day</string>
+    <string name="diary_next_day">Next day</string>
+
+    <!-- Statuses -->
+    <string name="diary_status_draft">Draft</string>
+    <string name="diary_status_submitted">Submitted</string>
+    <string name="diary_status_published">Published</string>
+    <string name="diary_status_returned">Returned</string>
+    <string name="diary_status_pending_review">Pending review</string>
+    <string name="diary_status_waiting_sync">Waiting to sync</string>
+    <string name="diary_status_not_written">Not written</string>
+
+    <!-- Entry card -->
+    <string name="diary_subject_unknown">Subject</string>
+    <string name="diary_topics">Topics taught</string>
+    <string name="diary_homework">Homework</string>
+    <string name="diary_due_on">Due %1$s</string>
+    <string name="diary_returned_comment">Returned by reviewer: %1$s</string>
+
+    <!-- Teacher list -->
+    <string name="diary_add_entry">Add entry</string>
+    <string name="diary_section_empty">No diary written for this day yet.</string>
+    <string name="diary_saved_on_phone">Saved on this phone</string>
+    <string name="diary_not_written">Not written yet</string>
+    <string name="diary_no_sections">No sections</string>
+    <string name="diary_no_sections_message">You are not assigned to any section yet.</string>
+
+    <!-- Editor -->
+    <string name="diary_editor_title">Diary</string>
+    <string name="diary_current_status">Current status</string>
+    <string name="diary_written_by">Written by %1$s</string>
+    <string name="diary_published_edit_note">Published entries can be edited until the diary closing time today.</string>
+    <string name="diary_waiting_review_note">This entry is waiting for review.</string>
+    <string name="diary_locked">The diary for this day is closed. This entry can no longer be changed.</string>
+    <string name="diary_no_edit_permission">You can view this entry but not change it.</string>
+    <string name="diary_subject">Subject</string>
+    <string name="diary_subject_required">Choose a subject.</string>
+    <string name="diary_topics_label">Topics taught</string>
+    <string name="diary_topics_required">Enter the topics taught.</string>
+    <string name="diary_homework_label">Homework (optional)</string>
+    <string name="diary_due_date">Homework due date</string>
+    <string name="diary_due_date_invalid">The due date cannot be before the diary date.</string>
+    <string name="diary_clear_due_date">Remove due date</string>
+    <string name="diary_attachments">Attachments</string>
+    <string name="diary_add_file">Add file</string>
+    <string name="diary_uploading">Uploading file…</string>
+    <string name="diary_upload_offline">Files need an internet connection to upload. Try again when online, or save without the file.</string>
+    <string name="diary_helper_note">Your class teacher publishes it.</string>
+    <string name="diary_save_draft">Save draft</string>
+    <string name="diary_publish">Publish</string>
+
+    <!-- Results -->
+    <string name="diary_result_draft_saved">Draft saved.</string>
+    <string name="diary_result_published">Diary published. Parents have been notified.</string>
+    <string name="diary_result_pending_review">Sent for review.</string>
+    <string name="diary_result_queued">Saved on this phone, will publish when online.</string>
+
+    <!-- Parent -->
+    <string name="diary_no_child">No child linked to your account.</string>
+    <string name="diary_child_no_section">Your child is not in a section yet.</string>
+    <string name="diary_parent_empty">No diary yet</string>
+    <string name="diary_parent_empty_message">Published diary entries from the last 14 days appear here.</string>
+
+    <!-- Supervisor -->
+    <string name="diary_missing_title">Missing diaries</string>
+    <string name="diary_missing_none">Every timetabled subject has a published diary.</string>
+    <string name="diary_missing_count">%1$d not written</string>
+    <string name="diary_waiting_review">Diaries waiting for review</string>
+    <string name="diary_waiting_review_supporting">Open approvals to publish or return them.</string>
+    <string name="diary_browse_title">Browse a section</string>
+    <string name="diary_section">Section</string>
+    <string name="diary_pick_section">Choose a section</string>
+    <string name="diary_section_no_entries">No diary entries for this section on this day.</string>
+    <string name="diary_return_title">Return to teacher</string>
+    <string name="diary_return_subject">Subject: %1$s</string>
+    <string name="diary_return_comment">What should be changed?</string>
+    <string name="diary_return_comment_required">Enter a comment for the teacher.</string>
+    <string name="diary_return_action">Return</string>
+    <string name="diary_returned_done">Entry returned to the teacher.</string>
+</resources>

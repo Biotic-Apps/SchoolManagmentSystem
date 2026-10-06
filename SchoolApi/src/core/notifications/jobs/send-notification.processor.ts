@@ -5,6 +5,7 @@ import { JobProcessorRegistry } from '../../jobs/job-processor.registry';
 import { QUEUES } from '../../jobs/queues';
 import { ChannelRegistry } from '../channels/channel-registry';
 import type { ChannelMessage } from '../channels/channel-message';
+import { isCritical } from '../notification-categories';
 import { NOTIFICATION_JOBS, type NotifyInput } from '../notification-jobs';
 import { NotificationsRepository } from '../notifications.repository';
 
@@ -44,8 +45,15 @@ export class SendNotificationProcessor
 
   async process(input: NotifyInput): Promise<void> {
     const recipients = await this.repository.recipients(input.userIds);
+    const muted = isCritical(input.category)
+      ? new Set<string>()
+      : await this.repository.pushMuted(input.userIds, input.category);
     for (const recipient of recipients) {
-      const wanted = channelsFor(recipient, input.channels ?? ['PUSH']);
+      const requested = (input.channels ?? ['PUSH']).filter(
+        (channel) =>
+          channel !== 'PUSH' || (!input.silent && !muted.has(recipient.id)),
+      );
+      const wanted = channelsFor(recipient, requested);
       const row = await this.repository.createWithDeliveries(
         recipient.id,
         input,

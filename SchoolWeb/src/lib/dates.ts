@@ -42,3 +42,13 @@ export function monthGrid({ year, month }: MonthRef): { date: string; day: numbe
 export function isWithin(date: string, start: string, end: string): boolean {
   return date >= start && date <= end;
 }
+
+export function todayIso(): string {
+  return toIsoDate(new Date());
+}
+
+/** Shifts a "YYYY-MM-DD" date by whole days (school-local). */
+export function addDays(iso: string, days: number): string {
+  const [year, month, day] = iso.split("-").map(Number);
+  return toIsoDate(new Date(year, month - 1, day + days));
+}

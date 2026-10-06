@@ -26,4 +26,9 @@
     <string name="approvals_details_child_link">Child link request</string>
     <string name="approvals_details_contact">Requested contact change</string>
     <string name="approvals_details_probation">Work awaiting review</string>
+    <string name="approvals_details_leave">Leave request</string>
+    <string name="approvals_details_attendance_correction">Attendance correction</string>
+    <string name="approvals_details_diary">Diary entry for review</string>
+    <string name="approvals_details_activity">Activity for approval</string>
+    <string name="approvals_details_notice">Notice for approval</string>
 </resources>

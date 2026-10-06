@@ -1,0 +1,83 @@
+<resources>
+    <string name="activities_title">Activities</string>
+    <string name="activities_detail_title">Activity</string>
+    <string name="activities_tab_upcoming">Upcoming</string>
+    <string name="activities_tab_past">Past</string>
+    <string name="activities_waiting_approval">Waiting for approval</string>
+    <string name="activities_empty_upcoming">No upcoming activities</string>
+    <string name="activities_empty_past">No past activities</string>
+    <string name="activities_no_child">No child linked to your account yet</string>
+    <string name="activities_propose">Propose activity</string>
+    <string name="activities_retry">Retry</string>
+
+    <string name="activities_type">Type</string>
+    <string name="activities_type_event">Event</string>
+    <string name="activities_type_sports">Sports</string>
+    <string name="activities_type_trip">Trip</string>
+    <string name="activities_type_competition">Competition</string>
+    <string name="activities_type_club">Club</string>
+
+    <string name="activities_status_proposed">Proposed</string>
+    <string name="activities_status_approved">Approved</string>
+    <string name="activities_status_rejected">Rejected</string>
+    <string name="activities_status_announced">Announced</string>
+    <string name="activities_status_ongoing">Ongoing</string>
+    <string name="activities_status_completed">Completed</string>
+    <string name="activities_status_cancelled">Cancelled</string>
+
+    <string name="activities_when">When</string>
+    <string name="activities_venue">Venue</string>
+    <string name="activities_audience">Audience</string>
+    <string name="activities_fee">Fee</string>
+    <string name="activities_max_participants">Max participants</string>
+    <string name="activities_consent_deadline">Consent deadline</string>
+    <string name="activities_proposed_by">Proposed by</string>
+
+    <string name="activities_consent_needed">Consent needed</string>
+    <string name="activities_consent_title">Permission slip</string>
+    <string name="activities_consent_pending">Pending</string>
+    <string name="activities_consent_granted">Granted</string>
+    <string name="activities_consent_declined">Declined</string>
+    <string name="activities_consent_respond_by">Please respond by %1$s</string>
+    <string name="activities_consent_closed_on">Consent closed on %1$s</string>
+    <string name="activities_consent_closed">Consent is closed</string>
+    <string name="activities_consent_hint">No response means not consented.</string>
+    <string name="activities_consent_note">Note (optional)</string>
+    <string name="activities_consent_grant">Grant</string>
+    <string name="activities_consent_decline">Decline</string>
+    <string name="activities_consent_saved">Your response has been saved</string>
+    <string name="activities_consents_title">Consents</string>
+    <string name="activities_participants_title">Participants</string>
+    <string name="activities_position">Position %1$d</string>
+
+    <string name="activities_approval_comment">Comment (optional)</string>
+    <string name="activities_approved_message">Activity approved and announced</string>
+    <string name="activities_rejected_message">Activity rejected</string>
+
+    <string name="activities_propose_title">Propose activity</string>
+    <string name="activities_field_title">Title</string>
+    <string name="activities_field_description">Description</string>
+    <string name="activities_field_date">Date</string>
+    <string name="activities_field_start_time">Start time</string>
+    <string name="activities_field_end_time">End time</string>
+    <string name="activities_field_venue">Venue (optional)</string>
+    <string name="activities_audience_whole_branch">Whole branch</string>
+    <string name="activities_audience_sections">Pick sections</string>
+    <string name="activities_no_sections">No sections assigned to you</string>
+    <string name="activities_field_consent_required">Parent consent required</string>
+    <string name="activities_field_deadline">Consent deadline</string>
+    <string name="activities_submit_proposal">Send for approval</string>
+    <string name="activities_propose_sent">Sent to the principal for approval</string>
+    <string name="activities_back_to_list">Back to activities</string>
+
+    <string name="activities_error_title">Enter a title</string>
+    <string name="activities_error_description">Enter a description</string>
+    <string name="activities_error_date">Pick a date</string>
+    <string name="activities_error_date_past">Pick today or a later date</string>
+    <string name="activities_error_start_time">Pick a start time</string>
+    <string name="activities_error_end_time">Pick an end time</string>
+    <string name="activities_error_end_before_start">End time must be after the start time</string>
+    <string name="activities_error_sections">Pick at least one section</string>
+    <string name="activities_error_deadline">Pick a consent deadline</string>
+    <string name="activities_error_deadline_after_start">The consent deadline must be before the activity date</string>
+</resources>

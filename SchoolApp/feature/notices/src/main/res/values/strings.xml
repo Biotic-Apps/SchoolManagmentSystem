@@ -1,0 +1,41 @@
+<resources>
+    <string name="notices_title">Notices</string>
+    <string name="notices_new">New notice</string>
+    <string name="notices_unread">Unread</string>
+    <string name="notices_pinned">Pinned</string>
+    <string name="notices_empty">No notices</string>
+    <string name="notices_empty_message">Notices from the school appear here.</string>
+
+    <string name="notices_status_draft">Draft</string>
+    <string name="notices_status_pending">Waiting for approval</string>
+    <string name="notices_status_published">Published</string>
+    <string name="notices_status_expired">Expired</string>
+
+    <!-- Detail -->
+    <string name="notices_detail_title">Notice</string>
+    <string name="notices_not_found">This notice is no longer available.</string>
+    <string name="notices_author">From</string>
+    <string name="notices_published_at">Published</string>
+    <string name="notices_audience">Audience</string>
+    <string name="notices_expires_on">Expires on</string>
+    <string name="notices_no_expiry">No expiry</string>
+    <string name="notices_status">Status</string>
+
+    <!-- Compose -->
+    <string name="notices_field_title">Title</string>
+    <string name="notices_title_required">Enter a title.</string>
+    <string name="notices_field_body">Message</string>
+    <string name="notices_body_required">Enter the notice message.</string>
+    <string name="notices_audience_branch">Whole branch</string>
+    <string name="notices_audience_classes">Classes</string>
+    <string name="notices_audience_sections">Sections</string>
+    <string name="notices_audience_required">Choose at least one class or section.</string>
+    <string name="notices_expires_on_optional">Expires on (optional)</string>
+    <string name="notices_expiry_invalid">The expiry date cannot be in the past.</string>
+    <string name="notices_clear_expiry">Remove expiry date</string>
+    <string name="notices_pin">Pin to top</string>
+    <string name="notices_pin_supporting">Pinned notices stay at the top of everyone\'s feed.</string>
+    <string name="notices_publish">Publish</string>
+    <string name="notices_result_published">Notice published.</string>
+    <string name="notices_result_sent_for_approval">Sent for approval.</string>
+</resources>

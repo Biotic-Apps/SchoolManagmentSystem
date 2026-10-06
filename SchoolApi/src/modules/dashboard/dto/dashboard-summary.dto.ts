@@ -1,3 +1,5 @@
+import { AttendanceTodayDto } from './daily-dashboard.dto';
+
 export class DashboardSummaryDto {
   schools!: number;
   branches!: number;
@@ -9,4 +11,5 @@ export class DashboardSummaryDto {
   staff!: number;
   pendingAdmissions!: number;
   pendingChildLinks!: number;
+  attendanceToday!: AttendanceTodayDto;
 }

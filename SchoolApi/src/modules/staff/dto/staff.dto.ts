@@ -59,19 +59,25 @@ export class WorkloadDto {
   subjects!: number;
 }
 
+export class SectionStaffRefDto {
+  id!: string;
+  name!: string;
+  userId!: string | null;
+}
+
 export class SubjectTeacherDto {
-  staff!: IdNameDto;
+  staff!: SectionStaffRefDto;
   subject!: IdNameDto;
   isSubstitute!: boolean;
 }
 
 export class HelperDto {
-  staff!: IdNameDto;
+  staff!: SectionStaffRefDto;
   responsibleStaff!: IdNameDto | null;
 }
 
 export class SectionStaffDto {
-  classTeacher!: IdNameDto | null;
+  classTeacher!: SectionStaffRefDto | null;
   subjectTeachers!: SubjectTeacherDto[];
   helpers!: HelperDto[];
 }

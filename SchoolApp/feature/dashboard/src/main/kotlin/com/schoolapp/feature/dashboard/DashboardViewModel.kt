@@ -3,67 +3,107 @@ package com.schoolapp.feature.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.schoolapp.core.common.result.AppResult
+import com.schoolapp.core.common.time.AppClock
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.data.dashboard.DashboardRepository
-import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.SessionContext
+import com.schoolapp.feature.dashboard.parent.ParentHome
+import com.schoolapp.feature.dashboard.supervisor.SupervisorLoader
+import com.schoolapp.feature.dashboard.teacher.TeacherDayLoader
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/** Role-based home; reloads when the role or (for parents) the active child changes. */
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
+    authRepository: AuthRepository,
     private val dashboardRepository: DashboardRepository,
-    private val todayPeriodsLoader: TodayPeriodsLoader,
+    private val supervisorLoader: SupervisorLoader,
+    private val teacherDayLoader: TeacherDayLoader,
+    private val clock: AppClock,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
+    private var session: SessionContext? = null
+    private var loadJob: Job? = null
+
     init {
-        load(refreshing = false)
-    }
-
-    fun refresh() = load(refreshing = true)
-
-    private fun load(refreshing: Boolean) {
         viewModelScope.launch {
-            val session = authRepository.session.filterNotNull().first()
-            if (!session.showsSummary()) {
-                val welcome = session.toWelcome()
-                _uiState.value = welcome
-                if (session.activeRole in TIMETABLE_ROLES) {
-                    val periods = (todayPeriodsLoader.load() as? AppResult.Success)?.data.orEmpty()
-                    _uiState.value = welcome.copy(todayPeriods = periods)
+            authRepository.session.filterNotNull()
+                .distinctUntilChanged { old, new -> old.activeRole == new.activeRole && old.activeChild?.id == new.activeChild?.id }
+                .collect { current ->
+                    session = current
+                    start(current, refreshing = false)
                 }
-                return@launch
-            }
-            val current = _uiState.value
-            _uiState.value = if (refreshing && current is DashboardUiState.Summary) {
-                current.copy(isRefreshing = true)
-            } else {
-                DashboardUiState.Loading
-            }
-            val scope = session.activeAssignments.firstOrNull()
-            _uiState.value = when (val result = dashboardRepository.summary(scope?.branchId)) {
-                is AppResult.Success -> DashboardUiState.Summary(
-                    userName = session.user.fullName,
-                    scopeName = scope?.branchName ?: scope?.schoolName,
-                    metrics = result.data,
-                )
-                is AppResult.Failure -> DashboardUiState.Error(result.error)
-            }
         }
     }
 
-    private fun SessionContext.showsSummary(): Boolean =
-        activeRole in SUMMARY_ROLES && has(DASHBOARD_VIEW)
+    fun refresh() {
+        session?.let { start(it, refreshing = true) }
+    }
+
+    private fun start(session: SessionContext, refreshing: Boolean) {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch { load(session, refreshing) }
+    }
+
+    private suspend fun load(session: SessionContext, refreshing: Boolean) {
+        when (session.dashboardMode()) {
+            DashboardMode.SUPERVISOR -> {
+                showProgress(refreshing)
+                _uiState.value = supervisorLoader.load(session, today(), session.showsTodayQueue())
+            }
+            DashboardMode.TEACHER -> {
+                showProgress(refreshing)
+                _uiState.value = DashboardUiState.Teacher(
+                    userName = session.user.fullName,
+                    branchName = session.activeAssignments.firstOrNull()?.branchName,
+                    day = teacherDayLoader.load(),
+                )
+            }
+            DashboardMode.PARENT -> loadParent(session, refreshing)
+            DashboardMode.WELCOME -> _uiState.value = session.toWelcome()
+        }
+    }
+
+    private suspend fun loadParent(session: SessionContext, refreshing: Boolean) {
+        val child = session.activeChild
+        if (child == null) {
+            _uiState.value = DashboardUiState.Parent(child = null)
+            return
+        }
+        val kept = (_uiState.value as? DashboardUiState.Parent)?.takeIf { it.child?.id == child.id }?.home
+        _uiState.value = DashboardUiState.Parent(
+            child = child,
+            home = kept,
+            isLoading = kept == null,
+            isRefreshing = refreshing && kept != null,
+        )
+        _uiState.value = when (val result = dashboardRepository.childToday(child.id)) {
+            is AppResult.Success -> DashboardUiState.Parent(child = child, home = ParentHome.from(result.data))
+            is AppResult.Failure -> DashboardUiState.Parent(child = child, home = kept, error = result.error)
+        }
+    }
+
+    private fun showProgress(refreshing: Boolean) {
+        val current = _uiState.value
+        _uiState.value = when {
+            refreshing && current is DashboardUiState.Supervisor -> current.copy(isRefreshing = true)
+            refreshing && current is DashboardUiState.Teacher -> current.copy(isRefreshing = true)
+            else -> DashboardUiState.Loading
+        }
+    }
+
+    private fun today(): String = clock.now().toLocalDate().toString()
 
     private fun SessionContext.toWelcome(): DashboardUiState.Welcome {
         val assignment = activeAssignments.firstOrNull()
@@ -74,11 +114,5 @@ class DashboardViewModel @Inject constructor(
             branchName = assignment?.branchName,
             schoolName = assignment?.schoolName,
         )
-    }
-
-    private companion object {
-        val SUMMARY_ROLES = setOf(RoleKey.SUPER_ADMIN, RoleKey.PRINCIPAL)
-        val TIMETABLE_ROLES = setOf(RoleKey.TEACHER, RoleKey.HELPER)
-        const val DASHBOARD_VIEW = "dashboard.view"
     }
 }

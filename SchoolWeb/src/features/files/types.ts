@@ -18,3 +18,11 @@ export const DOCUMENT_TYPES = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
 export const DOCUMENT_MAX_MB = 10;
+
+/** Attachment as returned on diary entries, notices, messages and complaints. */
+export interface Attachment {
+  id: string;
+  url: string;
+  mime: string;
+  name: string;
+}

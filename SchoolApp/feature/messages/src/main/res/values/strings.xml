@@ -1,0 +1,53 @@
+<resources>
+    <string name="messages_shortcut_notices">Notices</string>
+    <string name="messages_shortcut_activities">Activities &amp; consent</string>
+    <string name="messages_shortcut_pickup">Pickup &amp; early leave</string>
+    <string name="messages_shortcut_health">Health card</string>
+    <string name="messages_threads_header">Conversations</string>
+    <string name="messages_new_message">New message</string>
+    <string name="messages_empty_title">No conversations yet</string>
+    <string name="messages_empty_message">Start a conversation with \"New message\".</string>
+    <string name="messages_closed">Closed</string>
+    <string name="messages_unread">%1$d unread</string>
+    <string name="messages_preview">%1$s: %2$s</string>
+    <string name="messages_student_class">%1$s · %2$s</string>
+    <string name="messages_class_section">%1$s %2$s</string>
+    <string name="messages_attachment_only">Attachment</string>
+
+    <string name="messages_conversation_title">Conversation</string>
+    <string name="messages_today">Today</string>
+    <string name="messages_yesterday">Yesterday</string>
+    <string name="messages_read">Read</string>
+    <string name="messages_sent">Sent</string>
+    <string name="messages_sending">Sending…</string>
+    <string name="messages_not_sent">Not sent — tap to retry</string>
+    <string name="messages_delivered_silently">Delivered silently (outside office hours)</string>
+    <string name="messages_load_older">Load earlier messages</string>
+    <string name="messages_loading_older">Loading earlier messages</string>
+    <string name="messages_composer_hint">Write a message</string>
+    <string name="messages_attach">Attach file</string>
+    <string name="messages_send">Send</string>
+    <string name="messages_uploading">Uploading attachment…</string>
+    <string name="messages_thread_closed_note">This conversation is closed. You can read it but not reply.</string>
+    <string name="messages_no_messages">No messages yet. Say hello.</string>
+
+    <string name="messages_new_title">New message</string>
+    <string name="messages_child">Child</string>
+    <string name="messages_parent_recipient_hint">Your message goes to the class teacher or the school office. The school chooses who replies.</string>
+    <string name="messages_student">Student</string>
+    <string name="messages_search_student">Search student by name or admission no.</string>
+    <string name="messages_search_hint">Type at least 2 letters to search.</string>
+    <string name="messages_no_students">No students found in your classes.</string>
+    <string name="messages_change">Change</string>
+    <string name="messages_recipients">Recipients</string>
+    <string name="messages_recipients_hint">Guardians of this student with an app account receive your message.</string>
+    <string name="messages_no_guardians">No guardians linked to this student.</string>
+    <string name="messages_no_app_account">No app account</string>
+    <string name="messages_admission_no">Adm. %1$s</string>
+    <string name="messages_subject">Subject</string>
+    <string name="messages_body">Message</string>
+    <string name="messages_required">Required</string>
+    <string name="messages_pick_student">Pick a student</string>
+    <string name="messages_pick_child">Pick a child</string>
+    <string name="messages_no_children">No linked children on your account.</string>
+</resources>

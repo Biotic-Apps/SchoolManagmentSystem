@@ -4,6 +4,9 @@ export const BRANCH_SETTING_DEFAULTS: Readonly<Record<string, unknown>> = {
   'diary.closingTime': '15:00',
   'messaging.officeHours': { from: '08:00', to: '16:00' },
   'approval.limits': {},
+  'notices.requireApproval': true,
+  'messaging.reviewProbation': false,
+  'complaints.slaHours': 48,
 };
 
 const HH_MM = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -19,6 +22,15 @@ export function validateSetting(key: string, value: unknown): string | null {
     return typeof value === 'string' && HH_MM.test(value)
       ? null
       : `${key} must be HH:mm`;
+  }
+  if (typeof fallback === 'number') {
+    const positive = (v: unknown) => Number.isInteger(v) && (v as number) > 0;
+    const ok =
+      positive(value) ||
+      (isPlainObject(value) && Object.values(value).every(positive));
+    return ok
+      ? null
+      : `${key} must be a positive whole number (or a map of them)`;
   }
   if (typeof fallback === 'boolean') {
     return typeof value === 'boolean' ? null : `${key} must be true or false`;

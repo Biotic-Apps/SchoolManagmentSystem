@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Statuses -->
+    <string name="attendance_status_present">Present</string>
+    <string name="attendance_status_absent">Absent</string>
+    <string name="attendance_status_late">Late</string>
+    <string name="attendance_status_leave">Leave</string>
+    <string name="attendance_status_half_day">Half day</string>
+    <string name="attendance_status_unmarked">Not marked</string>
+    <string name="attendance_short_present">P</string>
+    <string name="attendance_short_absent">A</string>
+    <string name="attendance_short_late">L</string>
+    <string name="attendance_short_leave">Lv</string>
+    <string name="attendance_short_half_day">½</string>
+    <string name="attendance_legend_leave_half">Leave / half day</string>
+    <string name="attendance_register_unmarked">Unmarked</string>
+    <string name="attendance_register_draft">Draft</string>
+    <string name="attendance_register_submitted">Submitted</string>
+    <string name="attendance_register_locked">Locked</string>
+    <string name="attendance_register_pending_review">Pending review</string>
+
+    <!-- Common -->
+    <string name="attendance_date">Date</string>
+    <string name="attendance_today_date">Today, %1$s</string>
+    <string name="attendance_loading">Loading…</string>
+    <string name="attendance_retry">Try again</string>
+    <string name="attendance_checking">Checking…</string>
+    <string name="attendance_previous_month">Previous month</string>
+    <string name="attendance_next_month">Next month</string>
+    <string name="attendance_percent">%1$d%%</string>
+    <string name="attendance_unmarked_note">Days without a mark are shown separately and are not counted as absent.</string>
+    <plurals name="attendance_students">
+        <item quantity="one">%1$d student</item>
+        <item quantity="other">%1$d students</item>
+    </plurals>
+    <plurals name="attendance_days">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+
+    <!-- Teacher home -->
+    <string name="attendance_your_sections">Your classes</string>
+    <string name="attendance_no_sections">No classes to show</string>
+    <string name="attendance_no_sections_message">Classes assigned to you will appear here.</string>
+    <string name="attendance_unsent_on_phone">Unsent marks saved on this phone</string>
+    <string name="attendance_leave_requests">Leave requests</string>
+    <string name="attendance_leave_requests_supporting">Approve or reject leave requests</string>
+    <plurals name="attendance_pending_count">
+        <item quantity="one">%1$d pending</item>
+        <item quantity="other">%1$d pending</item>
+    </plurals>
+
+    <!-- Register -->
+    <string name="attendance_register_title">Attendance register</string>
+    <string name="attendance_roll_name">%1$d. %2$s</string>
+    <string name="attendance_on_approved_leave">On approved leave</string>
+    <string name="attendance_your_mark">Your mark: %1$s</string>
+    <string name="attendance_health_alert_for">Health alert for %1$s</string>
+    <string name="attendance_mark_all_present">Mark all present</string>
+    <string name="attendance_save_draft">Save draft</string>
+    <string name="attendance_submit">Submit</string>
+    <string name="attendance_helper_note">Your class teacher submits the register.</string>
+    <string name="attendance_roster_empty">No students in this class</string>
+    <string name="attendance_offline_banner">You are offline. Showing the register saved on this phone.</string>
+    <string name="attendance_sync_queued">Saved on this phone, will sync when you are back online.</string>
+    <string name="attendance_sync_needs_attention">The server rejected the queued register. Please review it.</string>
+    <string name="attendance_show_server_register">Show server register</string>
+    <string name="attendance_already_submitted_by">Already submitted by %1$s. Showing their register.</string>
+    <string name="attendance_already_submitted">Someone else already submitted this register. Showing their register.</string>
+    <string name="attendance_compare_marks">Compare with my marks</string>
+    <string name="attendance_hide_compare">Hide comparison</string>
+    <string name="attendance_discard_mine">Discard my marks</string>
+    <string name="attendance_locked_at">Locked at %1$s.</string>
+    <string name="attendance_locked">This register is locked.</string>
+    <string name="attendance_correction_hint">Tap a student to request a correction.</string>
+    <string name="attendance_pending_review_banner">Waiting for review. The register will apply once it is approved.</string>
+    <string name="attendance_submitted_by">Submitted by %1$s.</string>
+    <string name="attendance_draft_saved">Draft saved.</string>
+    <string name="attendance_submitted_message">Register submitted. Guardians of absent and late students will be notified.</string>
+    <string name="attendance_queued_message">Saved on this phone. It will be sent automatically when you are back online.</string>
+    <string name="attendance_pending_review_message">Sent for review before it applies.</string>
+    <string name="attendance_locked_message">The register is locked, so it can no longer be changed. Request a correction instead.</string>
+    <string name="attendance_unsent_changes">Unsent changes. Save a draft or submit to send them.</string>
+    <plurals name="attendance_unmarked_blocking">
+        <item quantity="one">%1$d student is not marked yet. Mark everyone before submitting.</item>
+        <item quantity="other">%1$d students are not marked yet. Mark everyone before submitting.</item>
+    </plurals>
+    <string name="attendance_confirm_submit_title">Submit register?</string>
+    <string name="attendance_confirm_submit_message">Present %1$d, absent %2$d, late %3$d, leave %4$d, half day %5$d. Guardians of absent and late students will be notified.</string>
+    <string name="attendance_allergies">Allergies</string>
+    <string name="attendance_conditions">Conditions</string>
+    <string name="attendance_instructions">Instructions</string>
+    <string name="attendance_open_health_card">Open health card</string>
+    <string name="attendance_correction_title">Request correction</string>
+    <string name="attendance_correction_current">Current mark</string>
+    <string name="attendance_correction_new">New mark</string>
+    <string name="attendance_correction_status_required">Choose the corrected mark</string>
+    <string name="attendance_correction_reason">Reason</string>
+    <string name="attendance_correction_reason_required">Enter a reason</string>
+    <string name="attendance_correction_send">Send request</string>
+    <string name="attendance_correction_sent">Correction request sent to the principal.</string>
+
+    <!-- Supervisor -->
+    <string name="attendance_branch_totals">Branch totals</string>
+    <string name="attendance_not_submitted">Not submitted</string>
+    <string name="attendance_submitted_sections">Submitted</string>
+    <plurals name="attendance_sections_not_submitted">
+        <item quantity="one">%1$d class has not submitted attendance yet.</item>
+        <item quantity="other">%1$d classes have not submitted attendance yet.</item>
+    </plurals>
+    <string name="attendance_section_counts">%1$d present · %2$d absent · %3$d late · %4$d on leave · %5$d students</string>
+    <string name="attendance_section_no_marks">No marks yet</string>
+
+    <!-- Parent -->
+    <string name="attendance_no_child">No child selected</string>
+    <string name="attendance_no_child_message">Link a child to see their attendance.</string>
+    <string name="attendance_month_summary">Attendance in %1$s</string>
+    <string name="attendance_marked_days">Marked days</string>
+    <string name="attendance_no_marks_month">No attendance marked for this month yet.</string>
+    <string name="attendance_request_leave">Request leave</string>
+
+    <!-- Staff -->
+    <string name="attendance_my_month_summary">My attendance in %1$s</string>
+    <string name="attendance_my_days">Days</string>
+    <string name="attendance_check_in">Check in %1$s</string>
+    <string name="attendance_check_out">Check out %1$s</string>
+    <string name="attendance_salary_note">Salary slips will appear here in a later update.</string>
+
+    <!-- Leave -->
+    <string name="attendance_my_leave_requests">My leave requests</string>
+    <string name="attendance_leave_none">No leave requests yet.</string>
+    <string name="attendance_leave_request_title">Request leave</string>
+    <string name="attendance_leave_type">Leave type</string>
+    <string name="attendance_leave_type_casual">Casual</string>
+    <string name="attendance_leave_type_sick">Sick</string>
+    <string name="attendance_leave_type_annual">Annual</string>
+    <string name="attendance_leave_type_unpaid">Unpaid</string>
+    <string name="attendance_leave_type_other">Other</string>
+    <string name="attendance_leave_from">From</string>
+    <string name="attendance_leave_to">To</string>
+    <string name="attendance_leave_date_required">Choose a date</string>
+    <string name="attendance_leave_range_invalid">The end date must be on or after the start date</string>
+    <string name="attendance_leave_reason">Reason</string>
+    <string name="attendance_leave_reason_required">Enter a reason</string>
+    <string name="attendance_leave_send">Send request</string>
+    <string name="attendance_leave_sent">Leave request sent.</string>
+    <string name="attendance_leave_cancel">Cancel request</string>
+    <string name="attendance_leave_cancelled">Leave request cancelled.</string>
+    <string name="attendance_leave_decided_by">Decided by %1$s</string>
+    <string name="attendance_leave_status_submitted">Pending</string>
+    <string name="attendance_leave_status_approved">Approved</string>
+    <string name="attendance_leave_status_rejected">Rejected</string>
+    <string name="attendance_leave_status_cancelled">Cancelled</string>
+    <string name="attendance_leave_kind">Request for</string>
+    <string name="attendance_leave_kind_staff">Staff</string>
+    <string name="attendance_leave_kind_student">Student</string>
+    <string name="attendance_leave_dates">Dates</string>
+    <string name="attendance_leave_days">Days</string>
+    <string name="attendance_leave_requested_by">Requested by</string>
+    <string name="attendance_leave_requested_on">Requested on</string>
+    <string name="attendance_leave_comment">Comment (optional)</string>
+    <string name="attendance_leave_approve">Approve</string>
+    <string name="attendance_leave_reject">Reject</string>
+    <string name="attendance_leave_approved_message">Leave approved.</string>
+    <string name="attendance_leave_rejected_message">Leave rejected.</string>
+    <string name="attendance_tab_pending_count">Pending (%1$d)</string>
+    <string name="attendance_tab_decided">Decided</string>
+    <string name="attendance_review_empty_pending">No leave requests waiting for you</string>
+    <string name="attendance_review_empty_decided">No decided leave requests yet</string>
+</resources>

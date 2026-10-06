@@ -55,7 +55,7 @@ export class WorkloadService {
     const rows = await this.prisma.staffAssignment.findMany({
       where: { sectionId, endedAt: null },
       include: {
-        staff: { select: { id: true, name: true } },
+        staff: { select: { id: true, name: true, userId: true } },
         subject: { select: { id: true, name: true } },
         responsibleStaff: { select: { id: true, name: true } },
       },

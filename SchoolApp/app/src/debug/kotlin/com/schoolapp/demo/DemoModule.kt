@@ -12,6 +12,18 @@ import com.schoolapp.core.data.staff.StaffRepository
 import com.schoolapp.core.data.timetable.TimetableRepository
 import com.schoolapp.core.data.syllabus.SyllabusRepository
 import com.schoolapp.core.data.admissions.AdmissionsRepository
+import com.schoolapp.core.data.attendance.AttendanceRepository
+import com.schoolapp.core.data.leave.LeaveRepository
+import com.schoolapp.core.data.diary.DiaryRepository
+import com.schoolapp.core.data.files.FilesRepository
+import com.schoolapp.core.data.activities.ActivitiesRepository
+import com.schoolapp.core.data.notices.NoticesRepository
+import com.schoolapp.core.data.messages.MessagesRepository
+import com.schoolapp.core.data.complaints.ComplaintsRepository
+import com.schoolapp.core.data.meetings.MeetingsRepository
+import com.schoolapp.core.data.health.HealthRepository
+import com.schoolapp.core.data.pickup.PickupRepository
+import com.schoolapp.core.data.notifications.NotificationPreferencesRepository
 import com.schoolapp.ui.LoginFooterContent
 import dagger.Binds
 import dagger.Module
@@ -57,6 +69,42 @@ interface DemoModule {
 
     @Binds
     fun bindAdmissionsRepository(impl: DemoAwareAdmissionsRepository): AdmissionsRepository
+
+    @Binds
+    fun bindAttendanceRepository(impl: DemoAwareAttendanceRepository): AttendanceRepository
+
+    @Binds
+    fun bindLeaveRepository(impl: DemoAwareLeaveRepository): LeaveRepository
+
+    @Binds
+    fun bindDiaryRepository(impl: DemoAwareDiaryRepository): DiaryRepository
+
+    @Binds
+    fun bindFilesRepository(impl: DemoAwareFilesRepository): FilesRepository
+
+    @Binds
+    fun bindActivitiesRepository(impl: DemoAwareActivitiesRepository): ActivitiesRepository
+
+    @Binds
+    fun bindNoticesRepository(impl: DemoAwareNoticesRepository): NoticesRepository
+
+    @Binds
+    fun bindMessagesRepository(impl: DemoAwareMessagesRepository): MessagesRepository
+
+    @Binds
+    fun bindComplaintsRepository(impl: DemoAwareComplaintsRepository): ComplaintsRepository
+
+    @Binds
+    fun bindMeetingsRepository(impl: DemoAwareMeetingsRepository): MeetingsRepository
+
+    @Binds
+    fun bindHealthRepository(impl: DemoAwareHealthRepository): HealthRepository
+
+    @Binds
+    fun bindPickupRepository(impl: DemoAwarePickupRepository): PickupRepository
+
+    @Binds
+    fun bindNotificationPreferencesRepository(impl: DemoAwareNotificationPreferencesRepository): NotificationPreferencesRepository
 
     @Binds
     fun bindLoginFooter(impl: DemoLoginFooter): LoginFooterContent

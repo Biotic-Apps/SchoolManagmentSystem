@@ -41,17 +41,21 @@ model Staff {
   createdAt           DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt           DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  school         School              @relation(fields: [schoolId], references: [id], onDelete: Restrict)
-  branch         Branch              @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  user           User?               @relation("StaffUser", fields: [userId], references: [id], onDelete: Restrict)
-  reviewer       User?               @relation("StaffReviewer", fields: [reviewerUserId], references: [id], onDelete: Restrict)
-  photoFile      File?               @relation("StaffPhoto", fields: [photoFileId], references: [id], onDelete: Restrict)
-  assignments    StaffAssignment[]   @relation("AssignmentStaff")
-  responsibleFor StaffAssignment[]   @relation("AssignmentResponsible")
-  classTeacherOf Section[]
-  timetableSlots TimetableSlot[]
-  substituteFor  TimetableOverride[] @relation("OverrideSubstitute")
-  replacedIn     TimetableOverride[] @relation("OverrideOriginal")
+  school           School               @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch           Branch               @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  user             User?                @relation("StaffUser", fields: [userId], references: [id], onDelete: Restrict)
+  reviewer         User?                @relation("StaffReviewer", fields: [reviewerUserId], references: [id], onDelete: Restrict)
+  photoFile        File?                @relation("StaffPhoto", fields: [photoFileId], references: [id], onDelete: Restrict)
+  assignments      StaffAssignment[]    @relation("AssignmentStaff")
+  responsibleFor   StaffAssignment[]    @relation("AssignmentResponsible")
+  classTeacherOf   Section[]
+  timetableSlots   TimetableSlot[]
+  substituteFor    TimetableOverride[]  @relation("OverrideSubstitute")
+  replacedIn       TimetableOverride[]  @relation("OverrideOriginal")
+  proxiedRegisters AttendanceRegister[] @relation("RegisterOnBehalfOf")
+  attendance       StaffAttendance[]    @relation("StaffAttendanceOf")
+  leaveRequests    LeaveRequest[]       @relation("StaffLeave")
+  proxiedDiaries   DiaryEntry[]         @relation("DiaryOnBehalfOf")
 
   @@unique([schoolId, employeeNo])
   @@index([branchId, status])

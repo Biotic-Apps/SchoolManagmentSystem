@@ -96,6 +96,10 @@ class DefaultSyllabusRepositoryTest {
             return rows.value.size.toLong()
         }
         override fun observeByType(type: String): Flow<List<OutboxEntity>> = rows.map { list -> list.filter { it.type == type } }
+        override fun observeByTypePrefix(prefix: String): Flow<List<OutboxEntity>> = rows.map { list -> list.filter { it.type.startsWith(prefix) } }
+        override fun observeByEntityKey(entityKey: String): Flow<List<OutboxEntity>> = rows.map { list -> list.filter { it.entityKey == entityKey } }
+        override suspend fun findByClientRequestId(clientRequestId: String): OutboxEntity? = rows.value.firstOrNull { it.clientRequestId == clientRequestId }
+        override suspend fun deleteByEntityKey(entityKey: String) = Unit
         override suspend fun nextPending(limit: Int): List<OutboxEntity> = rows.value
         override suspend fun markInFlight(id: Long) = Unit
         override suspend fun markRetry(id: Long, error: String?) = Unit

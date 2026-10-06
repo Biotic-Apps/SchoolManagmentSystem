@@ -19,5 +19,6 @@ import { WeekViewService } from './week-view.service';
     WeekViewService,
     OverridesService,
   ],
+  exports: [WeekViewService],
 })
 export class TimetableModule {}

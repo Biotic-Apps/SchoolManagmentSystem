@@ -11,7 +11,7 @@ import com.schoolapp.core.ui.humanizeKey
 import com.schoolapp.feature.approvals.R
 
 /**
- * Payload summary for typed requests (SYLLABUS_PLAN, CHILD_LINK, CONTACT_CHANGE, PROBATION_REVIEW, ...):
+ * Payload summary for typed requests (SYLLABUS_PLAN, CHILD_LINK, LEAVE, DIARY_MODERATION, NOTICE, ...):
  * the server payload flattened to label/value rows, with known keys shown first.
  */
 @Composable
@@ -32,6 +32,11 @@ private fun titleFor(type: String): Int = when (type) {
     "CHILD_LINK" -> R.string.approvals_details_child_link
     "CONTACT_CHANGE" -> R.string.approvals_details_contact
     "PROBATION_REVIEW" -> R.string.approvals_details_probation
+    "LEAVE" -> R.string.approvals_details_leave
+    "ATTENDANCE_CORRECTION" -> R.string.approvals_details_attendance_correction
+    "DIARY_MODERATION" -> R.string.approvals_details_diary
+    "ACTIVITY" -> R.string.approvals_details_activity
+    "NOTICE" -> R.string.approvals_details_notice
     else -> R.string.approvals_details
 }
 
@@ -40,4 +45,9 @@ private val PreferredKeys: Map<String, List<String>> = mapOf(
     "CHILD_LINK" to listOf("student.name", "student.admissionNo", "student.className", "relation", "guardian.name", "guardian.phone"),
     "CONTACT_CHANGE" to listOf("phone", "email", "address", "old.phone", "old.email", "old.address"),
     "PROBATION_REVIEW" to listOf("action", "topicTitle", "status", "completedOn", "note"),
+    "LEAVE" to listOf("subject.name", "from", "to", "days", "type", "reason"),
+    "ATTENDANCE_CORRECTION" to listOf("student", "student.name", "date", "oldStatus", "newStatus", "reason"),
+    "DIARY_MODERATION" to listOf("className", "sectionName", "subject", "subjectName", "date", "topics", "homework"),
+    "ACTIVITY" to listOf("title", "type", "startAt", "venue", "consentRequired"),
+    "NOTICE" to listOf("title", "audience"),
 )

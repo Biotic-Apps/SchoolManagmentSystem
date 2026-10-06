@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Menu -->
+    <string name="health_tab_incidents">Incidents</string>
+    <string name="health_tab_students">Students</string>
+    <string name="health_report_incident">Report incident</string>
+    <string name="health_incidents_empty">No incidents in the last 30 days</string>
+    <string name="health_incidents_empty_message">First-aid incidents reported by staff appear here.</string>
+    <string name="health_close_incident">Close</string>
+    <string name="health_close_title">Close incident?</string>
+    <string name="health_close_message">The incident for %1$s will be marked as closed.</string>
+    <string name="health_search_students">Search students by name or admission no.</string>
+    <string name="health_search_hint">Search for a student to open their health card</string>
+    <string name="health_search_empty">No students match your search</string>
+    <string name="health_reported_by">Reported by %1$s</string>
+    <string name="health_action_taken_value">Action taken: %1$s</string>
+
+    <!-- Incident labels -->
+    <string name="health_type_injury">Injury</string>
+    <string name="health_type_illness">Illness</string>
+    <string name="health_type_allergic_reaction">Allergic reaction</string>
+    <string name="health_type_other">Other</string>
+    <string name="health_severity_minor">Minor</string>
+    <string name="health_severity_moderate">Moderate</string>
+    <string name="health_severity_serious">Serious</string>
+    <string name="health_status_reported">Reported</string>
+    <string name="health_status_parent_notified">Parent notified</string>
+    <string name="health_status_closed">Closed</string>
+
+    <!-- Health card -->
+    <string name="health_card_title">Health card</string>
+    <string name="health_no_child">No child selected</string>
+    <string name="health_no_child_message">Link a child to your account to see their health card.</string>
+    <string name="health_not_found">No health record yet</string>
+    <string name="health_not_found_message">The school office has not recorded health details for this student.</string>
+    <string name="health_allergies">Allergies</string>
+    <string name="health_allergy_severity">Severity: %1$s</string>
+    <string name="health_allergy_reaction">Reaction: %1$s</string>
+    <string name="health_instructions">Medical instructions</string>
+    <string name="health_conditions">Conditions</string>
+    <string name="health_medications">Medications</string>
+    <string name="health_medication_dose">Dose: %1$s</string>
+    <string name="health_medication_schedule">Schedule: %1$s</string>
+    <string name="health_blood_group">Blood group</string>
+    <string name="health_doctor">Doctor</string>
+    <string name="health_call">Call</string>
+    <string name="health_sms">SMS</string>
+    <string name="health_emergency_contacts">Emergency contacts</string>
+    <string name="health_emergency_contacts_subtitle">Call in this order</string>
+    <string name="health_priority">Priority %1$d</string>
+    <string name="health_last_updated">Last updated %1$s</string>
+    <string name="health_none_recorded">None recorded</string>
+    <string name="health_not_recorded">Not recorded</string>
+    <string name="health_child_incidents">Incidents</string>
+    <string name="health_child_incidents_empty">No incidents have been reported.</string>
+    <string name="health_request_change">Request a change</string>
+    <string name="health_request_sent">Sent to the school office for verification</string>
+
+    <!-- Change request sheet -->
+    <string name="health_change_title">Request a change</string>
+    <string name="health_change_hint">The school office verifies your changes before they appear on the health card.</string>
+    <string name="health_allergy_name">Allergy</string>
+    <string name="health_allergy_reaction_label">Reaction</string>
+    <string name="health_add_allergy">Add allergy</string>
+    <string name="health_add_contact">Add contact</string>
+    <string name="health_remove">Remove</string>
+    <string name="health_contact_name">Name</string>
+    <string name="health_contact_relation">Relation</string>
+    <string name="health_contact_phone">Phone</string>
+    <string name="health_contact_number">Contact %1$d</string>
+    <string name="health_required">Required</string>
+    <string name="health_send">Send to school</string>
+    <string name="health_severity_mild">Mild</string>
+    <string name="health_severity_severe">Severe</string>
+
+    <!-- Report incident -->
+    <string name="health_report_title">Report incident</string>
+    <string name="health_student">Student</string>
+    <string name="health_change_student">Change</string>
+    <string name="health_student_required">Choose a student</string>
+    <string name="health_date">Date</string>
+    <string name="health_time">Time</string>
+    <string name="health_time_title">Time of incident</string>
+    <string name="health_future_error">The incident time cannot be in the future</string>
+    <string name="health_type">Type</string>
+    <string name="health_severity">Severity</string>
+    <string name="health_description">What happened</string>
+    <string name="health_action_taken">Action taken</string>
+    <string name="health_submit_report">Submit report</string>
+    <string name="health_report_notice">Guardians are notified as soon as you submit. Serious incidents also alert the principal.</string>
+    <string name="health_reported_title">Incident reported</string>
+    <string name="health_notified_guardians">Guardians have been notified</string>
+    <string name="health_notified_guardians_principal">Guardians and the principal have been notified</string>
+    <string name="health_done">Done</string>
+</resources>

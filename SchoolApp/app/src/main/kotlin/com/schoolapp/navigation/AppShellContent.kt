@@ -4,6 +4,26 @@ import androidx.compose.runtime.Composable
 import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.syllabus.SyllabusPlan
 import com.schoolapp.core.navigation.MenuIds
+import com.schoolapp.core.navigation.NotificationPreferencesDestination
+import com.schoolapp.feature.activities.ActivitiesMenuScreen
+import com.schoolapp.feature.activities.navigation.activitiesDestinations
+import com.schoolapp.feature.attendance.AttendanceMenuScreen
+import com.schoolapp.feature.attendance.MyAttendanceLeaveScreen
+import com.schoolapp.feature.attendance.navigation.attendanceDestinations
+import com.schoolapp.feature.complaints.ComplaintsMenuScreen
+import com.schoolapp.feature.complaints.complaintsDestinations
+import com.schoolapp.feature.diary.DiaryMenuScreen
+import com.schoolapp.feature.diary.diaryDestinations
+import com.schoolapp.feature.health.HealthMenuScreen
+import com.schoolapp.feature.health.healthDestinations
+import com.schoolapp.feature.meetings.MeetingsMenuScreen
+import com.schoolapp.feature.meetings.navigation.meetingsDestinations
+import com.schoolapp.feature.messages.MessagesMenuScreen
+import com.schoolapp.feature.messages.messagesDestinations
+import com.schoolapp.feature.notices.NoticesMenuScreen
+import com.schoolapp.feature.notices.noticesDestinations
+import com.schoolapp.feature.pickup.PickupMenuScreen
+import com.schoolapp.feature.pickup.pickupDestinations
 import com.schoolapp.feature.admissions.list.AdmissionsRoute
 import com.schoolapp.feature.admissions.navigation.ApplicationDetailDestination
 import com.schoolapp.feature.admissions.navigation.admissionsDestinations
@@ -44,12 +64,15 @@ import com.schoolapp.feature.timetable.TimetableRoute
 /** Menu ids with a real screen; everything else shows the phase placeholder. */
 internal val AppShellContent = ShellContent(
     menuScreens = mapOf(
-        MenuIds.DASHBOARD to { shell -> DashboardRoute(onOpenMenu = shell::openMenu, canOpenMenu = shell::canOpenMenu) },
+        MenuIds.DASHBOARD to { shell ->
+            DashboardRoute(onOpenMenu = shell::openMenu, canOpenMenu = shell::canOpenMenu, onOpen = shell::open)
+        },
         MenuIds.APPROVALS to { shell -> ApprovalsRoute(onOpen = { shell.open(ApprovalDetailDestination(it)) }) },
         MenuIds.PROFILE to { shell ->
             ProfileRoute(
                 onChangePassword = { shell.open(ChangePasswordDestination) },
                 onDeviceSessions = { shell.open(DeviceSessionsDestination) },
+                onNotificationPreferences = { shell.open(NotificationPreferencesDestination) },
             )
         },
         MenuIds.BRANCHES to { shell -> BranchesRoute(onOpenBranch = { shell.open(BranchDetailDestination(it)) }) },
@@ -83,6 +106,22 @@ internal val AppShellContent = ShellContent(
         },
         MenuIds.ADMISSIONS to { shell -> AdmissionsRoute(onOpenApplication = { shell.open(ApplicationDetailDestination(it)) }) },
         MenuIds.STAFF to { shell -> StaffListRoute(onOpenStaff = { shell.open(StaffDetailDestination(it)) }) },
+        MenuIds.ATTENDANCE to { shell -> AttendanceMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.MY_SALARY to { shell -> MyAttendanceLeaveScreen(onOpen = shell::open) },
+        MenuIds.DIARY to { shell ->
+            DiaryMenuScreen(
+                role = shell.activeRole,
+                onOpen = shell::open,
+                onOpenApprovals = { shell.openMenu(MenuIds.APPROVALS) }.takeIf { shell.canOpenMenu(MenuIds.APPROVALS) },
+            )
+        },
+        MenuIds.ACTIVITIES to { shell -> ActivitiesMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.NOTICES to { shell -> NoticesMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.MESSAGES to { shell -> MessagesMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.COMPLAINTS to { shell -> ComplaintsMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.MEETINGS to { shell -> MeetingsMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.HEALTH to { shell -> HealthMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.PICKUP to { shell -> PickupMenuScreen(role = shell.activeRole, onOpen = shell::open) },
     ),
     destinations = { navController ->
         approvalsDestinations(navController)
@@ -93,6 +132,15 @@ internal val AppShellContent = ShellContent(
         syllabusDestinations(navController)
         admissionsDestinations(navController)
         staffDestinations(navController)
+        attendanceDestinations(navController)
+        diaryDestinations(navController)
+        activitiesDestinations(navController)
+        noticesDestinations(navController)
+        messagesDestinations(navController)
+        complaintsDestinations(navController)
+        meetingsDestinations(navController)
+        healthDestinations(navController)
+        pickupDestinations(navController)
     },
 )
 

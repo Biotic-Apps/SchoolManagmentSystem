@@ -4,6 +4,7 @@ import { UserRound } from "lucide-react";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Card } from "@/components/ui/Card";
+import { ChildActivitiesSection } from "@/features/activities/components/ChildActivitiesSection";
 import { useChildTimetable } from "../use-child-timetable";
 import { TeacherWeekGrid } from "./TeacherWeekGrid";
 import { WeekNav } from "./WeekNav";
@@ -30,6 +31,7 @@ export function ChildTimetableView() {
             showSection={false}
             emptyDescription="No published timetable for this week yet."
           />
+          <ChildActivitiesSection className="mt-4" />
         </>
       )}
     </div>
