@@ -17,6 +17,7 @@ internal fun ApprovalDto.toModel() = ApprovalRequest(
     currentStep = currentStep,
     createdAt = createdAt,
     steps = steps.orEmpty().sortedBy { it.order }.map { it.toModel() },
+    details = payload?.toApprovalDetails().orEmpty(),
 )
 
 private fun ApprovalStepDto.toModel() = ApprovalStep(

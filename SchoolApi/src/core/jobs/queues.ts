@@ -12,5 +12,7 @@ export type QueueName = (typeof QUEUES)[keyof typeof QUEUES];
 /** Queues that have processors (and therefore BullMQ workers) today. */
 export const ACTIVE_QUEUES: QueueName[] = [
   QUEUES.NOTIFICATIONS,
+  QUEUES.DOCUMENTS,
+  QUEUES.REPORTS,
   QUEUES.MAINTENANCE,
 ];

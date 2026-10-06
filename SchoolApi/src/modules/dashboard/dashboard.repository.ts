@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../../core/prisma/prisma.service';
 import type { Scope } from '../../core/rbac/scope/scope';
+import { studentScopeWhere } from '../students/student-scope';
 import { activeAssignmentWhere } from '../users/active-assignment-where';
 import type { DashboardQueryDto } from './dto/dashboard-query.dto';
 
@@ -66,7 +67,9 @@ export class DashboardRepository {
     return this.prisma.section.count({
       where: {
         AND: [
-          scope.branchFilter(),
+          scope.sectionLimited
+            ? { id: { in: [...scope.sectionIds] } }
+            : scope.branchFilter(),
           {
             schoolId: q.schoolId,
             branchId: q.branchId,
@@ -75,6 +78,88 @@ export class DashboardRepository {
               ? { sessionId: q.sessionId }
               : { session: { status: 'ACTIVE' } }),
           },
+        ],
+      },
+    });
+  }
+
+  students(scope: Scope, q: DashboardQueryDto) {
+    return this.prisma.student.count({
+      where: {
+        AND: [
+          studentScopeWhere(scope),
+          { status: 'ACTIVE', schoolId: q.schoolId },
+          q.branchId || q.sessionId
+            ? {
+                enrollments: {
+                  some: {
+                    status: 'ACTIVE',
+                    branchId: q.branchId,
+                    sessionId: q.sessionId,
+                  },
+                },
+              }
+            : {},
+        ],
+      },
+    });
+  }
+
+  staff(scope: Scope, q: DashboardQueryDto) {
+    if (scope.guardian) return Promise.resolve(0);
+    const visible: Prisma.StaffWhereInput = scope.sectionLimited
+      ? {
+          assignments: {
+            some: { endedAt: null, sectionId: { in: [...scope.sectionIds] } },
+          },
+        }
+      : scope.branchFilter();
+    return this.prisma.staff.count({
+      where: {
+        AND: [
+          visible,
+          {
+            status: { in: ['ACTIVE', 'ON_LEAVE'] },
+            schoolId: q.schoolId,
+            branchId: q.branchId,
+          },
+        ],
+      },
+    });
+  }
+
+  pendingAdmissions(scope: Scope, q: DashboardQueryDto) {
+    if (scope.guardian || scope.sectionLimited) return Promise.resolve(0);
+    return this.prisma.admissionApplication.count({
+      where: {
+        AND: [
+          scope.managedBranchFilter(),
+          {
+            schoolId: q.schoolId,
+            branchId: q.branchId,
+            sessionId: q.sessionId,
+            status: {
+              in: [
+                'SUBMITTED',
+                'DOCUMENTS_PENDING',
+                'TEST_SCHEDULED',
+                'TEST_COMPLETED',
+                'OFFERED',
+              ],
+            },
+          },
+        ],
+      },
+    });
+  }
+
+  pendingChildLinks(scope: Scope, q: DashboardQueryDto) {
+    if (scope.guardian || scope.sectionLimited) return Promise.resolve(0);
+    return this.prisma.childLinkRequest.count({
+      where: {
+        AND: [
+          scope.managedBranchFilter(),
+          { status: 'REQUESTED', schoolId: q.schoolId, branchId: q.branchId },
         ],
       },
     });

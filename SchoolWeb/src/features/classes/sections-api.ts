@@ -1,4 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import type { Option } from "@/components/shared/OptionSelect";
 import { http, type Query } from "@/lib/http";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type { Section, SectionCreateInput, SectionUpdateInput } from "./types";
@@ -35,4 +36,25 @@ export function useArchiveSection() {
     invalidate: [sectionKeys.all, ["dashboard"]],
     success: "Section archived",
   });
+}
+
+function sectionLabel(section: Section, withClass: boolean): string {
+  const name = withClass ? `${section.className} ${section.name}` : section.name;
+  return `${name} (${section.studentCount}/${section.capacity})`;
+}
+
+/** Active sections of a branch session for pickers, labelled with seats used / capacity. */
+export function useSectionOptions(branchId: string | null, sessionId: string | null, classId?: string | null) {
+  const enabled = !!branchId && !!sessionId;
+  const query = useSections(
+    { page: 1, pageSize: 100, branchId, sessionId, classId: classId ?? undefined, status: "ACTIVE" },
+    enabled,
+  );
+  const sections = query.data?.data ?? [];
+  const options: Option[] = sections.map((section) => ({ id: section.id, name: sectionLabel(section, !classId) }));
+  const isFull = (id: string) => {
+    const section = sections.find((item) => item.id === id);
+    return !!section && section.studentCount >= section.capacity;
+  };
+  return { sections, options, isFull, isLoading: enabled && query.isLoading };
 }

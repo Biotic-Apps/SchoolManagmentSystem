@@ -64,7 +64,11 @@ describe('Auth (e2e)', () => {
     const me = (res.body as { data: Me }).data;
     expect(me.activeRole).toBe(role);
     expect(me.permissions).toContain('dashboard.view');
-    expect(me.children).toEqual([]);
+    const children: Record<string, number> = {
+      'parent@eschool.local': 2,
+      'teacherparent@eschool.local': 1,
+    };
+    expect(me.children).toHaveLength(children[identifier] ?? 0);
   });
 
   it('switches role context with X-Active-Role', async () => {

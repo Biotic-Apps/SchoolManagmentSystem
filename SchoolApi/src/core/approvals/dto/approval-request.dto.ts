@@ -28,5 +28,7 @@ export class ApprovalRequestDto {
   status!: ApprovalStatus;
   currentStep!: number;
   createdAt!: string;
+  /** Stored JSON snapshot of the request (shape depends on type). */
+  payload!: unknown;
   steps?: ApprovalStepDto[];
 }

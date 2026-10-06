@@ -1,0 +1,32 @@
+<resources>
+    <string name="admissions_all">All (%1$d)</string>
+    <string name="admissions_status_count">%1$s (%2$d)</string>
+    <string name="admissions_empty">No applications here</string>
+    <string name="admissions_web_hint">New enquiries, forms, tests and confirmation are handled on the web panel.</string>
+    <string name="admissions_detail_title">Application</string>
+    <string name="admissions_child">Child</string>
+    <string name="admissions_class">Applying for</string>
+    <string name="admissions_dob">Date of birth</string>
+    <string name="admissions_gender">Gender</string>
+    <string name="admissions_previous_school">Previous school</string>
+    <string name="admissions_applied_on">Applied on</string>
+    <string name="admissions_documents">Documents</string>
+    <string name="admissions_waitlist_position">Waiting list position</string>
+    <string name="admissions_guardians">Guardians</string>
+    <string name="admissions_test">Admission test</string>
+    <string name="admissions_test_at">Scheduled</string>
+    <string name="admissions_test_venue">Venue</string>
+    <string name="admissions_test_score">Score</string>
+    <string name="admissions_test_remarks">Remarks</string>
+    <string name="admissions_decision_reason">Decision note</string>
+    <string name="admissions_offer">Offer</string>
+    <string name="admissions_waitlist">Waitlist</string>
+    <string name="admissions_reject">Reject</string>
+    <string name="admissions_confirm_title_offer">Offer admission?</string>
+    <string name="admissions_confirm_title_waitlist">Add to waiting list?</string>
+    <string name="admissions_confirm_title_reject">Reject application?</string>
+    <string name="admissions_reason">Reason</string>
+    <string name="admissions_reason_required">A reason is required to reject</string>
+    <string name="admissions_decided">Decision saved.</string>
+    <string name="admissions_primary">Primary</string>
+</resources>

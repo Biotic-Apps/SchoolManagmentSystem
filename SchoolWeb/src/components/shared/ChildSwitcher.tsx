@@ -21,10 +21,15 @@ export function ChildSwitcher({ items, value, onChange, className }: ChildSwitch
       <SelectContent>
         {items.map((child) => (
           <SelectItem key={child.id} value={child.id}>
-            {child.className ? `${child.name} · ${child.className}` : child.name}
+            {childLabel(child)}
           </SelectItem>
         ))}
       </SelectContent>
     </Select>
   );
+}
+
+function childLabel(child: ChildSummary): string {
+  const placement = [child.className, child.sectionName].filter(Boolean).join(" ");
+  return placement ? `${child.name} · ${placement}` : child.name;
 }

@@ -51,4 +51,5 @@ private fun AssignmentDto.toModel(): RoleAssignment? {
     )
 }
 
-private fun ChildDto.toModel() = ChildSummary(id, name, className, sectionName, branchName)
+private fun ChildDto.toModel() =
+    ChildSummary(id, name, className, sectionName, branchName, photoUrl, admissionNo, sessionName)

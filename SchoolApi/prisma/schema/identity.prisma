@@ -62,6 +62,10 @@ model User {
   decidedSteps        ApprovalStep[]       @relation("ApprovalStepDecider")
   notifications       Notification[]
   uploadedFiles       File[]
+  staffProfile        Staff?               @relation("StaffUser")
+  reviewingStaff      Staff[]              @relation("StaffReviewer")
+  guardianProfile     Guardian?            @relation("GuardianUser")
+  verifiedDocuments   Document[]           @relation("DocumentVerifier")
 
   @@map("users")
 }
@@ -188,13 +192,14 @@ model RoleAssignment {
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  user      User     @relation("AssignedUser", fields: [userId], references: [id], onDelete: Restrict)
-  role      Role     @relation(fields: [roleId], references: [id], onDelete: Restrict)
-  grantedBy User?    @relation("AssignmentGrantedBy", fields: [grantedById], references: [id], onDelete: Restrict)
-  school    School?  @relation(fields: [schoolId], references: [id], onDelete: Restrict)
-  branch    Branch?  @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  section   Section? @relation(fields: [sectionId], references: [id], onDelete: Restrict)
-  subject   Subject? @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  user            User             @relation("AssignedUser", fields: [userId], references: [id], onDelete: Restrict)
+  role            Role             @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  grantedBy       User?            @relation("AssignmentGrantedBy", fields: [grantedById], references: [id], onDelete: Restrict)
+  school          School?          @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch          Branch?          @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  section         Section?         @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+  subject         Subject?         @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  staffAssignment StaffAssignment?
 
   @@index([userId])
   @@index([roleId])

@@ -8,6 +8,12 @@ import com.schoolapp.core.network.api.DashboardApi
 import com.schoolapp.core.network.api.MeApi
 import com.schoolapp.core.network.api.NotificationsApi
 import com.schoolapp.core.network.api.OrganisationApi
+import com.schoolapp.core.network.api.StudentsApi
+import com.schoolapp.core.network.api.GuardiansApi
+import com.schoolapp.core.network.api.StaffApi
+import com.schoolapp.core.network.api.TimetableApi
+import com.schoolapp.core.network.api.SyllabusApi
+import com.schoolapp.core.network.api.AdmissionsApi
 import com.schoolapp.core.network.api.RefreshApi
 import com.schoolapp.core.network.auth.AuthInterceptor
 import com.schoolapp.core.network.auth.TokenAuthenticator
@@ -96,6 +102,30 @@ internal object NetworkModule {
     @Provides
     @Singleton
     fun provideOrganisationApi(retrofit: Retrofit): OrganisationApi = retrofit.create(OrganisationApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideStudentsApi(retrofit: Retrofit): StudentsApi = retrofit.create(StudentsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideGuardiansApi(retrofit: Retrofit): GuardiansApi = retrofit.create(GuardiansApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideStaffApi(retrofit: Retrofit): StaffApi = retrofit.create(StaffApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideTimetableApi(retrofit: Retrofit): TimetableApi = retrofit.create(TimetableApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideSyllabusApi(retrofit: Retrofit): SyllabusApi = retrofit.create(SyllabusApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAdmissionsApi(retrofit: Retrofit): AdmissionsApi = retrofit.create(AdmissionsApi::class.java)
 
     @Provides
     @Singleton

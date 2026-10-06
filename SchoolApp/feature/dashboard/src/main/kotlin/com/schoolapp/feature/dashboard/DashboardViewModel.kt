@@ -20,6 +20,7 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val dashboardRepository: DashboardRepository,
+    private val todayPeriodsLoader: TodayPeriodsLoader,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
@@ -35,7 +36,12 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             val session = authRepository.session.filterNotNull().first()
             if (!session.showsSummary()) {
-                _uiState.value = session.toWelcome()
+                val welcome = session.toWelcome()
+                _uiState.value = welcome
+                if (session.activeRole in TIMETABLE_ROLES) {
+                    val periods = (todayPeriodsLoader.load() as? AppResult.Success)?.data.orEmpty()
+                    _uiState.value = welcome.copy(todayPeriods = periods)
+                }
                 return@launch
             }
             val current = _uiState.value
@@ -72,6 +78,7 @@ class DashboardViewModel @Inject constructor(
 
     private companion object {
         val SUMMARY_ROLES = setOf(RoleKey.SUPER_ADMIN, RoleKey.PRINCIPAL)
+        val TIMETABLE_ROLES = setOf(RoleKey.TEACHER, RoleKey.HELPER)
         const val DASHBOARD_VIEW = "dashboard.view"
     }
 }

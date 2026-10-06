@@ -53,6 +53,11 @@ dependencies {
     implementation(projects.feature.approvals)
     implementation(projects.feature.notifications)
     implementation(projects.feature.organisation)
+    implementation(projects.feature.students)
+    implementation(projects.feature.timetable)
+    implementation(projects.feature.syllabus)
+    implementation(projects.feature.admissions)
+    implementation(projects.feature.staff)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

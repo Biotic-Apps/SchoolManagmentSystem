@@ -10,6 +10,7 @@ export interface AccessContext {
   permissions: Set<string>;
   assignments: ActiveAssignment[];
   allAssignments: ActiveAssignment[];
+  studentIds: string[];
 }
 
 @Injectable()
@@ -35,8 +36,12 @@ export class AccessContextService {
     const lists = await Promise.all(
       roleIds.map((id) => this.cache.rolePermissions(id)),
     );
+    const studentIds = assignments.some((a) => a.scopeType === 'GUARDIAN')
+      ? await this.cache.guardianStudents(userId)
+      : [];
     return {
       activeRole,
+      studentIds,
       roles,
       permissions: new Set(lists.flat()),
       assignments,

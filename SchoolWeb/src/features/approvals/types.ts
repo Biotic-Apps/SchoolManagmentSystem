@@ -29,6 +29,9 @@ export interface ApprovalRequest {
   status: ApprovalStatus;
   currentStep: number;
   createdAt: string;
+  amountMinor?: number | null;
+  /** Not in the Phase 1 contract; Phase 2 types (CHILD_LINK, CONTACT_CHANGE, ...) are summarised from it when sent. */
+  payload?: Record<string, unknown> | null;
   steps?: ApprovalStep[];
 }
 

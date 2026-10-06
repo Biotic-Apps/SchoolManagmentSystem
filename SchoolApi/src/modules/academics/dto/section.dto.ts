@@ -10,7 +10,8 @@ export class SectionDto {
   name!: string;
   capacity!: number | null;
   room!: IdNameDto | null;
-  /** 0 until enrollments arrive in Phase 2. */
+  classTeacher!: IdNameDto | null;
+  /** Active enrollments. */
   studentCount!: number;
   status!: RecordStatus;
 }

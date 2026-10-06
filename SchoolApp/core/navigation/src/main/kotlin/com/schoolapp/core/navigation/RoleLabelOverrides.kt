@@ -15,3 +15,9 @@ internal val RoleLabelOverrides: Map<RoleKey, Map<String, String>> = mapOf(
         MenuIds.MESSAGES to "Messages, Notices & Requests",
     ),
 )
+
+/** Compact (bottom bar / rail) label overrides per role. */
+internal val RoleShortLabelOverrides: Map<RoleKey, Map<String, String>> = mapOf(
+    RoleKey.TEACHER to mapOf(MenuIds.CLASSES to "My Classes"),
+    RoleKey.PARENT to mapOf(MenuIds.STUDENTS to "Child", MenuIds.PROGRESS to "Results"),
+)

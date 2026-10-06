@@ -10,6 +10,8 @@ const INCLUDE = {
   schoolClass: { select: { name: true, levelOrder: true } },
   room: { select: { id: true, name: true } },
   session: { select: { status: true } },
+  classTeacher: { select: { id: true, name: true } },
+  _count: { select: { enrollments: { where: { status: 'ACTIVE' } } } },
 } satisfies Prisma.SectionInclude;
 
 export type SectionRow = Prisma.SectionGetPayload<{ include: typeof INCLUDE }>;
@@ -23,9 +25,14 @@ export class SectionsRepository {
       AND: [
         scope.global
           ? {}
-          : {
-              OR: [scope.branchFilter(), { id: { in: [...scope.sectionIds] } }],
-            },
+          : scope.sectionLimited
+            ? { id: { in: [...scope.sectionIds] } }
+            : {
+                OR: [
+                  scope.branchFilter(),
+                  { id: { in: [...scope.sectionIds] } },
+                ],
+              },
         {
           branchId: query.branchId,
           sessionId: query.sessionId,

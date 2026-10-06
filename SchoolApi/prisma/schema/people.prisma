@@ -1,0 +1,287 @@
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+
+  @@map("gender")
+}
+
+enum StudentStatus {
+  ACTIVE
+  WITHDRAWN
+  TRANSFERRED
+  GRADUATED
+
+  @@map("student_status")
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  WITHDRAWN
+  TRANSFERRED_OUT
+  PROMOTED
+  REPEATED
+  GRADUATED
+
+  @@map("enrollment_status")
+}
+
+enum GuardianRelation {
+  FATHER
+  MOTHER
+  GUARDIAN
+  OTHER
+
+  @@map("guardian_relation")
+}
+
+enum GuardianLinkStatus {
+  REQUESTED
+  VERIFIED
+  REJECTED
+  REVOKED
+
+  @@map("guardian_link_status")
+}
+
+enum ChildLinkRequestStatus {
+  OTP_PENDING
+  REQUESTED
+  VERIFIED
+  REJECTED
+  EXPIRED
+
+  @@map("child_link_request_status")
+}
+
+enum TransferStatus {
+  REQUESTED
+  ACCEPTED
+  REJECTED
+  CANCELLED
+
+  @@map("transfer_status")
+}
+
+enum IdCardStatus {
+  PENDING
+  READY
+  FAILED
+
+  @@map("id_card_status")
+}
+
+model Student {
+  id            String        @id @default(uuid(7)) @db.Uuid
+  schoolId      String        @map("school_id") @db.Uuid
+  admissionNo   String        @map("admission_no")
+  firstName     String        @map("first_name")
+  lastName      String        @map("last_name")
+  dob           DateTime      @db.Date
+  gender        Gender
+  bForm         String?       @map("b_form")
+  photoFileId   String?       @map("photo_file_id") @db.Uuid
+  address       String?
+  admissionDate DateTime      @map("admission_date") @db.Date
+  status        StudentStatus @default(ACTIVE)
+  createdById   String?       @map("created_by_id") @db.Uuid
+  updatedById   String?       @map("updated_by_id") @db.Uuid
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school            School                @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  photoFile         File?                 @relation("StudentPhoto", fields: [photoFileId], references: [id], onDelete: Restrict)
+  enrollments       Enrollment[]
+  guardianLinks     StudentGuardian[]
+  healthProfile     StudentHealthProfile?
+  transfers         Transfer[]
+  idCards           IdCard[]
+  childLinkRequests ChildLinkRequest[]
+  application       AdmissionApplication?
+
+  @@unique([schoolId, admissionNo])
+  @@index([schoolId, status])
+  @@index([photoFileId])
+  @@map("students")
+}
+
+model StudentHealthProfile {
+  studentId   String   @id @map("student_id") @db.Uuid
+  allergies   String?
+  conditions  String?
+  notes       String?
+  updatedById String?  @map("updated_by_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
+
+  @@map("student_health_profiles")
+}
+
+model Enrollment {
+  id          String           @id @default(uuid(7)) @db.Uuid
+  schoolId    String           @map("school_id") @db.Uuid
+  studentId   String           @map("student_id") @db.Uuid
+  branchId    String           @map("branch_id") @db.Uuid
+  sessionId   String           @map("session_id") @db.Uuid
+  sectionId   String           @map("section_id") @db.Uuid
+  rollNo      Int?             @map("roll_no")
+  startDate   DateTime         @map("start_date") @db.Date
+  endDate     DateTime?        @map("end_date") @db.Date
+  status      EnrollmentStatus @default(ACTIVE)
+  reason      String?
+  createdById String?          @map("created_by_id") @db.Uuid
+  updatedById String?          @map("updated_by_id") @db.Uuid
+  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school  School          @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  student Student         @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  branch  Branch          @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  session AcademicSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  section Section         @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+
+  @@unique([studentId], map: "enrollments_one_active_per_student", where: raw("status = 'ACTIVE'::enrollment_status"))
+  @@unique([sectionId, rollNo], map: "enrollments_roll_no_per_section", where: raw("status = 'ACTIVE'::enrollment_status"))
+  @@index([schoolId])
+  @@index([branchId, sessionId, status])
+  @@index([sectionId, status])
+  @@index([studentId, startDate])
+  @@map("enrollments")
+}
+
+model Guardian {
+  id          String           @id @default(uuid(7)) @db.Uuid
+  schoolId    String           @map("school_id") @db.Uuid
+  userId      String?          @unique @map("user_id") @db.Uuid
+  name        String
+  relation    GuardianRelation @default(GUARDIAN)
+  cnic        String?
+  phone       String
+  email       String?
+  occupation  String?
+  address     String?
+  status      RecordStatus     @default(ACTIVE)
+  createdById String?          @map("created_by_id") @db.Uuid
+  updatedById String?          @map("updated_by_id") @db.Uuid
+  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school       School             @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  user         User?              @relation("GuardianUser", fields: [userId], references: [id], onDelete: Restrict)
+  studentLinks StudentGuardian[]
+  linkRequests ChildLinkRequest[]
+
+  @@index([schoolId, phone])
+  @@map("guardians")
+}
+
+model StudentGuardian {
+  id           String             @id @default(uuid(7)) @db.Uuid
+  schoolId     String             @map("school_id") @db.Uuid
+  studentId    String             @map("student_id") @db.Uuid
+  guardianId   String             @map("guardian_id") @db.Uuid
+  relation     GuardianRelation
+  isPrimary    Boolean            @default(false) @map("is_primary")
+  status       GuardianLinkStatus @default(REQUESTED)
+  verifiedById String?            @map("verified_by_id") @db.Uuid
+  verifiedAt   DateTime?          @map("verified_at") @db.Timestamptz(3)
+  revokedById  String?            @map("revoked_by_id") @db.Uuid
+  revokedAt    DateTime?          @map("revoked_at") @db.Timestamptz(3)
+  revokeReason String?            @map("revoke_reason")
+  createdById  String?            @map("created_by_id") @db.Uuid
+  createdAt    DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school   School   @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  student  Student  @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  guardian Guardian @relation(fields: [guardianId], references: [id], onDelete: Restrict)
+
+  @@unique([studentId, guardianId], map: "student_guardians_open_link", where: raw("status = ANY (ARRAY['REQUESTED'::guardian_link_status, 'VERIFIED'::guardian_link_status])"))
+  @@unique([studentId], map: "student_guardians_one_primary", where: raw("is_primary AND status = 'VERIFIED'::guardian_link_status"))
+  @@index([schoolId])
+  @@index([guardianId, status])
+  @@index([studentId, status])
+  @@map("student_guardians")
+}
+
+model ChildLinkRequest {
+  id                String                 @id @default(uuid(7)) @db.Uuid
+  schoolId          String                 @map("school_id") @db.Uuid
+  branchId          String?                @map("branch_id") @db.Uuid
+  guardianId        String                 @map("guardian_id") @db.Uuid
+  studentId         String                 @map("student_id") @db.Uuid
+  relation          GuardianRelation
+  status            ChildLinkRequestStatus @default(OTP_PENDING)
+  otpCodeId         String?                @map("otp_code_id") @db.Uuid
+  linkId            String?                @map("link_id") @db.Uuid
+  approvalRequestId String?                @map("approval_request_id") @db.Uuid
+  requestedById     String                 @map("requested_by_id") @db.Uuid
+  decidedAt         DateTime?              @map("decided_at") @db.Timestamptz(3)
+  createdAt         DateTime               @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime               @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school   School   @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  guardian Guardian @relation(fields: [guardianId], references: [id], onDelete: Restrict)
+  student  Student  @relation(fields: [studentId], references: [id], onDelete: Restrict)
+
+  @@index([schoolId])
+  @@index([branchId, status])
+  @@index([guardianId])
+  @@index([studentId])
+  @@map("child_link_requests")
+}
+
+model Transfer {
+  id               String         @id @default(uuid(7)) @db.Uuid
+  schoolId         String         @map("school_id") @db.Uuid
+  studentId        String         @map("student_id") @db.Uuid
+  fromBranchId     String         @map("from_branch_id") @db.Uuid
+  toBranchId       String         @map("to_branch_id") @db.Uuid
+  fromEnrollmentId String         @map("from_enrollment_id") @db.Uuid
+  toEnrollmentId   String?        @map("to_enrollment_id") @db.Uuid
+  effectiveDate    DateTime       @map("effective_date") @db.Date
+  reason           String
+  status           TransferStatus @default(REQUESTED)
+  decisionReason   String?        @map("decision_reason")
+  requestedById    String         @map("requested_by_id") @db.Uuid
+  decidedById      String?        @map("decided_by_id") @db.Uuid
+  decidedAt        DateTime?      @map("decided_at") @db.Timestamptz(3)
+  createdAt        DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school     School  @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  student    Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  fromBranch Branch  @relation("TransferFrom", fields: [fromBranchId], references: [id], onDelete: Restrict)
+  toBranch   Branch  @relation("TransferTo", fields: [toBranchId], references: [id], onDelete: Restrict)
+
+  @@unique([studentId], map: "transfers_one_open_per_student", where: raw("status = 'REQUESTED'::transfer_status"))
+  @@index([schoolId])
+  @@index([fromBranchId, status])
+  @@index([toBranchId, status])
+  @@map("transfers")
+}
+
+model IdCard {
+  id            String       @id @default(uuid(7)) @db.Uuid
+  schoolId      String       @map("school_id") @db.Uuid
+  studentId     String       @map("student_id") @db.Uuid
+  version       Int
+  status        IdCardStatus @default(PENDING)
+  fileId        String?      @map("file_id") @db.Uuid
+  error         String?
+  requestedById String       @map("requested_by_id") @db.Uuid
+  generatedAt   DateTime?    @map("generated_at") @db.Timestamptz(3)
+  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school  School  @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  file    File?   @relation("IdCardFile", fields: [fileId], references: [id], onDelete: Restrict)
+
+  @@unique([studentId, version])
+  @@index([schoolId])
+  @@index([fileId])
+  @@map("id_cards")
+}

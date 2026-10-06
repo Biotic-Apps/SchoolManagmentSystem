@@ -13,6 +13,8 @@ import com.schoolapp.core.model.dashboard.DashboardMetric
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.dashboard.components.MetricGrid
 import com.schoolapp.feature.dashboard.components.SummaryHeader
+import com.schoolapp.feature.dashboard.components.TodayPeriodsCard
+import com.schoolapp.core.navigation.MenuIds
 import com.schoolapp.feature.dashboard.components.WelcomeCard
 
 @Composable
@@ -26,7 +28,17 @@ fun DashboardScreen(
     when (state) {
         DashboardUiState.Loading -> LoadingState(modifier)
         is DashboardUiState.Error -> ErrorState(appErrorMessage(state.error), modifier, onRetry = onRefresh)
-        is DashboardUiState.Welcome -> ScreenColumn(modifier) { item { WelcomeCard(state) } }
+        is DashboardUiState.Welcome -> ScreenColumn(modifier) {
+            item(key = "welcome") { WelcomeCard(state) }
+            state.todayPeriods?.let { periods ->
+                item(key = "today") {
+                    TodayPeriodsCard(
+                        periods = periods,
+                        onOpenTimetable = MenuIds.TIMETABLE.takeIf(canOpenMenu)?.let { id -> { onOpenMenu(id) } },
+                    )
+                }
+            }
+        }
         is DashboardUiState.Summary -> RefreshBox(state.isRefreshing, onRefresh, modifier) {
             MetricGrid(
                 metrics = state.metrics,

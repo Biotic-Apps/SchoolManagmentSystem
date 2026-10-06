@@ -6,6 +6,7 @@ import { AssignmentRepository } from './assignment.repository';
 const TTL_SECONDS = 300;
 const ASSIGNMENTS = 'auth:assignments:';
 const ROLE_PERMISSIONS = 'auth:role-perms:';
+const GUARDIAN_STUDENTS = 'auth:guardian-students:';
 
 /** Cached assignments and role permissions; invalidated on every change. */
 @Injectable()
@@ -31,11 +32,19 @@ export class AccessCache {
     );
   }
 
-  invalidateUser(userId: string): Promise<void> {
-    return this.cache.del(ASSIGNMENTS + userId);
+  /** Students reachable through VERIFIED guardian links. */
+  guardianStudents(userId: string): Promise<string[]> {
+    return this.cache.getOrLoad(GUARDIAN_STUDENTS + userId, TTL_SECONDS, () =>
+      this.repository.verifiedStudentIds(userId),
+    );
   }
 
-  invalidateAllUsers(): Promise<void> {
+  invalidateUser(userId: string): Promise<void> {
+    return this.cache.del(ASSIGNMENTS + userId, GUARDIAN_STUDENTS + userId);
+  }
+
+  async invalidateAllUsers(): Promise<void> {
+    await this.cache.delByPrefix(GUARDIAN_STUDENTS);
     return this.cache.delByPrefix(ASSIGNMENTS);
   }
 

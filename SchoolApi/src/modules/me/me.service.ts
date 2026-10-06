@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { AuditService } from '../../core/audit/audit.service';
 import { normalizePhone } from '../../core/auth/identifier';
 import type { AuthUser } from '../../core/common/types/auth-user';
+import { UrlSigner } from '../../core/files/url-signer';
 import { AccessCache } from '../../core/rbac/access/access-cache';
+import { RoleKey } from '../../core/rbac/role-key.enum';
 import { toAssignmentDto } from '../users/assignment.mapper';
-import type { MeDto, MeUserDto } from './dto/me.dto';
+import type { MeChildDto, MeDto, MeUserDto } from './dto/me.dto';
 import type { UpdateMeDto } from './dto/update-me.dto';
 import { MeRepository } from './me.repository';
 
@@ -13,6 +15,7 @@ export class MeService {
   constructor(
     private readonly repository: MeRepository,
     private readonly access: AccessCache,
+    private readonly signer: UrlSigner,
     private readonly audit: AuditService,
   ) {}
 
@@ -27,8 +30,29 @@ export class MeService {
       roles: user.roles,
       permissions: [...user.permissions].sort(),
       assignments: assignments.map(toAssignmentDto),
-      children: [],
+      children: user.roles.includes(RoleKey.PARENT)
+        ? await this.children(user.id)
+        : [],
     };
+  }
+
+  private async children(userId: string): Promise<MeChildDto[]> {
+    const rows = await this.repository.children(userId);
+    return rows.map((row) => {
+      const e = row.enrollments[0];
+      return {
+        id: row.id,
+        name: `${row.firstName} ${row.lastName}`.trim(),
+        admissionNo: row.admissionNo,
+        photoUrl: row.photoFileId
+          ? this.signer.sign(row.photoFileId).url
+          : null,
+        className: e?.section.schoolClass.name ?? '',
+        sectionName: e?.section.name ?? '',
+        branchName: e?.branch.name ?? '',
+        sessionName: e?.session.name ?? '',
+      };
+    });
   }
 
   async update(user: AuthUser, dto: UpdateMeDto): Promise<MeUserDto> {

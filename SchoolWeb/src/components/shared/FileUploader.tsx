@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type ChangeEvent } from "react";
-import { ImageUp, X } from "lucide-react";
+import { FileText, ImageUp, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 interface FileUploaderProps {
@@ -13,6 +13,8 @@ interface FileUploaderProps {
   onUpload: (file: File) => void;
   onClear?: () => void;
   hint?: string;
+  /** Name of an uploaded non-image file; shown instead of an image preview. */
+  fileName?: string | null;
 }
 
 function validate(file: File, accept: string[], maxSizeMb: number): string | null {
@@ -21,7 +23,18 @@ function validate(file: File, accept: string[], maxSizeMb: number): string | nul
   return null;
 }
 
-export function FileUploader({ id, accept, maxSizeMb, previewUrl, uploading, onUpload, onClear, hint }: FileUploaderProps) {
+export function FileUploader({
+  id,
+  accept,
+  maxSizeMb,
+  previewUrl,
+  uploading,
+  onUpload,
+  onClear,
+  hint,
+  fileName,
+}: FileUploaderProps) {
+  const hasFile = !!previewUrl || !!fileName;
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,15 +54,18 @@ export function FileUploader({ id, accept, maxSizeMb, previewUrl, uploading, onU
           {previewUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- signed storage URLs, not optimizable
             <img src={previewUrl} alt="" className="size-full object-contain" />
+          ) : fileName ? (
+            <FileText className="size-5 text-primary" />
           ) : (
             <ImageUp className="size-5 text-fg-muted" />
           )}
         </div>
+        {fileName && <span className="min-w-0 flex-1 truncate text-label text-fg">{fileName}</span>}
         <div className="flex flex-wrap gap-2">
           <Button variant="secondary" size="sm" loading={uploading} onClick={() => inputRef.current?.click()}>
-            {previewUrl ? "Replace" : "Upload"}
+            {hasFile ? "Replace" : "Upload"}
           </Button>
-          {previewUrl && onClear && (
+          {hasFile && onClear && (
             <Button variant="ghost" size="sm" onClick={onClear} disabled={uploading}>
               <X />
               Remove

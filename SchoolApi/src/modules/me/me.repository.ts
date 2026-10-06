@@ -20,6 +20,31 @@ export class MeRepository {
     });
   }
 
+  /** Children through VERIFIED guardian links, with the current enrollment. */
+  children(userId: string) {
+    return this.prisma.student.findMany({
+      where: {
+        guardianLinks: {
+          some: { status: 'VERIFIED', guardian: { userId, status: 'ACTIVE' } },
+        },
+      },
+      include: {
+        enrollments: {
+          where: { status: 'ACTIVE' },
+          include: {
+            branch: { select: { name: true } },
+            session: { select: { name: true } },
+            section: {
+              select: { name: true, schoolClass: { select: { name: true } } },
+            },
+          },
+          take: 1,
+        },
+      },
+      orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
+    });
+  }
+
   updateUser(
     id: string,
     data: { name?: string; email?: string; phone?: string },

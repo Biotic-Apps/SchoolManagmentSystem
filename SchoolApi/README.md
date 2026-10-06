@@ -1,7 +1,7 @@
 # SchoolApi
 
 NestJS 11 + Prisma 7 (PostgreSQL 16) + BullMQ (Redis) API for the eSchool Management System.
-Design: [../docs/architecture.md](../docs/architecture.md) §5, [databaseManagement.md](../docs/databaseManagement.md), [security.md](../docs/security.md). Phase 1 API: [../docs/api/phase1-contract.md](../docs/api/phase1-contract.md).
+Design: [../docs/architecture.md](../docs/architecture.md) §5, [databaseManagement.md](../docs/databaseManagement.md), [security.md](../docs/security.md). Phase 1 API: [../docs/api/phase1-contract.md](../docs/api/phase1-contract.md); Phase 2 API: [../docs/api/phase2-contract.md](../docs/api/phase2-contract.md).
 
 ## Local run (no Docker, Postgres or Redis install needed)
 ```bash
@@ -14,7 +14,8 @@ npm run start:dev           # API on http://localhost:3000, Swagger UI at /docs
 ```
 Stop the database with Ctrl+C in terminal 1 or `npm run db:local:stop`. The first `db:local` initialises the cluster and creates the `eschool` and `eschool_test` databases.
 
-Demo accounts (password `Demo@1234`): `admin@`, `principal@`, `coordinator@`, `teacher@`, `accountant@`, `parent@`, `teacherparent@eschool.local`.
+Demo accounts (password `Demo@1234`): `admin@`, `principal@`, `coordinator@`, `teacher@`, `teacher2@`, `teacher3@`, `newteacher@` (on probation, reviewed by the coordinator), `accountant@`, `parent@` (2 children), `teacherparent@eschool.local`.
+Demo data: 40 students in Class 4–5 with guardians, staff assignments, bell schedule and published 5-A/5-B timetables, Class 5 book list, 5-A syllabus plans, an admissions pipeline. The local database uses the WIN1252 encoding, so keep stored text ASCII-safe in dev.
 Production seeds only the catalogue, system roles and the super admin from `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`.
 
 ## Drivers
@@ -41,8 +42,9 @@ Push, email and SMS channels log messages in development and mark deliveries `FA
 
 ## Layout
 ```
-prisma/schema/        base, identity, organisation, audit, jobs (multi-file schema)
-prisma/migrations/    phase1_init (+ partial unique indexes), phase1_integrity (audit append-only trigger, CHECKs)
+prisma/schema/        base, identity, organisation, audit, jobs, people, staff, documents, admissions, academics-plan
+prisma/migrations/    phase1_init (+ partial unique indexes), phase1_integrity (audit append-only trigger, CHECKs),
+                      phase2_people_academics (+ partial uniques: one active enrollment, one primary guardian, one class teacher; CHECKs)
 prisma/seed*          seed entry + small seed steps
 scripts/              embedded PostgreSQL start/stop
 src/config/           zod-validated env + typed AppConfigService
@@ -53,10 +55,15 @@ src/core/audit/       AuditService + interceptor (append-only audit_logs), GET /
 src/core/approvals/   generic approval engine (handler registry, steps, amount limits), inbox, reassign job
 src/core/notifications/ in-app rows + delivery rows, channel adapters, jobs
 src/core/files/       upload policy, local storage, signed URLs
-src/core/jobs/        JobDispatcher (BullMQ | inline), processor registry, JobRunner
+src/core/jobs/        JobDispatcher + JobScheduler (BullMQ | inline), processor registry, JobRunner
+src/core/outbox/      transactional outbox (domain_events) published after commit; sequences/ numbered ids
+src/core/probation/   ProbationGate + PROBATION_REVIEW handler (reviewable action registry)
+src/core/otp/, accounts/  one-time codes; login provisioning for staff/guardians
 src/core/cache/       CacheStore (Redis | memory)
 src/modules/          me, roles, schools, branches (+settings, principal), users (+assignments),
-                      academic-sessions (sessions, terms, calendar), academics (classes, subjects, rooms, sections), dashboard
+                      academic-sessions (sessions, terms, calendar), academics (classes, subjects, rooms, sections), dashboard,
+                      documents, students (+enrollment, transfers, ID card PDF job), guardians (+child links, contact change),
+                      admissions, staff (+assignments, probation, expiry job), timetable, syllabus (+book lists, delay report job)
 ```
 Each module: `controller` (routes + permission) → `service` (rules, scope checks, audit) → `repository` (Prisma, takes a `Scope`).
 Responses are `{ data, meta? }`; errors are `{ error: { code, message, details? } }` with codes from `ErrorCode`.

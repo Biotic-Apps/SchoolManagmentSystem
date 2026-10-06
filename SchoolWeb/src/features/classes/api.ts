@@ -36,10 +36,11 @@ export function useSaveClass() {
   });
 }
 
-export function useClassSubjects(classId: string) {
+export function useClassSubjects(classId: string, enabled = true) {
   return useQuery({
     queryKey: classKeys.subjects(classId),
     queryFn: async () => (await http.get<Subject[]>(`/classes/${classId}/subjects`)).data,
+    enabled: enabled && !!classId,
   });
 }
 
@@ -49,4 +50,11 @@ export function useSaveClassSubjects(classId: string) {
     invalidate: [classKeys.all],
     success: "Class subjects saved",
   });
+}
+
+/** Subject options for a class; idle until a class is chosen. */
+export function useClassSubjectOptions(classId: string | null | undefined) {
+  const query = useClassSubjects(classId ?? "", !!classId);
+  const options: Option[] = (query.data ?? []).map((subject) => ({ id: subject.id, name: subject.name }));
+  return { options, isLoading: !!classId && query.isLoading };
 }

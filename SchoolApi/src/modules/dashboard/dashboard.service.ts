@@ -32,6 +32,10 @@ export class DashboardService {
       activeSessions,
       sections,
       pendingApprovals,
+      students,
+      staff,
+      pendingAdmissions,
+      pendingChildLinks,
     ] = await Promise.all([
       this.repository.schools(scope, query),
       this.repository.branches(scope, query),
@@ -39,6 +43,10 @@ export class DashboardService {
       this.repository.activeSessions(scope, query),
       this.repository.sections(scope, query),
       this.approvals.countPending(scope, user.id, user.activeRole),
+      this.repository.students(scope, query),
+      this.repository.staff(scope, query),
+      this.repository.pendingAdmissions(scope, query),
+      this.repository.pendingChildLinks(scope, query),
     ]);
     return {
       schools,
@@ -47,6 +55,10 @@ export class DashboardService {
       activeSessions,
       sections,
       pendingApprovals,
+      students,
+      staff,
+      pendingAdmissions,
+      pendingChildLinks,
     };
   }
 }

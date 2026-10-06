@@ -6,5 +6,9 @@ export interface DashboardSummary {
   activeSessions?: number;
   sections?: number;
   pendingApprovals?: number;
+  students?: number;
+  staff?: number;
+  pendingAdmissions?: number;
+  pendingChildLinks?: number;
   [key: string]: number | undefined;
 }

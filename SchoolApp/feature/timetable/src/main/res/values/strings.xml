@@ -1,0 +1,18 @@
+<resources>
+    <string name="timetable_empty_day">No periods on this day</string>
+    <string name="timetable_no_sections">No sections to show</string>
+    <string name="timetable_now">Now</string>
+    <string name="timetable_substitute">Substitute</string>
+    <string name="timetable_break">Break</string>
+    <string name="timetable_period">Period %1$d</string>
+    <string name="timetable_read_only">Timetables are edited and published on the web panel.</string>
+    <string-array name="timetable_days_short">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
+</resources>

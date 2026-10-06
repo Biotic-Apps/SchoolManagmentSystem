@@ -27,6 +27,16 @@ export class DirectMessageProcessor
   }
 
   async process(input: DirectMessageInput): Promise<void> {
+    if (input.to) {
+      await this.channels.get(input.channel).send({
+        title: input.title,
+        body: input.body,
+        email: input.to.email,
+        phone: input.to.phone,
+      });
+      return;
+    }
+    if (!input.userId) return;
     const [recipient] = await this.repository.recipients([input.userId]);
     if (!recipient) return;
     await this.channels.get(input.channel).send({

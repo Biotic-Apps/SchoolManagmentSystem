@@ -1,0 +1,267 @@
+enum TimetableStatus {
+  DRAFT
+  PUBLISHED
+  DRAFT_REVISION
+
+  @@map("timetable_status")
+}
+
+enum BookListStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  RETURNED
+
+  @@map("book_list_status")
+}
+
+enum SyllabusPlanStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  RETURNED
+
+  @@map("syllabus_plan_status")
+}
+
+enum TopicStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+
+  @@map("topic_status")
+}
+
+/// Bell schedule of a branch; times are 24-hour "HH:mm".
+model BranchPeriod {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  schoolId  String   @map("school_id") @db.Uuid
+  branchId  String   @map("branch_id") @db.Uuid
+  index     Int      @map("period_index")
+  startTime String   @map("start_time") @db.VarChar(5)
+  endTime   String   @map("end_time") @db.VarChar(5)
+  isBreak   Boolean  @default(false) @map("is_break")
+  label     String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Restrict)
+
+  @@unique([branchId, index])
+  @@index([schoolId])
+  @@map("branch_periods")
+}
+
+model Timetable {
+  id            String          @id @default(uuid(7)) @db.Uuid
+  schoolId      String          @map("school_id") @db.Uuid
+  branchId      String          @map("branch_id") @db.Uuid
+  sessionId     String          @map("session_id") @db.Uuid
+  sectionId     String          @map("section_id") @db.Uuid
+  status        TimetableStatus @default(DRAFT)
+  version       Int             @default(0)
+  publishedAt   DateTime?       @map("published_at") @db.Timestamptz(3)
+  publishedById String?         @map("published_by_id") @db.Uuid
+  updatedById   String?         @map("updated_by_id") @db.Uuid
+  createdAt     DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school  School          @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch  Branch          @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  session AcademicSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  section Section         @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+  slots   TimetableSlot[]
+
+  @@unique([sectionId, sessionId])
+  @@index([schoolId])
+  @@index([branchId, sessionId])
+  @@map("timetables")
+}
+
+/// `published = false` rows are the working draft; `true` rows are what everyone sees.
+model TimetableSlot {
+  id          String  @id @default(uuid(7)) @db.Uuid
+  timetableId String  @map("timetable_id") @db.Uuid
+  published   Boolean
+  day         Int
+  periodIndex Int     @map("period_index")
+  subjectId   String  @map("subject_id") @db.Uuid
+  staffId     String  @map("staff_id") @db.Uuid
+  roomId      String? @map("room_id") @db.Uuid
+
+  timetable Timetable @relation(fields: [timetableId], references: [id], onDelete: Cascade)
+  subject   Subject   @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  staff     Staff     @relation(fields: [staffId], references: [id], onDelete: Restrict)
+  room      Room?     @relation(fields: [roomId], references: [id], onDelete: Restrict)
+
+  @@unique([timetableId, published, day, periodIndex])
+  @@index([staffId, published])
+  @@index([roomId])
+  @@index([subjectId])
+  @@map("timetable_slots")
+}
+
+model TimetableOverride {
+  id                String    @id @default(uuid(7)) @db.Uuid
+  schoolId          String    @map("school_id") @db.Uuid
+  branchId          String    @map("branch_id") @db.Uuid
+  sectionId         String    @map("section_id") @db.Uuid
+  date              DateTime  @db.Date
+  periodIndex       Int       @map("period_index")
+  originalStaffId   String?   @map("original_staff_id") @db.Uuid
+  substituteStaffId String    @map("substitute_staff_id") @db.Uuid
+  reason            String
+  cancelledAt       DateTime? @map("cancelled_at") @db.Timestamptz(3)
+  createdById       String?   @map("created_by_id") @db.Uuid
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school          School  @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch          Branch  @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  section         Section @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+  originalStaff   Staff?  @relation("OverrideOriginal", fields: [originalStaffId], references: [id], onDelete: Restrict)
+  substituteStaff Staff   @relation("OverrideSubstitute", fields: [substituteStaffId], references: [id], onDelete: Restrict)
+
+  @@unique([sectionId, date, periodIndex], map: "timetable_overrides_one_per_period", where: raw("cancelled_at IS NULL"))
+  @@index([schoolId])
+  @@index([branchId, date])
+  @@index([substituteStaffId, date])
+  @@index([originalStaffId])
+  @@map("timetable_overrides")
+}
+
+model BookList {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  schoolId  String   @map("school_id") @db.Uuid
+  branchId  String   @map("branch_id") @db.Uuid
+  sessionId String   @map("session_id") @db.Uuid
+  classId   String   @map("class_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school      School             @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch      Branch             @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  session     AcademicSession    @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  schoolClass SchoolClass        @relation(fields: [classId], references: [id], onDelete: Restrict)
+  revisions   BookListRevision[]
+
+  @@unique([branchId, sessionId, classId])
+  @@index([schoolId])
+  @@index([sessionId])
+  @@index([classId])
+  @@map("book_lists")
+}
+
+model BookListRevision {
+  id            String         @id @default(uuid(7)) @db.Uuid
+  bookListId    String         @map("book_list_id") @db.Uuid
+  revision      Int
+  status        BookListStatus @default(DRAFT)
+  comment       String?
+  submittedById String?        @map("submitted_by_id") @db.Uuid
+  submittedAt   DateTime?      @map("submitted_at") @db.Timestamptz(3)
+  decidedById   String?        @map("decided_by_id") @db.Uuid
+  approvedAt    DateTime?      @map("approved_at") @db.Timestamptz(3)
+  createdById   String?        @map("created_by_id") @db.Uuid
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  bookList BookList       @relation(fields: [bookListId], references: [id], onDelete: Restrict)
+  items    BookListItem[]
+
+  @@unique([bookListId, revision])
+  @@map("book_list_revisions")
+}
+
+model BookListItem {
+  id          String  @id @default(uuid(7)) @db.Uuid
+  revisionId  String  @map("revision_id") @db.Uuid
+  subjectId   String? @map("subject_id") @db.Uuid
+  title       String
+  author      String?
+  publisher   String?
+  isbn        String?
+  isMandatory Boolean @default(true) @map("is_mandatory")
+  priceMinor  BigInt? @map("price_minor")
+  sortOrder   Int     @map("sort_order")
+
+  revision BookListRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+  subject  Subject?         @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+
+  @@index([revisionId])
+  @@index([subjectId])
+  @@map("book_list_items")
+}
+
+model SyllabusPlan {
+  id                String             @id @default(uuid(7)) @db.Uuid
+  schoolId          String             @map("school_id") @db.Uuid
+  branchId          String             @map("branch_id") @db.Uuid
+  sessionId         String             @map("session_id") @db.Uuid
+  sectionId         String             @map("section_id") @db.Uuid
+  subjectId         String             @map("subject_id") @db.Uuid
+  revision          Int                @default(1)
+  status            SyllabusPlanStatus @default(DRAFT)
+  approvalRequestId String?            @map("approval_request_id") @db.Uuid
+  comment           String?
+  submittedById     String?            @map("submitted_by_id") @db.Uuid
+  approvedAt        DateTime?          @map("approved_at") @db.Timestamptz(3)
+  createdById       String?            @map("created_by_id") @db.Uuid
+  updatedById       String?            @map("updated_by_id") @db.Uuid
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school   School            @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch   Branch            @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  session  AcademicSession   @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  section  Section           @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+  subject  Subject           @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  chapters SyllabusChapter[]
+  topics   SyllabusTopic[]
+
+  @@unique([sectionId, subjectId, sessionId])
+  @@index([schoolId])
+  @@index([branchId, sessionId])
+  @@index([subjectId])
+  @@index([sessionId])
+  @@map("syllabus_plans")
+}
+
+model SyllabusChapter {
+  id     String @id @default(uuid(7)) @db.Uuid
+  planId String @map("plan_id") @db.Uuid
+  title  String
+  order  Int    @map("sort_order")
+
+  plan   SyllabusPlan    @relation(fields: [planId], references: [id], onDelete: Cascade)
+  topics SyllabusTopic[]
+
+  @@index([planId])
+  @@map("syllabus_chapters")
+}
+
+model SyllabusTopic {
+  id                String      @id @default(uuid(7)) @db.Uuid
+  planId            String      @map("plan_id") @db.Uuid
+  chapterId         String      @map("chapter_id") @db.Uuid
+  title             String
+  order             Int         @map("sort_order")
+  targetDate        DateTime    @map("target_date") @db.Date
+  status            TopicStatus @default(NOT_STARTED)
+  completedOn       DateTime?   @map("completed_on") @db.Date
+  note              String?
+  pendingApprovalId String?     @map("pending_approval_id") @db.Uuid
+  updatedById       String?     @map("updated_by_id") @db.Uuid
+  onBehalfOfStaffId String?     @map("on_behalf_of_staff_id") @db.Uuid
+  createdAt         DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  plan    SyllabusPlan    @relation(fields: [planId], references: [id], onDelete: Cascade)
+  chapter SyllabusChapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@index([planId])
+  @@index([chapterId])
+  @@index([targetDate, status])
+  @@map("syllabus_topics")
+}

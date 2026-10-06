@@ -26,3 +26,4 @@ SchoolApi/storage/
 *.iml
 .DS_Store
 Thumbs.db
+SchoolApi/.pgdata-*/

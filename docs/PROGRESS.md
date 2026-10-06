@@ -27,14 +27,14 @@ Definition of Done per module: schema + migration · API with permission/scope g
 - [x] Android: login, role shell, role-based navigation, profile
 
 ## Phase 2 — People & academics
-- [ ] Admissions pipeline (enquiry → confirmation, waiting list, entrance test)
-- [ ] Documents & verification
-- [ ] Students & enrollment (withdraw, transfer)
-- [ ] Student ID card
-- [ ] Guardians + verified child links + child switcher
-- [ ] Staff (teachers, helpers, coordinators, head teachers, probation, substitutes)
-- [ ] Timetable
-- [ ] Syllabus & books
+- [x] Admissions pipeline (enquiry → confirmation, waiting list, entrance test)
+- [x] Documents & verification
+- [x] Students & enrollment (withdraw, transfer)
+- [x] Student ID card
+- [x] Guardians + verified child links + child switcher
+- [x] Staff (teachers, helpers, coordinators, head teachers, probation, substitutes)
+- [x] Timetable
+- [x] Syllabus & books
 
 ## Phase 3 — Daily operations
 - [ ] Student attendance (offline Android)
@@ -78,12 +78,18 @@ Definition of Done per module: schema + migration · API with permission/scope g
 ## Phase 6 — Pilot & rollout
 - [ ] Pilot branch
 
+## Phase 2 notes
+- API: 94 unit + 40 e2e tests; migration phase2_people_academics; scope by staff assignments (teacher sees only own sections) and verified guardian links (parent 404 otherwise). Deviations in docs/api/phase2-contract.md.
+- Local DB recreated as UTF-8 (was WIN1252 — Urdu names failed); scripts/db-local.ts now passes initdb --encoding=UTF8. Urdu name round-trip verified.
+- Web: all Phase 2 screens verified against API (admissions, students, staff, timetable 12h, syllabus). Fixed: input double focus stroke, timetable time wrapping.
+- Android: 96 unit tests; installed on phone, invalid old session correctly returns to login.
+- Not yet: offer-letter PDF, waitlist auto-expiry, photo re-encode, transfer certificate (Phase 4 certificates).
+
 ## Phase 1 notes
 - API: 67 unit + 28 e2e tests pass; local DB via `npm run db:local` (embedded Postgres :5433). Contract deviations listed in docs/api/phase1-contract.md.
 - Android: 69 unit tests; verified on real phone against the API (principal login, dashboard, branch with 12-hour timings, session kept across reinstall). Phone reaches the PC API via `adb reverse tcp:3000 tcp:3000` + `-Pschoolapp.apiBaseUrl.debug=http://localhost:3000/api/v1/` (no firewall change needed).
 - Web verified end-to-end against API (login via BFF cookie, refresh rotation, route guard, admin/principal/teacher menus, real data on dashboard, schools, branches, users, roles, sessions, classes).
 - Fixed in integration: BFF ignored empty API_URL; "All role/status" filter labels.
-- Phase 2 follow-up: teacher dashboard counts all branch sections — restrict to assigned sections once staff assignments exist.
 - Android follow-ups: branded launcher icon + splash (still default Android icon), debug cold start ~5–7 s, forgot/reset password screens, FCM device registration, pull-to-refresh on organisation screens.
 - Not yet: S3 storage driver, image re-encode/EXIF strip, AV scan, audit partitioning, forgot/reset password web screens, FCM device registration on web.
 

@@ -41,7 +41,12 @@ class DemoAwareOrganisationRepository @Inject constructor(
         if (demo) AppResult.Success(DemoData.classes) else real.classes(schoolId)
 
     override suspend fun sections(branchId: String, sessionId: String?): AppResult<List<Section>> =
-        if (demo) AppResult.Success(DemoData.sections) else real.sections(branchId, sessionId)
+        if (demo) AppResult.Success(demoSections()) else real.sections(branchId, sessionId)
+
+    private fun demoSections(): List<Section> = when (auth.demoSession.value?.activeRole) {
+        RoleKey.TEACHER, RoleKey.HELPER -> DemoData.sections.filter { it.id in DemoAwareStudentsRepository.TEACHER_SECTIONS }
+        else -> DemoData.sections
+    }
 
     override suspend fun subjects(schoolId: String?): AppResult<List<Subject>> =
         if (demo) AppResult.Success(DemoData.subjects) else real.subjects(schoolId)

@@ -1,6 +1,10 @@
 package com.schoolapp.feature.dashboard
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Assignment
+import androidx.compose.material.icons.outlined.Badge
+import androidx.compose.material.icons.outlined.FamilyRestroom
+import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Apartment
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Insights
@@ -30,6 +34,14 @@ internal fun presentationFor(key: String): MetricPresentation = when (key) {
     "sections" -> MetricPresentation(R.string.dashboard_metric_sections, Icons.Outlined.Layers, StatusTone.Neutral, MenuIds.CLASSES)
     "pendingApprovals" -> MetricPresentation(
         R.string.dashboard_metric_approvals, Icons.Outlined.TaskAlt, StatusTone.Warning, MenuIds.APPROVALS,
+    )
+    "students" -> MetricPresentation(R.string.dashboard_metric_students, Icons.Outlined.Groups, StatusTone.Info, MenuIds.STUDENTS)
+    "staff" -> MetricPresentation(R.string.dashboard_metric_staff, Icons.Outlined.Badge, StatusTone.Neutral, MenuIds.STAFF)
+    "pendingAdmissions" -> MetricPresentation(
+        R.string.dashboard_metric_admissions, Icons.AutoMirrored.Outlined.Assignment, StatusTone.Warning, MenuIds.ADMISSIONS,
+    )
+    "pendingChildLinks" -> MetricPresentation(
+        R.string.dashboard_metric_child_links, Icons.Outlined.FamilyRestroom, StatusTone.Warning, MenuIds.GUARDIANS,
     )
     else -> MetricPresentation(null, Icons.Outlined.Insights, StatusTone.Neutral, null)
 }

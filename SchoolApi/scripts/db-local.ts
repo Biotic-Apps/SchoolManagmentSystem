@@ -26,6 +26,8 @@ async function main(): Promise<void> {
     user: LOCAL_DB.user,
     password: LOCAL_DB.password,
     persistent: true,
+    // UTF-8 so Urdu and other non-ASCII names store correctly (Windows defaults to WIN1252).
+    initdbFlags: ['--encoding=UTF8', '--locale=C'],
     onLog: () => undefined,
     onError: (message) => console.error(String(message)),
   });

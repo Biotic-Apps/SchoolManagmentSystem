@@ -1,0 +1,55 @@
+enum DocumentOwnerType {
+  STUDENT
+  GUARDIAN
+  STAFF
+  APPLICATION
+
+  @@map("document_owner_type")
+}
+
+enum DocumentType {
+  BIRTH_CERTIFICATE
+  B_FORM
+  CNIC
+  PHOTO
+  PREVIOUS_RESULT
+  LEAVING_CERTIFICATE
+  MEDICAL
+  OTHER
+
+  @@map("document_type")
+}
+
+enum DocumentStatus {
+  UPLOADED
+  VERIFIED
+  REJECTED
+
+  @@map("document_status")
+}
+
+model Document {
+  id           String            @id @default(uuid(7)) @db.Uuid
+  schoolId     String            @map("school_id") @db.Uuid
+  ownerType    DocumentOwnerType @map("owner_type")
+  ownerId      String            @map("owner_id") @db.Uuid
+  docType      DocumentType      @map("doc_type")
+  fileId       String            @map("file_id") @db.Uuid
+  status       DocumentStatus    @default(UPLOADED)
+  note         String?
+  verifiedById String?           @map("verified_by_id") @db.Uuid
+  verifiedAt   DateTime?         @map("verified_at") @db.Timestamptz(3)
+  uploadedById String            @map("uploaded_by_id") @db.Uuid
+  createdAt    DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school     School @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  file       File   @relation("DocumentFile", fields: [fileId], references: [id], onDelete: Restrict)
+  verifiedBy User?  @relation("DocumentVerifier", fields: [verifiedById], references: [id], onDelete: Restrict)
+
+  @@index([schoolId])
+  @@index([ownerType, ownerId])
+  @@index([fileId])
+  @@index([verifiedById])
+  @@map("documents")
+}

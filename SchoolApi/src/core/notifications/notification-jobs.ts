@@ -15,9 +15,11 @@ export interface NotifyInput {
   channels?: Exclude<NotificationChannel, 'IN_APP'>[];
 }
 
-/** One-off message with no stored row (e.g. password reset codes). */
+/** One-off message with no stored row (e.g. password reset codes, OTPs). */
 export interface DirectMessageInput {
-  userId: string;
+  /** Account to reach; or give an explicit address in `to` (no account needed). */
+  userId?: string;
+  to?: { phone?: string | null; email?: string | null };
   channel: Exclude<NotificationChannel, 'IN_APP'>;
   title: string;
   body: string;

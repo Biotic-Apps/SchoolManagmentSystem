@@ -127,6 +127,7 @@ fun RoleShellScreen(
                         navController = navController,
                         startMenuId = state.menu.first().id,
                         menuIds = remember(state.menu) { state.menu.map { it.id }.toSet() },
+                        activeRole = state.activeRole,
                         content = content,
                         modifier = Modifier.padding(padding).consumeWindowInsets(padding),
                     )

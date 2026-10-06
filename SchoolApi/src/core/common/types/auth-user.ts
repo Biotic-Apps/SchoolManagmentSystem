@@ -9,6 +9,8 @@ export interface AuthUser {
   permissions: ReadonlySet<string>;
   /** Assignments of the active role only, valid right now. */
   assignments: ActiveAssignment[];
+  /** Verified children when the active role has GUARDIAN scope. */
+  studentIds?: string[];
 }
 
 export interface AuthenticatedRequest {

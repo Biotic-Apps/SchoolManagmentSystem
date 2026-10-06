@@ -9,6 +9,7 @@ import { formatDateTime, formatNumber, humanize } from "@/lib/format";
 import { useApproval } from "../api";
 import type { ApprovalRequest } from "../types";
 import { ApprovalDecisionPanel } from "./ApprovalDecisionPanel";
+import { ApprovalPayloadSummary } from "./ApprovalPayloadSummary";
 import { ApprovalSteps } from "./ApprovalSteps";
 
 interface ApprovalDetailDrawerProps {
@@ -43,6 +44,7 @@ export function ApprovalDetailDrawer({ request, onClose }: ApprovalDetailDrawerP
       {query.error && !data && <ErrorState error={query.error} onRetry={() => query.refetch()} />}
       {data && (
         <>
+          <ApprovalPayloadSummary request={data} />
           <ApprovalDecisionPanel key={data.id} request={data} />
           <ApprovalSteps request={data} />
         </>

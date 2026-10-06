@@ -30,20 +30,37 @@ model School {
   createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  logoFile         File?             @relation("SchoolLogo", fields: [logoFileId], references: [id], onDelete: Restrict)
-  branches         Branch[]
-  academicSessions AcademicSession[]
-  terms            Term[]
-  calendarEvents   CalendarEvent[]
-  classes          SchoolClass[]
-  sections         Section[]
-  subjects         Subject[]
-  classSubjects    ClassSubject[]
-  rooms            Room[]
-  roles            Role[]
-  roleAssignments  RoleAssignment[]
-  approvalRequests ApprovalRequest[]
-  files            File[]
+  logoFile              File?                  @relation("SchoolLogo", fields: [logoFileId], references: [id], onDelete: Restrict)
+  branches              Branch[]
+  academicSessions      AcademicSession[]
+  terms                 Term[]
+  calendarEvents        CalendarEvent[]
+  classes               SchoolClass[]
+  sections              Section[]
+  subjects              Subject[]
+  classSubjects         ClassSubject[]
+  rooms                 Room[]
+  roles                 Role[]
+  roleAssignments       RoleAssignment[]
+  approvalRequests      ApprovalRequest[]
+  files                 File[]
+  students              Student[]
+  enrollments           Enrollment[]
+  guardians             Guardian[]
+  studentGuardians      StudentGuardian[]
+  childLinkRequests     ChildLinkRequest[]
+  transfers             Transfer[]
+  idCards               IdCard[]
+  staff                 Staff[]
+  staffAssignments      StaffAssignment[]
+  documents             Document[]
+  admissionEnquiries    AdmissionEnquiry[]
+  admissionApplications AdmissionApplication[]
+  branchPeriods         BranchPeriod[]
+  timetables            Timetable[]
+  timetableOverrides    TimetableOverride[]
+  bookLists             BookList[]
+  syllabusPlans         SyllabusPlan[]
 
   @@index([logoFileId])
   @@map("schools")
@@ -66,16 +83,28 @@ model Branch {
   createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt       DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  school           School            @relation(fields: [schoolId], references: [id], onDelete: Restrict)
-  principal        User?             @relation("BranchPrincipal", fields: [principalUserId], references: [id], onDelete: Restrict)
-  settings         BranchSetting[]
-  academicSessions AcademicSession[]
-  terms            Term[]
-  calendarEvents   CalendarEvent[]
-  sections         Section[]
-  rooms            Room[]
-  roleAssignments  RoleAssignment[]
-  approvalRequests ApprovalRequest[]
+  school                School                 @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  principal             User?                  @relation("BranchPrincipal", fields: [principalUserId], references: [id], onDelete: Restrict)
+  settings              BranchSetting[]
+  academicSessions      AcademicSession[]
+  terms                 Term[]
+  calendarEvents        CalendarEvent[]
+  sections              Section[]
+  rooms                 Room[]
+  roleAssignments       RoleAssignment[]
+  approvalRequests      ApprovalRequest[]
+  enrollments           Enrollment[]
+  transfersOut          Transfer[]             @relation("TransferFrom")
+  transfersIn           Transfer[]             @relation("TransferTo")
+  staff                 Staff[]
+  staffAssignments      StaffAssignment[]
+  admissionEnquiries    AdmissionEnquiry[]
+  admissionApplications AdmissionApplication[]
+  periods               BranchPeriod[]
+  timetables            Timetable[]
+  timetableOverrides    TimetableOverride[]
+  bookLists             BookList[]
+  syllabusPlans         SyllabusPlan[]
 
   @@unique([schoolId, code])
   @@index([principalUserId])
@@ -110,11 +139,18 @@ model AcademicSession {
   createdAt   DateTime              @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime              @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  school         School          @relation(fields: [schoolId], references: [id], onDelete: Restrict)
-  branch         Branch          @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  terms          Term[]
-  calendarEvents CalendarEvent[]
-  sections       Section[]
+  school                School                 @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch                Branch                 @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  terms                 Term[]
+  calendarEvents        CalendarEvent[]
+  sections              Section[]
+  enrollments           Enrollment[]
+  staffAssignments      StaffAssignment[]
+  admissionEnquiries    AdmissionEnquiry[]
+  admissionApplications AdmissionApplication[]
+  timetables            Timetable[]
+  bookLists             BookList[]
+  syllabusPlans         SyllabusPlan[]
 
   @@unique([branchId, name])
   @@unique([branchId], map: "academic_sessions_one_active_per_branch", where: raw("status = 'ACTIVE'::academic_session_status"))
@@ -184,9 +220,12 @@ model SchoolClass {
   createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  school   School         @relation(fields: [schoolId], references: [id], onDelete: Restrict)
-  sections Section[]
-  subjects ClassSubject[]
+  school                School                 @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  sections              Section[]
+  subjects              ClassSubject[]
+  admissionEnquiries    AdmissionEnquiry[]
+  admissionApplications AdmissionApplication[]
+  bookLists             BookList[]
 
   @@unique([schoolId, name])
   @@map("classes")
@@ -208,12 +247,18 @@ model Section {
   createdAt           DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt           DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  school          School           @relation(fields: [schoolId], references: [id], onDelete: Restrict)
-  branch          Branch           @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  session         AcademicSession  @relation(fields: [sessionId], references: [id], onDelete: Restrict)
-  schoolClass     SchoolClass      @relation(fields: [classId], references: [id], onDelete: Restrict)
-  room            Room?            @relation(fields: [roomId], references: [id], onDelete: Restrict)
-  roleAssignments RoleAssignment[]
+  school             School              @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch             Branch              @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  session            AcademicSession     @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  schoolClass        SchoolClass         @relation(fields: [classId], references: [id], onDelete: Restrict)
+  room               Room?               @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  roleAssignments    RoleAssignment[]
+  classTeacher       Staff?              @relation(fields: [classTeacherStaffId], references: [id], onDelete: Restrict)
+  enrollments        Enrollment[]
+  staffAssignments   StaffAssignment[]
+  timetables         Timetable[]
+  timetableOverrides TimetableOverride[]
+  syllabusPlans      SyllabusPlan[]
 
   @@unique([sessionId, classId, name])
   @@index([schoolId])
@@ -235,9 +280,13 @@ model Subject {
   createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  school          School           @relation(fields: [schoolId], references: [id], onDelete: Restrict)
-  classes         ClassSubject[]
-  roleAssignments RoleAssignment[]
+  school           School            @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  classes          ClassSubject[]
+  roleAssignments  RoleAssignment[]
+  staffAssignments StaffAssignment[]
+  timetableSlots   TimetableSlot[]
+  bookListItems    BookListItem[]
+  syllabusPlans    SyllabusPlan[]
 
   @@unique([schoolId, code])
   @@map("subjects")
@@ -276,9 +325,10 @@ model Room {
   createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  school   School    @relation(fields: [schoolId], references: [id], onDelete: Restrict)
-  branch   Branch    @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  sections Section[]
+  school         School          @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch         Branch          @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  sections       Section[]
+  timetableSlots TimetableSlot[]
 
   @@unique([branchId, name])
   @@index([schoolId])

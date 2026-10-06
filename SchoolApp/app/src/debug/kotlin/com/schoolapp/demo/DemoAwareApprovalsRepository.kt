@@ -21,7 +21,7 @@ class DemoAwareApprovalsRepository @Inject constructor(
     private val auth: DemoAwareAuthRepository,
 ) : ApprovalsRepository {
 
-    private val demoItems = MutableStateFlow(DemoData.approvals)
+    private val demoItems = MutableStateFlow(DemoPhase2Approvals.items + DemoData.approvals)
     private val demoChanges = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     override val changes: Flow<Unit> = merge(real.changes, demoChanges)

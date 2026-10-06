@@ -5,4 +5,8 @@ export class DashboardSummaryDto {
   activeSessions!: number;
   sections!: number;
   pendingApprovals!: number;
+  students!: number;
+  staff!: number;
+  pendingAdmissions!: number;
+  pendingChildLinks!: number;
 }

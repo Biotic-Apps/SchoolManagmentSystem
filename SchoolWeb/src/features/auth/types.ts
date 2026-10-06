@@ -20,12 +20,16 @@ export interface Assignment {
   validUntil: string | null;
 }
 
+/** GET /me children (PARENT): students with a VERIFIED guardian link. */
 export interface ChildSummary {
   id: string;
   name: string;
+  admissionNo?: string | null;
+  photoUrl?: string | null;
   className?: string | null;
   sectionName?: string | null;
   branchName?: string | null;
+  sessionName?: string | null;
 }
 
 /** GET /me */

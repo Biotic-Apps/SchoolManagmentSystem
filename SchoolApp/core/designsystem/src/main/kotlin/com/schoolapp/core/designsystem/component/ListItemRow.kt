@@ -33,6 +33,7 @@ fun ListItemRow(
     selected: Boolean = false,
     onClick: (() -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
+    leading: (@Composable () -> Unit)? = null,
 ) {
     val clickModifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
     Row(
@@ -44,7 +45,10 @@ fun ListItemRow(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (leadingIcon != null) {
+        if (leading != null) {
+            leading()
+            Spacer(Modifier.width(16.dp))
+        } else if (leadingIcon != null) {
             Icon(
                 imageVector = leadingIcon,
                 contentDescription = null,

@@ -17,6 +17,7 @@ export function toApprovalDto(
     status: row.status,
     currentStep: row.currentStep,
     createdAt: row.createdAt.toISOString(),
+    payload: row.payload,
     ...(withSteps && {
       steps: row.steps.map((step) => ({
         order: step.order,

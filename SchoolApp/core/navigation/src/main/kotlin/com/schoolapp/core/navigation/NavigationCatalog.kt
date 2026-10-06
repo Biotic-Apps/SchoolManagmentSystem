@@ -26,7 +26,7 @@ object NavigationCatalog {
         is RoleKey -> defaultOrder(role)
             .mapNotNull(byId::get)
             .filter { session.has(it.permission) }
-            .map { it.copy(label = labelFor(role, it.id)) }
+            .map { it.copy(label = labelFor(role, it.id), shortLabel = RoleShortLabelOverrides[role]?.get(it.id) ?: it.shortLabel) }
         is CustomRole -> entries.filter { session.has(it.permission) }
     }
 }

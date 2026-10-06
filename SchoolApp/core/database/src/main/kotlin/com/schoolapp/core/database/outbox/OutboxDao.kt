@@ -36,6 +36,9 @@ interface OutboxDao {
     @Query("SELECT * FROM outbox WHERE status = 'NEEDS_ATTENTION' ORDER BY id ASC")
     fun observeNeedsAttention(): Flow<List<OutboxEntity>>
 
+    @Query("SELECT * FROM outbox WHERE type = :type ORDER BY id ASC")
+    fun observeByType(type: String): Flow<List<OutboxEntity>>
+
     @Query("DELETE FROM outbox")
     suspend fun clear()
 }

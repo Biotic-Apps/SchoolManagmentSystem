@@ -21,4 +21,9 @@
     <string name="approvals_decided_approved">Request approved.</string>
     <string name="approvals_decided_rejected">Request rejected.</string>
     <string name="approvals_decided_returned">Request returned to the requester.</string>
+    <string name="approvals_details">Request details</string>
+    <string name="approvals_details_syllabus">Syllabus plan</string>
+    <string name="approvals_details_child_link">Child link request</string>
+    <string name="approvals_details_contact">Requested contact change</string>
+    <string name="approvals_details_probation">Work awaiting review</string>
 </resources>

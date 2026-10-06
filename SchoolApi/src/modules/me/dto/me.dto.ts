@@ -11,9 +11,12 @@ export class MeUserDto {
 export class MeChildDto {
   id!: string;
   name!: string;
+  admissionNo!: string;
+  photoUrl!: string | null;
   className!: string;
   sectionName!: string;
   branchName!: string;
+  sessionName!: string;
 }
 
 export class MeDto {
@@ -22,6 +25,6 @@ export class MeDto {
   roles!: string[];
   permissions!: string[];
   assignments!: AssignmentDto[];
-  /** PARENT only; empty until Phase 2. */
+  /** Verified children when the user holds PARENT. */
   children!: MeChildDto[];
 }

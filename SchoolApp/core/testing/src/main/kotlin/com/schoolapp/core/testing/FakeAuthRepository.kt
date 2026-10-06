@@ -30,7 +30,9 @@ class FakeAuthRepository(initial: SessionContext? = null) : AuthRepository {
 
     override suspend fun switchRole(role: RoleRef): AppResult<Unit> = result()
 
-    override suspend fun selectChild(childId: String) = Unit
+    override suspend fun selectChild(childId: String) {
+        sessionState.value = sessionState.value?.copy(activeChildId = childId)
+    }
 
     override suspend fun changePassword(currentPassword: String, newPassword: String): AppResult<Unit> {
         changePasswordCalls += currentPassword to newPassword

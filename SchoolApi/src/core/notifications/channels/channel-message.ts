@@ -1,5 +1,5 @@
 export interface ChannelMessage {
-  userId: string;
+  userId?: string;
   title: string;
   body: string;
   data?: Record<string, unknown>;

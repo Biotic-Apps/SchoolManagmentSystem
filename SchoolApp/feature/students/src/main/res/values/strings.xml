@@ -1,0 +1,84 @@
+<resources>
+    <string name="students_my_sections">My sections</string>
+    <string name="students_sections">Sections</string>
+    <string name="students_sections_empty">No sections assigned to you yet</string>
+    <string name="students_search_hint">Search by name or admission no</string>
+    <string name="students_search_empty">No students match your search</string>
+    <string name="students_roster_empty">No students enrolled in this section</string>
+    <string name="students_roll_no">Roll %1$d</string>
+    <string name="students_detail_title">Student</string>
+    <string name="students_profile">Profile</string>
+    <string name="students_admission_no">Admission no</string>
+    <string name="students_class">Class</string>
+    <string name="students_roll">Roll no</string>
+    <string name="students_dob">Date of birth</string>
+    <string name="students_gender">Gender</string>
+    <string name="students_bform">B-Form</string>
+    <string name="students_address">Address</string>
+    <string name="students_admission_date">Admission date</string>
+    <string name="students_branch">Branch</string>
+    <string name="students_guardians">Parents &amp; guardians</string>
+    <string name="students_guardians_empty">No guardians on record</string>
+    <string name="students_primary">Primary</string>
+    <string name="students_call">Call %1$s</string>
+    <string name="students_sms">Message %1$s</string>
+    <string name="students_documents">Documents</string>
+    <string name="students_documents_empty">No documents uploaded</string>
+    <string name="students_open_document">Open %1$s</string>
+    <string name="students_enrollment">Enrollment</string>
+    <string name="students_session">Session</string>
+    <string name="students_started">Started</string>
+    <string name="students_status">Status</string>
+    <string name="students_no_enrollment">Not enrolled in the current session</string>
+    <string name="students_child_title">Child profile</string>
+    <string name="students_no_children_title">No linked children</string>
+    <string name="students_no_children_message">Link your child with their admission number and date of birth.</string>
+    <string name="students_request_correction">Request correction</string>
+    <string name="students_link_child">Link another child</string>
+    <string name="students_contact_title">Update my contact details</string>
+    <string name="students_contact_hint">The school reviews changes before they replace your current details. Fill only what should change.</string>
+    <string name="students_contact_phone">New phone</string>
+    <string name="students_contact_email">New email</string>
+    <string name="students_contact_address">New address</string>
+    <string name="students_contact_submit">Send for approval</string>
+    <string name="students_contact_sent">Sent. The school will review your change.</string>
+    <string name="students_contact_empty">Enter at least one detail to change</string>
+    <string name="students_contact_phone_invalid">Enter a valid phone number</string>
+    <string name="students_contact_email_invalid">Enter a valid email</string>
+    <string name="students_link_title">Link another child</string>
+    <string name="students_link_intro">Enter the details from the school record. We send a code to the phone the school has on file.</string>
+    <string name="students_link_admission">Admission number</string>
+    <string name="students_link_dob">Child\'s date of birth</string>
+    <string name="students_link_relation">Your relation</string>
+    <string name="students_link_send_code">Send code</string>
+    <string name="students_link_code">Verification code</string>
+    <string name="students_link_code_sent">Code sent to %1$s</string>
+    <string name="students_link_code_sent_generic">Code sent to the phone on the school record</string>
+    <string name="students_link_verify">Verify and send request</string>
+    <string name="students_link_done">Request sent. The school will approve the link, then the child appears in your switcher.</string>
+    <string name="students_link_done_action">Done</string>
+    <string name="students_link_dev_code">Development code: %1$s</string>
+    <string name="students_error_admission_required">Enter the admission number</string>
+    <string name="students_error_dob_required">Choose the date of birth</string>
+    <string name="students_error_dob_future">Date of birth cannot be in the future</string>
+    <string name="students_error_relation_required">Choose your relation</string>
+    <string name="students_error_code_invalid">Enter the 4 to 8 digit code</string>
+    <string name="students_select_date">Select date</string>
+    <string name="students_guardians_title">Parents &amp; guardians</string>
+    <string name="students_tab_link_requests">Link requests</string>
+    <string name="students_tab_guardians">Guardians</string>
+    <string name="students_link_requests_empty">No pending link requests</string>
+    <string name="students_guardians_list_empty">No guardians found</string>
+    <string name="students_link_requests_hint">Approve or reject link requests from Approvals.</string>
+    <string name="students_has_account">Has app account</string>
+    <string-array name="students_relations">
+        <item>Father</item>
+        <item>Mother</item>
+        <item>Guardian</item>
+        <item>Other</item>
+    </string-array>
+    <plurals name="students_count">
+        <item quantity="one">%1$d student</item>
+        <item quantity="other">%1$d students</item>
+    </plurals>
+</resources>

@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.schoolapp.core.model.RoleRef
 import com.schoolapp.core.navigation.MenuDestination
 import com.schoolapp.feature.home.ShellContent
 import com.schoolapp.feature.home.ShellNavigator
@@ -16,10 +17,11 @@ internal fun ShellNavHost(
     navController: NavHostController,
     startMenuId: String,
     menuIds: Set<String>,
+    activeRole: RoleRef,
     content: ShellContent,
     modifier: Modifier = Modifier,
 ) {
-    val navigator = remember(navController, menuIds) { ShellNavigator(navController, menuIds) }
+    val navigator = remember(navController, menuIds, activeRole) { ShellNavigator(navController, menuIds, activeRole) }
     NavHost(
         navController = navController,
         startDestination = MenuDestination(startMenuId),

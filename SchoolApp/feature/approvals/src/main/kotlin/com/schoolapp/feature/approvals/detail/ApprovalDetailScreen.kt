@@ -25,6 +25,7 @@ import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.approvals.R
 import com.schoolapp.feature.approvals.detail.components.ApprovalStepsCard
 import com.schoolapp.feature.approvals.detail.components.ApprovalSummaryCard
+import com.schoolapp.feature.approvals.detail.components.RequestDetailsCard
 import com.schoolapp.feature.approvals.detail.components.decidedMessageRes
 
 @Composable
@@ -61,6 +62,7 @@ fun ApprovalDetailScreen(
                 state.decided?.let { item(key = "decided") { InlineMessage(stringResource(decidedMessageRes(it)), StatusTone.Success) } }
                 state.decideError?.let { item(key = "error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
                 item(key = "summary") { ApprovalSummaryCard(request) }
+                if (request.details.isNotEmpty()) item(key = "details") { RequestDetailsCard(request.type, request.details) }
                 if (request.steps.isNotEmpty()) item(key = "steps") { ApprovalStepsCard(request.steps) }
                 if (state.showActions) {
                     item(key = "comment") {

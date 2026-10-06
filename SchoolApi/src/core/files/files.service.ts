@@ -11,6 +11,12 @@ import { StorageDriver } from './storage/storage-driver';
 import { checkUpload, type UploadCandidate } from './upload-policy';
 import { UrlSigner, type SignedUrl } from './url-signer';
 
+const IMAGE_PURPOSES = new Set<FilePurpose>([
+  'SCHOOL_LOGO',
+  'STUDENT_PHOTO',
+  'STAFF_PHOTO',
+]);
+
 @Injectable()
 export class FilesService {
   constructor(
@@ -27,7 +33,7 @@ export class FilesService {
     purpose: FilePurpose,
   ): Promise<FileUploadedDto> {
     if (!file) throw invalid('file is required');
-    const extension = checkUpload(file, purpose === 'SCHOOL_LOGO');
+    const extension = checkUpload(file, IMAGE_PURPOSES.has(purpose));
     const id = randomUUID();
     const now = new Date();
     const storageKey = `${now.getUTCFullYear()}/${now.getUTCMonth() + 1}/${id}.${extension}`;

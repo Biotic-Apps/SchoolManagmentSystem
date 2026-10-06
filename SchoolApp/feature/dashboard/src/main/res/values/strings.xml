@@ -12,4 +12,13 @@
     <string name="dashboard_metric_sessions">Active sessions</string>
     <string name="dashboard_metric_sections">Sections</string>
     <string name="dashboard_metric_approvals">Pending approvals</string>
+    <string name="dashboard_metric_students">Students</string>
+    <string name="dashboard_metric_staff">Staff</string>
+    <string name="dashboard_metric_admissions">Pending admissions</string>
+    <string name="dashboard_metric_child_links">Child link requests</string>
+    <string name="dashboard_today_periods">Today\'s periods</string>
+    <string name="dashboard_no_periods_today">No periods today</string>
+    <string name="dashboard_open_timetable">Open timetable</string>
+    <string name="dashboard_now">Now</string>
+    <string name="dashboard_substitute">Substitute</string>
 </resources>

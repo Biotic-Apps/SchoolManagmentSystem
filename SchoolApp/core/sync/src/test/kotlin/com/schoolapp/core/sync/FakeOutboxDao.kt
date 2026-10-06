@@ -39,6 +39,9 @@ class FakeOutboxDao(entries: List<OutboxEntity>) : OutboxDao {
     override fun observeNeedsAttention(): Flow<List<OutboxEntity>> =
         rows.map { m -> m.values.filter { it.status == OutboxStatus.NEEDS_ATTENTION } }
 
+    override fun observeByType(type: String): Flow<List<OutboxEntity>> =
+        rows.map { m -> m.values.filter { it.type == type }.sortedBy { it.id } }
+
     override suspend fun clear() {
         rows.value = emptyMap()
     }

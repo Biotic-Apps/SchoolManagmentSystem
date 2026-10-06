@@ -11,6 +11,9 @@ export const CurrentScope = createParamDecorator(
     if (!request.user) {
       throw new AppError(ErrorCode.UNAUTHENTICATED, 'Not authenticated');
     }
-    return ScopeService.resolve(request.user.assignments);
+    return ScopeService.resolve(
+      request.user.assignments,
+      request.user.studentIds,
+    );
   },
 );

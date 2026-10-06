@@ -11,7 +11,8 @@ export function toSectionDto(row: SectionRow): SectionDto {
     name: row.name,
     capacity: row.capacity,
     room: row.room,
-    studentCount: 0,
+    classTeacher: row.classTeacher,
+    studentCount: row._count.enrollments,
     status: row.status,
   };
 }

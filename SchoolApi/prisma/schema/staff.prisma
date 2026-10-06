@@ -1,0 +1,101 @@
+enum StaffStatus {
+  ACTIVE
+  ON_LEAVE
+  RESIGNED
+  TERMINATED
+
+  @@map("staff_status")
+}
+
+enum StaffAssignmentKind {
+  CLASS_TEACHER
+  SUBJECT_TEACHER
+  HELPER
+  COORDINATOR
+  HEAD_TEACHER
+
+  @@map("staff_assignment_kind")
+}
+
+model Staff {
+  id                  String      @id @default(uuid(7)) @db.Uuid
+  schoolId            String      @map("school_id") @db.Uuid
+  branchId            String      @map("branch_id") @db.Uuid
+  userId              String?     @unique @map("user_id") @db.Uuid
+  name                String
+  email               String?
+  phone               String?
+  employeeNo          String?     @map("employee_no")
+  designation         String
+  joinDate            DateTime    @map("join_date") @db.Date
+  cnic                String?
+  qualification       String?
+  photoFileId         String?     @map("photo_file_id") @db.Uuid
+  status              StaffStatus @default(ACTIVE)
+  statusReason        String?     @map("status_reason")
+  statusEffectiveDate DateTime?   @map("status_effective_date") @db.Date
+  requiresReview      Boolean     @default(false) @map("requires_review")
+  reviewerUserId      String?     @map("reviewer_user_id") @db.Uuid
+  createdById         String?     @map("created_by_id") @db.Uuid
+  updatedById         String?     @map("updated_by_id") @db.Uuid
+  createdAt           DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school         School              @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch         Branch              @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  user           User?               @relation("StaffUser", fields: [userId], references: [id], onDelete: Restrict)
+  reviewer       User?               @relation("StaffReviewer", fields: [reviewerUserId], references: [id], onDelete: Restrict)
+  photoFile      File?               @relation("StaffPhoto", fields: [photoFileId], references: [id], onDelete: Restrict)
+  assignments    StaffAssignment[]   @relation("AssignmentStaff")
+  responsibleFor StaffAssignment[]   @relation("AssignmentResponsible")
+  classTeacherOf Section[]
+  timetableSlots TimetableSlot[]
+  substituteFor  TimetableOverride[] @relation("OverrideSubstitute")
+  replacedIn     TimetableOverride[] @relation("OverrideOriginal")
+
+  @@unique([schoolId, employeeNo])
+  @@index([branchId, status])
+  @@index([reviewerUserId])
+  @@index([photoFileId])
+  @@map("staff")
+}
+
+model StaffAssignment {
+  id                 String              @id @default(uuid(7)) @db.Uuid
+  schoolId           String              @map("school_id") @db.Uuid
+  branchId           String              @map("branch_id") @db.Uuid
+  sessionId          String              @map("session_id") @db.Uuid
+  staffId            String              @map("staff_id") @db.Uuid
+  kind               StaffAssignmentKind
+  sectionId          String?             @map("section_id") @db.Uuid
+  subjectId          String?             @map("subject_id") @db.Uuid
+  responsibleStaffId String?             @map("responsible_staff_id") @db.Uuid
+  isSubstitute       Boolean             @default(false) @map("is_substitute")
+  validFrom          DateTime            @default(now()) @map("valid_from") @db.Timestamptz(3)
+  validUntil         DateTime?           @map("valid_until") @db.Timestamptz(3)
+  endedAt            DateTime?           @map("ended_at") @db.Timestamptz(3)
+  roleAssignmentId   String?             @unique @map("role_assignment_id") @db.Uuid
+  createdById        String?             @map("created_by_id") @db.Uuid
+  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime            @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school           School          @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  branch           Branch          @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  session          AcademicSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  staff            Staff           @relation("AssignmentStaff", fields: [staffId], references: [id], onDelete: Restrict)
+  section          Section?        @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+  subject          Subject?        @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  responsibleStaff Staff?          @relation("AssignmentResponsible", fields: [responsibleStaffId], references: [id], onDelete: Restrict)
+  roleAssignment   RoleAssignment? @relation(fields: [roleAssignmentId], references: [id], onDelete: Restrict)
+
+  @@unique([sessionId, sectionId], map: "staff_assignments_one_class_teacher", where: raw("kind = 'CLASS_TEACHER'::staff_assignment_kind AND ended_at IS NULL"))
+  @@unique([sectionId, subjectId], map: "staff_assignments_one_subject_teacher", where: raw("kind = 'SUBJECT_TEACHER'::staff_assignment_kind AND NOT is_substitute AND ended_at IS NULL"))
+  @@index([schoolId])
+  @@index([branchId, sessionId])
+  @@index([staffId, endedAt])
+  @@index([sectionId])
+  @@index([subjectId])
+  @@index([responsibleStaffId])
+  @@index([validUntil])
+  @@map("staff_assignments")
+}

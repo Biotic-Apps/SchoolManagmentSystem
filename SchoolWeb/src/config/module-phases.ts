@@ -11,6 +11,12 @@ export const BUILT_MODULES: ReadonlySet<NavId> = new Set<NavId>([
   "classes",
   "approvals",
   "profile",
+  "admissions",
+  "students",
+  "guardians",
+  "staff",
+  "timetable",
+  "syllabus",
 ]);
 
 // Delivery phase for each menu module, per docs/PROGRESS.md.

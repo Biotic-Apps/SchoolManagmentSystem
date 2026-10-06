@@ -4,7 +4,9 @@ import { OptionSelect } from "@/components/shared/OptionSelect";
 import type { BranchPicker } from "../use-branch-picker";
 
 /** Branch selector bound to useBranchPicker; renders nothing when only one branch is in scope. */
-export function BranchPickerSelect({ picker, className = "md:w-64" }: { picker: BranchPicker; className?: string }) {
+type PickerProps = Pick<BranchPicker, "showPicker" | "options" | "branchId"> & { setBranchId: (id: string) => void };
+
+export function BranchPickerSelect({ picker, className = "md:w-64" }: { picker: PickerProps; className?: string }) {
   if (!picker.showPicker) return null;
   return (
     <OptionSelect

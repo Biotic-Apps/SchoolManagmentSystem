@@ -13,4 +13,8 @@
     <string name="ds_switch_branch">Switch branch</string>
     <string name="ds_back">Back</string>
     <string name="ds_error_title">Something went wrong</string>
+    <string name="ds_photo_of">Photo of %1$s</string>
+    <string name="ds_search">Search</string>
+    <string name="ds_clear_search">Clear search</string>
+    <string name="ds_percent">%1$d%%</string>
 </resources>

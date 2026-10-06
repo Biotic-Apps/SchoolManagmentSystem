@@ -75,6 +75,7 @@ export class JwtAuthGuard implements CanActivate {
       roles: access.roles,
       permissions: access.permissions,
       assignments: access.assignments,
+      studentIds: access.studentIds,
     };
     const store = requestContext.getStore();
     if (store) store.actorId = claims.sub;

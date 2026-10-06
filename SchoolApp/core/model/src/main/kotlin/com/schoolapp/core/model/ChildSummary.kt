@@ -7,4 +7,6 @@ data class ChildSummary(
     val sectionName: String? = null,
     val branchName: String? = null,
     val photoUrl: String? = null,
+    val admissionNo: String? = null,
+    val sessionName: String? = null,
 )

@@ -24,7 +24,19 @@ sealed interface DashboardUiState {
         val roleName: String?,
         val branchName: String?,
         val schoolName: String?,
+        /** Teacher/helper only: today's periods from `/timetables/me`; null for other roles. */
+        val todayPeriods: List<TodayPeriod>? = null,
     ) : DashboardUiState
 
     data class Error(val error: AppError) : DashboardUiState
 }
+
+@Immutable
+data class TodayPeriod(
+    val periodIndex: Int,
+    val timeRange: String,
+    val title: String,
+    val subtitle: String?,
+    val isSubstitute: Boolean,
+    val isCurrent: Boolean,
+)

@@ -12,7 +12,6 @@ import com.schoolapp.core.model.organisation.BranchSetting
 import com.schoolapp.core.model.organisation.BranchTimings
 import com.schoolapp.core.model.organisation.CalendarEvent
 import com.schoolapp.core.model.organisation.SchoolClass
-import com.schoolapp.core.model.organisation.Section
 import com.schoolapp.core.model.organisation.Subject
 import com.schoolapp.core.model.profile.DeviceSession
 
@@ -25,7 +24,9 @@ internal object DemoData {
 
     val metrics = listOf(
         DashboardMetric("schools", 1), DashboardMetric("branches", 2), DashboardMetric("users", 24),
-        DashboardMetric("activeSessions", 2), DashboardMetric("sections", 18), DashboardMetric("pendingApprovals", 2),
+        DashboardMetric("activeSessions", 2), DashboardMetric("sections", 4), DashboardMetric("pendingApprovals", 6),
+        DashboardMetric("students", 40), DashboardMetric("staff", 7), DashboardMetric("pendingAdmissions", 4),
+        DashboardMetric("pendingChildLinks", 1),
     )
 
     val approvals = listOf(
@@ -89,14 +90,11 @@ internal object DemoData {
 
     val classes = listOf(
         SchoolClass("demo-c-1", "Class 1", 1, 5), SchoolClass("demo-c-2", "Class 2", 2, 5),
+        SchoolClass("demo-c-4", "Class 4", 4, 7),
         SchoolClass("demo-c-5", "Class 5", 5, 7),
     )
 
-    val sections = listOf(
-        Section("demo-sec-1", "demo-c-1", "Class 1", "A", 30, "Room 3", 0, "ACTIVE"),
-        Section("demo-sec-2", "demo-c-2", "Class 2", "B", 30, "Room 7", 0, "ACTIVE"),
-        Section("demo-sec-3", "demo-c-5", "Class 5", "A", 35, "Room 12", 0, "ACTIVE"),
-    )
+    val sections = DemoPeopleData.sections
 
     val subjects = listOf(
         Subject("demo-sub-1", "ENG", "English"), Subject("demo-sub-2", "MATH", "Mathematics"),

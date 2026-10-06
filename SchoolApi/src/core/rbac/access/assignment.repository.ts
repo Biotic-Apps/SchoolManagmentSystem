@@ -43,6 +43,14 @@ export class AssignmentRepository {
     }));
   }
 
+  async verifiedStudentIds(userId: string): Promise<string[]> {
+    const rows = await this.prisma.studentGuardian.findMany({
+      where: { status: 'VERIFIED', guardian: { userId, status: 'ACTIVE' } },
+      select: { studentId: true },
+    });
+    return [...new Set(rows.map((row) => row.studentId))];
+  }
+
   async permissionsOfRole(roleId: string): Promise<string[]> {
     const rows = await this.prisma.rolePermission.findMany({
       where: { roleId },

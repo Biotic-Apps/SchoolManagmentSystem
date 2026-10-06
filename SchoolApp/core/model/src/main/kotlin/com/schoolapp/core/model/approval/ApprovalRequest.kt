@@ -11,4 +11,6 @@ data class ApprovalRequest(
     val currentStep: Int?,
     val createdAt: String?,
     val steps: List<ApprovalStep> = emptyList(),
+    /** Flattened request payload (key -> display value) for the type-specific summary. */
+    val details: List<Pair<String, String>> = emptyList(),
 )

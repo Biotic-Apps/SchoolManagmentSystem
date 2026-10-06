@@ -1,0 +1,29 @@
+<resources>
+    <string name="staff_search_hint">Search staff</string>
+    <string name="staff_empty">No staff found</string>
+    <string name="staff_detail_title">Staff member</string>
+    <string name="staff_on_probation">On probation</string>
+    <string name="staff_profile">Profile</string>
+    <string name="staff_employee_no">Employee no</string>
+    <string name="staff_designation">Designation</string>
+    <string name="staff_branch">Branch</string>
+    <string name="staff_email">Email</string>
+    <string name="staff_phone">Phone</string>
+    <string name="staff_qualification">Qualification</string>
+    <string name="staff_join_date">Joined</string>
+    <string name="staff_roles">Roles</string>
+    <string name="staff_probation">Probation</string>
+    <string name="staff_probation_reviewer">Reviewer: %1$s</string>
+    <string name="staff_probation_on">Work is reviewed before it applies</string>
+    <string name="staff_probation_off">Not on probation</string>
+    <string name="staff_workload">Workload</string>
+    <string name="staff_periods_week">Periods per week</string>
+    <string name="staff_sections">Sections</string>
+    <string name="staff_subjects">Subjects</string>
+    <string name="staff_assignments">Assignments</string>
+    <string name="staff_assignments_empty">No current assignments</string>
+    <string name="staff_substitute_until">Substitute until %1$s</string>
+    <string name="staff_responsible">Responsible: %1$s</string>
+    <string name="staff_counts">%1$d sections · %2$d subjects</string>
+    <string name="staff_web_hint">Assignments and probation are changed on the web panel.</string>
+</resources>

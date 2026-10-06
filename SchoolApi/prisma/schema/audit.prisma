@@ -64,6 +64,9 @@ enum FilePurpose {
   SCHOOL_LOGO
   DOCUMENT
   ATTACHMENT
+  STUDENT_PHOTO
+  STAFF_PHOTO
+  ID_CARD
 
   @@map("file_purpose")
 }
@@ -213,9 +216,13 @@ model File {
   archivedAt   DateTime?      @map("archived_at") @db.Timestamptz(3)
   createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
 
-  school      School?  @relation(fields: [schoolId], references: [id], onDelete: Restrict)
-  uploadedBy  User     @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
-  schoolLogos School[] @relation("SchoolLogo")
+  school        School?    @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  uploadedBy    User       @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  schoolLogos   School[]   @relation("SchoolLogo")
+  studentPhotos Student[]  @relation("StudentPhoto")
+  staffPhotos   Staff[]    @relation("StaffPhoto")
+  documents     Document[] @relation("DocumentFile")
+  idCards       IdCard[]   @relation("IdCardFile")
 
   @@index([schoolId])
   @@index([uploadedById])

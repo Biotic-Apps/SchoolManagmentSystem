@@ -20,8 +20,8 @@ internal object DemoSessions {
     val roles: List<RoleRef> = RoleKey.entries + FrontDesk
 
     private val children = listOf(
-        ChildSummary("demo-child-1", "Ayesha Khan", "Class 5", "A", "Main Branch"),
-        ChildSummary("demo-child-2", "Omar Khan", "Class 2", "B", "Main Branch"),
+        ChildSummary(DemoPeopleData.CHILD_1, "Ayesha Khan", "Class 5", "A", "Main Branch", null, "BS-2026-0010", "2026-27"),
+        ChildSummary(DemoPeopleData.CHILD_2, "Omar Khan", "Class 4", "B", "Main Branch", null, "BS-2026-0040", "2026-27"),
     )
 
     private val approvers = setOf(RoleKey.SUPER_ADMIN, RoleKey.PRINCIPAL, RoleKey.COORDINATOR, RoleKey.HEAD_TEACHER)
@@ -58,11 +58,18 @@ internal object DemoSessions {
     private fun permissionsFor(role: RoleRef): Set<Permission> = when (role) {
         is RoleKey -> {
             val menu = NavigationCatalog.defaultOrder(role).mapNotNull { NavigationCatalog.find(it)?.permission }
-            val extra = if (role in approvers) listOf(Permission("approvals.approve")) else emptyList()
-            (menu + extra).toSet()
+            val extra = (if (role in approvers) listOf("approvals.approve") else emptyList()) + extraPermissions[role].orEmpty()
+            (menu + extra.map(::Permission)).toSet()
         }
         is CustomRole -> frontDeskPermissions.map(::Permission).toSet()
     }
+
+    /** Action permissions used inside Phase 2 screens (not menu entries). */
+    private val extraPermissions: Map<RoleKey, List<String>> = mapOf(
+        RoleKey.TEACHER to listOf("syllabus.edit", "students.view"),
+        RoleKey.PRINCIPAL to listOf("admissions.approve", "syllabus.approve"),
+        RoleKey.COORDINATOR to listOf("syllabus.approve"),
+    )
 
     private fun scopeFor(role: RoleRef) = when (role) {
         RoleKey.SUPER_ADMIN -> ScopeType.GLOBAL

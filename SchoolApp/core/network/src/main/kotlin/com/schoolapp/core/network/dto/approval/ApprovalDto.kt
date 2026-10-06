@@ -2,6 +2,7 @@ package com.schoolapp.core.network.dto.approval
 
 import com.schoolapp.core.network.dto.common.IdNameDto
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 
 @Serializable
 data class ApprovalDto(
@@ -16,4 +17,5 @@ data class ApprovalDto(
     val currentStep: Int? = null,
     val createdAt: String? = null,
     val steps: List<ApprovalStepDto>? = null,
+    val payload: JsonObject? = null,
 )
