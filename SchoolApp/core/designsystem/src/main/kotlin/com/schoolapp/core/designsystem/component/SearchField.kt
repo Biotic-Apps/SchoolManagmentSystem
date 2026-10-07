@@ -1,7 +1,5 @@
 package com.schoolapp.core.designsystem.component
 
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Search
@@ -28,8 +26,9 @@ fun SearchField(
         onValueChange = onValueChange,
         label = placeholder,
         modifier = modifier,
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = { onSearch() }),
+        kind = FieldKind.Text,
+        imeAction = ImeAction.Search,
+        onImeAction = onSearch,
         leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, tint = AppColors.TextSecondary) },
         trailingIcon = if (value.isNotEmpty()) {
             {

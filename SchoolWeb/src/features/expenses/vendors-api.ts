@@ -13,9 +13,10 @@ export function useVendors(params: Query = {}, enabled = true) {
   });
 }
 
-export function useCreateVendor() {
+/** A global admin names the school; scoped users may leave it out. */
+export function useCreateVendor(schoolId: string | null = null) {
   return useApiMutation({
-    mutationFn: async (input: VendorInput) => (await http.post<Vendor>("/vendors", input)).data,
+    mutationFn: async (input: VendorInput) => (await http.post<Vendor>("/vendors", schoolId ? { ...input, schoolId } : input)).data,
     invalidate: [expenseKeys.all],
     success: (vendor) => `${vendor.name} added`,
     toastError: false,

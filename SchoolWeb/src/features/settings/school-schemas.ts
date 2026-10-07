@@ -11,7 +11,7 @@ export const schoolSettingsSchema = z.object({
   primaryColor: z
     .string()
     .trim()
-    .refine(isHexColor, "Enter a hex colour like #7A2944")
+    .refine(isHexColor, "Enter a hex colour like #0B7F74")
     .refine(passesContrast, "Pick a darker colour so white text on it stays readable"),
   receiptFooter: optionalText(FOOTER_MAX),
   reportCardFooter: optionalText(FOOTER_MAX),

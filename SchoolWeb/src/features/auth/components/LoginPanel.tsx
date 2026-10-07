@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Smartphone } from "lucide-react";
+import { OrDivider } from "@/components/shared/OrDivider";
 import { Button } from "@/components/ui/Button";
 import { useLoginForm } from "../use-login-form";
 import { AuthFooterLink } from "./AuthFooterLink";
@@ -34,7 +35,8 @@ export function LoginPanel() {
         description="For parents: we send a one-time code by SMS to your mobile number."
       >
         <PhoneLoginForm onChallenge={setOtpChallengeId} />
-        <Button variant="secondary" size="lg" className="mt-3 w-full" onClick={() => setWithPhone(false)}>
+        <OrDivider />
+        <Button variant="secondary" size="lg" className="w-full" onClick={() => setWithPhone(false)}>
           Sign in with password
         </Button>
       </AuthLayout>
@@ -47,7 +49,8 @@ export function LoginPanel() {
       footer={<AuthFooterLink href="/forgot-password">Forgot your password?</AuthFooterLink>}
     >
       <LoginForm login={login} />
-      <Button variant="secondary" size="lg" className="mt-3 w-full" onClick={() => setWithPhone(true)}>
+      <OrDivider />
+      <Button variant="secondary" size="lg" className="w-full" onClick={() => setWithPhone(true)}>
         <Smartphone />
         Sign in with phone code
       </Button>

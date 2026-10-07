@@ -3,25 +3,21 @@ package com.schoolapp.feature.auth.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppCard
 import com.schoolapp.core.designsystem.component.AppTextButton
 import com.schoolapp.core.designsystem.component.AppTextField
+import com.schoolapp.core.designsystem.component.FieldKind
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.PrimaryButton
 import com.schoolapp.core.designsystem.theme.AppColors
@@ -63,17 +59,9 @@ internal fun TwoFactorForm(state: LoginUiState, actions: LoginActions, modifier:
                 label = stringResource(if (recovery) R.string.auth_two_factor_recovery_label else R.string.auth_two_factor_code_label),
                 errorText = twoFactor.codeError?.let { stringResource(it.messageRes()) },
                 enabled = !state.isSubmitting,
-                keyboardOptions = if (recovery) {
-                    KeyboardOptions(
-                        keyboardType = KeyboardType.Ascii,
-                        autoCorrectEnabled = false,
-                        imeAction = ImeAction.Done,
-                    )
-                } else {
-                    KeyboardOptions(keyboardType = KeyboardType.NumberPassword, imeAction = ImeAction.Done)
-                },
-                keyboardActions = KeyboardActions(onDone = { actions.onVerify() }),
-                modifier = if (recovery) Modifier else Modifier.semantics { contentType = ContentType.SmsOtpCode },
+                kind = if (recovery) FieldKind.Code else FieldKind.OneTimeCode,
+                imeAction = ImeAction.Done,
+                onImeAction = actions.onVerify,
             )
             PrimaryButton(
                 text = stringResource(R.string.auth_two_factor_verify),

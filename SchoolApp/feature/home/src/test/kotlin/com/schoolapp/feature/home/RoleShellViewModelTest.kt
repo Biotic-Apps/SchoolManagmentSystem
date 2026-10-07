@@ -55,7 +55,7 @@ class RoleShellViewModelTest {
         val vm = viewModel()
         backgroundScope.launch(mainDispatcherRule.dispatcher) { vm.uiState.collect {} }
         assertEquals(null, (vm.uiState.value as RoleShellUiState.Ready).brand.name)
-        branding.state.value = Branding("City School", null, null, "#7A2944", null)
+        branding.state.value = Branding("City School", null, null, "#0B7F74", null)
         assertEquals("City School", (vm.uiState.value as RoleShellUiState.Ready).brand.name)
     }
 

@@ -29,17 +29,17 @@ export class UpdateSchoolSettingsDto {
   logoFileId?: string | null;
 
   /** Format and contrast are checked in the service (message has the ratio). */
-  @ApiPropertyOptional({ example: '#7A2944' })
+  @ApiPropertyOptional({ example: '#0B7F74' })
   @IsOptional()
   @Transform(trim)
   @IsString()
   @MaxLength(16)
   primaryColor?: string;
 
-  @ApiPropertyOptional({ example: '#F6EAF0' })
+  @ApiPropertyOptional({ example: '#E6F5F2' })
   @IsOptional()
   @Matches(/^#[0-9a-fA-F]{6}$/, {
-    message: 'accentSoftColor must be a hex colour like #F6EAF0',
+    message: 'accentSoftColor must be a hex colour like #E6F5F2',
   })
   accentSoftColor?: string;
 

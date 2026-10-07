@@ -5,8 +5,8 @@ import { TextareaField } from "@/components/shared/form/TextareaField";
 import { TextField } from "@/components/shared/form/TextField";
 import { useVendorForm } from "../use-catalog-forms";
 
-export function VendorFormDialog({ onClose }: { onClose: () => void }) {
-  const vendor = useVendorForm(onClose);
+export function VendorFormDialog({ schoolId, onClose }: { schoolId: string | null; onClose: () => void }) {
+  const vendor = useVendorForm(schoolId, onClose);
 
   return (
     <FormDialog

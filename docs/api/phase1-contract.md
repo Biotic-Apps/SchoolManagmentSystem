@@ -183,6 +183,7 @@ Dev uses `STORAGE_DRIVER=local` (files under `SchoolApi/storage/`); production u
 | `admin@eschool.local` | SUPER_ADMIN | GLOBAL |
 | `principal@eschool.local` | PRINCIPAL | Bright School › Main Branch |
 | `coordinator@eschool.local` | COORDINATOR | Main Branch |
+| `headteacher@eschool.local` | HEAD_TEACHER | Main Branch |
 | `teacher@eschool.local` | TEACHER | Main Branch |
 | `accountant@eschool.local` | ACCOUNTANT | Main Branch |
 | `parent@eschool.local` | PARENT | GUARDIAN |

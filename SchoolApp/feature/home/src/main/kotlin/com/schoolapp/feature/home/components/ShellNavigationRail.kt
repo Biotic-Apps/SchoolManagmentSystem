@@ -35,8 +35,8 @@ internal fun ShellNavigationRail(
     modifier: Modifier = Modifier,
 ) {
     val colors = NavigationRailItemDefaults.colors(
-        selectedIconColor = AppColors.Primary,
-        selectedTextColor = AppColors.Primary,
+        selectedIconColor = AppColors.OnSelected,
+        selectedTextColor = AppColors.OnSelected,
         indicatorColor = AppColors.Selected,
         unselectedIconColor = AppColors.TextSecondary,
         unselectedTextColor = AppColors.TextSecondary,

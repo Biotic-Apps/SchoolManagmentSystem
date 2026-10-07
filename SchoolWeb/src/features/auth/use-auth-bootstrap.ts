@@ -6,16 +6,14 @@ import { renewAccessToken } from "./token-session";
 import type { SignOutReason, WebTokens } from "./types";
 
 interface BootstrapOptions {
-  enabled: boolean;
   startSession: (tokens: WebTokens) => Promise<void>;
   endLocal: (reason: SignOutReason | null) => void;
   requirePasswordChange: () => void;
 }
 
 /** Silent refresh on app load, and the http client's 401 / password-change hooks. */
-export function useAuthBootstrap({ enabled, startSession, endLocal, requirePasswordChange }: BootstrapOptions) {
+export function useAuthBootstrap({ startSession, endLocal, requirePasswordChange }: BootstrapOptions) {
   useEffect(() => {
-    if (!enabled) return;
     setAuthHandlers({
       refresh: async () => (await renewAccessToken())?.accessToken ?? null,
       onExpired: () => endLocal("expired"),
@@ -36,5 +34,5 @@ export function useAuthBootstrap({ enabled, startSession, endLocal, requirePassw
       cancelled = true;
       setAuthHandlers(null);
     };
-  }, [enabled, startSession, endLocal, requirePasswordChange]);
+  }, [startSession, endLocal, requirePasswordChange]);
 }

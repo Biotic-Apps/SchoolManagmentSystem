@@ -3,22 +3,17 @@ package com.schoolapp.feature.auth.forgot.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentType
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppTextButton
 import com.schoolapp.core.designsystem.component.AppTextField
+import com.schoolapp.core.designsystem.component.FieldKind
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.PrimaryButton
 import com.schoolapp.core.designsystem.component.StatusTone
@@ -50,9 +45,9 @@ internal fun ForgotPasswordForm(
             errorText = state.identifierError?.let { stringResource(it.messageRes()) },
             supportingText = stringResource(R.string.auth_identifier_hint),
             enabled = !state.isSubmitting,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Send),
-            keyboardActions = KeyboardActions(onSend = { onSubmit() }),
-            modifier = Modifier.semantics { contentType = ContentType.Username },
+            kind = FieldKind.Username,
+            imeAction = ImeAction.Done,
+            onImeAction = onSubmit,
         )
         PrimaryButton(
             text = stringResource(R.string.auth_forgot_submit),

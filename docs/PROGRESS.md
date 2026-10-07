@@ -8,7 +8,7 @@ Definition of Done per module: schema + migration · API with permission/scope g
 - [x] docs: architecture.md, backendFlows.md, databaseManagement.md, security.md
 - [x] infra/docker-compose.yml
 - [x] SchoolApi scaffold (NestJS 11, Prisma 7 multi-file schema: identity/organisation/audit, config, envelope + errors, PolicyGuard deny-by-default, BullMQ connection, /health, OpenAPI export)
-- [x] SchoolWeb scaffold (Next 16, Tailwind 4 tokens, ui + shared components, portal shell, navigation catalogue, demo roles)
+- [x] SchoolWeb scaffold (Next 16, Tailwind 4 tokens, ui + shared components, portal shell, navigation catalogue; demo-role preview removed — real sign-in only)
 - [x] SchoolApp restructure (build-logic convention plugins, core:model/common/designsystem/navigation/network/datastore/database/data/sync, feature:auth, feature:home role shell, debug demo roles)
 
 ## Phase 1 — Admin foundation

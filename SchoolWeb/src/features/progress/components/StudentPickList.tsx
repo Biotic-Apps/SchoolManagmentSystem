@@ -42,7 +42,7 @@ export function StudentPickList({ query, students, selectedId, onSelect }: Stude
                   className={cn(
                     "flex w-full items-center gap-3 rounded-input px-3 py-2 text-left transition-colors",
                     focusRing,
-                    selected ? "bg-selected text-primary" : "text-fg hover:bg-selected/60",
+                    selected ? "bg-selected text-on-selected" : "text-fg hover:bg-selected/60",
                   )}
                 >
                   <PersonAvatar name={student.name} photoUrl={student.photoUrl} />

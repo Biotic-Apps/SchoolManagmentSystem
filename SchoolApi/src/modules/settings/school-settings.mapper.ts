@@ -6,7 +6,7 @@ import type { SchoolSettingRow, SettingsSchool } from './settings.repository';
 export const SCHOOL_SETTING_DEFAULTS = {
   appName: 'eSchool',
   primaryColor: DEFAULT_PRIMARY_COLOR,
-  accentSoftColor: '#F6EAF0',
+  accentSoftColor: '#E6F5F2',
   timezone: 'Asia/Karachi',
   currency: 'PKR',
   locale: 'en-PK',

@@ -13,12 +13,14 @@ export interface StockLine {
 
 /** Flattens a stock row, filling item details from the catalog when only an id came back. */
 export function toStockLine(row: StockRow, catalog: Map<string, InventoryItem>): StockLine {
-  const item = { ...catalog.get(row.itemId), ...row.item };
+  // The API nests the item ({ item: { id, ... } }); older payloads send a flat itemId.
+  const itemId = row.itemId ?? row.item?.id ?? "";
+  const item = { ...catalog.get(itemId), ...row.item };
   const quantity = Number(row.quantity) || 0;
   const reorderRaw = row.reorderLevel ?? item.reorderLevel;
   const reorderLevel = reorderRaw === undefined || reorderRaw === null ? null : Number(reorderRaw);
   return {
-    itemId: row.itemId,
+    itemId,
     name: row.name ?? item.name ?? "",
     sku: row.sku ?? item.sku ?? "",
     category: row.category ?? item.category ?? "",

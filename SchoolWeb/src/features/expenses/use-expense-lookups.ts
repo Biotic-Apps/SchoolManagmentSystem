@@ -10,7 +10,8 @@ const ALL_VENDORS = { page: 1, pageSize: 100 };
 /** Category and vendor options, plus name lookups for expenses that only carry ids. */
 export function useExpenseLookups(schoolId: string | null) {
   const categories = useExpenseCategories(schoolId);
-  const vendors = useVendors(ALL_VENDORS);
+  // Vendors are school-wide; a global admin must name the school.
+  const vendors = useVendors({ ...ALL_VENDORS, schoolId }, !!schoolId);
 
   return useMemo(() => {
     const categoryOptions: Option[] = (categories.data ?? []).map((item) => ({ id: item.id, name: item.name }));

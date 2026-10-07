@@ -22,12 +22,12 @@ export function SidebarNav({ items, activeId, onNavigate }: SidebarNavProps) {
             aria-current={active ? "page" : undefined}
             className={cn(
               "relative flex items-center gap-3 rounded-input px-3 py-2.5 text-label font-medium transition-colors",
-              active ? "bg-selected text-primary" : "text-fg-muted hover:bg-selected/50 hover:text-fg",
+              active ? "bg-selected font-semibold text-on-selected" : "text-fg-muted hover:bg-background hover:text-fg",
               focusRing,
             )}
           >
             {active && <span aria-hidden className="absolute inset-y-2 left-0 w-[3px] rounded-full bg-primary" />}
-            <Icon className="size-[18px] shrink-0" />
+            <Icon className={cn("size-[18px] shrink-0", active && "text-primary")} />
             <span className="leading-snug">{label}</span>
           </Link>
         );

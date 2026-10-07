@@ -8,10 +8,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.designsystem.component.AppCard
 import com.schoolapp.core.designsystem.component.AppTextField
+import com.schoolapp.core.designsystem.component.FieldKind
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.MoneyField
 import com.schoolapp.core.designsystem.component.MoneyRow
@@ -117,6 +119,8 @@ private fun PaymentForm(state: RecordPaymentUiState, actions: RecordPaymentActio
             supportingText = if (state.method == PaymentMethod.CHEQUE) stringResource(R.string.fees_cheque_help) else null,
             errorText = if (PaymentIssue.REFERENCE_REQUIRED in issues) stringResource(R.string.fees_required) else null,
             enabled = enabled,
+            kind = FieldKind.Code,
+            imeAction = ImeAction.Done,
         )
         FeesDateField(
             date = state.receivedOn,

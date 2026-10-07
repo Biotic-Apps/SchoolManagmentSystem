@@ -3,15 +3,14 @@ package com.schoolapp.feature.profile.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppCard
 import com.schoolapp.core.designsystem.component.AppTextField
+import com.schoolapp.core.designsystem.component.FieldKind
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.PrimaryButton
 import com.schoolapp.core.designsystem.component.SectionHeader
@@ -40,7 +39,7 @@ internal fun ProfileForm(
                 label = stringResource(R.string.profile_name),
                 errorText = state.nameError?.let { stringResource(it.messageRes()) },
                 enabled = !state.isSaving,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                kind = FieldKind.Name,
             )
             AppTextField(
                 value = state.form.email,
@@ -48,7 +47,7 @@ internal fun ProfileForm(
                 label = stringResource(R.string.profile_email),
                 errorText = state.emailError?.let { stringResource(it.messageRes()) },
                 enabled = !state.isSaving,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+                kind = FieldKind.Email,
             )
             AppTextField(
                 value = state.form.phone,
@@ -56,7 +55,9 @@ internal fun ProfileForm(
                 label = stringResource(R.string.profile_phone),
                 errorText = state.phoneError?.let { stringResource(it.messageRes()) },
                 enabled = !state.isSaving,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Done),
+                kind = FieldKind.Phone,
+                imeAction = ImeAction.Done,
+                onImeAction = { if (state.hasChanges) onSave() },
             )
             PrimaryButton(
                 text = stringResource(R.string.profile_save),

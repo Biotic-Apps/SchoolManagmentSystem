@@ -50,6 +50,11 @@ export const DEMO_STAFF: StaffSeed[] = [
     employeeNo: 'EMP-008',
     designation: 'HELPER',
   },
+  {
+    email: 'headteacher@eschool.local',
+    employeeNo: 'EMP-009',
+    designation: 'HEAD_TEACHER',
+  },
 ];
 
 /** Staff record per demo login (idempotent by user). Returns staff id by email. */
@@ -197,6 +202,7 @@ export async function seedAssignments(
       section: '4-B',
     },
     { staffEmail: 'coordinator@eschool.local', kind: 'COORDINATOR' },
+    { staffEmail: 'headteacher@eschool.local', kind: 'HEAD_TEACHER' },
     {
       staffEmail: 'helper@eschool.local',
       kind: 'HELPER',

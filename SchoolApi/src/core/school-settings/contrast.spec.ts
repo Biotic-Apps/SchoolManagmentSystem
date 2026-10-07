@@ -4,20 +4,20 @@ describe('contrastOnWhite', () => {
   it('computes the WCAG ratio against white', () => {
     expect(contrastOnWhite('#000000')).toBeCloseTo(21, 5);
     expect(contrastOnWhite('#FFFFFF')).toBeCloseTo(1, 5);
-    expect(contrastOnWhite('#7A2944')!).toBeGreaterThan(4.5);
+    expect(contrastOnWhite('#0B7F74')!).toBeGreaterThan(4.5);
     expect(contrastOnWhite('#1f4e79')!).toBeGreaterThan(4.5);
   });
 
   it('rejects malformed colours', () => {
-    for (const value of ['7A2944', '#7A294', '#7A29441', '#GGGGGG', 'red']) {
+    for (const value of ['0B7F74', '#7A294', '#0B7F741', '#GGGGGG', 'red']) {
       expect(contrastOnWhite(value)).toBeNull();
     }
   });
 });
 
 describe('primaryColorProblem', () => {
-  it('accepts the default burgundy', () => {
-    expect(primaryColorProblem('#7A2944')).toBeNull();
+  it('accepts the default teal', () => {
+    expect(primaryColorProblem('#0B7F74')).toBeNull();
   });
 
   it('rejects yellow with the ratio in the message', () => {

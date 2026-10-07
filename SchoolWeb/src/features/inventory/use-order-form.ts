@@ -12,7 +12,7 @@ const ALL_VENDORS = { page: 1, pageSize: 100 };
 
 export function useOrderForm(request: PurchaseRequest, onDone: () => void) {
   const create = useCreatePurchaseOrder(request.id);
-  const vendors = useVendors(ALL_VENDORS);
+  const vendors = useVendors({ ...ALL_VENDORS, branchId: request.branchId });
   const { form, submit, submitting, formError } = useServerForm({
     schema: orderSchema,
     defaultValues: orderDefaults(request),

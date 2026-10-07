@@ -16,7 +16,6 @@ import com.schoolapp.feature.auth.phone.PhoneSignInViewModel
 fun LoginRoute(
     modifier: Modifier = Modifier,
     onForgotPassword: () -> Unit = {},
-    footer: @Composable () -> Unit = {},
     viewModel: LoginViewModel = hiltViewModel(),
     phoneViewModel: PhoneSignInViewModel = hiltViewModel(),
     brandingViewModel: LoginBrandingViewModel = hiltViewModel(),
@@ -63,6 +62,5 @@ fun LoginRoute(
         modifier = modifier,
         phone = phone,
         phoneActions = phoneActions,
-        footer = footer,
     )
 }

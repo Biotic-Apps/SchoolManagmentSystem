@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { useVendorsTab } from "../use-vendors-tab";
 import { VendorFormDialog } from "./VendorFormDialog";
 
-export function VendorsTab() {
-  const tab = useVendorsTab();
+export function VendorsTab({ schoolId }: { schoolId: string | null }) {
+  const tab = useVendorsTab(schoolId);
   const { list, query } = tab;
 
   return (
@@ -33,7 +33,7 @@ export function VendorsTab() {
         emptyDescription="Suppliers you buy from or pay bills to appear here."
         pagination={tab.pagination}
       />
-      {tab.composer.open && <VendorFormDialog onClose={tab.composer.close} />}
+      {tab.composer.open && <VendorFormDialog schoolId={schoolId} onClose={tab.composer.close} />}
     </div>
   );
 }

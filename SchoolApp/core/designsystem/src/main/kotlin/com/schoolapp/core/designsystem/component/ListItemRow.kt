@@ -61,7 +61,7 @@ fun ListItemRow(
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
-                color = if (selected) AppColors.Primary else AppColors.TextPrimary,
+                color = if (selected) AppColors.OnSelected else AppColors.TextPrimary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

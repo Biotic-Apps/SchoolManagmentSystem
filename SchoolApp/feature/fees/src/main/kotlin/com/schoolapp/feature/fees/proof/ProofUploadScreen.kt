@@ -10,12 +10,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppCard
 import com.schoolapp.core.designsystem.component.AppTextField
 import com.schoolapp.core.designsystem.component.AttachmentChipItem
 import com.schoolapp.core.designsystem.component.AttachmentChips
 import com.schoolapp.core.designsystem.component.ErrorState
+import com.schoolapp.core.designsystem.component.FieldKind
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.LoadingState
 import com.schoolapp.core.designsystem.component.MoneyField
@@ -132,6 +134,8 @@ private fun ProofForm(state: ProofUploadUiState, currency: String, actions: Proo
             supportingText = stringResource(R.string.fees_reference_help),
             errorText = if (ProofIssue.REFERENCE_REQUIRED in issues) stringResource(R.string.fees_required) else null,
             enabled = enabled,
+            kind = FieldKind.Code,
+            imeAction = ImeAction.Done,
         )
         state.submitError?.let { InlineMessage(appErrorMessage(it), StatusTone.Error) }
         PrimaryButton(stringResource(R.string.fees_send_proof), actions.onSubmit, Modifier.fillMaxWidth(), loading = state.isSubmitting)

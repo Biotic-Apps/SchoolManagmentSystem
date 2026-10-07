@@ -13,7 +13,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
-/** Repository interfaces are bound in :app (release: defaults, debug: demo-aware wrappers). */
+/** Repository interfaces are bound in :app (RepositoryModule, same for every build type). */
 @Module
 @InstallIn(SingletonComponent::class)
 internal abstract class DataModule {

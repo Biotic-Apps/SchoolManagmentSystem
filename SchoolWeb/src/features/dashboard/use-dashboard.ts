@@ -16,11 +16,11 @@ function countOf(summary: DashboardSummary | undefined, key: string): number | u
 }
 
 export function useDashboard() {
-  const { session, isDemo } = useSession();
+  const { session } = useSession();
   const view = useDashboardView();
   const menu = useMenuIds();
   const scope = useDashboardScope();
-  const allowed = can(session, "dashboard.view") && !isDemo && view !== "parent";
+  const allowed = can(session, "dashboard.view") && view !== "parent";
   const query = useDashboardSummary(scope.scope, allowed);
   const summary = query.data;
 
@@ -44,7 +44,7 @@ export function useDashboard() {
     stats,
     attendanceToday: summary?.attendanceToday,
     canOpenAttendance: menu.has("attendance"),
-    showPending: view === "leader" && can(session, "dashboard.view") && !isDemo,
+    showPending: view === "leader" && can(session, "dashboard.view"),
     showNoticesFeed: view !== "parent" && can(session, "notices.view") && !menu.has("notices"),
     loading: query.isLoading,
     error: query.error,

@@ -42,7 +42,6 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     phone: PhoneSignInUiState = PhoneSignInUiState(),
     phoneActions: PhoneSignInActions = PhoneSignInActions(),
-    footer: @Composable () -> Unit = {},
 ) {
     AppScaffold(modifier = modifier, contentWindowInsets = WindowInsets(0)) { padding ->
         BoxWithConstraints(
@@ -65,7 +64,6 @@ fun LoginScreen(
                             phone.active -> PhoneSignInForm(phone, phoneActions)
                             else -> LoginForm(state, actions)
                         }
-                        footer()
                     }
                 }
             }

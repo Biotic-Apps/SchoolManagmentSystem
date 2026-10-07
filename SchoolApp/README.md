@@ -50,7 +50,7 @@ Cleartext HTTP is allowed **only in debug builds and only to** `10.0.2.2`, `loca
 `schoolapp.apiBaseUrl.debug`: the task `generateDebugNetworkSecurityConfig` writes
 `network_security_config_debug.xml` from that property. Release builds use HTTPS only.
 
-Seeded demo accounts (dev API only): `admin@eschool.local`, `principal@eschool.local`, `coordinator@eschool.local`,
+Seeded test accounts (dev API only): `admin@eschool.local`, `principal@eschool.local`, `coordinator@eschool.local`,
 `teacher@eschool.local`, `accountant@eschool.local`, `parent@eschool.local`, `teacherparent@eschool.local`
 — password `Demo@1234`.
 
@@ -65,11 +65,10 @@ Seeded demo accounts (dev API only): `admin@eschool.local`, `principal@eschool.l
 Get a pin: `openssl s_client -connect api.host:443 </dev/null | openssl x509 -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64`.
 Release builds use R8 and ship a startup profile (`app/src/main/baseline-prof.txt`, installed by `profileinstaller`). The launch screen uses the SplashScreen API and stays only until the stored session has been read.
 
-## Debug-only role preview
+## Sign-in only
 
-Debug builds show **Preview a role** under the login form. It opens the role shell with local sample data (no server),
-including a custom role ("Front Desk") whose menu is built from its permissions. Release builds do not contain it
-(`app/src/debug`).
+There is no preview or demo mode: debug and release builds bind the same real repositories
+(`app/src/main/kotlin/com/schoolapp/di/RepositoryModule.kt`), so every portal requires an account in the API database.
 
 ## Auth behaviour (contract `../docs/api/phase1-contract.md`)
 

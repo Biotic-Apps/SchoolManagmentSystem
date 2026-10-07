@@ -28,15 +28,15 @@ class DefaultBrandingRepositoryTest {
 
     @Test
     fun success_is_cached_and_emitted() = runTest(dispatcher) {
-        api.response = BrandingDto("City School", "https://cdn/logo.png", "#7A2944", "#F6EAF0", "City App")
+        api.response = BrandingDto("City School", "https://cdn/logo.png", "#0B7F74", "#E6F5F2", "City App")
         assertEquals(AppResult.Success(Unit), repository.refresh("s1"))
-        assertEquals(Branding("City School", "City App", "https://cdn/logo.png", "#7A2944", "#F6EAF0"), repository.branding.first())
+        assertEquals(Branding("City School", "City App", "https://cdn/logo.png", "#0B7F74", "#E6F5F2"), repository.branding.first())
         assertEquals(listOf<String?>("s1"), api.calls)
     }
 
     @Test
     fun failure_keeps_previous_cache() = runTest(dispatcher) {
-        val previous = Branding("Old School", null, null, "#7A2944", null)
+        val previous = Branding("Old School", null, null, "#0B7F74", null)
         cache.state.value = previous
         api.fail = IOException("offline")
         assertEquals(AppResult.Failure(AppError.Network), repository.refresh("s1"))
@@ -45,9 +45,9 @@ class DefaultBrandingRepositoryTest {
 
     @Test
     fun blank_fields_become_null() = runTest(dispatcher) {
-        api.response = BrandingDto(schoolName = "  ", logoUrl = "", primaryColor = " #7A2944 ", accentSoftColor = null, appName = "")
+        api.response = BrandingDto(schoolName = "  ", logoUrl = "", primaryColor = " #0B7F74 ", accentSoftColor = null, appName = "")
         repository.refresh(null)
-        assertEquals(Branding(null, null, null, "#7A2944", null), repository.branding.first())
+        assertEquals(Branding(null, null, null, "#0B7F74", null), repository.branding.first())
     }
 
     @Test

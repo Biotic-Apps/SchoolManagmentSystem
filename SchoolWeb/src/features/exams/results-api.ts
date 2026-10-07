@@ -10,7 +10,7 @@ export function useSectionResults(examId: string, sectionId: string | null) {
   const params = { examId, sectionId };
   return useQuery({
     queryKey: examsKeys.results(params),
-    queryFn: async () => (await http.get<StudentResult[]>("/results", { pageSize: 100, ...params })).data ?? [],
+    queryFn: async () => (await http.get<StudentResult[]>("/results", params)).data ?? [],
     enabled: !!sectionId,
   });
 }
@@ -21,7 +21,7 @@ export function useStudentResult(examId: string | null, studentId: string | null
   return useQuery({
     queryKey: examsKeys.results(params),
     queryFn: async () => {
-      const rows = (await http.get<StudentResult[]>("/results", { pageSize: 100, ...params })).data ?? [];
+      const rows = (await http.get<StudentResult[]>("/results", params)).data ?? [];
       return rows.find((row) => row.studentId === studentId) ?? null;
     },
     enabled: !!examId && !!studentId,

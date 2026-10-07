@@ -5,12 +5,9 @@ import { buildCsp } from "@/lib/csp";
 const isDev = process.env.NODE_ENV === "development";
 const PUBLIC_PATHS = ["/login", "/forgot-password", "/reset-password"];
 
-// Dev-only shell preview (NEXT_PUBLIC_DEMO_ROLE) has no session cookie.
-const demoMode = isDev && !!process.env.NEXT_PUBLIC_DEMO_ROLE;
-
 function needsSignIn(request: NextRequest): boolean {
   const { pathname } = request.nextUrl;
-  if (demoMode || PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))) return false;
+  if (PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))) return false;
   return !request.cookies.has(SESSION_COOKIE);
 }
 

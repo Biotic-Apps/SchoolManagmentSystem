@@ -1,34 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  --primary: #7a2944;
+  --primary: #0b7f74;
+  --primary-hover: #096a61;
   --on-primary: #ffffff;
-  --background: #fbf8f5;
+  --background: #f5faf9;
   --surface: #ffffff;
-  --selected: #f6eaf0;
-  --text-primary: #29252a;
-  --text-secondary: #716b73;
-  --border: #e8e1e4;
+  --selected: #e6f5f2;
+  --on-selected: #075f57;
+  --text-primary: #1f2a2e;
+  --text-secondary: #5f6e72;
+  --border: #dce8e5;
+  --border-strong: #c3d6d2;
 
-  --success: #2f7a55;
-  --success-soft: #e8f3ec;
-  --warning: #9a6a12;
-  --warning-soft: #fbf1dc;
-  --error: #b3261e;
-  --error-soft: #fbe9e7;
-  --info: #2f5f8a;
-  --info-soft: #e7eff7;
+  --success: #1f7a45;
+  --success-soft: #e8f5ec;
+  --warning: #8a5a00;
+  --warning-soft: #fdf3dc;
+  --error: #b42318;
+  --error-soft: #fdecea;
+  --info: #2e5e8c;
+  --info-soft: #e8f0f8;
 }
 
 @theme inline {
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-on-primary: var(--on-primary);
   --color-background: var(--background);
   --color-surface: var(--surface);
   --color-selected: var(--selected);
+  --color-on-selected: var(--on-selected);
   --color-fg: var(--text-primary);
   --color-fg-muted: var(--text-secondary);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
 
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);

@@ -2,6 +2,8 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { OPTIONS_PAGE } from "@/config/options";
 import { http, type Query } from "@/lib/http";
 import { useApiMutation } from "@/lib/use-api-mutation";
+import { useCan } from "@/features/auth/use-can";
+import { useAssignedBranches } from "./use-assigned-branches";
 import type { StatusAction } from "@/features/schools/types";
 import type { Branch, BranchInput, BranchSettings } from "./types";
 
@@ -23,15 +25,21 @@ export function useBranches(params: Query, enabled = true) {
 
 /** Active branches in the caller's scope, for pickers. */
 export function useActiveBranches(schoolId?: string, enabled = true) {
-  const query = useBranches({ ...OPTIONS_PAGE, status: "ACTIVE", schoolId }, enabled);
+  // Roles without branches.view (teachers, helpers, coordinators…) take their branches from /me instead.
+  const canList = useCan()("branches.view");
+  const assigned = useAssignedBranches(schoolId);
+  const query = useBranches({ ...OPTIONS_PAGE, status: "ACTIVE", schoolId }, enabled && canList);
+  if (!canList) return { branches: assigned, isLoading: false, error: null };
   return { branches: query.data?.data ?? [], isLoading: query.isLoading, error: query.error };
 }
 
+/** Branch detail; roles without branches.view skip it (callers fall back to defaults). */
 export function useBranch(id: string | null) {
+  const canView = useCan()("branches.view");
   return useQuery({
     queryKey: branchKeys.detail(id ?? ""),
     queryFn: async () => (await http.get<Branch>(`/branches/${id}`)).data,
-    enabled: !!id,
+    enabled: !!id && canView,
   });
 }
 

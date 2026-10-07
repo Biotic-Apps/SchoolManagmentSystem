@@ -15,6 +15,13 @@ interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "na
   inputClassName?: string;
 }
 
+// Phone keypad / email keyboard and browser autofill follow the field type unless a caller overrides them.
+const TYPE_DEFAULTS: Partial<Record<string, Pick<InputHTMLAttributes<HTMLInputElement>, "inputMode" | "autoComplete">>> = {
+  email: { inputMode: "email", autoComplete: "email" },
+  tel: { inputMode: "tel", autoComplete: "tel" },
+  number: { inputMode: "numeric" },
+};
+
 export function TextField({ name, label, hint, required, className, inputClassName, ...inputProps }: TextFieldProps) {
   const { register, formState } = useFormContext();
   const error = fieldError(formState.errors, name);
@@ -26,6 +33,7 @@ export function TextField({ name, label, hint, required, className, inputClassNa
         className={inputClassName}
         aria-invalid={!!error}
         aria-describedby={error ? errorId(id) : undefined}
+        {...(inputProps.type ? TYPE_DEFAULTS[inputProps.type] : undefined)}
         {...inputProps}
         {...register(name)}
       />

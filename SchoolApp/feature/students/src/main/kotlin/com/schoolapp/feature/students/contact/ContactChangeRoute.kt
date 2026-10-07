@@ -1,12 +1,10 @@
 package com.schoolapp.feature.students.contact
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.designsystem.component.AppScaffold
@@ -14,6 +12,7 @@ import com.schoolapp.core.designsystem.component.AppTextArea
 import com.schoolapp.core.designsystem.component.AppTextField
 import com.schoolapp.core.designsystem.component.AppTopBar
 import com.schoolapp.core.designsystem.component.BackButton
+import com.schoolapp.core.designsystem.component.FieldKind
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.PrimaryButton
 import com.schoolapp.core.designsystem.component.ScreenColumn
@@ -67,7 +66,7 @@ fun ContactChangeForm(
                 label = stringResource(R.string.students_contact_phone),
                 enabled = editable,
                 errorText = if (state.fieldError == ContactFieldError.PHONE_INVALID) stringResource(R.string.students_contact_phone_invalid) else null,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                kind = FieldKind.Phone,
             )
         }
         item {
@@ -77,7 +76,7 @@ fun ContactChangeForm(
                 label = stringResource(R.string.students_contact_email),
                 enabled = editable,
                 errorText = if (state.fieldError == ContactFieldError.EMAIL_INVALID) stringResource(R.string.students_contact_email_invalid) else null,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                kind = FieldKind.Email,
             )
         }
         item {

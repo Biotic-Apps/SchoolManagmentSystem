@@ -9,6 +9,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppCard
+import com.schoolapp.core.designsystem.component.FieldKind
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.PasswordField
 import com.schoolapp.core.designsystem.component.PrimaryButton
@@ -50,6 +51,7 @@ internal fun ChangePasswordForm(
                 errorText = state.newError?.let { stringResource(it.messageRes()) },
                 enabled = !state.isSubmitting,
                 imeAction = ImeAction.Next,
+                kind = FieldKind.NewPassword,
             )
             PasswordField(
                 value = state.confirm,
@@ -58,6 +60,7 @@ internal fun ChangePasswordForm(
                 errorText = state.confirmError?.let { stringResource(it.messageRes()) },
                 enabled = !state.isSubmitting,
                 onImeAction = onSubmit,
+                kind = FieldKind.NewPassword,
             )
             PrimaryButton(
                 text = stringResource(R.string.password_submit),

@@ -34,7 +34,7 @@ export interface InventoryItemInput {
 
 /** One row per item; item details may be nested or flattened. */
 export interface StockRow {
-  itemId: string;
+  itemId?: string;
   item?: Partial<InventoryItem> | null;
   sku?: string;
   name?: string;

@@ -27,7 +27,7 @@ export function UserMenu({ name, email, onSignOut }: UserMenuProps) {
       <DropdownMenuTrigger
         aria-label="Account menu"
         className={cn(
-          "grid size-10 place-items-center rounded-full bg-selected text-label font-semibold text-primary",
+          "grid size-10 place-items-center rounded-full bg-selected text-label font-semibold text-on-selected",
           focusRing,
         )}
       >

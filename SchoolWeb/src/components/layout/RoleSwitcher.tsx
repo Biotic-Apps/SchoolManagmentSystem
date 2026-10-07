@@ -20,7 +20,13 @@ interface RoleSwitcherProps {
 }
 
 export function RoleSwitcher({ roles, activeRole, onChange }: RoleSwitcherProps) {
-  if (roles.length < 2) return <Badge tone="primary">{roleLabel(activeRole)}</Badge>;
+  if (roles.length < 2) {
+    return (
+      <Badge tone="primary" className="hidden sm:inline-flex">
+        {roleLabel(activeRole)}
+      </Badge>
+    );
+  }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

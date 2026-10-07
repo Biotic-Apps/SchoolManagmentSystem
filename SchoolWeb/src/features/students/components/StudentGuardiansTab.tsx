@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { UnlinkDialog } from "@/features/guardians/components/UnlinkDialog";
+import { useModuleAccess } from "@/features/modules/use-module-access";
 import type { StudentDetail } from "../types";
 import { useStudentGuardians } from "../use-student-guardians";
 import { AddGuardianDialog } from "./AddGuardianDialog";
@@ -12,6 +13,7 @@ import { GuardianLinkCard } from "./GuardianLinkCard";
 
 export function StudentGuardiansTab({ student, readOnly = false }: { student: StudentDetail; readOnly?: boolean }) {
   const tab = useStudentGuardians(student, readOnly);
+  const guardiansScreen = useModuleAccess("guardians").allowed;
 
   return (
     <section className="flex flex-col gap-3">
@@ -31,7 +33,7 @@ export function StudentGuardiansTab({ student, readOnly = false }: { student: St
       ) : (
         <ul className="flex flex-col gap-3">
           {tab.links.map((link) => (
-            <GuardianLinkCard key={link.id} link={link} linkName={!readOnly} onRemove={tab.onRemove} />
+            <GuardianLinkCard key={link.id} link={link} linkName={!readOnly && guardiansScreen} onRemove={tab.onRemove} />
           ))}
         </ul>
       )}

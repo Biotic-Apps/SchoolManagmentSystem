@@ -5,7 +5,7 @@ import { ImageProcessor, MAX_IMAGE_DIMENSION } from './image-processor';
 /** A JPEG carrying EXIF (camera make + orientation 6 = rotate 90° CW). */
 function jpegWithExif(width: number, height: number): Promise<Buffer> {
   return sharp({
-    create: { width, height, channels: 3, background: '#7a2944' },
+    create: { width, height, channels: 3, background: '#0b7f74' },
   })
     .jpeg()
     .withExif({ IFD0: { Make: 'SpyCam' } })

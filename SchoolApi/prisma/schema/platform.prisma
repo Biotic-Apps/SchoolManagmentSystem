@@ -4,8 +4,8 @@ model SchoolSetting {
   schoolId         String   @id @map("school_id") @db.Uuid
   displayName      String?  @map("display_name")
   appName          String   @default("eSchool") @map("app_name")
-  primaryColor     String   @default("#7A2944") @map("primary_color") @db.VarChar(7)
-  accentSoftColor  String   @default("#F6EAF0") @map("accent_soft_color") @db.VarChar(7)
+  primaryColor     String   @default("#0B7F74") @map("primary_color") @db.VarChar(7)
+  accentSoftColor  String   @default("#E6F5F2") @map("accent_soft_color") @db.VarChar(7)
   receiptFooter    String?  @map("receipt_footer")
   reportCardFooter String?  @map("report_card_footer")
   timezone         String   @default("Asia/Karachi")

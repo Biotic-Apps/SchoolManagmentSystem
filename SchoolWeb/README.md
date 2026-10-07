@@ -21,7 +21,6 @@ npm run build
 | `REFRESH_TTL_DAYS` | Refresh-cookie lifetime (default 30, match the API) |
 | `NEXT_PUBLIC_IDLE_TIMEOUT_MINUTES` | Auto sign-out after inactivity (default 30) |
 | `NEXT_PUBLIC_ASSET_ORIGINS` | Extra CSP origins for images, e.g. the S3 bucket URL |
-| `NEXT_PUBLIC_DEMO_ROLE` | Dev only. Loads a demo session to preview the shell per role, e.g. `PRINCIPAL` or `TEACHER,PARENT` (first is active). Ignored in production builds. |
 
 ## Auth (security.md §7)
 

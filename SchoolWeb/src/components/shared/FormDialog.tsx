@@ -16,6 +16,16 @@ import { FormAlert } from "./FormAlert";
 
 const SIZE_CLASS = { md: "max-w-lg", lg: "max-w-2xl", xl: "max-w-4xl" };
 
+const FIRST_FIELD = "input:not([type=hidden]):not([disabled]), textarea:not([disabled]), button[role=combobox]:not([disabled])";
+
+/** Opening a form dialog puts the cursor in its first field rather than on a button. */
+function focusFirstField(event: Event) {
+  const field = (event.target as HTMLElement | null)?.querySelector<HTMLElement>(FIRST_FIELD);
+  if (!field) return;
+  event.preventDefault();
+  field.focus();
+}
+
 interface FormDialogProps<T extends FieldValues> {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -61,7 +71,7 @@ export function FormDialog<T extends FieldValues>({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn(SIZE_CLASS[size])}>
+      <DialogContent className={cn(SIZE_CLASS[size])} onOpenAutoFocus={focusFirstField}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}

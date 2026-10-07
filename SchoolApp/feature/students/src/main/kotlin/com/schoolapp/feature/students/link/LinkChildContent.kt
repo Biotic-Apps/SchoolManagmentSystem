@@ -3,7 +3,6 @@ package com.schoolapp.feature.students.link
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -13,11 +12,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppDatePickerDialog
 import com.schoolapp.core.designsystem.component.AppTextField
+import com.schoolapp.core.designsystem.component.FieldKind
 import com.schoolapp.core.designsystem.component.FilterChipRow
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.PickerField
@@ -72,6 +72,8 @@ private fun DetailsStep(state: LinkChildUiState, callbacks: LinkChildCallbacks) 
             label = stringResource(R.string.students_link_admission),
             enabled = !state.isSubmitting,
             errorText = state.errors.firstMessage(LinkFieldError.ADMISSION_REQUIRED),
+            kind = FieldKind.Code,
+            imeAction = ImeAction.Done,
         )
         PickerField(
             value = formatDate(state.dob).orEmpty(),
@@ -115,7 +117,9 @@ private fun CodeStep(state: LinkChildUiState, callbacks: LinkChildCallbacks) {
             label = stringResource(R.string.students_link_code),
             enabled = !state.isSubmitting,
             errorText = state.errors.firstMessage(LinkFieldError.CODE_INVALID),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+            kind = FieldKind.OneTimeCode,
+            imeAction = ImeAction.Done,
+            onImeAction = callbacks.onVerify,
         )
         PrimaryButton(stringResource(R.string.students_link_verify), callbacks.onVerify, loading = state.isSubmitting)
     }

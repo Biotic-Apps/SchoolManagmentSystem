@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import type { Option } from "@/components/shared/OptionSelect";
 import type { ChildSummary } from "@/features/auth/types";
 import { staffTargetOptions } from "@/features/messages/staff-targets";
+import { useCan } from "@/features/auth/use-can";
 import { useSectionStaff } from "@/features/staff/api";
 import { useStudent } from "@/features/students/api";
 import { ApiError } from "@/lib/api-error";
@@ -22,7 +23,9 @@ function teacherOptionsFromSlots(slots: MeetingSlot[]): Option[] {
 
 export function useParentBooking(child: ChildSummary, onBooked: () => void) {
   const student = useStudent(child.id);
-  const sectionStaff = useSectionStaff(student.data?.enrollment?.sectionId ?? null);
+  // Parents have no staff.view: they pick teachers from the open slots instead.
+  const canSeeStaff = useCan()("staff.view");
+  const sectionStaff = useSectionStaff(student.data?.enrollment?.sectionId ?? null, canSeeStaff);
   const sectionTeachers = staffTargetOptions(sectionStaff.data);
   const filterOnServer = sectionTeachers.length > 0;
   const [teacherId, setTeacherId] = useState<string | null>(null);

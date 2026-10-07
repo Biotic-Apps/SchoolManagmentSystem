@@ -3,7 +3,6 @@ package com.schoolapp.feature.pickup.parent
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddAPhoto
 import androidx.compose.material3.MaterialTheme
@@ -12,11 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppBottomSheet
 import com.schoolapp.core.designsystem.component.AppTextField
+import com.schoolapp.core.designsystem.component.FieldKind
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.PersonAvatar
 import com.schoolapp.core.designsystem.component.PrimaryButton
@@ -56,16 +55,16 @@ internal fun AddPersonSheet(
             value = editor.name,
             onValueChange = { v -> onChange { it.copy(name = v) } },
             label = stringResource(R.string.pickup_person_name),
+            kind = FieldKind.Name,
             enabled = enabled,
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
             errorText = required.takeIf { PersonField.NAME in editor.errors },
         )
         AppTextField(
             value = editor.relation,
             onValueChange = { v -> onChange { it.copy(relation = v) } },
             label = stringResource(R.string.pickup_person_relation),
+            kind = FieldKind.Title,
             enabled = enabled,
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
             errorText = required.takeIf { PersonField.RELATION in editor.errors },
         )
         AppTextField(
@@ -73,7 +72,7 @@ internal fun AddPersonSheet(
             onValueChange = { v -> onChange { it.copy(phone = v) } },
             label = stringResource(R.string.pickup_person_phone),
             enabled = enabled,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            kind = FieldKind.Phone,
             errorText = when {
                 PersonField.PHONE in editor.errors -> required
                 PersonField.PHONE_FORMAT in editor.errors -> stringResource(R.string.pickup_phone_invalid)
@@ -85,7 +84,8 @@ internal fun AddPersonSheet(
             onValueChange = { v -> onChange { it.copy(cnic = v) } },
             label = stringResource(R.string.pickup_person_cnic),
             enabled = enabled,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            kind = FieldKind.Number,
+            imeAction = ImeAction.Done,
             errorText = stringResource(R.string.pickup_cnic_invalid).takeIf { PersonField.CNIC_FORMAT in editor.errors },
         )
         PrimaryButton(

@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
   // Self-contained server in .next/standalone for the Docker image (ignored by `next dev`).
   output: "standalone",
   poweredByHeader: false,
+  // No floating Next.js dev badge over the portal.
+  devIndicators: false,
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },

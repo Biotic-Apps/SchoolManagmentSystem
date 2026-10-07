@@ -3,8 +3,8 @@ import { useCreateExpenseCategory } from "./categories-api";
 import { categoryDefaults, categorySchema, toCategoryInput, toVendorInput, vendorDefaults, vendorSchema } from "./catalog-schemas";
 import { useCreateVendor } from "./vendors-api";
 
-export function useVendorForm(onDone: () => void) {
-  const create = useCreateVendor();
+export function useVendorForm(schoolId: string | null, onDone: () => void) {
+  const create = useCreateVendor(schoolId);
   return useServerForm({
     schema: vendorSchema,
     defaultValues: vendorDefaults,

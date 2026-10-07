@@ -21,7 +21,7 @@ const DECISION_TOAST: Record<LeaveDecision, string> = {
 export function useLeaveList(params: Query & { scope: "mine" | "review" }, enabled = true) {
   return useQuery({
     queryKey: leaveKeys.list(params),
-    queryFn: async () => (await http.get<Leave[]>("/leave", { page: 1, pageSize: 100, ...params })).data,
+    queryFn: async () => (await http.get<Leave[]>("/leave", params)).data,
     enabled,
   });
 }

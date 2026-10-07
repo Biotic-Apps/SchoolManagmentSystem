@@ -27,7 +27,7 @@ fun SecondaryButton(
 ) {
     OutlinedButton(
         onClick = onClick,
-        modifier = modifier.heightIn(min = 48.dp),
+        modifier = modifier.heightIn(min = 52.dp),
         enabled = enabled && !loading,
         shape = MaterialTheme.shapes.small,
         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),

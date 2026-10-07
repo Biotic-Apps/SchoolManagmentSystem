@@ -233,22 +233,22 @@ Offline (attendance + diary):
 
 ## 10. Design system (shared tokens, web + Android)
 
-Light theme. Burgundy is an accent only (primary buttons, active tabs).
+Light theme. Teal is the accent (primary buttons, active nav/tab, links, focus border); hover/pressed `#096A61`; text on selected `#075F57`.
 
 | Token | Use | HEX |
 |---|---|---|
-| primary | Primary buttons, active tabs | `#7A2944` |
+| primary | Primary buttons, active tabs | `#0B7F74` |
 | onPrimary | Text on primary | `#FFFFFF` |
-| background | Main background (light cream) | `#FBF8F5` |
+| background | Main background (very light mint) | `#F5FAF9` |
 | surface | Cards / forms | `#FFFFFF` |
-| selected | Selected menu/tab background (soft rose) | `#F6EAF0` |
-| textPrimary | Main text (charcoal) | `#29252A` |
-| textSecondary | Secondary text (grey) | `#716B73` |
-| border | Borders (light warm grey) | `#E8E1E4` |
-| success | Present, paid, approved | `#2F7A55` on `#E8F3EC` |
-| warning | Pending, late, partial | `#9A6A12` on `#FBF1DC` |
-| error | Absent, overdue, rejected | `#B3261E` on `#FBE9E7` |
-| info | Info, drafts, leave | `#2F5F8A` on `#E7EFF7` |
+| selected | Selected menu/tab background (soft teal) | `#E6F5F2` |
+| textPrimary | Main text (charcoal) | `#1F2A2E` |
+| textSecondary | Secondary text (grey) | `#5F6E72` |
+| border | Borders (light cool grey) | `#DCE8E5` |
+| success | Present, paid, approved | `#1F7A45` on `#E8F5EC` |
+| warning | Pending, late, partial | `#8A5A00` on `#FDF3DC` |
+| error | Absent, overdue, rejected | `#B42318` on `#FDECEA` |
+| info | Info, drafts, leave | `#2E5E8C` on `#E8F0F8` |
 
 Typography (Inter on web, system/Inter on Android):
 

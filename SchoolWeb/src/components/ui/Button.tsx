@@ -10,9 +10,9 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-primary text-on-primary hover:bg-primary/90 active:bg-primary/85",
-        secondary: "border border-border bg-surface text-fg hover:bg-selected/60",
-        ghost: "text-fg hover:bg-selected/60",
+        primary: "bg-primary text-on-primary shadow-xs hover:bg-primary-hover active:bg-primary-hover",
+        secondary: "border border-border-strong bg-surface text-fg hover:border-primary/50 hover:bg-selected hover:text-on-selected",
+        ghost: "text-fg hover:bg-selected hover:text-on-selected",
         danger: "border border-error/30 bg-error-soft text-error hover:border-error/50",
       },
       size: {

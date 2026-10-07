@@ -1,7 +1,11 @@
 package com.schoolapp.core.designsystem.component
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
@@ -14,6 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.schoolapp.core.designsystem.theme.AppColors
 
+/**
+ * Content insets include the keyboard, so screens without a bottom bar shrink above it; the padding handed to
+ * [content] is marked consumed, so an extra imePadding() inside does not double up. Tapping empty space clears
+ * focus and hides the keyboard.
+ */
 @Composable
 fun AppScaffold(
     modifier: Modifier = Modifier,
@@ -21,11 +30,11 @@ fun AppScaffold(
     bottomBar: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     snackbarHostState: SnackbarHostState? = null,
-    contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
+    contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets.union(WindowInsets.ime),
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.clearFocusOnTap(),
         topBar = topBar,
         bottomBar = bottomBar,
         floatingActionButton = floatingActionButton,
@@ -33,8 +42,9 @@ fun AppScaffold(
         containerColor = AppColors.Background,
         contentColor = AppColors.TextPrimary,
         contentWindowInsets = contentWindowInsets,
-        content = content,
-    )
+    ) { padding ->
+        Box(Modifier.consumeWindowInsets(padding)) { content(padding) }
+    }
 }
 
 @Preview

@@ -1,11 +1,9 @@
 package com.schoolapp.core.designsystem.component
 
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.schoolapp.core.designsystem.money.MoneyFormat
 import com.schoolapp.core.designsystem.theme.AppColors
@@ -21,6 +19,8 @@ fun MoneyField(
     errorText: String? = null,
     supportingText: String? = null,
     enabled: Boolean = true,
+    imeAction: ImeAction = ImeAction.Next,
+    onImeAction: (() -> Unit)? = null,
 ) {
     AppTextField(
         value = value,
@@ -30,7 +30,9 @@ fun MoneyField(
         errorText = errorText,
         supportingText = supportingText,
         enabled = enabled,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Next),
+        kind = FieldKind.Decimal,
+        imeAction = imeAction,
+        onImeAction = onImeAction,
         leadingIcon = { Text(MoneyFormat.symbol(currency), color = AppColors.TextSecondary) },
     )
 }

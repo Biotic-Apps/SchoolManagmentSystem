@@ -1,7 +1,7 @@
 // WCAG 2.1 contrast of the school's primary colour against white
 // (same formula as SchoolWeb/src/features/branding/contrast.ts).
 
-export const DEFAULT_PRIMARY_COLOR = '#7A2944';
+export const DEFAULT_PRIMARY_COLOR = '#0B7F74';
 export const MIN_CONTRAST_ON_WHITE = 4.5;
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
@@ -31,7 +31,7 @@ export function contrastOnWhite(hex: string): number | null {
 /** Error message for an unusable primary colour, or null when it passes. */
 export function primaryColorProblem(hex: string): string | null {
   const ratio = contrastOnWhite(hex);
-  if (ratio === null) return 'primaryColor must be a hex colour like #7A2944';
+  if (ratio === null) return 'primaryColor must be a hex colour like #0B7F74';
   if (ratio >= MIN_CONTRAST_ON_WHITE) return null;
   return (
     `primaryColor ${hex} has a contrast ratio of ${ratio.toFixed(2)}:1 ` +

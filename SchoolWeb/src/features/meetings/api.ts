@@ -31,10 +31,17 @@ export function useMeetings(params: Query, enabled = true) {
   });
 }
 
+/** The API nests the owner as `staff: { userId, name }`; screens use the flat fields. */
+type ApiSlot = MeetingSlot & { staff?: { userId: string; name: string } | null };
+
+function toSlot(slot: ApiSlot): MeetingSlot {
+  return { ...slot, staffUserId: slot.staffUserId ?? slot.staff?.userId ?? "", staffName: slot.staffName ?? slot.staff?.name ?? null };
+}
+
 export function useSlots(params: Query, enabled = true) {
   return useQuery({
     queryKey: meetingKeys.slots(params),
-    queryFn: async () => (await http.get<MeetingSlot[]>("/meetings/slots", { pageSize: 100, ...params })).data,
+    queryFn: async () => (await http.get<ApiSlot[]>("/meetings/slots", params)).data.map(toSlot),
     placeholderData: keepPreviousData,
     enabled,
   });
@@ -105,7 +112,7 @@ export function useCompleteMeeting(id: string) {
 export function useFollowUps(params: Query) {
   return useQuery({
     queryKey: meetingKeys.followUps(params),
-    queryFn: async () => (await http.get<FollowUp[]>("/follow-ups", { pageSize: 100, ...params })).data,
+    queryFn: async () => (await http.get<FollowUp[]>("/follow-ups", params)).data,
   });
 }
 

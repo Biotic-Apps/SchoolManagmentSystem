@@ -16,9 +16,9 @@ export interface IdCardContent {
 // CR80 card, 85.6 x 54 mm in points.
 const WIDTH = 242.6;
 const HEIGHT = 153;
-const PRIMARY = '#7A2944';
-const TEXT = '#29252A';
-const MUTED = '#716B73';
+const PRIMARY = '#0B7F74';
+const TEXT = '#1F2A2E';
+const MUTED = '#5F6E72';
 
 /** Renders a one-page student ID card (backendFlows.md §3.4). */
 export async function renderIdCard(content: IdCardContent): Promise<Buffer> {
@@ -40,7 +40,7 @@ export async function renderIdCard(content: IdCardContent): Promise<Buffer> {
   doc.font('Helvetica').fontSize(7.5);
   doc.text(content.branchName, 10, 21, { width: WIDTH - 20, lineBreak: false });
 
-  doc.rect(10, 44, 56, 68).lineWidth(0.6).strokeColor('#E8E1E4').stroke();
+  doc.rect(10, 44, 56, 68).lineWidth(0.6).strokeColor('#DCE8E5').stroke();
   if (content.photo) {
     doc.image(content.photo, 11, 45, {
       fit: [54, 66],

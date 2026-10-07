@@ -1,6 +1,7 @@
 package com.schoolapp.core.designsystem.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.schoolapp.core.designsystem.theme.Borders
 
 /** Tinted inline banner for form-level success/warning/error/info messages. */
 @Composable
@@ -42,6 +44,7 @@ fun InlineMessage(
         modifier = modifier
             .fillMaxWidth()
             .background(colors.container, MaterialTheme.shapes.small)
+            .border(Borders.Thin, colors.content.copy(alpha = 0.3f), MaterialTheme.shapes.small)
             .padding(12.dp)
             .semantics { liveRegion = LiveRegionMode.Polite },
         verticalAlignment = Alignment.Top,

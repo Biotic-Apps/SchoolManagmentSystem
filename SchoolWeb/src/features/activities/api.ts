@@ -93,10 +93,23 @@ export function useSaveParticipants(id: string) {
   });
 }
 
+/** GET /activities/mine answers { upcoming, consentPending }; the screen wants one list. */
+interface MyActivitiesResponse {
+  upcoming: MyActivity[];
+  consentPending: MyActivity[];
+}
+
+function mergeMine(data: MyActivitiesResponse | MyActivity[]): MyActivity[] {
+  if (Array.isArray(data)) return data;
+  const byId = new Map<string, MyActivity>();
+  for (const item of [...(data.consentPending ?? []), ...(data.upcoming ?? [])]) byId.set(item.id, item);
+  return [...byId.values()];
+}
+
 export function useMyActivities(studentId: string | null) {
   return useQuery({
     queryKey: activityKeys.mine(studentId ?? ""),
-    queryFn: async () => (await http.get<MyActivity[]>("/activities/mine", { studentId })).data,
+    queryFn: async () => mergeMine((await http.get<MyActivitiesResponse>("/activities/mine", { studentId })).data),
     enabled: !!studentId,
   });
 }

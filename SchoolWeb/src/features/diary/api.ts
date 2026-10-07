@@ -12,7 +12,7 @@ export const diaryKeys = {
 export function useDiaryEntries(params: Query, enabled = true) {
   return useQuery({
     queryKey: diaryKeys.list(params),
-    queryFn: async () => (await http.get<DiaryEntry[]>("/diary", { pageSize: 100, ...params })).data,
+    queryFn: async () => (await http.get<DiaryEntry[]>("/diary", params)).data,
     placeholderData: keepPreviousData,
     enabled,
   });

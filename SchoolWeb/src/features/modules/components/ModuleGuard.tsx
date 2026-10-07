@@ -8,9 +8,16 @@ import { Card } from "@/components/ui/Card";
 import type { NavId } from "@/config/navigation";
 import { useModuleAccess } from "../use-module-access";
 
-/** Renders a built module only when the active role holds its view permission. */
-export function ModuleGuard({ moduleId, children }: { moduleId: NavId; children: ReactNode }) {
-  const { label, allowed } = useModuleAccess(moduleId);
+interface ModuleGuardProps {
+  moduleId: NavId;
+  /** Detail pages opened from other screens only need the view permission, not a menu entry. */
+  detail?: boolean;
+  children: ReactNode;
+}
+
+/** Renders a built module only when it is in the active role's menu and the role holds its view permission. */
+export function ModuleGuard({ moduleId, detail = false, children }: ModuleGuardProps) {
+  const { label, allowed } = useModuleAccess(moduleId, { menuOnly: !detail });
   if (allowed) return children;
   return (
     <>

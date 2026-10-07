@@ -32,8 +32,8 @@ internal fun ShellDrawerSheet(
 ) {
     val colors = NavigationDrawerItemDefaults.colors(
         selectedContainerColor = AppColors.Selected,
-        selectedIconColor = AppColors.Primary,
-        selectedTextColor = AppColors.Primary,
+        selectedIconColor = AppColors.OnSelected,
+        selectedTextColor = AppColors.OnSelected,
         unselectedContainerColor = AppColors.Surface,
         unselectedIconColor = AppColors.TextSecondary,
         unselectedTextColor = AppColors.TextPrimary,

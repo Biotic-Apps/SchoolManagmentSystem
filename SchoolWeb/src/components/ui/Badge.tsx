@@ -8,7 +8,7 @@ const badgeVariants = cva(
     variants: {
       tone: {
         neutral: "bg-background text-fg-muted ring-1 ring-inset ring-border",
-        primary: "bg-selected text-primary",
+        primary: "bg-selected text-on-selected",
         success: "bg-success-soft text-success",
         warning: "bg-warning-soft text-warning",
         error: "bg-error-soft text-error",

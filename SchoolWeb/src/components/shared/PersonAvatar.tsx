@@ -15,7 +15,7 @@ export function PersonAvatar({ name, photoUrl, size = "sm", className }: PersonA
   return (
     <span
       className={cn(
-        "grid shrink-0 place-items-center overflow-hidden rounded-full bg-selected font-semibold text-primary",
+        "grid shrink-0 place-items-center overflow-hidden rounded-full bg-selected font-semibold text-on-selected",
         SIZE_CLASS[size],
         className,
       )}

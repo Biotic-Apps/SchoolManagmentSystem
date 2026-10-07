@@ -37,7 +37,7 @@ import com.schoolapp.feature.messages.R
 /** Delivery state shown in a bubble's footer. */
 enum class BubbleStatus { RECEIVED, SENT, READ, SENDING, FAILED }
 
-/** Chat bubble: mine on the right in soft rose, others on the left on surface with a border. */
+/** Chat bubble: mine on the right in the soft selected colour, others on the left on surface with a border. */
 @Composable
 internal fun MessageBubble(
     body: String,

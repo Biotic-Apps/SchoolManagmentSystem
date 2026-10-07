@@ -30,7 +30,7 @@ const REVIEW_TOAST: Record<ReviewAction, string> = {
 export function useBookLists(params: Query, enabled = true) {
   return useQuery({
     queryKey: syllabusKeys.bookLists(params),
-    queryFn: async () => (await http.get<BookList[]>("/book-lists", { pageSize: 100, ...params })).data,
+    queryFn: async () => (await http.get<BookList[]>("/book-lists", params)).data,
     placeholderData: keepPreviousData,
     enabled,
   });
@@ -65,7 +65,7 @@ export function useReviewBookList() {
 export function useSyllabusPlans(params: Query, enabled = true) {
   return useQuery({
     queryKey: syllabusKeys.plans(params),
-    queryFn: async () => (await http.get<SyllabusPlan[]>("/syllabus-plans", { pageSize: 100, ...params })).data,
+    queryFn: async () => (await http.get<SyllabusPlan[]>("/syllabus-plans", params)).data,
     enabled,
   });
 }

@@ -122,10 +122,10 @@ export function useStaffWorkload(id: string, sessionId: string | null) {
   });
 }
 
-export function useSectionStaff(sectionId: string | null) {
+export function useSectionStaff(sectionId: string | null, enabled = true) {
   return useQuery({
     queryKey: staffKeys.section(sectionId ?? ""),
     queryFn: async () => (await http.get<SectionStaff>(`/sections/${sectionId}/staff`)).data,
-    enabled: !!sectionId,
+    enabled: enabled && !!sectionId,
   });
 }

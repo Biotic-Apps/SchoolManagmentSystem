@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.MaterialTheme
@@ -14,11 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppCard
 import com.schoolapp.core.designsystem.component.AppTextButton
 import com.schoolapp.core.designsystem.component.AppTextField
+import com.schoolapp.core.designsystem.component.FieldKind
 import com.schoolapp.core.designsystem.component.FilterChipRow
 import com.schoolapp.core.designsystem.component.SwitcherOption
 import com.schoolapp.core.designsystem.theme.AppColors
@@ -83,6 +82,7 @@ internal fun ContactDraftFields(
                 value = draft.name,
                 onValueChange = { onChange(draft.copy(name = it)) },
                 label = stringResource(R.string.health_contact_name),
+                kind = FieldKind.Name,
                 enabled = enabled,
                 errorText = required.takeIf { showErrors && draft.name.isBlank() },
             )
@@ -90,6 +90,7 @@ internal fun ContactDraftFields(
                 value = draft.relation,
                 onValueChange = { onChange(draft.copy(relation = it)) },
                 label = stringResource(R.string.health_contact_relation),
+                kind = FieldKind.Title,
                 enabled = enabled,
             )
             AppTextField(
@@ -97,7 +98,7 @@ internal fun ContactDraftFields(
                 onValueChange = { onChange(draft.copy(phone = it)) },
                 label = stringResource(R.string.health_contact_phone),
                 enabled = enabled,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                kind = FieldKind.Phone,
                 errorText = required.takeIf { showErrors && draft.phone.isBlank() },
             )
             RemoveButton(enabled, onRemove)

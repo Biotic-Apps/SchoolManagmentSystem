@@ -24,7 +24,7 @@ export function ChannelCard({ channel, icon: Icon, title, description, switchLab
     <Card>
       <CardContent className="flex flex-col gap-4">
         <div className="flex items-start gap-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-input bg-selected text-primary">
+          <span className="grid size-10 shrink-0 place-items-center rounded-input bg-selected text-on-selected">
             <Icon className="size-5" />
           </span>
           <div className="flex min-w-0 flex-col gap-0.5">

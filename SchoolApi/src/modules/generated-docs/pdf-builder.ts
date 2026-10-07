@@ -1,9 +1,9 @@
 import PDFDocument from 'pdfkit';
 
-const PRIMARY = '#7A2944';
-const TEXT = '#29252A';
-const MUTED = '#716B73';
-const LINE = '#E8E1E4';
+const PRIMARY = '#0B7F74';
+const TEXT = '#1F2A2E';
+const MUTED = '#5F6E72';
+const LINE = '#DCE8E5';
 
 export interface PdfColumn {
   header: string;

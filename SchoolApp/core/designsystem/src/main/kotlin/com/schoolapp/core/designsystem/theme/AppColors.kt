@@ -2,23 +2,25 @@ package com.schoolapp.core.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 
-/** Raw design tokens from docs/architecture.md §10. */
+/** Raw design tokens (light teal theme). A school's API primary colour overrides [Primary] for brand marks. */
 object AppColors {
-    val Primary = Color(0xFF7A2944)
+    val Primary = Color(0xFF0B7F74)
+    val PrimaryPressed = Color(0xFF096A61)
     val OnPrimary = Color(0xFFFFFFFF)
-    val Background = Color(0xFFFBF8F5)
+    val Background = Color(0xFFF5FAF9)
     val Surface = Color(0xFFFFFFFF)
-    val Selected = Color(0xFFF6EAF0)
-    val TextPrimary = Color(0xFF29252A)
-    val TextSecondary = Color(0xFF716B73)
-    val Border = Color(0xFFE8E1E4)
+    val Selected = Color(0xFFE6F5F2)
+    val OnSelected = Color(0xFF075F57)
+    val TextPrimary = Color(0xFF1F2A2E)
+    val TextSecondary = Color(0xFF5F6E72)
+    val Border = Color(0xFFDCE8E5)
 
-    val Success = Color(0xFF2F7A55)
-    val SuccessContainer = Color(0xFFE8F3EC)
-    val Warning = Color(0xFF9A6A12)
-    val WarningContainer = Color(0xFFFBF1DC)
+    val Success = Color(0xFF1E7B45)
+    val SuccessContainer = Color(0xFFE6F4EA)
+    val Warning = Color(0xFF8A5A00)
+    val WarningContainer = Color(0xFFFFF4DB)
     val Error = Color(0xFFB3261E)
-    val ErrorContainer = Color(0xFFFBE9E7)
-    val Info = Color(0xFF2F5F8A)
-    val InfoContainer = Color(0xFFE7EFF7)
+    val ErrorContainer = Color(0xFFFCEBE9)
+    val Info = Color(0xFF2A5C8F)
+    val InfoContainer = Color(0xFFE8F0F9)
 }

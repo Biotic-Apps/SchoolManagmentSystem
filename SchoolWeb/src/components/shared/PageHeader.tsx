@@ -12,7 +12,7 @@ export function PageHeader({ title, description, actions, className }: PageHeade
   return (
     <header className={cn("flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between", className)}>
       <div className="flex flex-col gap-1">
-        <h1 className="text-page-title font-semibold tracking-tight text-fg">{title}</h1>
+        <h1 className="text-[24px] leading-8 font-semibold tracking-tight text-fg sm:text-page-title">{title}</h1>
         {description && <p className="text-label text-fg-muted">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}

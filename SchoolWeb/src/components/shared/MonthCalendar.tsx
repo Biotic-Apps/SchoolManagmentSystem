@@ -16,7 +16,7 @@ export interface CalendarItem {
 
 const TONE_CLASS: Record<BadgeTone, string> = {
   neutral: "bg-background text-fg-muted",
-  primary: "bg-selected text-primary",
+  primary: "bg-selected text-on-selected",
   success: "bg-success-soft text-success",
   warning: "bg-warning-soft text-warning",
   error: "bg-error-soft text-error",

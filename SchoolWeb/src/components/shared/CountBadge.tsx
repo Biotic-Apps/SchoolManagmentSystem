@@ -5,7 +5,7 @@ interface CountBadgeProps {
   className?: string;
 }
 
-/** Small burgundy pill for unread / pending counts; hidden at zero. */
+/** Small primary-colour pill for unread / pending counts; hidden at zero. */
 export function CountBadge({ count, className }: CountBadgeProps) {
   if (!count) return null;
   return (

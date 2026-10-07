@@ -18,7 +18,7 @@ export function StatCard({ label, value, hint, icon: Icon, loading }: StatCardPr
       <div className="flex items-center justify-between gap-2">
         <span className="text-label text-fg-muted">{label}</span>
         {Icon && (
-          <span className="grid size-9 place-items-center rounded-input bg-selected text-primary">
+          <span className="grid size-9 place-items-center rounded-input bg-selected text-on-selected">
             <Icon className="size-4" />
           </span>
         )}

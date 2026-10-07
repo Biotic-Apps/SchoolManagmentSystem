@@ -13,7 +13,7 @@ Same conventions as phase1–4 contracts incl. all **Deviations**. Goal: make th
 ```ts
 SchoolSettings = { schoolId, displayName, logoFileId, logoUrl, primaryColor /*hex*/, receiptFooter, reportCardFooter, timezone, currency, locale: "en-PK" }
 ```
-Rules: `primaryColor` must be a hex with WCAG AA contrast ≥ 4.5 against white (else 400 with a message) — default `#7A2944`. Web and Android read `/branding` and apply the school's logo/colour to the login screen and top bar; everything else keeps the design tokens.
+Rules: `primaryColor` must be a hex with WCAG AA contrast ≥ 4.5 against white (else 400 with a message) — default `#0B7F74`. Web and Android read `/branding` and apply the school's logo/colour to the login screen and top bar; everything else keeps the design tokens.
 
 ## B. Account recovery and 2FA (carry-over)
 - Web + Android screens for `POST /auth/password/forgot` and `/auth/password/reset` (Phase 1 endpoints): identifier → "if the account exists, instructions were sent" → token entry + new password.
@@ -86,7 +86,7 @@ Paths and documented fields are unchanged unless listed. Additions and clarifica
 - **Settings access (§A)**:
   - GETs need `settings.view` plus membership of the school. Other schools give 403 FORBIDDEN_SCOPE; an unknown school gives 404.
   - Every PATCH needs `settings.edit` and the SUPER_ADMIN active role.
-  - `SchoolSettings` adds `accentSoftColor` (default `#F6EAF0`) and `appName` (default "eSchool").
+  - `SchoolSettings` adds `accentSoftColor` (default `#E6F5F2`) and `appName` (default "eSchool").
   - PATCH fields are optional; `null` clears `logoFileId` and the footers.
   - Field rules:
     - `primaryColor`: `#RRGGBB` with contrast ≥ 4.5 against white, else 400 with the ratio in the message. Stored upper case.

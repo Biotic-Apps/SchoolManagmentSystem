@@ -4,9 +4,9 @@ import { useMarkAllRead, useMarkRead, useRecentNotifications, useUnreadCount } f
 import type { AppNotification } from "./types";
 
 export function useNotificationBell() {
-  const { status, isDemo } = useSession();
+  const { status } = useSession();
   const [open, setOpen] = useState(false);
-  const live = status === "authenticated" && !isDemo;
+  const live = status === "authenticated";
   const unread = useUnreadCount(live);
   const recent = useRecentNotifications(live && open);
   const markRead = useMarkRead();

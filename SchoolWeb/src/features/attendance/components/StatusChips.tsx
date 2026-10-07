@@ -39,7 +39,7 @@ export function StatusChips({ value, onChange, disabled, label }: StatusChipsPro
             onClick={() => onChange(choice.id)}
             className={cn(
               "grid h-9 min-w-9 place-items-center rounded-input border px-2 text-label font-semibold transition-colors",
-              "outline-none focus-visible:ring-2 focus-visible:ring-primary/25 disabled:cursor-not-allowed",
+              "outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed",
               selected ? SELECTED[choice.tone] : "border-border bg-surface text-fg-muted hover:bg-selected/60",
               disabled && !selected && "opacity-50",
             )}

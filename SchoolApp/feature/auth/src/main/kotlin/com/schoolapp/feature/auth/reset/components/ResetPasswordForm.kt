@@ -3,22 +3,15 @@ package com.schoolapp.feature.auth.reset.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.autofill.ContentType
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentType
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppTextField
+import com.schoolapp.core.designsystem.component.FieldKind
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.PasswordField
 import com.schoolapp.core.designsystem.component.PrimaryButton
@@ -36,7 +29,6 @@ internal fun ResetPasswordForm(
     onSubmit: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val focusManager = LocalFocusManager.current
     Column(modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
             text = stringResource(R.string.auth_reset_message),
@@ -51,12 +43,7 @@ internal fun ResetPasswordForm(
             errorText = state.tokenError?.let { stringResource(it.messageRes()) },
             supportingText = stringResource(R.string.auth_reset_code_hint),
             enabled = !state.isSubmitting,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Ascii,
-                autoCorrectEnabled = false,
-                imeAction = ImeAction.Next,
-            ),
-            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+            kind = FieldKind.Code,
         )
         PasswordField(
             value = state.newPassword,
@@ -65,8 +52,7 @@ internal fun ResetPasswordForm(
             errorText = state.newError?.let { stringResource(it.messageRes()) },
             enabled = !state.isSubmitting,
             imeAction = ImeAction.Next,
-            onImeAction = { focusManager.moveFocus(FocusDirection.Down) },
-            modifier = Modifier.semantics { contentType = ContentType.NewPassword },
+            kind = FieldKind.NewPassword,
         )
         PasswordField(
             value = state.confirm,
@@ -75,7 +61,7 @@ internal fun ResetPasswordForm(
             errorText = state.confirmError?.let { stringResource(it.messageRes()) },
             enabled = !state.isSubmitting,
             onImeAction = onSubmit,
-            modifier = Modifier.semantics { contentType = ContentType.NewPassword },
+            kind = FieldKind.NewPassword,
         )
         PrimaryButton(
             text = stringResource(R.string.auth_reset_submit),

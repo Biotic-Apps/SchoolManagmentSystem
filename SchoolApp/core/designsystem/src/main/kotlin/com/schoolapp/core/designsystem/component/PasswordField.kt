@@ -1,7 +1,5 @@
 package com.schoolapp.core.designsystem.component
 
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
@@ -15,7 +13,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,7 +28,8 @@ fun PasswordField(
     errorText: String? = null,
     enabled: Boolean = true,
     imeAction: ImeAction = ImeAction.Done,
-    onImeAction: () -> Unit = {},
+    onImeAction: (() -> Unit)? = null,
+    kind: FieldKind = FieldKind.Password,
 ) {
     var visible by rememberSaveable { mutableStateOf(false) }
     AppTextField(
@@ -41,8 +39,9 @@ fun PasswordField(
         modifier = modifier,
         errorText = errorText,
         enabled = enabled,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = imeAction),
-        keyboardActions = KeyboardActions(onAny = { onImeAction() }),
+        kind = kind,
+        imeAction = imeAction,
+        onImeAction = onImeAction,
         visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
             IconButton(onClick = { visible = !visible }) {

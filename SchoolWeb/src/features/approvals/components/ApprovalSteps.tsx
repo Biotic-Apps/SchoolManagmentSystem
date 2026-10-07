@@ -18,7 +18,7 @@ export function ApprovalSteps({ request }: { request: ApprovalRequest }) {
             const by = decidedByName(step.decidedBy);
             return (
               <li key={step.order} className="flex gap-3 rounded-input border border-border p-3">
-                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-selected text-caption font-semibold text-primary">
+                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-selected text-caption font-semibold text-on-selected">
                   {step.order}
                 </span>
                 <div className="flex flex-1 flex-col gap-1">

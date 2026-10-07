@@ -8,7 +8,7 @@ import type { PendingDefinition } from "../pending-definitions";
 const TONES = {
   warning: { chip: "bg-warning-soft text-warning", count: "text-warning" },
   error: { chip: "bg-error-soft text-error", count: "text-error" },
-  idle: { chip: "bg-selected text-primary", count: "text-fg" },
+  idle: { chip: "bg-selected text-on-selected", count: "text-fg" },
 };
 
 interface PendingTileProps {

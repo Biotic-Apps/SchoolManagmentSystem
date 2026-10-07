@@ -29,7 +29,6 @@ fun AppNavHost(
     uiState: AppUiState,
     shellContent: ShellContent,
     onSignOut: () -> Unit,
-    loginFooter: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (uiState == AppUiState.Loading) {
@@ -49,7 +48,7 @@ fun AppNavHost(
         startDestination = target,
         modifier = modifier.background(AppColors.Background),
     ) {
-        authGraph(navController, loginFooter)
+        authGraph(navController)
         composable<ForcedPasswordChangeDestination> { ForcedChangePasswordRoute(onSignOut = onSignOut) }
         composable<ShellDestination> { RoleShellRoute(content = shellContent) }
     }

@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
@@ -25,9 +23,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppTextField
+import com.schoolapp.core.designsystem.component.FieldKind
 import com.schoolapp.core.designsystem.component.StatusChip
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.designsystem.theme.AppColors
@@ -86,8 +84,9 @@ internal fun MarkEntryRow(
                     placeholder = if (row.absent) stringResource(R.string.exams_absent) else null,
                     errorText = row.error?.let { markErrorText(it, maxMarks) },
                     enabled = enabled && !row.absent,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = imeAction),
-                    keyboardActions = KeyboardActions(onNext = { onImeAction() }, onDone = { onImeAction() }),
+                    kind = FieldKind.Decimal,
+                    imeAction = imeAction,
+                    onImeAction = onImeAction,
                 )
                 Spacer(Modifier.width(12.dp))
                 AbsentToggle(row.absent, enabled, onAbsentChange, Modifier.padding(top = 4.dp))

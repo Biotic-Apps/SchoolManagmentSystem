@@ -1,6 +1,5 @@
 package com.schoolapp.feature.auth.navigation
 
-import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -21,13 +20,12 @@ data object ForgotPasswordDestination
 @Serializable
 data object ResetPasswordDestination
 
-fun NavGraphBuilder.authGraph(navController: NavHostController, loginFooter: @Composable () -> Unit) {
+fun NavGraphBuilder.authGraph(navController: NavHostController) {
     val backToSignIn: () -> Unit = { navController.popBackStack(LoginDestination, inclusive = false) }
     navigation<AuthGraph>(startDestination = LoginDestination) {
         composable<LoginDestination> {
             LoginRoute(
                 onForgotPassword = { navController.navigate(ForgotPasswordDestination) { launchSingleTop = true } },
-                footer = loginFooter,
             )
         }
         composable<ForgotPasswordDestination> {

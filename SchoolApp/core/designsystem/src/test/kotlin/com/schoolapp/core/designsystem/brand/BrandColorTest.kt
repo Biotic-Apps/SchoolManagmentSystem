@@ -11,9 +11,14 @@ import org.junit.Test
 class BrandColorTest {
 
     @Test
-    fun default_maroon_passes_with_high_contrast() {
-        assertEquals(Color(0xFF7A2944), BrandColor.contrastSafeOrNull("#7A2944"))
-        assertTrue(BrandColor.contrastAgainstWhite(Color(0xFF7A2944)) > 9.0)
+    fun default_teal_passes_aa_contrast() {
+        assertEquals(Color(0xFF0B7F74), BrandColor.contrastSafeOrNull("#0B7F74"))
+        assertTrue(BrandColor.contrastAgainstWhite(Color(0xFF0B7F74)) >= BrandColor.MIN_CONTRAST)
+    }
+
+    @Test
+    fun default_token_is_the_teal_primary() {
+        assertEquals(Color(0xFF0B7F74), AppColors.Primary)
     }
 
     @Test
@@ -44,8 +49,8 @@ class BrandColorTest {
 
     @Test
     fun hash_is_optional_and_whitespace_trimmed() {
-        assertEquals(Color(0xFF7A2944), BrandColor.contrastSafeOrNull("7A2944"))
-        assertEquals(Color(0xFF7A2944), BrandColor.contrastSafeOrNull(" #7a2944 "))
+        assertEquals(Color(0xFF0B7F74), BrandColor.contrastSafeOrNull("0B7F74"))
+        assertEquals(Color(0xFF0B7F74), BrandColor.contrastSafeOrNull(" #0b7f74 "))
     }
 
     @Test

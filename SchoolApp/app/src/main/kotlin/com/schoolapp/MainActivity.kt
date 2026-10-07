@@ -13,16 +13,10 @@ import com.schoolapp.core.designsystem.theme.SchoolTheme
 import com.schoolapp.navigation.AppNavHost
 import com.schoolapp.navigation.AppShellContent
 import com.schoolapp.startup.SplashGate
-import com.schoolapp.ui.LoginFooterContent
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Optional
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
-
-    @Inject
-    lateinit var loginFooter: Optional<LoginFooterContent>
 
     private val viewModel: AppViewModel by viewModels()
 
@@ -30,7 +24,6 @@ class MainActivity : FragmentActivity() {
         installSplashScreen().setKeepOnScreenCondition { SplashGate.keepOnScreen(viewModel.uiState.value) }
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        val footer = loginFooter.orElse(null)
         setContent {
             val state by viewModel.uiState.collectAsStateWithLifecycle()
             SchoolTheme {
@@ -39,7 +32,6 @@ class MainActivity : FragmentActivity() {
                         uiState = state,
                         shellContent = AppShellContent,
                         onSignOut = viewModel::onSignOut,
-                        loginFooter = { footer?.Content() },
                     )
                 }
             }

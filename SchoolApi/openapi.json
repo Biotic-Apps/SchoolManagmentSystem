@@ -37882,11 +37882,11 @@
           },
           "primaryColor": {
             "type": "string",
-            "example": "#7A2944"
+            "example": "#0B7F74"
           },
           "accentSoftColor": {
             "type": "string",
-            "example": "#F6EAF0"
+            "example": "#E6F5F2"
           },
           "appName": {
             "type": "string",
@@ -37945,12 +37945,12 @@
             "type": "string",
             "description": "Format and contrast are checked in the service (message has the ratio).",
             "maxLength": 16,
-            "example": "#7A2944"
+            "example": "#0B7F74"
           },
           "accentSoftColor": {
             "type": "string",
             "pattern": "^#[0-9a-fA-F]{6}$",
-            "example": "#F6EAF0"
+            "example": "#E6F5F2"
           },
           "appName": {
             "type": "string",
@@ -38295,11 +38295,11 @@
           },
           "primaryColor": {
             "type": "string",
-            "example": "#7A2944"
+            "example": "#0B7F74"
           },
           "accentSoftColor": {
             "type": "string",
-            "example": "#F6EAF0"
+            "example": "#E6F5F2"
           },
           "appName": {
             "type": "string",

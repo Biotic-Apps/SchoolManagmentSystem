@@ -53,7 +53,7 @@ describe('Settings and support (e2e)', () => {
     const res = await t('principal')
       .get(`/settings/school/${schoolId}`)
       .expect(200);
-    expect(data<{ primaryColor: string }>(res).primaryColor).toBe('#7A2944');
+    expect(data<{ primaryColor: string }>(res).primaryColor).toBe('#0B7F74');
     await t('principal')
       .get(`/settings/policies?schoolId=${schoolId}`)
       .expect(200);
@@ -89,7 +89,7 @@ describe('Settings and support (e2e)', () => {
     expect(audit).toBeGreaterThan(0);
 
     await t('admin')
-      .patch(`/settings/school/${schoolId}`, { primaryColor: '#7A2944' })
+      .patch(`/settings/school/${schoolId}`, { primaryColor: '#0B7F74' })
       .expect(200);
   });
 

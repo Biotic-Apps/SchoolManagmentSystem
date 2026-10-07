@@ -6,10 +6,10 @@ import { useListState } from "@/lib/use-list-state";
 import { vendorColumns } from "./catalog-columns";
 import { useVendors } from "./vendors-api";
 
-export function useVendorsTab() {
+export function useVendorsTab(schoolId: string | null) {
   const can = useCan();
   const list = useListState({});
-  const query = useVendors(list.params);
+  const query = useVendors({ ...list.params, schoolId }, !!schoolId);
   const columns = useMemo(() => vendorColumns(), []);
 
   return {

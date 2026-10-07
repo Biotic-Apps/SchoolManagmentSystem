@@ -20,7 +20,7 @@ import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.feature.timetable.R
 import com.schoolapp.feature.timetable.ScheduleRow
 
-/** One period; the running one gets the selected (rose) background, primary border and a "Now" chip. */
+/** One period; the running one gets the selected (soft teal) background, primary border and a "Now" chip. */
 @Composable
 internal fun PeriodCard(row: ScheduleRow, isCurrent: Boolean, modifier: Modifier = Modifier) {
     Surface(

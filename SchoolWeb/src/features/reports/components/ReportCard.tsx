@@ -13,7 +13,7 @@ export function ReportCard({ report, onSelect }: { report: Report; onSelect: () 
         focusRing,
       )}
     >
-      <span className="grid size-10 shrink-0 place-items-center rounded-input bg-selected text-primary">
+      <span className="grid size-10 shrink-0 place-items-center rounded-input bg-selected text-on-selected">
         <FileSpreadsheet className="size-5" />
       </span>
       <span className="flex min-w-0 flex-col gap-1">

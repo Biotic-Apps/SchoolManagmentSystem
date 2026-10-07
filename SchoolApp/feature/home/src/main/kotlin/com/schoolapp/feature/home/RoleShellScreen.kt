@@ -2,6 +2,7 @@ package com.schoolapp.feature.home
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
@@ -129,7 +130,7 @@ fun RoleShellScreen(
                         menuIds = remember(state.menu) { state.menu.map { it.id }.toSet() },
                         activeRole = state.activeRole,
                         content = content,
-                        modifier = Modifier.padding(padding).consumeWindowInsets(padding),
+                        modifier = Modifier.padding(padding).consumeWindowInsets(padding).imePadding(),
                     )
                 }
             }

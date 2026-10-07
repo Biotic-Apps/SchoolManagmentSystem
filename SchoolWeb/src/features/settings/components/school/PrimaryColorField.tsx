@@ -9,11 +9,12 @@ import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { MIN_CONTRAST } from "@/features/branding/contrast";
 import type { PrimaryColorState } from "../../use-primary-color";
+import { PrimaryColorPresets } from "./PrimaryColorPresets";
 
 const ID = "field-primaryColor";
 
 function liveMessage(color: PrimaryColorState): string | null {
-  if (!color.isHex) return "Enter a hex colour like #7A2944.";
+  if (!color.isHex) return "Enter a hex colour like #0B7F74.";
   if (!color.passes) {
     return `Pick a darker colour — white text on it needs a contrast of at least ${MIN_CONTRAST} : 1 to stay readable.`;
   }
@@ -27,6 +28,7 @@ export function PrimaryColorField({ color }: { color: PrimaryColorState }) {
   return (
     <div className="flex flex-col gap-1.5">
       <Label htmlFor={ID}>Primary colour</Label>
+      <PrimaryColorPresets value={color.value} onPick={color.setColor} />
       <div className="flex flex-wrap items-center gap-3">
         <input
           type="color"

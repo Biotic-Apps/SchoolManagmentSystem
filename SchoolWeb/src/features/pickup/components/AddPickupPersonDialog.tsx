@@ -24,7 +24,7 @@ export function AddPickupPersonDialog({ studentId, onClose }: { studentId: strin
         <TextField name="name" label="Full name" required />
         <TextField name="relation" label="Relation" required placeholder="e.g. Driver, Uncle" />
         <TextField name="phone" label="Phone" type="tel" required />
-        <TextField name="cnic" label="CNIC" placeholder="35202-1234567-1" />
+        <TextField name="cnic" label="CNIC" inputMode="numeric" autoComplete="off" placeholder="35202-1234567-1" />
       </div>
       <UploadField name="photoFileId" label="Photo" purpose="STUDENT_PHOTO" />
     </FormDialog>

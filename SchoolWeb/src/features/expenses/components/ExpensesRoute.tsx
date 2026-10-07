@@ -36,7 +36,7 @@ export function ExpensesRoute() {
             {route.branchId && <ExpensesTab branchId={route.branchId} schoolId={route.schoolId} canAdd={route.canAdd} />}
           </TabsContent>
           <TabsContent value="vendors">
-            <VendorsTab />
+            <VendorsTab schoolId={route.schoolId} />
           </TabsContent>
           <TabsContent value="categories">
             <CategoriesTab schoolId={route.schoolId} />

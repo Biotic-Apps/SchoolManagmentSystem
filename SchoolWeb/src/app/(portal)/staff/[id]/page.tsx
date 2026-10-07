@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Staff profile" };
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   return (
-    <ModuleGuard moduleId="staff">
+    <ModuleGuard moduleId="staff" detail>
       <StaffDetailPage staffId={id} />
     </ModuleGuard>
   );

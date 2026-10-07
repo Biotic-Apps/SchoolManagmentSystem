@@ -20,6 +20,7 @@ const PARENT_PHONE = '+923001112233';
 const BRANCH_STAFF = [
   ['principal@eschool.local', 'Demo Principal', RoleKey.PRINCIPAL],
   ['coordinator@eschool.local', 'Demo Coordinator', RoleKey.COORDINATOR],
+  ['headteacher@eschool.local', 'Demo Head Teacher', RoleKey.HEAD_TEACHER],
   ['teacher@eschool.local', 'Demo Teacher', RoleKey.TEACHER],
   ['accountant@eschool.local', 'Demo Accountant', RoleKey.ACCOUNTANT],
   ['teacher2@eschool.local', 'Sana Teacher', RoleKey.TEACHER],

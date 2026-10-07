@@ -1,13 +1,11 @@
 import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { isRoleKey } from "@/config/roles";
 import { hasErrorCode } from "@/lib/api-error";
 import { errorMessage } from "@/lib/error-messages";
 import { getAccessToken, setActiveRoleHeader } from "@/lib/request-context";
 import { toast } from "@/lib/toast";
 import { saveActiveRole } from "./active-role-store";
 import { logoutRequest } from "./auth-client";
-import { buildDemoSession, isDemoSession, loadDemoSession } from "./demo-session";
 import { fetchMe } from "./me-api";
 import { applyTokens, clearTokens } from "./token-session";
 import type { AuthStatus, Session, SessionUser, SignOutReason, WebTokens } from "./types";
@@ -20,16 +18,13 @@ interface SessionSnapshot {
 }
 
 function initialSnapshot(): SessionSnapshot {
-  const demo = loadDemoSession();
-  setActiveRoleHeader(demo?.activeRole ?? null);
-  return { status: demo ? "authenticated" : "loading", session: demo, reason: null };
+  return { status: "loading", session: null, reason: null };
 }
 
 export function useSessionState() {
   const queryClient = useQueryClient();
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [activeChildId, setActiveChildId] = useState<string | null>(null);
-  const [demoMode] = useState(() => snapshot.session !== null);
 
   const endLocal = useCallback(
     (reason: SignOutReason | null) => {
@@ -71,14 +66,14 @@ export function useSessionState() {
     [loadMe, requirePasswordChange],
   );
 
-  useAuthBootstrap({ enabled: !demoMode, startSession: signIn, endLocal, requirePasswordChange });
+  useAuthBootstrap({ startSession: signIn, endLocal, requirePasswordChange });
 
   const signOut = useCallback(
     async (reason: SignOutReason = "signed-out") => {
-      if (!demoMode) await logoutRequest(getAccessToken());
+      await logoutRequest(getAccessToken());
       endLocal(reason);
     },
-    [demoMode, endLocal],
+    [endLocal],
   );
 
   const switchRole = useCallback(
@@ -86,10 +81,6 @@ export function useSessionState() {
       const current = snapshot.session;
       if (!current || role === current.activeRole || !current.roles.includes(role)) return;
       setActiveRoleHeader(role);
-      if (isDemoSession(current)) {
-        if (isRoleKey(role)) setSnapshot((s) => ({ ...s, session: buildDemoSession(role, current.roles.filter(isRoleKey)) }));
-        return;
-      }
       saveActiveRole(role);
       queryClient.removeQueries();
       await loadMe().catch((error) => toast.error(errorMessage(error)));
@@ -112,7 +103,6 @@ export function useSessionState() {
     status: snapshot.status,
     session: snapshot.session,
     reason: snapshot.reason,
-    isDemo: demoMode,
     activeChildId,
     selectChild: setActiveChildId,
     signIn,

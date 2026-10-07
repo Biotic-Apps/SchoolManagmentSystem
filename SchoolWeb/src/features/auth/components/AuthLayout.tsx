@@ -1,10 +1,11 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
+import { ShieldCheck } from "lucide-react";
+import { Card } from "@/components/ui/Card";
 import { useBranding } from "@/features/branding/api";
 import { brandStyle } from "@/features/branding/brand-style";
-import { BrandMark } from "@/features/branding/components/BrandMark";
+import { BrandLogo } from "@/features/branding/components/BrandLogo";
 
 interface AuthLayoutProps {
   title: string;
@@ -16,26 +17,36 @@ interface AuthLayoutProps {
 /** Shell for the sign-in, forgot-password and reset-password pages, in the school's branding. */
 export function AuthLayout({ title, description, footer, children }: AuthLayoutProps) {
   const { data: branding } = useBranding(null);
+  const schoolName = branding?.schoolName || branding?.appName || "eSchool";
 
   return (
     <main
       style={brandStyle(branding?.primaryColor)}
-      className="flex min-h-dvh flex-col items-center justify-center gap-8 bg-background px-4 py-12"
+      className="flex min-h-dvh flex-col items-center justify-center bg-background px-4 py-10"
     >
-      <BrandMark
-        name={branding?.schoolName || branding?.appName || "eSchool"}
-        logoUrl={branding?.logoUrl}
-        subtitle="School Management System"
-        className="max-w-[420px]"
-      />
-      <Card className="w-full max-w-[420px]">
-        <CardHeader className="px-8 pt-8">
-          <CardTitle>{title}</CardTitle>
-          {description && <CardDescription>{description}</CardDescription>}
-        </CardHeader>
-        <CardContent className="px-8 pb-8 pt-6">{children}</CardContent>
-      </Card>
-      {footer}
+      <div className="flex w-full max-w-[420px] flex-col items-center gap-6">
+        <Card className="w-full overflow-hidden shadow-sm">
+          <div aria-hidden className="h-1 bg-primary" />
+          <div className="flex flex-col items-center gap-3 px-6 pt-8 text-center sm:px-8">
+            <BrandLogo logoUrl={branding?.logoUrl} size="lg" />
+            <div className="flex flex-col gap-0.5">
+              <p className="text-card-title font-semibold text-fg">{schoolName}</p>
+              <p className="text-caption text-fg-muted">School Management System</p>
+            </div>
+          </div>
+          <div className="mx-6 mt-6 border-t border-border sm:mx-8" />
+          <div className="flex flex-col gap-1 px-6 pt-6 sm:px-8">
+            <h1 className="text-[20px] font-semibold leading-7 text-fg">{title}</h1>
+            {description && <p className="text-label text-fg-muted">{description}</p>}
+          </div>
+          <div className="px-6 pb-8 pt-5 sm:px-8">{children}</div>
+        </Card>
+        {footer}
+        <p className="flex items-center gap-1.5 text-caption text-fg-muted">
+          <ShieldCheck className="size-4 text-primary" />
+          Only accounts registered by your school can sign in.
+        </p>
+      </div>
     </main>
   );
 }
