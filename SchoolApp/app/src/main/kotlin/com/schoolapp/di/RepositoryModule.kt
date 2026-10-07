@@ -10,6 +10,8 @@ import com.schoolapp.core.data.branding.BrandingRepository
 import com.schoolapp.core.data.branding.DefaultBrandingRepository
 import com.schoolapp.core.data.dashboard.DashboardRepository
 import com.schoolapp.core.data.dashboard.DefaultDashboardRepository
+import com.schoolapp.core.data.setup.DefaultSetupRepository
+import com.schoolapp.core.data.setup.SetupRepository
 import com.schoolapp.core.data.notifications.DefaultNotificationsRepository
 import com.schoolapp.core.data.notifications.NotificationsRepository
 import com.schoolapp.core.data.organisation.DefaultOrganisationRepository
@@ -82,6 +84,9 @@ interface RepositoryModule {
 
     @Binds
     fun bindDashboardRepository(impl: DefaultDashboardRepository): DashboardRepository
+
+    @Binds
+    fun bindSetupRepository(impl: DefaultSetupRepository): SetupRepository
 
     @Binds
     fun bindApprovalsRepository(impl: DefaultApprovalsRepository): ApprovalsRepository

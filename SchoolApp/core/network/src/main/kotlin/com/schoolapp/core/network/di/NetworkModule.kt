@@ -6,6 +6,7 @@ import com.schoolapp.core.network.api.ApprovalsApi
 import com.schoolapp.core.network.api.AuthApi
 import com.schoolapp.core.network.api.BrandingApi
 import com.schoolapp.core.network.api.DashboardApi
+import com.schoolapp.core.network.api.SetupApi
 import com.schoolapp.core.network.api.MeApi
 import com.schoolapp.core.network.api.NotificationsApi
 import com.schoolapp.core.network.api.OrganisationApi
@@ -112,6 +113,10 @@ internal object NetworkModule {
     @Provides
     @Singleton
     fun provideDashboardApi(retrofit: Retrofit): DashboardApi = retrofit.create(DashboardApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideSetupApi(retrofit: Retrofit): SetupApi = retrofit.create(SetupApi::class.java)
 
     @Provides
     @Singleton

@@ -25,6 +25,7 @@ import com.schoolapp.core.testing.MainDispatcherRule
 import com.schoolapp.core.testing.TestSessions
 import com.schoolapp.feature.dashboard.finance.FinanceLoader
 import com.schoolapp.feature.dashboard.parent.attendanceChip
+import com.schoolapp.feature.dashboard.setup.SetupChecklistLoader
 import com.schoolapp.feature.dashboard.supervisor.SupervisorLoader
 import com.schoolapp.feature.dashboard.teacher.TeacherDayLoader
 import org.junit.Assert.assertEquals
@@ -45,6 +46,7 @@ class DashboardViewModelTest {
     private val today = "2026-10-06"
     private val repository = FakeDashboardRepository()
     private val fees = FakeFinanceFees()
+    private val setup = FakeSetupRepository()
 
     private fun viewModel(
         auth: FakeAuthRepository,
@@ -54,7 +56,7 @@ class DashboardViewModelTest {
         val periods = TodayPeriodsLoader(FakeTimetableRepository(week), clock)
         val scoped = ScopedSections(auth, organisationWith(sections))
         return DashboardViewModel(
-            auth, repository, SupervisorLoader(repository, FinanceLoader(fees.repository)),
+            auth, repository, SupervisorLoader(repository, FinanceLoader(fees.repository), SetupChecklistLoader(setup)),
             TeacherDayLoader(repository, periods, scoped, clock), FinanceLoader(fees.repository), clock,
         )
     }

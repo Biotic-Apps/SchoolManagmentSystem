@@ -30,7 +30,7 @@ import com.schoolapp.feature.dashboard.R
 import com.schoolapp.feature.dashboard.action
 import com.schoolapp.feature.dashboard.presentationFor
 
-/** Adaptive grid: the Today queue, the month's finance card, then the summary counts; two columns on phones, more when wider. */
+/** Adaptive grid: the setup card (until done), the Today queue, the month's finance card, then the summary counts; two columns on phones, more when wider. */
 @Composable
 internal fun SupervisorGrid(
     state: DashboardUiState.Supervisor,
@@ -48,6 +48,9 @@ internal fun SupervisorGrid(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             fullWidth("header") { SummaryHeader(state.userName, state.scopeName) }
+            state.setup?.let { setup ->
+                fullWidth("setup") { SetupChecklistCard(setup, onOpenMenu, onOpen, canOpenMenu) }
+            }
             if (state.showsToday) {
                 fullWidth("today-title") {
                     SectionHeader(title = stringResource(R.string.dashboard_today_title), subtitle = formatDate(state.date))

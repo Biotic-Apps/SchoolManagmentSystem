@@ -64,8 +64,11 @@ export class SessionsRepository {
     });
   }
 
-  create(data: Prisma.AcademicSessionUncheckedCreateInput) {
-    return this.prisma.academicSession.create({ data, include: INCLUDE });
+  create(
+    data: Prisma.AcademicSessionUncheckedCreateInput,
+    db: Prisma.TransactionClient = this.prisma,
+  ) {
+    return db.academicSession.create({ data, include: INCLUDE });
   }
 
   update(id: string, data: Prisma.AcademicSessionUncheckedUpdateInput) {

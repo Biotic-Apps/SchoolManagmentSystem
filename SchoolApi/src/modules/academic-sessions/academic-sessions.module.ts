@@ -29,6 +29,6 @@ import { TermsService } from './terms/terms.service';
     CalendarService,
     StudentCalendarService,
   ],
-  exports: [SessionsService],
+  exports: [SessionsService, SessionsRepository],
 })
 export class AcademicSessionsModule {}

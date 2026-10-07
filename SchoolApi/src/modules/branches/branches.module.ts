@@ -19,6 +19,12 @@ import { BranchSettingsService } from './settings/branch-settings.service';
     PrincipalRepository,
     PrincipalService,
   ],
-  exports: [BranchesService, BranchSettingsReader],
+  exports: [
+    BranchesService,
+    BranchSettingsReader,
+    BranchesRepository,
+    BranchSettingsRepository,
+    PrincipalRepository,
+  ],
 })
 export class BranchesModule {}

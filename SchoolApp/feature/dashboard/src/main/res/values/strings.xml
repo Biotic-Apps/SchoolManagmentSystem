@@ -84,4 +84,15 @@
     <string name="dashboard_finance_today">Collected today</string>
     <string name="dashboard_finance_expenses">Expenses</string>
     <string name="dashboard_finance_payroll">Payroll</string>
+    <string name="dashboard_setup_title">Set up your school</string>
+    <string name="dashboard_setup_progress">%1$d of %2$d done</string>
+    <string name="dashboard_setup_done">Done</string>
+    <string name="dashboard_setup_todo">Not done yet</string>
+    <string name="dashboard_setup_session">Academic session</string>
+    <string name="dashboard_setup_classes">Classes</string>
+    <string name="dashboard_setup_subjects">Subjects</string>
+    <string name="dashboard_setup_teachers">Teachers</string>
+    <string name="dashboard_setup_students">Students</string>
+    <string name="dashboard_setup_timetable">Timetable</string>
+    <string name="dashboard_setup_fee_plan">Fee plan</string>
 </resources>

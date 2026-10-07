@@ -49,8 +49,11 @@ export class BranchesRepository {
     return this.prisma.school.count({ where: { id } });
   }
 
-  create(data: Prisma.BranchUncheckedCreateInput) {
-    return this.prisma.branch.create({ data, include: INCLUDE });
+  create(
+    data: Prisma.BranchUncheckedCreateInput,
+    db: Prisma.TransactionClient = this.prisma,
+  ) {
+    return db.branch.create({ data, include: INCLUDE });
   }
 
   update(id: string, data: Prisma.BranchUncheckedUpdateInput) {

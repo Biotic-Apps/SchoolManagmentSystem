@@ -37,8 +37,11 @@ export class SubjectsRepository {
     return this.prisma.subject.findUnique({ where: { id } });
   }
 
-  create(data: Prisma.SubjectUncheckedCreateInput) {
-    return this.prisma.subject.create({ data });
+  create(
+    data: Prisma.SubjectUncheckedCreateInput,
+    db: Prisma.TransactionClient = this.prisma,
+  ) {
+    return db.subject.create({ data });
   }
 
   update(id: string, data: Prisma.SubjectUncheckedUpdateInput) {

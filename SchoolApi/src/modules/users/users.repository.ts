@@ -118,8 +118,9 @@ export class UsersRepository {
   create(
     data: Prisma.UserUncheckedCreateInput,
     assignments: Prisma.RoleAssignmentUncheckedCreateWithoutUserInput[],
+    db: Prisma.TransactionClient = this.prisma,
   ) {
-    return this.prisma.user.create({
+    return db.user.create({
       data: { ...data, roleAssignments: { create: assignments } },
       include: userInclude(),
     });

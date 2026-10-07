@@ -7,6 +7,7 @@ import com.schoolapp.core.model.RoleRef
 import com.schoolapp.core.model.dashboard.DashboardMetric
 import com.schoolapp.feature.dashboard.finance.FinanceCardState
 import com.schoolapp.feature.dashboard.parent.ParentHome
+import com.schoolapp.feature.dashboard.setup.SetupCardState
 import com.schoolapp.feature.dashboard.supervisor.PendingTile
 import com.schoolapp.feature.dashboard.teacher.TeacherDay
 
@@ -26,6 +27,8 @@ sealed interface DashboardUiState {
         val summaryError: AppError? = null,
         /** "Finance this month" for roles with `fees.view`; null hides the card. */
         val finance: FinanceCardState? = null,
+        /** Principal's "Set up your school" card; null hides it (complete, failed or another role). */
+        val setup: SetupCardState? = null,
         val isRefreshing: Boolean = false,
     ) : DashboardUiState
 

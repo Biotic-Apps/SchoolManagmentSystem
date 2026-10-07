@@ -48,8 +48,11 @@ export class ClassesRepository {
     });
   }
 
-  create(data: Prisma.SchoolClassUncheckedCreateInput) {
-    return this.prisma.schoolClass.create({ data, include: INCLUDE });
+  create(
+    data: Prisma.SchoolClassUncheckedCreateInput,
+    db: Prisma.TransactionClient = this.prisma,
+  ) {
+    return db.schoolClass.create({ data, include: INCLUDE });
   }
 
   update(id: string, data: Prisma.SchoolClassUncheckedUpdateInput) {

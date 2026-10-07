@@ -22,5 +22,6 @@ import { SettingsRepository } from './settings.repository';
     NotificationSettingsService,
     PoliciesService,
   ],
+  exports: [SettingsRepository],
 })
 export class SettingsModule {}

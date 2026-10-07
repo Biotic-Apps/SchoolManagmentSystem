@@ -5,12 +5,14 @@ import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.dashboard.DashboardRepository
 import com.schoolapp.core.data.fees.FeesRepository
 import com.schoolapp.core.data.organisation.OrganisationRepository
+import com.schoolapp.core.data.setup.SetupRepository
 import com.schoolapp.core.data.timetable.TimetableRepository
 import com.schoolapp.core.model.dashboard.ChildToday
 import com.schoolapp.core.model.dashboard.DashboardMetric
 import com.schoolapp.core.model.dashboard.TeacherToday
 import com.schoolapp.core.model.fees.FinanceOverview
 import com.schoolapp.core.model.organisation.Section
+import com.schoolapp.core.model.setup.SetupChecklist
 import com.schoolapp.core.model.timetable.SectionTimetable
 import com.schoolapp.core.model.timetable.TeacherSlot
 import java.lang.reflect.Proxy
@@ -80,4 +82,15 @@ class FakeFinanceFees {
             else -> error("not used: ${method.name}")
         }
     } as FeesRepository
+}
+
+/** Setup checklist stub; fails by default so existing dashboards behave as before the card existed. */
+class FakeSetupRepository : SetupRepository {
+    var result: AppResult<SetupChecklist> = AppResult.Failure(AppError.Network)
+    val calls = mutableListOf<String?>()
+
+    override suspend fun checklist(branchId: String?): AppResult<SetupChecklist> {
+        calls += branchId
+        return result
+    }
 }

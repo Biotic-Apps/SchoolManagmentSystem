@@ -29,5 +29,6 @@ import { SubjectsService } from './subjects/subjects.service';
     SectionsRepository,
     SectionsService,
   ],
+  exports: [ClassesRepository, SubjectsRepository, SectionsRepository],
 })
 export class AcademicsModule {}

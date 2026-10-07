@@ -39,8 +39,11 @@ export class SchoolsRepository {
     return this.prisma.school.findUnique({ where: { id }, include: INCLUDE });
   }
 
-  create(data: Prisma.SchoolUncheckedCreateInput) {
-    return this.prisma.school.create({ data, include: INCLUDE });
+  create(
+    data: Prisma.SchoolUncheckedCreateInput,
+    db: Prisma.TransactionClient = this.prisma,
+  ) {
+    return db.school.create({ data, include: INCLUDE });
   }
 
   update(id: string, data: Prisma.SchoolUncheckedUpdateInput) {

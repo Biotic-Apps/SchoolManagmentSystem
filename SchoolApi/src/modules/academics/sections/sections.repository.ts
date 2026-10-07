@@ -70,8 +70,11 @@ export class SectionsRepository {
     return this.prisma.room.findUnique({ where: { id } });
   }
 
-  create(data: Prisma.SectionUncheckedCreateInput) {
-    return this.prisma.section.create({ data, include: INCLUDE });
+  create(
+    data: Prisma.SectionUncheckedCreateInput,
+    db: Prisma.TransactionClient = this.prisma,
+  ) {
+    return db.section.create({ data, include: INCLUDE });
   }
 
   update(id: string, data: Prisma.SectionUncheckedUpdateInput) {

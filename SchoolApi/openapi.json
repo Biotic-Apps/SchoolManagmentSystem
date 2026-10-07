@@ -2056,6 +2056,103 @@
         ]
       }
     },
+    "/api/v1/schools/setup": {
+      "post": {
+        "operationId": "SchoolSetupController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SchoolSetupDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SchoolSetupResultDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "VALIDATION_FAILED; each message in details starts with the field path, e.g. \"school.code …\""
+          },
+          "403": {
+            "description": "Caller is not Super Admin"
+          },
+          "409": {
+            "description": "SCHOOL_CODE_TAKEN | USER_EMAIL_TAKEN | USER_PHONE_TAKEN"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "One-form school provisioning (Super Admin): school, main branch, principal, active session, classes, sections, subjects in one transaction",
+        "tags": [
+          "school-setup"
+        ]
+      }
+    },
+    "/api/v1/setup/checklist": {
+      "get": {
+        "operationId": "ChecklistController_get",
+        "parameters": [
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "description": "Required for Super Admin; a principal defaults to their own branch.",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SetupChecklistDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not a principal or Super Admin, or branch outside scope"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Setup checklist of a branch (principal: own branch; Super Admin: branchId required)",
+        "tags": [
+          "school-setup"
+        ]
+      }
+    },
     "/api/v1/branches": {
       "get": {
         "operationId": "BranchesController_list",
@@ -5691,6 +5788,311 @@
         ],
         "tags": [
           "classes"
+        ]
+      }
+    },
+    "/api/v1/settings/school/{schoolId}": {
+      "get": {
+        "operationId": "SchoolSettingsController_get",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SchoolSettingsDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "settings"
+        ]
+      },
+      "patch": {
+        "operationId": "SchoolSettingsController_update",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSchoolSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SchoolSettingsDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/api/v1/settings/notifications": {
+      "get": {
+        "operationId": "SchoolConfigController_getNotifications",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/NotificationSettingsDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "settings"
+        ]
+      },
+      "patch": {
+        "operationId": "SchoolConfigController_updateNotifications",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNotificationSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/NotificationSettingsDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/api/v1/settings/policies": {
+      "get": {
+        "operationId": "SchoolConfigController_getPolicies",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PoliciesDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "settings"
+        ]
+      },
+      "patch": {
+        "operationId": "SchoolConfigController_updatePolicies",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePoliciesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PoliciesDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/api/v1/branding": {
+      "get": {
+        "operationId": "BrandingController_get",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": false,
+            "in": "query",
+            "description": "Default school if omitted",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BrandingDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "settings"
         ]
       }
     },
@@ -20369,311 +20771,6 @@
         ]
       }
     },
-    "/api/v1/settings/school/{schoolId}": {
-      "get": {
-        "operationId": "SchoolSettingsController_get",
-        "parameters": [
-          {
-            "name": "schoolId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/SchoolSettingsDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "settings"
-        ]
-      },
-      "patch": {
-        "operationId": "SchoolSettingsController_update",
-        "parameters": [
-          {
-            "name": "schoolId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateSchoolSettingsDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/SchoolSettingsDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "settings"
-        ]
-      }
-    },
-    "/api/v1/settings/notifications": {
-      "get": {
-        "operationId": "SchoolConfigController_getNotifications",
-        "parameters": [
-          {
-            "name": "schoolId",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "format": "uuid",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/NotificationSettingsDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "settings"
-        ]
-      },
-      "patch": {
-        "operationId": "SchoolConfigController_updateNotifications",
-        "parameters": [
-          {
-            "name": "schoolId",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "format": "uuid",
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateNotificationSettingsDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/NotificationSettingsDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "settings"
-        ]
-      }
-    },
-    "/api/v1/settings/policies": {
-      "get": {
-        "operationId": "SchoolConfigController_getPolicies",
-        "parameters": [
-          {
-            "name": "schoolId",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "format": "uuid",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/PoliciesDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "settings"
-        ]
-      },
-      "patch": {
-        "operationId": "SchoolConfigController_updatePolicies",
-        "parameters": [
-          {
-            "name": "schoolId",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "format": "uuid",
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdatePoliciesDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/PoliciesDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "settings"
-        ]
-      }
-    },
-    "/api/v1/branding": {
-      "get": {
-        "operationId": "BrandingController_get",
-        "parameters": [
-          {
-            "name": "schoolId",
-            "required": false,
-            "in": "query",
-            "description": "Default school if omitted",
-            "schema": {
-              "format": "uuid",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/BrandingDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "settings"
-        ]
-      }
-    },
     "/api/v1/support/notifications/failed": {
       "get": {
         "operationId": "SupportController_failed",
@@ -22886,6 +22983,339 @@
           }
         }
       },
+      "SetupEntityDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name"
+        ]
+      },
+      "SetupPrincipalDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "temporaryPassword": {
+            "type": "string",
+            "description": "Only when generated; shown once, never stored or sent anywhere else."
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "phone"
+        ]
+      },
+      "SetupSessionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "YYYY-MM-DD"
+          },
+          "endDate": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "startDate",
+          "endDate"
+        ]
+      },
+      "SetupCountsDto": {
+        "type": "object",
+        "properties": {
+          "classes": {
+            "type": "number"
+          },
+          "sections": {
+            "type": "number"
+          },
+          "subjects": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "classes",
+          "sections",
+          "subjects"
+        ]
+      },
+      "SchoolSetupResultDto": {
+        "type": "object",
+        "properties": {
+          "school": {
+            "$ref": "#/components/schemas/SetupEntityDto"
+          },
+          "branch": {
+            "$ref": "#/components/schemas/SetupEntityDto"
+          },
+          "principal": {
+            "$ref": "#/components/schemas/SetupPrincipalDto"
+          },
+          "session": {
+            "nullable": true,
+            "description": "null when `academics.createSession` is false.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SetupSessionDto"
+              }
+            ]
+          },
+          "counts": {
+            "$ref": "#/components/schemas/SetupCountsDto"
+          }
+        },
+        "required": [
+          "school",
+          "branch",
+          "principal",
+          "session",
+          "counts"
+        ]
+      },
+      "BranchTimingsInput": {
+        "type": "object",
+        "properties": {
+          "opensAt": {
+            "type": "string"
+          },
+          "closesAt": {
+            "type": "string"
+          },
+          "attendanceLockAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "opensAt",
+          "closesAt",
+          "attendanceLockAt"
+        ]
+      },
+      "SetupBranchInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Default \"Main Branch\".",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "code": {
+            "type": "string",
+            "description": "Default \"MAIN\".",
+            "pattern": "^[A-Z0-9]{2,12}$"
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "timings": {
+            "$ref": "#/components/schemas/BranchTimingsInput"
+          },
+          "workingDays": {
+            "uniqueItems": true,
+            "maxItems": 7,
+            "type": "array",
+            "items": {
+              "type": "number",
+              "maximum": 7,
+              "minimum": 1
+            }
+          }
+        }
+      },
+      "SetupPrincipalInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "description": "Omit to generate a temporary password (returned once).",
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "SetupAcademicsInput": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "description": "Default 1 April of the current school year (Asia/Karachi).",
+            "example": "2026-04-01",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Default 31 March of the following year.",
+            "example": "2026-04-01",
+            "format": "date"
+          },
+          "createSession": {
+            "type": "boolean",
+            "description": "Default true: active session + classes, sections and subjects."
+          },
+          "sessionName": {
+            "type": "string",
+            "description": "Default from the dates, e.g. \"2026-27\".",
+            "minLength": 2,
+            "maxLength": 30
+          },
+          "classesPreset": {
+            "type": "string",
+            "description": "Default STANDARD: Playgroup, Nursery, Prep, Class 1 … Class 10.",
+            "enum": [
+              "STANDARD",
+              "NONE"
+            ]
+          },
+          "sectionsPerClass": {
+            "type": "number",
+            "description": "1–4, default 1 (sections A, B, …).",
+            "minimum": 1,
+            "maximum": 4
+          },
+          "subjectsPreset": {
+            "type": "string",
+            "description": "Default STANDARD (8 subjects).",
+            "enum": [
+              "STANDARD",
+              "NONE"
+            ]
+          }
+        }
+      },
+      "SchoolSetupDto": {
+        "type": "object",
+        "properties": {
+          "school": {
+            "$ref": "#/components/schemas/CreateSchoolDto"
+          },
+          "branch": {
+            "$ref": "#/components/schemas/SetupBranchInput"
+          },
+          "principal": {
+            "$ref": "#/components/schemas/SetupPrincipalInput"
+          },
+          "academics": {
+            "$ref": "#/components/schemas/SetupAcademicsInput"
+          }
+        },
+        "required": [
+          "school",
+          "principal"
+        ]
+      },
+      "ChecklistItemDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "enum": [
+              "session",
+              "classes",
+              "subjects",
+              "teachers",
+              "students",
+              "timetable",
+              "feePlan"
+            ],
+            "type": "string"
+          },
+          "done": {
+            "type": "boolean",
+            "description": "count > 0"
+          },
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "key",
+          "done",
+          "count"
+        ]
+      },
+      "SetupChecklistDto": {
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "type": "string"
+          },
+          "complete": {
+            "type": "boolean",
+            "description": "Every item done."
+          },
+          "items": {
+            "description": "Always in this order: session, classes, subjects, teachers, students, timetable, feePlan.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChecklistItemDto"
+            }
+          }
+        },
+        "required": [
+          "branchId",
+          "complete",
+          "items"
+        ]
+      },
       "BranchTimingsDto": {
         "type": "object",
         "properties": {
@@ -22986,25 +23416,6 @@
           "principal",
           "status",
           "createdAt"
-        ]
-      },
-      "BranchTimingsInput": {
-        "type": "object",
-        "properties": {
-          "opensAt": {
-            "type": "string"
-          },
-          "closesAt": {
-            "type": "string"
-          },
-          "attendanceLockAt": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "opensAt",
-          "closesAt",
-          "attendanceLockAt"
         ]
       },
       "CreateBranchDto": {
@@ -25033,6 +25444,459 @@
             "format": "uuid"
           }
         }
+      },
+      "SchoolSettingsDto": {
+        "type": "object",
+        "properties": {
+          "schoolId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "logoFileId": {
+            "type": "string",
+            "nullable": true
+          },
+          "logoUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "5-minute link"
+          },
+          "primaryColor": {
+            "type": "string",
+            "example": "#0B7F74"
+          },
+          "accentSoftColor": {
+            "type": "string",
+            "example": "#E6F5F2"
+          },
+          "appName": {
+            "type": "string",
+            "example": "eSchool"
+          },
+          "receiptFooter": {
+            "type": "string",
+            "nullable": true
+          },
+          "reportCardFooter": {
+            "type": "string",
+            "nullable": true
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Asia/Karachi"
+          },
+          "currency": {
+            "type": "string",
+            "example": "PKR"
+          },
+          "locale": {
+            "type": "string",
+            "example": "en-PK"
+          }
+        },
+        "required": [
+          "schoolId",
+          "displayName",
+          "logoFileId",
+          "logoUrl",
+          "primaryColor",
+          "accentSoftColor",
+          "appName",
+          "receiptFooter",
+          "reportCardFooter",
+          "timezone",
+          "currency",
+          "locale"
+        ]
+      },
+      "UpdateSchoolSettingsDto": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "logoFileId": {
+            "type": "string",
+            "nullable": true,
+            "format": "uuid"
+          },
+          "primaryColor": {
+            "type": "string",
+            "description": "Format and contrast are checked in the service (message has the ratio).",
+            "maxLength": 16,
+            "example": "#0B7F74"
+          },
+          "accentSoftColor": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "example": "#E6F5F2"
+          },
+          "appName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "example": "eSchool"
+          },
+          "receiptFooter": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 300
+          },
+          "reportCardFooter": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 300
+          },
+          "timezone": {
+            "type": "string",
+            "description": "IANA zone; checked in the service.",
+            "maxLength": 64,
+            "example": "Asia/Karachi"
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "example": "PKR"
+          },
+          "locale": {
+            "type": "string",
+            "maxLength": 20,
+            "example": "en-PK"
+          }
+        }
+      },
+      "EmailSwitchDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "fromName": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 60
+          }
+        },
+        "required": [
+          "enabled",
+          "fromName"
+        ]
+      },
+      "SmsSwitchDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "senderId": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 20
+          }
+        },
+        "required": [
+          "enabled",
+          "senderId"
+        ]
+      },
+      "PushSwitchDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "enabled"
+        ]
+      },
+      "CategoryChannelsDto": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "ATTENDANCE",
+              "DIARY",
+              "ACTIVITY",
+              "CONSENT",
+              "NOTICE",
+              "MESSAGE",
+              "COMPLAINT",
+              "MEETING",
+              "HEALTH",
+              "PICKUP",
+              "LEAVE",
+              "APPROVAL",
+              "EXAM",
+              "RESULT",
+              "FEE",
+              "PAYROLL",
+              "EXPENSE",
+              "INVENTORY",
+              "CERTIFICATE"
+            ]
+          },
+          "email": {
+            "type": "boolean"
+          },
+          "sms": {
+            "type": "boolean"
+          },
+          "push": {
+            "type": "boolean"
+          },
+          "inApp": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "category",
+          "email",
+          "sms",
+          "push",
+          "inApp"
+        ]
+      },
+      "NotificationSettingsDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "$ref": "#/components/schemas/EmailSwitchDto"
+          },
+          "sms": {
+            "$ref": "#/components/schemas/SmsSwitchDto"
+          },
+          "push": {
+            "$ref": "#/components/schemas/PushSwitchDto"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryChannelsDto"
+            }
+          }
+        },
+        "required": [
+          "email",
+          "sms",
+          "push",
+          "categories"
+        ]
+      },
+      "UpdateNotificationSettingsDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "$ref": "#/components/schemas/EmailSwitchDto"
+          },
+          "sms": {
+            "$ref": "#/components/schemas/SmsSwitchDto"
+          },
+          "push": {
+            "$ref": "#/components/schemas/PushSwitchDto"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryChannelsDto"
+            }
+          }
+        }
+      },
+      "LateFeeDefaultDto": {
+        "type": "object",
+        "properties": {
+          "amountMinor": {
+            "type": "number",
+            "minimum": 0
+          },
+          "afterDays": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 365
+          }
+        },
+        "required": [
+          "amountMinor",
+          "afterDays"
+        ]
+      },
+      "PasswordPolicyDto": {
+        "type": "object",
+        "properties": {
+          "minLength": {
+            "type": "number",
+            "minimum": 8,
+            "maximum": 64
+          },
+          "requireDigit": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PoliciesDto": {
+        "type": "object",
+        "properties": {
+          "attendanceLockTime": {
+            "type": "string",
+            "example": "11:00"
+          },
+          "diaryModeration": {
+            "type": "boolean"
+          },
+          "gradingDefault": {
+            "type": "string",
+            "nullable": true
+          },
+          "feeLateFeeDefault": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LateFeeDefaultDto"
+              }
+            ]
+          },
+          "approvalLimits": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            },
+            "example": {
+              "CONCESSION": 2500000
+            }
+          },
+          "passwordPolicy": {
+            "$ref": "#/components/schemas/PasswordPolicyDto"
+          },
+          "sessionTimeoutMinutes": {
+            "type": "number"
+          },
+          "twoFactorRequiredFor": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "SUPER_ADMIN",
+                "PRINCIPAL",
+                "COORDINATOR",
+                "HEAD_TEACHER",
+                "TEACHER",
+                "HELPER",
+                "ACCOUNTANT",
+                "PARENT"
+              ]
+            }
+          }
+        },
+        "required": [
+          "attendanceLockTime",
+          "diaryModeration",
+          "gradingDefault",
+          "feeLateFeeDefault",
+          "approvalLimits",
+          "passwordPolicy",
+          "sessionTimeoutMinutes",
+          "twoFactorRequiredFor"
+        ]
+      },
+      "UpdatePoliciesDto": {
+        "type": "object",
+        "properties": {
+          "attendanceLockTime": {
+            "type": "string",
+            "example": "11:00"
+          },
+          "diaryModeration": {
+            "type": "boolean"
+          },
+          "gradingDefault": {
+            "type": "string",
+            "nullable": true,
+            "format": "uuid"
+          },
+          "feeLateFeeDefault": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LateFeeDefaultDto"
+              }
+            ]
+          },
+          "approvalLimits": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            },
+            "description": "Keys and amounts are checked in the service.",
+            "example": {
+              "CONCESSION": 2500000
+            }
+          },
+          "passwordPolicy": {
+            "$ref": "#/components/schemas/PasswordPolicyDto"
+          },
+          "sessionTimeoutMinutes": {
+            "type": "number",
+            "minimum": 5,
+            "maximum": 1440
+          },
+          "twoFactorRequiredFor": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "SUPER_ADMIN",
+                "PRINCIPAL",
+                "COORDINATOR",
+                "HEAD_TEACHER",
+                "TEACHER",
+                "HELPER",
+                "ACCOUNTANT",
+                "PARENT"
+              ]
+            }
+          }
+        }
+      },
+      "BrandingDto": {
+        "type": "object",
+        "properties": {
+          "schoolName": {
+            "type": "string"
+          },
+          "logoUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "5-minute link"
+          },
+          "primaryColor": {
+            "type": "string",
+            "example": "#0B7F74"
+          },
+          "accentSoftColor": {
+            "type": "string",
+            "example": "#E6F5F2"
+          },
+          "appName": {
+            "type": "string",
+            "example": "eSchool"
+          }
+        },
+        "required": [
+          "schoolName",
+          "logoUrl",
+          "primaryColor",
+          "accentSoftColor",
+          "appName"
+        ]
       },
       "AttendanceTodayDto": {
         "type": "object",
@@ -37859,459 +38723,6 @@
         "required": [
           "status",
           "fileUrl"
-        ]
-      },
-      "SchoolSettingsDto": {
-        "type": "object",
-        "properties": {
-          "schoolId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "displayName": {
-            "type": "string"
-          },
-          "logoFileId": {
-            "type": "string",
-            "nullable": true
-          },
-          "logoUrl": {
-            "type": "string",
-            "nullable": true,
-            "description": "5-minute link"
-          },
-          "primaryColor": {
-            "type": "string",
-            "example": "#0B7F74"
-          },
-          "accentSoftColor": {
-            "type": "string",
-            "example": "#E6F5F2"
-          },
-          "appName": {
-            "type": "string",
-            "example": "eSchool"
-          },
-          "receiptFooter": {
-            "type": "string",
-            "nullable": true
-          },
-          "reportCardFooter": {
-            "type": "string",
-            "nullable": true
-          },
-          "timezone": {
-            "type": "string",
-            "example": "Asia/Karachi"
-          },
-          "currency": {
-            "type": "string",
-            "example": "PKR"
-          },
-          "locale": {
-            "type": "string",
-            "example": "en-PK"
-          }
-        },
-        "required": [
-          "schoolId",
-          "displayName",
-          "logoFileId",
-          "logoUrl",
-          "primaryColor",
-          "accentSoftColor",
-          "appName",
-          "receiptFooter",
-          "reportCardFooter",
-          "timezone",
-          "currency",
-          "locale"
-        ]
-      },
-      "UpdateSchoolSettingsDto": {
-        "type": "object",
-        "properties": {
-          "displayName": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 120
-          },
-          "logoFileId": {
-            "type": "string",
-            "nullable": true,
-            "format": "uuid"
-          },
-          "primaryColor": {
-            "type": "string",
-            "description": "Format and contrast are checked in the service (message has the ratio).",
-            "maxLength": 16,
-            "example": "#0B7F74"
-          },
-          "accentSoftColor": {
-            "type": "string",
-            "pattern": "^#[0-9a-fA-F]{6}$",
-            "example": "#E6F5F2"
-          },
-          "appName": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 40,
-            "example": "eSchool"
-          },
-          "receiptFooter": {
-            "type": "string",
-            "nullable": true,
-            "maxLength": 300
-          },
-          "reportCardFooter": {
-            "type": "string",
-            "nullable": true,
-            "maxLength": 300
-          },
-          "timezone": {
-            "type": "string",
-            "description": "IANA zone; checked in the service.",
-            "maxLength": 64,
-            "example": "Asia/Karachi"
-          },
-          "currency": {
-            "type": "string",
-            "pattern": "^[A-Z]{3}$",
-            "example": "PKR"
-          },
-          "locale": {
-            "type": "string",
-            "maxLength": 20,
-            "example": "en-PK"
-          }
-        }
-      },
-      "EmailSwitchDto": {
-        "type": "object",
-        "properties": {
-          "enabled": {
-            "type": "boolean"
-          },
-          "fromName": {
-            "type": "string",
-            "nullable": true,
-            "maxLength": 60
-          }
-        },
-        "required": [
-          "enabled",
-          "fromName"
-        ]
-      },
-      "SmsSwitchDto": {
-        "type": "object",
-        "properties": {
-          "enabled": {
-            "type": "boolean"
-          },
-          "senderId": {
-            "type": "string",
-            "nullable": true,
-            "maxLength": 20
-          }
-        },
-        "required": [
-          "enabled",
-          "senderId"
-        ]
-      },
-      "PushSwitchDto": {
-        "type": "object",
-        "properties": {
-          "enabled": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "enabled"
-        ]
-      },
-      "CategoryChannelsDto": {
-        "type": "object",
-        "properties": {
-          "category": {
-            "type": "string",
-            "enum": [
-              "ATTENDANCE",
-              "DIARY",
-              "ACTIVITY",
-              "CONSENT",
-              "NOTICE",
-              "MESSAGE",
-              "COMPLAINT",
-              "MEETING",
-              "HEALTH",
-              "PICKUP",
-              "LEAVE",
-              "APPROVAL",
-              "EXAM",
-              "RESULT",
-              "FEE",
-              "PAYROLL",
-              "EXPENSE",
-              "INVENTORY",
-              "CERTIFICATE"
-            ]
-          },
-          "email": {
-            "type": "boolean"
-          },
-          "sms": {
-            "type": "boolean"
-          },
-          "push": {
-            "type": "boolean"
-          },
-          "inApp": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "category",
-          "email",
-          "sms",
-          "push",
-          "inApp"
-        ]
-      },
-      "NotificationSettingsDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "$ref": "#/components/schemas/EmailSwitchDto"
-          },
-          "sms": {
-            "$ref": "#/components/schemas/SmsSwitchDto"
-          },
-          "push": {
-            "$ref": "#/components/schemas/PushSwitchDto"
-          },
-          "categories": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CategoryChannelsDto"
-            }
-          }
-        },
-        "required": [
-          "email",
-          "sms",
-          "push",
-          "categories"
-        ]
-      },
-      "UpdateNotificationSettingsDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "$ref": "#/components/schemas/EmailSwitchDto"
-          },
-          "sms": {
-            "$ref": "#/components/schemas/SmsSwitchDto"
-          },
-          "push": {
-            "$ref": "#/components/schemas/PushSwitchDto"
-          },
-          "categories": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CategoryChannelsDto"
-            }
-          }
-        }
-      },
-      "LateFeeDefaultDto": {
-        "type": "object",
-        "properties": {
-          "amountMinor": {
-            "type": "number",
-            "minimum": 0
-          },
-          "afterDays": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 365
-          }
-        },
-        "required": [
-          "amountMinor",
-          "afterDays"
-        ]
-      },
-      "PasswordPolicyDto": {
-        "type": "object",
-        "properties": {
-          "minLength": {
-            "type": "number",
-            "minimum": 8,
-            "maximum": 64
-          },
-          "requireDigit": {
-            "type": "boolean"
-          }
-        }
-      },
-      "PoliciesDto": {
-        "type": "object",
-        "properties": {
-          "attendanceLockTime": {
-            "type": "string",
-            "example": "11:00"
-          },
-          "diaryModeration": {
-            "type": "boolean"
-          },
-          "gradingDefault": {
-            "type": "string",
-            "nullable": true
-          },
-          "feeLateFeeDefault": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/LateFeeDefaultDto"
-              }
-            ]
-          },
-          "approvalLimits": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number"
-            },
-            "example": {
-              "CONCESSION": 2500000
-            }
-          },
-          "passwordPolicy": {
-            "$ref": "#/components/schemas/PasswordPolicyDto"
-          },
-          "sessionTimeoutMinutes": {
-            "type": "number"
-          },
-          "twoFactorRequiredFor": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "SUPER_ADMIN",
-                "PRINCIPAL",
-                "COORDINATOR",
-                "HEAD_TEACHER",
-                "TEACHER",
-                "HELPER",
-                "ACCOUNTANT",
-                "PARENT"
-              ]
-            }
-          }
-        },
-        "required": [
-          "attendanceLockTime",
-          "diaryModeration",
-          "gradingDefault",
-          "feeLateFeeDefault",
-          "approvalLimits",
-          "passwordPolicy",
-          "sessionTimeoutMinutes",
-          "twoFactorRequiredFor"
-        ]
-      },
-      "UpdatePoliciesDto": {
-        "type": "object",
-        "properties": {
-          "attendanceLockTime": {
-            "type": "string",
-            "example": "11:00"
-          },
-          "diaryModeration": {
-            "type": "boolean"
-          },
-          "gradingDefault": {
-            "type": "string",
-            "nullable": true,
-            "format": "uuid"
-          },
-          "feeLateFeeDefault": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/LateFeeDefaultDto"
-              }
-            ]
-          },
-          "approvalLimits": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number"
-            },
-            "description": "Keys and amounts are checked in the service.",
-            "example": {
-              "CONCESSION": 2500000
-            }
-          },
-          "passwordPolicy": {
-            "$ref": "#/components/schemas/PasswordPolicyDto"
-          },
-          "sessionTimeoutMinutes": {
-            "type": "number",
-            "minimum": 5,
-            "maximum": 1440
-          },
-          "twoFactorRequiredFor": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "SUPER_ADMIN",
-                "PRINCIPAL",
-                "COORDINATOR",
-                "HEAD_TEACHER",
-                "TEACHER",
-                "HELPER",
-                "ACCOUNTANT",
-                "PARENT"
-              ]
-            }
-          }
-        }
-      },
-      "BrandingDto": {
-        "type": "object",
-        "properties": {
-          "schoolName": {
-            "type": "string"
-          },
-          "logoUrl": {
-            "type": "string",
-            "nullable": true,
-            "description": "5-minute link"
-          },
-          "primaryColor": {
-            "type": "string",
-            "example": "#0B7F74"
-          },
-          "accentSoftColor": {
-            "type": "string",
-            "example": "#E6F5F2"
-          },
-          "appName": {
-            "type": "string",
-            "example": "eSchool"
-          }
-        },
-        "required": [
-          "schoolName",
-          "logoUrl",
-          "primaryColor",
-          "accentSoftColor",
-          "appName"
         ]
       },
       "FailedRecipientDto": {

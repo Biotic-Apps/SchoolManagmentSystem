@@ -59,8 +59,9 @@ export class SettingsRepository {
   upsert(
     schoolId: string,
     data: Omit<Prisma.SchoolSettingUncheckedCreateInput, 'schoolId'>,
+    db: Prisma.TransactionClient = this.prisma,
   ): Promise<SchoolSettingRow> {
-    return this.prisma.schoolSetting.upsert({
+    return db.schoolSetting.upsert({
       where: { schoolId },
       create: { schoolId, ...data },
       update: data,

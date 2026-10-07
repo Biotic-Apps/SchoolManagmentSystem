@@ -39,6 +39,7 @@ import { MeModule } from './modules/me/me.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { SchoolDayModule } from './modules/school-day/school-day.module';
 import { SchoolsModule } from './modules/schools/schools.module';
+import { SchoolSetupModule } from './modules/school-setup/school-setup.module';
 import { StaffModule } from './modules/staff/staff.module';
 import { StudentsModule } from './modules/students/students.module';
 import { SyllabusModule } from './modules/syllabus/syllabus.module';
@@ -84,6 +85,7 @@ import { ImportsModule } from './modules/imports/imports.module';
     MeModule,
     RolesModule,
     SchoolsModule,
+    SchoolSetupModule,
     BranchesModule,
     UsersModule,
     AcademicSessionsModule,
