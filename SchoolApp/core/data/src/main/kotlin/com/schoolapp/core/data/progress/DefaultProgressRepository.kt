@@ -3,7 +3,10 @@ package com.schoolapp.core.data.progress
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.common.result.map
 import com.schoolapp.core.data.common.approvalId
+import com.schoolapp.core.data.common.arrayAt
+import com.schoolapp.core.data.common.decodeEach
 import com.schoolapp.core.data.common.isPendingReview
+import com.schoolapp.core.model.progress.HomeworkCompletionItem
 import com.schoolapp.core.model.progress.HomeworkTick
 import com.schoolapp.core.model.progress.ProgressNote
 import com.schoolapp.core.model.progress.ProgressNoteInput
@@ -11,6 +14,7 @@ import com.schoolapp.core.model.progress.ProgressNoteOutcome
 import com.schoolapp.core.network.ApiCaller
 import com.schoolapp.core.network.api.ProgressApi
 import com.schoolapp.core.network.dto.progress.HomeworkEntryDto
+import com.schoolapp.core.network.dto.progress.HomeworkItemDto
 import com.schoolapp.core.network.dto.progress.HomeworkStatusBodyDto
 import com.schoolapp.core.network.dto.progress.ProgressNoteBodyDto
 import com.schoolapp.core.network.dto.progress.ProgressNoteDto
@@ -43,5 +47,14 @@ class DefaultProgressRepository @Inject constructor(
         apiCaller.call {
             api.homeworkStatus(diaryId, HomeworkStatusBodyDto(ticks.map { HomeworkEntryDto(it.studentId, it.status.name) }))
             Unit
+        }
+
+    override suspend fun homeworkCompletion(studentId: String, from: String?, to: String?): AppResult<List<HomeworkCompletionItem>> =
+        apiCaller.call {
+            val items = api.homeworkCompletion(studentId, from, to).data.arrayAt("entries", "items", "data")
+            json.decodeEach(items, HomeworkItemDto.serializer())
+                .mapIndexed { index, dto -> dto.toModel(index) }
+                .filter { it.homework.isNotEmpty() }
+                .sortedByDescending { it.date }
         }
 }

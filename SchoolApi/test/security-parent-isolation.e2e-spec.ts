@@ -27,6 +27,7 @@ const p = (suffix: string) => (id: string) => `/students/${id}${suffix}`;
 
 const PROBES: Record<string, Probe> = {
   'GET /students/:id': { url: p('') },
+  'GET /students/:studentId/calendar': { url: p('/calendar') },
   'GET /students/:id/enrollments': { url: p('/enrollments') },
   'GET /students/:id/fee-summary': { url: p('/fee-summary') },
   'GET /students/:id/health': { url: p('/health') },

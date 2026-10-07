@@ -11,6 +11,7 @@ import com.schoolapp.core.model.meeting.MeetingBox
 import com.schoolapp.core.model.meeting.MeetingMode
 import com.schoolapp.core.model.meeting.MeetingSlot
 import com.schoolapp.core.model.meeting.MeetingStatus
+import com.schoolapp.core.model.meeting.SlotInput
 
 internal fun slot(id: String, date: String = "2026-10-08", start: String = "09:00") =
     MeetingSlot(id, PersonRef("t1", "Ms Sana"), date, start, "09:20", MeetingMode.IN_PERSON, null, "OPEN")
@@ -32,6 +33,31 @@ internal class FakeMeetingsRepository : MeetingsRepository {
     override suspend fun openSlots(from: String, to: String, staffUserId: String?): AppResult<List<MeetingSlot>> {
         slotRequests += from to to
         return AppResult.Success(slots)
+    }
+
+    var mine = listOf(slot("m1", date = "2026-10-06", start = "13:00"), slot("m2", date = "2026-10-08").copy(status = "BOOKED"))
+    var publishError: AppError? = null
+    var removeError: AppError? = null
+    val mySlotRequests = mutableListOf<Triple<String, String, String>>()
+    val published = mutableListOf<List<SlotInput>>()
+    val removed = mutableListOf<String>()
+
+    override suspend fun mySlots(staffUserId: String, from: String, to: String): AppResult<List<MeetingSlot>> {
+        mySlotRequests += Triple(staffUserId, from, to)
+        return AppResult.Success(mine)
+    }
+
+    override suspend fun publishSlots(slots: List<SlotInput>): AppResult<List<MeetingSlot>> {
+        publishError?.let { return AppResult.Failure(it) }
+        published += slots
+        return AppResult.Success(slots.mapIndexed { i, s -> MeetingSlot("new$i", null, s.date, s.startTime, s.endTime, s.mode, s.location, "OPEN") })
+    }
+
+    override suspend fun removeSlot(id: String): AppResult<MeetingSlot> {
+        removeError?.let { return AppResult.Failure(it) }
+        removed += id
+        mine = mine.filterNot { it.id == id }
+        return AppResult.Success(slot(id).copy(status = "CANCELLED"))
     }
 
     override suspend fun book(slotId: String, studentId: String, agenda: String): AppResult<Meeting> {

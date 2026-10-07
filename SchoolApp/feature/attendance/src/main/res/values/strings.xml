@@ -167,4 +167,24 @@
     <string name="attendance_tab_decided">Decided</string>
     <string name="attendance_review_empty_pending">No leave requests waiting for you</string>
     <string name="attendance_review_empty_decided">No decided leave requests yet</string>
+
+    <!-- Staff register (supervisors) -->
+    <string name="attendance_tab_classes">Classes</string>
+    <string name="attendance_tab_staff">Staff</string>
+    <string name="attendance_staff_empty">No active staff</string>
+    <string name="attendance_staff_empty_message">Staff of this branch appear here once they are added in Staff.</string>
+    <string name="attendance_staff_no_branch">No branch to show</string>
+    <string name="attendance_staff_save">Save</string>
+    <string name="attendance_staff_saved">Staff attendance saved.</string>
+    <string name="attendance_staff_all_saved">All changes saved</string>
+    <string name="attendance_unsaved_changes">Unsaved changes</string>
+    <string name="attendance_staff_details_for">Check times and remark for %1$s</string>
+    <string name="attendance_staff_no_times">Check times apply only to present, late and half-day marks.</string>
+    <string name="attendance_check_in_label">Check-in</string>
+    <string name="attendance_check_out_label">Check-out</string>
+    <string name="attendance_time_not_set">Not set</string>
+    <string name="attendance_clear_times">Clear times</string>
+    <string name="attendance_remark">Remark</string>
+    <string name="attendance_remark_optional">Optional</string>
+    <string name="attendance_done">Done</string>
 </resources>

@@ -76,8 +76,15 @@ class DemoAwareComplaintsRepository @Inject constructor(
         return find(complaint.id)
     }
 
-    override suspend fun addUpdate(id: String, message: String, status: ComplaintStatus?): AppResult<Complaint> =
-        if (auth.isDemoActive) change(id, message, status) { it } else real.addUpdate(id, message, status)
+    override suspend fun assign(id: String, assigneeUserId: String): AppResult<Complaint> {
+        if (!auth.isDemoActive) return real.assign(id, assigneeUserId)
+        val staff = DemoStaffData.staff.firstOrNull { it.userId == assigneeUserId }
+            ?: return AppResult.Failure(AppError.Server(404, "NOT_FOUND", null))
+        return change(id, "Assigned to ${staff.name}", ComplaintStatus.ASSIGNED) { it.copy(assignee = PersonRef(assigneeUserId, staff.name)) }
+    }
+
+    override suspend fun addUpdate(id: String, message: String, status: ComplaintStatus?, attachmentFileIds: List<String>): AppResult<Complaint> =
+        if (auth.isDemoActive) change(id, message, status) { it } else real.addUpdate(id, message, status, attachmentFileIds)
 
     override suspend fun escalate(id: String, reason: String?): AppResult<Complaint> =
         if (auth.isDemoActive) {

@@ -6,6 +6,13 @@
     <string name="timetable_break">Break</string>
     <string name="timetable_period">Period %1$d</string>
     <string name="timetable_read_only">Timetables are edited and published on the web panel.</string>
+    <string name="timetable_tab_week">Timetable</string>
+    <string name="timetable_tab_calendar">Calendar</string>
+    <string name="timetable_tab_activities">Activities</string>
+    <string name="timetable_no_child">Link a child to see the school calendar</string>
+    <string name="timetable_calendar_title">Upcoming school calendar</string>
+    <string name="timetable_calendar_window">Holidays, events and deadlines in the next %1$d days</string>
+    <string name="timetable_calendar_empty">Nothing on the calendar in the next few months</string>
     <string-array name="timetable_days_short">
         <item>Mon</item>
         <item>Tue</item>

@@ -78,20 +78,12 @@ Definition of Done per module: schema + migration · API with permission/scope g
 ## Phase 6 — Pilot & rollout
 - [ ] Pilot branch
 
-## Phase 5 status (paused 2026-10-06 — resume here)
-Done (code on disk, each part tested by its own helper; full suites NOT yet run together):
-- API: settings & branding (+public /branding), notification switches, school policies fallback, /support (failed notifications, jobs retry, health), TOTP 2FA + recovery codes + unlock + password policy + web session timeout, encrypted backups + restore verify (built-in COPY format in dev because pg_dump is not installed; prod requires pg_dump), XLSX/CSV data import (students, guardians, staff, opening balances, fee plans) with validate/commit/revert, S3 driver, sharp image re-encode, ClamAV hook, file-purpose access fixes, audit_logs monthly partitions, trusted proxy, security e2e suites (parent 404 sweep, rate limit, headers, route inventory), carry-overs (promotion capacity, payroll adjustment cancel, fee plan archive).
-- Web: Settings & Backups (branding, notifications, policies, support, backups, data import), forgot/reset password, 2FA setup + login step, unlock user, teacher "My Classes & Students" roster, principal Settings menu; tsc/lint/build passed before the last API changes.
-- Android: branded adaptive icon + splash, forgot/reset + 2FA verify, branding, org pull-to-refresh, release cert pinning config, parity-android.md; assembleDebug + testDebugUnitTest (357 tests) + assembleRelease pass; installed on phone, no crash.
-- Docs: docs/parity.md (web), docs/parity-android.md, docs/security-review.md (API, Web, Android sections).
-
-Remaining (next session, in order):
-1. API: finish lead's list — @AuthThrottle on /auth/password/change + count wrong current password toward lockout; IMPORT file purpose restricted to uploader/settings.import; archived diary attachments not signed; POST /students/:id/id-card needs students.edit; update test/security-routes allow-list for new routes.
-2. API: npm audit overrides (mysql2, js-yaml, uuid); run full build/lint/unit/e2e on eschool_test and fix regressions (file-attach change, branch-settings fallback).
-3. Dev .env: BACKUP_ENCRYPTION_KEY + TWO_FACTOR_ENCRYPTION_KEY; migrate deploy + seed; run one real backup + verify on dev DB.
-4. Regenerate openapi.json, README, append all helpers' Deviations to docs/api/phase5-contract.md.
-5. Restart API, web screenshot check of Settings/Imports/Backups/2FA for super admin + principal; merge parity docs; parent calendar on timetable (needs parent calendar read permission); Android cold start still ~5.2 s in debug — measure release.
-6. Commit "Phase 5 complete", then Phase 6 (pilot).
+## Phase 5 notes (complete 2026-10-07)
+- API: settings & branding, notification switches, policies, support tools, TOTP 2FA + recovery codes, unlock, password policy, encrypted backups + restore verify, XLSX/CSV data import, S3 driver, image re-encode, ClamAV hook, audit_logs monthly partitions, trusted proxy, security e2e suites, parent school calendar `GET /students/:id/calendar`. 642 unit + 137 e2e tests; npm audit 0 vulnerabilities. Real backup on dev DB restore-verified (PASSED). Deviations in docs/api/phase5-contract.md.
+- Web: Settings & Backups, forgot/reset password, 2FA setup + login step (verified end-to-end), unlock user, teacher roster, parent school calendar, idle logout from policy `sessionTimeoutMinutes`. Fixed in integration: principal saw super-admin-only Support tab; import size 10→5 MB; timeout range 480→1440.
+- Android: branded icon + splash, forgot/reset + 2FA verify, branding, pull-to-refresh, release pinning, staff attendance marking, meeting slot publishing, parent homework tab, attachments on incidents/complaint updates, complaint assign, parent Timetable tabs (Timetable / Calendar / Activities). 431 unit tests; assembleDebug + assembleRelease pass.
+- Parity: docs/parity.md (web) and docs/parity-android.md — every gap Fixed or Justified. Security review in docs/security-review.md.
+- Carry to Phase 6: new Android screens not yet checked on a phone (no device connected 2026-10-07); release cold start not measured; optional Android app lock (security.md §8) not built; staff-attendance Hilt modules could be merged into the main modules; demo seed has no calendar events; parent phone + OTP sign-in not built (no API endpoint).
 
 ## Phase 4 notes
 - API: 324 unit + 62 e2e tests; migration phase4_finance_results (43 tables, append-only triggers on ledger_entries/stock_movements, money CHECKs). GET /jobs/:id for all background jobs. Deviations in docs/api/phase4-contract.md.

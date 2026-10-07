@@ -17,6 +17,7 @@ import com.schoolapp.core.model.exams.MarkSheetSyncState
 import com.schoolapp.core.model.exams.ReportCard
 import com.schoolapp.core.model.exams.ReportCardStatus
 import com.schoolapp.core.model.exams.StudentResult
+import com.schoolapp.core.model.progress.HomeworkCompletionItem
 import com.schoolapp.core.model.progress.HomeworkTick
 import com.schoolapp.core.model.progress.ProgressNote
 import com.schoolapp.core.model.progress.ProgressNoteInput
@@ -92,4 +93,6 @@ internal class FakeProgressRepository(private val notes: Map<String, List<Progre
     override suspend fun notes(studentId: String): AppResult<List<ProgressNote>> = AppResult.Success(notes[studentId].orEmpty())
     override suspend fun addNote(studentId: String, input: ProgressNoteInput): AppResult<ProgressNoteOutcome> = error("unused")
     override suspend fun saveHomeworkStatus(diaryId: String, ticks: List<HomeworkTick>): AppResult<Unit> = error("unused")
+    override suspend fun homeworkCompletion(studentId: String, from: String?, to: String?): AppResult<List<HomeworkCompletionItem>> =
+        error("unused")
 }

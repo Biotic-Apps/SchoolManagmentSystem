@@ -9,7 +9,7 @@ import com.schoolapp.core.data.files.FilesRepository
 import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.complaint.ComplaintCategory
 import com.schoolapp.core.model.complaint.ComplaintInput
-import com.schoolapp.core.model.files.Attachment
+import com.schoolapp.core.model.files.AttachmentDraft
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -56,26 +56,24 @@ class FileComplaintViewModel @Inject constructor(
     fun onAnonymousChange(anonymous: Boolean) = _uiState.update { it.copy(anonymous = anonymous) }
 
     fun onAttach(uri: String) {
-        _uiState.update { it.copy(uploadingCount = it.uploadingCount + 1, error = null) }
+        if (!_uiState.value.attachments.canAdd(AttachmentDraft.DEFAULT_MAX)) return
+        _uiState.update { it.copy(attachments = it.attachments.started(), error = null) }
         viewModelScope.launch {
             val result = filesRepository.upload(uri)
             _uiState.update { state ->
                 when (result) {
-                    is AppResult.Success -> state.copy(
-                        uploadingCount = state.uploadingCount - 1,
-                        attachments = state.attachments + result.data.let { Attachment(it.id, it.url, it.mime, it.name) },
-                    )
-                    is AppResult.Failure -> state.copy(uploadingCount = state.uploadingCount - 1, error = result.error)
+                    is AppResult.Success -> state.copy(attachments = state.attachments.added(result.data.toAttachment()))
+                    is AppResult.Failure -> state.copy(attachments = state.attachments.failed(), error = result.error)
                 }
             }
         }
     }
 
-    fun onRemoveAttachment(id: String) = _uiState.update { state -> state.copy(attachments = state.attachments.filterNot { it.id == id }) }
+    fun onRemoveAttachment(id: String) = _uiState.update { it.copy(attachments = it.attachments.removed(id)) }
 
     fun submit() {
         val state = _uiState.value
-        if (state.isSubmitting || state.uploadingCount > 0) return
+        if (state.isSubmitting || state.attachments.isUploading) return
         val category = state.category
         val checked = state.copy(
             categoryMissing = category == null,
@@ -92,7 +90,7 @@ class FileComplaintViewModel @Inject constructor(
             description = state.description.trim(),
             studentId = state.childId.takeIf { state.isParent },
             anonymous = state.anonymous,
-            attachmentFileIds = state.attachments.map(Attachment::id),
+            attachmentFileIds = state.attachments.fileIds,
         )
         _uiState.update { it.copy(isSubmitting = true, error = null) }
         viewModelScope.launch {

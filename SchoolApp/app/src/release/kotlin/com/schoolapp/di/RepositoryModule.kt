@@ -60,6 +60,8 @@ import com.schoolapp.core.data.payroll.PayrollRepository
 import com.schoolapp.core.data.payroll.DefaultPayrollRepository
 import com.schoolapp.core.data.certificates.CertificatesRepository
 import com.schoolapp.core.data.certificates.DefaultCertificatesRepository
+import com.schoolapp.core.data.calendar.DefaultStudentCalendarRepository
+import com.schoolapp.core.data.calendar.StudentCalendarRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -97,6 +99,9 @@ interface RepositoryModule {
 
     @Binds
     fun bindTimetableRepository(impl: DefaultTimetableRepository): TimetableRepository
+
+    @Binds
+    fun bindStudentCalendarRepository(impl: DefaultStudentCalendarRepository): StudentCalendarRepository
 
     @Binds
     fun bindSyllabusRepository(impl: DefaultSyllabusRepository): SyllabusRepository

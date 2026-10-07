@@ -20,6 +20,7 @@ import com.schoolapp.core.model.organisation.Section
 import com.schoolapp.core.model.organisation.Subject
 import com.schoolapp.core.model.people.StudentDetail
 import com.schoolapp.core.model.people.StudentSummary
+import com.schoolapp.core.model.progress.HomeworkCompletionItem
 import com.schoolapp.core.model.progress.HomeworkTick
 import com.schoolapp.core.model.progress.ProgressNote
 import com.schoolapp.core.model.progress.ProgressNoteInput
@@ -54,6 +55,15 @@ internal class FakeProgressRepository : ProgressRepository {
     override suspend fun saveHomeworkStatus(diaryId: String, ticks: List<HomeworkTick>): AppResult<Unit> {
         homeworkCalls += diaryId to ticks
         return homeworkError?.let { AppResult.Failure(it) } ?: AppResult.Success(Unit)
+    }
+
+    var completion: Map<String, List<HomeworkCompletionItem>> = emptyMap()
+    var completionError: AppError? = null
+    val completionCalls = mutableListOf<Triple<String, String?, String?>>()
+
+    override suspend fun homeworkCompletion(studentId: String, from: String?, to: String?): AppResult<List<HomeworkCompletionItem>> {
+        completionCalls += Triple(studentId, from, to)
+        return completionError?.let { AppResult.Failure(it) } ?: AppResult.Success(completion[studentId].orEmpty())
     }
 }
 

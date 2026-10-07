@@ -12,19 +12,23 @@ import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.designsystem.component.SwitcherOption
 import com.schoolapp.core.model.complaint.ComplaintStatus
 import com.schoolapp.core.ui.appErrorMessage
+import com.schoolapp.core.ui.attachments.AttachmentsField
 import com.schoolapp.feature.complaints.R
 import com.schoolapp.feature.complaints.components.statusLabel
+import com.schoolapp.feature.complaints.detail.UPDATE_MAX_ATTACHMENTS
 import com.schoolapp.feature.complaints.detail.UpdateEditor
 
 private val UpdateStatuses = listOf(ComplaintStatus.IN_PROGRESS, ComplaintStatus.RESOLVED)
 private const val NO_CHANGE = "none"
 
-/** Assignee "Add update" (message + optional status) or complainant "Add comment". */
+/** Assignee "Add update" (message + optional status) or complainant "Add comment"; both may attach files. */
 @Composable
 internal fun UpdateSheet(
     editor: UpdateEditor,
     onMessageChange: (String) -> Unit,
     onStatusChange: (ComplaintStatus?) -> Unit,
+    onAttach: (String) -> Unit,
+    onRemoveAttachment: (String) -> Unit,
     onSave: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -47,6 +51,18 @@ internal fun UpdateSheet(
                 onSelect = { id -> onStatusChange(UpdateStatuses.firstOrNull { it.name == id }) },
             )
         }
-        PrimaryButton(stringResource(R.string.complaints_save), onSave, loading = editor.isSaving)
+        AttachmentsField(
+            draft = editor.attachments,
+            onPicked = onAttach,
+            onRemove = onRemoveAttachment,
+            max = UPDATE_MAX_ATTACHMENTS,
+            enabled = !editor.isSaving,
+        )
+        PrimaryButton(
+            stringResource(R.string.complaints_save),
+            onSave,
+            loading = editor.isSaving,
+            enabled = !editor.attachments.isUploading,
+        )
     }
 }

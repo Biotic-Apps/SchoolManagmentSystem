@@ -18,6 +18,7 @@ export const sessionKeys = {
   terms: (sessionId: string) => ["sessions", "terms", sessionId] as const,
   calendar: ["calendar"] as const,
   calendarRange: (branchId: string | null, from: string, to: string) => ["calendar", branchId, from, to] as const,
+  studentCalendar: (studentId: string | null) => ["calendar", "student", studentId] as const,
 };
 
 export function useAcademicSessions(branchId: string | null) {
@@ -89,6 +90,15 @@ export function useCalendarEvents(branchId: string | null, from: string, to: str
     queryKey: sessionKeys.calendarRange(branchId, from, to),
     queryFn: async () => (await http.get<CalendarEvent[]>("/calendar", { branchId, from, to })).data,
     enabled: !!branchId,
+  });
+}
+
+/** PARENT (and staff): holidays and events of the student's branch, today + 90 days by default. */
+export function useStudentCalendar(studentId: string | null) {
+  return useQuery({
+    queryKey: sessionKeys.studentCalendar(studentId),
+    queryFn: async () => (await http.get<CalendarEvent[]>(`/students/${studentId}/calendar`)).data,
+    enabled: !!studentId,
   });
 }
 

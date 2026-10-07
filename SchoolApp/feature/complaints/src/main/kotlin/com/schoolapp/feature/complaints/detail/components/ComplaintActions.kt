@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Comment
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.PersonAddAlt
 import androidx.compose.material.icons.outlined.Replay
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.runtime.Composable
@@ -26,11 +27,15 @@ internal fun ComplaintActions(
     detail: ComplaintDetailUi,
     onAddUpdate: () -> Unit,
     onReasonAction: (ReasonAction) -> Unit,
+    onAssign: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     FlowRow(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (detail.canAddUpdate) {
             PrimaryButton(stringResource(R.string.complaints_add_update), onAddUpdate, leadingIcon = Icons.Outlined.Edit)
+        }
+        if (detail.canAssign) {
+            SecondaryButton(stringResource(R.string.complaints_assign), onAssign, leadingIcon = Icons.Outlined.PersonAddAlt)
         }
         if (detail.canEscalate) {
             SecondaryButton(

@@ -6,8 +6,8 @@ import type { Thread } from "./types";
 
 export type InboxScope = "own" | "branch";
 
-/** Roles that may read every thread in their branch (read-only, audited by the API). */
-const BRANCH_READERS = new Set(["PRINCIPAL", "COORDINATOR"]);
+/** Roles that may read every thread in their branch (read-only, audited); same set as the API's ThreadAccessService. */
+const BRANCH_READERS = new Set(["PRINCIPAL", "COORDINATOR", "HEAD_TEACHER"]);
 
 function matches(thread: Thread, term: string): boolean {
   if (!term) return true;

@@ -1,6 +1,8 @@
 package com.schoolapp.core.data.health
 
+import com.schoolapp.core.data.common.orNullIfEmpty
 import com.schoolapp.core.data.common.string
+import com.schoolapp.core.data.common.toAttachments
 import com.schoolapp.core.model.common.enumOrDefault
 import com.schoolapp.core.model.health.Allergy
 import com.schoolapp.core.model.health.EmergencyContact
@@ -68,6 +70,7 @@ internal fun IncidentDto.toModel() = Incident(
     actionTaken = actionTaken,
     status = status,
     reportedByName = reportedBy?.name,
+    attachments = attachments.toAttachments(),
 )
 
 internal fun IncidentInput.toBody() = IncidentBodyDto(
@@ -77,6 +80,7 @@ internal fun IncidentInput.toBody() = IncidentBodyDto(
     severity = severity.name,
     description = description.trim(),
     actionTaken = actionTaken.trim(),
+    attachmentFileIds = attachmentFileIds.orNullIfEmpty(),
 )
 
 internal fun HealthChangeInput.toBody() = HealthChangeBodyDto(

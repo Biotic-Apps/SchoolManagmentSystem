@@ -43,6 +43,8 @@ export interface Session {
   permissions: string[];
   assignments: Assignment[];
   children: ChildSummary[];
+  /** Phase 5 policy: web sign-out after this many idle minutes (absent on older APIs). */
+  sessionTimeoutMinutes?: number;
 }
 
 /** What the BFF returns to the browser (the refresh token stays in an httpOnly cookie). */

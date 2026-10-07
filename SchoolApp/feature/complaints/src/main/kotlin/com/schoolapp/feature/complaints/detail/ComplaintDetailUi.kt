@@ -22,15 +22,17 @@ data class ComplaintDetailUi(
     val canComment: Boolean,
     val canClose: Boolean,
     val canReopen: Boolean,
+    val canAssign: Boolean = false,
 ) {
-    val hasActions: Boolean get() = canAddUpdate || canEscalate || canComment || canClose || canReopen
+    val hasActions: Boolean get() = canAddUpdate || canEscalate || canComment || canClose || canReopen || canAssign
 }
 
 /**
  * Maps the server record for [viewerUserId]; [openedAsComplainant] covers anonymous complaints
- * the viewer filed (the server may hide the complainant even from them).
+ * the viewer filed (the server may hide the complainant even from them). [canManage] is the
+ * `complaints.edit` permission: supervisors may (re)assign while the complaint is still open.
  */
-fun Complaint.toDetailUi(viewerUserId: String?, openedAsComplainant: Boolean): ComplaintDetailUi {
+fun Complaint.toDetailUi(viewerUserId: String?, openedAsComplainant: Boolean, canManage: Boolean = false): ComplaintDetailUi {
     val isAssignee = viewerUserId != null && assignee?.id == viewerUserId
     val isComplainant = (viewerUserId != null && complainant?.id == viewerUserId) || (openedAsComplainant && !isAssignee)
     val resolved = status == ComplaintStatus.RESOLVED
@@ -44,5 +46,6 @@ fun Complaint.toDetailUi(viewerUserId: String?, openedAsComplainant: Boolean): C
         canComment = isComplainant && !isAssignee && status != ComplaintStatus.CLOSED,
         canClose = isComplainant && resolved,
         canReopen = isComplainant && resolved,
+        canAssign = canManage && isOpen,
     )
 }

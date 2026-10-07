@@ -30,6 +30,7 @@ internal fun ComplaintDetailScreen(
     onRetry: () -> Unit,
     onAddUpdate: () -> Unit,
     onReasonAction: (ReasonAction) -> Unit,
+    onAssign: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val detail = state.detail
@@ -40,7 +41,7 @@ internal fun ComplaintDetailScreen(
         else -> ScreenColumn(modifier) {
             item(key = "header") { ComplaintHeaderCard(detail.complaint) }
             if (detail.hasActions) {
-                item(key = "actions") { ComplaintActions(detail, onAddUpdate, onReasonAction) }
+                item(key = "actions") { ComplaintActions(detail, onAddUpdate, onReasonAction, onAssign) }
             }
             item(key = "people") { ComplaintPeopleCard(detail) }
             item(key = "timeline") {

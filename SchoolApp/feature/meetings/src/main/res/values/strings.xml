@@ -75,4 +75,41 @@
     <string name="meetings_follow_up_overdue">Overdue · due %1$s</string>
     <string name="meetings_follow_up_open">Open</string>
     <string name="meetings_follow_up_done">Done</string>
+    <string name="meetings_my_slots">My slots</string>
+    <string name="meetings_add_slots">Add slots</string>
+    <string name="meetings_add_slots_title">Add meeting slots</string>
+    <string name="meetings_add_slots_hint">Parents of your students can book these times. Add a row for each slot.</string>
+    <string name="meetings_add_another_slot">Add another slot</string>
+    <string name="meetings_remove_slot_row">Remove row</string>
+    <string name="meetings_slot_number">Slot %1$d</string>
+    <string name="meetings_slot_start">Start</string>
+    <string name="meetings_slot_end">End</string>
+    <string name="meetings_slot_location_hint">e.g. Staff room</string>
+    <plurals name="meetings_publish_slots">
+        <item quantity="one">Add slot</item>
+        <item quantity="other">Add %1$d slots</item>
+    </plurals>
+    <plurals name="meetings_slots_published">
+        <item quantity="one">Slot added</item>
+        <item quantity="other">%1$d slots added</item>
+    </plurals>
+    <string name="meetings_slot_removed">Slot removed</string>
+    <string name="meetings_slot_open">Free</string>
+    <string name="meetings_slot_booked">Booked</string>
+    <string name="meetings_remove_slot">Remove slot</string>
+    <string name="meetings_remove_slot_title">Remove this slot?</string>
+    <string name="meetings_remove_slot_confirm">Remove</string>
+    <string name="meetings_slot_line">%1$s, %2$s</string>
+    <string name="meetings_no_slots_week">No slots this week</string>
+    <string name="meetings_no_slots_week_hint">Add times when parents can book a meeting with you.</string>
+    <string name="meetings_previous_week">Previous week</string>
+    <string name="meetings_next_week">Next week</string>
+    <string name="meetings_this_week">This week</string>
+    <string name="meetings_error_slot_date_past">Pick today or a later date</string>
+    <string name="meetings_error_slot_start_past">This time has already passed</string>
+    <string name="meetings_error_slot_end">End time must be after the start time</string>
+    <string name="meetings_error_slot_overlap">Overlaps another slot in this list</string>
+    <string name="meetings_error_slot_location">Keep the location under 200 characters</string>
+    <string name="meetings_slot_start_title">Slot starts at</string>
+    <string name="meetings_slot_end_title">Slot ends at</string>
 </resources>

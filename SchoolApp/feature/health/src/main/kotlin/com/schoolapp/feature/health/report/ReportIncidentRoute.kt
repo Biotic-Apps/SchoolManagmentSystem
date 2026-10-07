@@ -41,6 +41,8 @@ internal fun ReportIncidentRoute(
                     onSeverityChange = viewModel::onSeverityChange,
                     onDescriptionChange = viewModel::onDescriptionChange,
                     onActionTakenChange = viewModel::onActionTakenChange,
+                    onAttach = viewModel::onAttach,
+                    onRemoveAttachment = viewModel::onRemoveAttachment,
                     onSubmit = viewModel::submit,
                 ),
                 modifier = Modifier.padding(padding),

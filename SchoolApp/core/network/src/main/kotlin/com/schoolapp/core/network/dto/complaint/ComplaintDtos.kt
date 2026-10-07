@@ -2,6 +2,7 @@ package com.schoolapp.core.network.dto.complaint
 
 import com.schoolapp.core.network.dto.common.IdNameDto
 import com.schoolapp.core.network.dto.common.UserRefDto
+import com.schoolapp.core.network.dto.files.AttachmentDto
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -32,6 +33,7 @@ data class ComplaintUpdateDto(
     val status: String? = null,
     val at: String? = null,
     val createdAt: String? = null,
+    val attachments: List<AttachmentDto> = emptyList(),
 )
 
 /** `POST /complaints`. */
@@ -46,4 +48,8 @@ data class ComplaintBodyDto(
 )
 
 @Serializable
-data class ComplaintUpdateBodyDto(val message: String, val status: String? = null)
+data class ComplaintUpdateBodyDto(val message: String, val status: String? = null, val attachmentFileIds: List<String>? = null)
+
+/** `POST /complaints/{id}/assign`. */
+@Serializable
+data class AssignComplaintBodyDto(val assigneeUserId: String)

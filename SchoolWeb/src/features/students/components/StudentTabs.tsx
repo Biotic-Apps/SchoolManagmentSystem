@@ -25,6 +25,8 @@ export function StudentTabs({ student, tab, onTabChange, readOnly }: StudentTabs
   const showAttendance = can("attendance.view");
   const showHealth = can("health.view");
   const showPickup = can("pickup.view");
+  // POST /students/:id/id-card needs students.edit (phase5-contract Deviations).
+  const canGenerateCard = !readOnly && can("students.edit");
 
   return (
     <Tabs value={tab} onValueChange={onTabChange}>
@@ -66,7 +68,7 @@ export function StudentTabs({ student, tab, onTabChange, readOnly }: StudentTabs
         <EnrollmentHistoryTab studentId={student.id} />
       </TabsContent>
       <TabsContent value="id-card">
-        <IdCardPanel studentId={student.id} canGenerate={!readOnly} />
+        <IdCardPanel studentId={student.id} canGenerate={canGenerateCard} />
       </TabsContent>
     </Tabs>
   );

@@ -4,6 +4,7 @@ import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.progress.DefaultProgressRepository
 import com.schoolapp.core.data.progress.ProgressRepository
 import com.schoolapp.core.model.RoleKey
+import com.schoolapp.core.model.progress.HomeworkCompletionItem
 import com.schoolapp.core.model.progress.HomeworkTick
 import com.schoolapp.core.model.progress.ProgressNote
 import com.schoolapp.core.model.progress.ProgressNoteInput
@@ -50,4 +51,7 @@ class DemoAwareProgressRepository @Inject constructor(
         }
         return AppResult.Success(Unit)
     }
+
+    override suspend fun homeworkCompletion(studentId: String, from: String?, to: String?): AppResult<List<HomeworkCompletionItem>> =
+        if (auth.isDemoActive) AppResult.Success(DemoHomeworkCompletionData.forChild(studentId)) else real.homeworkCompletion(studentId, from, to)
 }

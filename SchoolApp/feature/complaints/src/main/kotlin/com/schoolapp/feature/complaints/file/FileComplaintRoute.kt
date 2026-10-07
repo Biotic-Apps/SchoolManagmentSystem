@@ -1,7 +1,5 @@
 package com.schoolapp.feature.complaints.file
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -13,7 +11,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.designsystem.component.AppScaffold
 import com.schoolapp.core.designsystem.component.AppTopBar
 import com.schoolapp.core.designsystem.component.BackButton
-import com.schoolapp.core.ui.rememberExternalActions
 import com.schoolapp.feature.complaints.R
 
 @Composable
@@ -24,10 +21,6 @@ fun FileComplaintRoute(
     viewModel: FileComplaintViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val external = rememberExternalActions()
-    val picker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        uri?.let { viewModel.onAttach(it.toString()) }
-    }
     LaunchedEffect(state.filedId) {
         state.filedId?.let {
             viewModel.onNavigated()
@@ -46,8 +39,7 @@ fun FileComplaintRoute(
                 onSubjectChange = viewModel::onSubjectChange,
                 onDescriptionChange = viewModel::onDescriptionChange,
                 onAnonymousChange = viewModel::onAnonymousChange,
-                onAttach = { picker.launch("*/*") },
-                onOpenAttachment = { attachment -> attachment.url?.let(external::open) },
+                onAttach = viewModel::onAttach,
                 onRemoveAttachment = viewModel::onRemoveAttachment,
                 onSubmit = viewModel::submit,
             ),

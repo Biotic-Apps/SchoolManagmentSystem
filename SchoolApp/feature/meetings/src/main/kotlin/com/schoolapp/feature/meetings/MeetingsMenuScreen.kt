@@ -20,6 +20,7 @@ fun MeetingsMenuScreen(role: RoleRef, onOpen: (Any) -> Unit, modifier: Modifier 
             onOpenMeeting = { id, box -> onOpen(MeetingDetailDestination(id, box.name)) },
             modifier = modifier,
             viewModel = hiltViewModel(key = "meetings_${role.key}"),
+            slotsViewModel = hiltViewModel(key = "meeting_slots_${role.key}"),
         )
     }
 }

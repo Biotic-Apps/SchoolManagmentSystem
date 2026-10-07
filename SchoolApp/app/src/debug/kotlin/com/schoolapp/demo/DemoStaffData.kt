@@ -11,8 +11,15 @@ internal object DemoStaffData {
     private fun summary(id: String, name: String, designation: String, roles: List<String>, sections: Int, subjects: Int, probation: Boolean = false) =
         StaffSummary(
             id, name, null, "EMP-${id.takeLast(2)}", designation, DemoData.MAIN_BRANCH_NAME, "ACTIVE", roles, probation,
-            if (probation) "Sana Iqbal" else null, sections, subjects,
+            if (probation) "Sana Iqbal" else null, sections, subjects, userId = demoUserIds[id] ?: "demo-u-$id",
         )
+
+    /** Staff whose logins are demo actors keep the actor's id, so assigning shows up in their "Assigned to me". */
+    private val demoUserIds = mapOf(
+        "demo-staff-01" to DemoActors.teacher.id,
+        "demo-staff-02" to DemoActors.coordinator.id,
+        "demo-staff-06" to DemoActors.probationTeacher.id,
+    )
 
     val staff = listOf(
         summary("demo-staff-01", "Demo Teacher", "Senior Teacher", listOf("TEACHER"), 2, 1),

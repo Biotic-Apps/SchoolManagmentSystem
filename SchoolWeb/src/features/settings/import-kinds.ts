@@ -45,7 +45,7 @@ export const IMPORT_FILE_ACCEPT = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   "text/csv",
 ].join(",");
-export const IMPORT_MAX_SIZE_MB = 10;
+export const IMPORT_MAX_SIZE_MB = 5;
 
 /** Statuses the server is still working on; the detail is polled while in one of these. */
 export const IMPORT_BUSY_STATUSES: ImportStatus[] = ["VALIDATING", "COMMITTING"];

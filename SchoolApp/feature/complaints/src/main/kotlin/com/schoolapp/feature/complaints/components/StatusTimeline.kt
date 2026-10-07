@@ -23,10 +23,11 @@ import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.StatusChip
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.model.complaint.ComplaintUpdate
+import com.schoolapp.core.ui.attachments.AttachmentLinks
 import com.schoolapp.core.ui.formatTimestamp
 import com.schoolapp.feature.complaints.R
 
-/** Vertical line with a dot per update: author, 12-hour time, message and any status change. */
+/** Vertical line with a dot per update: author, 12-hour time, message, attachments and any status change. */
 @Composable
 internal fun StatusTimeline(updates: List<ComplaintUpdate>, modifier: Modifier = Modifier) {
     Column(modifier) {
@@ -64,6 +65,7 @@ private fun TimelineEntry(update: ComplaintUpdate, isFirst: Boolean, isLast: Boo
             if (update.message.isNotBlank()) {
                 Text(update.message, style = MaterialTheme.typography.bodyMedium, color = AppColors.TextPrimary)
             }
+            AttachmentLinks(update.attachments)
             update.status?.let { StatusChip(stringResource(R.string.complaints_status_changed, statusLabel(it)), it.tone()) }
         }
     }

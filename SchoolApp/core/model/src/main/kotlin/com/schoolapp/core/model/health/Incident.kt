@@ -1,5 +1,7 @@
 package com.schoolapp.core.model.health
 
+import com.schoolapp.core.model.files.Attachment
+
 enum class IncidentType { INJURY, ILLNESS, ALLERGIC_REACTION, OTHER }
 
 enum class IncidentSeverity { MINOR, MODERATE, SERIOUS }
@@ -16,6 +18,7 @@ data class Incident(
     val actionTaken: String?,
     val status: String?,
     val reportedByName: String?,
+    val attachments: List<Attachment> = emptyList(),
 )
 
 data class IncidentInput(
@@ -26,4 +29,5 @@ data class IncidentInput(
     val severity: IncidentSeverity,
     val description: String,
     val actionTaken: String,
+    val attachmentFileIds: List<String> = emptyList(),
 )

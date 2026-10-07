@@ -20,10 +20,16 @@ import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.meetings.R
 import com.schoolapp.feature.meetings.components.MeetingCard
 import com.schoolapp.feature.meetings.staff.components.FollowUpCard
+import com.schoolapp.feature.meetings.staff.slots.MySlotsActions
+import com.schoolapp.feature.meetings.staff.slots.MySlotsOverlays
+import com.schoolapp.feature.meetings.staff.slots.MySlotsUiState
+import com.schoolapp.feature.meetings.staff.slots.mySlotsTab
 
 @Composable
 internal fun StaffMeetingsScreen(
     state: StaffMeetingsUiState,
+    slots: MySlotsUiState,
+    slotActions: MySlotsActions,
     onTabSelected: (StaffMeetingsTab) -> Unit,
     onOpenMeeting: (String, MeetingBox) -> Unit,
     onFollowUpDone: (String) -> Unit,
@@ -31,20 +37,22 @@ internal fun StaffMeetingsScreen(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    RefreshBox(isRefreshing = state.isRefreshing, onRefresh = onRefresh, modifier = modifier) {
+    val tabs = visibleStaffTabs(slots.canPublish)
+    val onSlotsTab = state.tab == StaffMeetingsTab.SLOTS && slots.canPublish
+    RefreshBox(
+        isRefreshing = if (onSlotsTab) slots.isRefreshing else state.isRefreshing,
+        onRefresh = if (onSlotsTab) slotActions.onRefresh else onRefresh,
+        modifier = modifier,
+    ) {
         when {
             state.isLoading -> LoadingState()
             state.error != null -> ErrorState(appErrorMessage(state.error), onRetry = onRetry)
             else -> ScreenColumn {
                 item(key = "tabs") {
                     AppTabs(
-                        titles = listOf(
-                            stringResource(R.string.meetings_upcoming),
-                            stringResource(R.string.meetings_past),
-                            stringResource(R.string.meetings_follow_ups),
-                        ),
-                        selectedIndex = state.tab.ordinal,
-                        onSelect = { onTabSelected(StaffMeetingsTab.entries[it]) },
+                        titles = tabs.map { stringResource(it.titleRes()) },
+                        selectedIndex = tabs.indexOf(state.tab).coerceAtLeast(0),
+                        onSelect = { onTabSelected(tabs[it]) },
                     )
                 }
                 state.actionError?.let { item(key = "error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
@@ -59,6 +67,7 @@ internal fun StaffMeetingsScreen(
                     } else {
                         items(state.past, key = { it.id }) { MeetingCard(it, forStaff = true, onClick = { onOpenMeeting(it.id, MeetingBox.PAST) }) }
                     }
+                    StaffMeetingsTab.SLOTS -> if (slots.canPublish) mySlotsTab(slots, slotActions)
                     StaffMeetingsTab.FOLLOW_UPS -> if (state.followUps.isEmpty()) {
                         item(key = "empty") { EmptyState(stringResource(R.string.meetings_empty_follow_ups), icon = Icons.Outlined.TaskAlt) }
                     } else {
@@ -70,4 +79,12 @@ internal fun StaffMeetingsScreen(
             }
         }
     }
+    if (onSlotsTab) MySlotsOverlays(slots, slotActions)
+}
+
+private fun StaffMeetingsTab.titleRes(): Int = when (this) {
+    StaffMeetingsTab.UPCOMING -> R.string.meetings_upcoming
+    StaffMeetingsTab.PAST -> R.string.meetings_past
+    StaffMeetingsTab.SLOTS -> R.string.meetings_my_slots
+    StaffMeetingsTab.FOLLOW_UPS -> R.string.meetings_follow_ups
 }

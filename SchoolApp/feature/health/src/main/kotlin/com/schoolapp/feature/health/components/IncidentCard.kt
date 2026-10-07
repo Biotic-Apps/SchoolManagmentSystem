@@ -18,6 +18,7 @@ import com.schoolapp.core.designsystem.component.AppTextButton
 import com.schoolapp.core.designsystem.component.StatusChip
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.model.health.Incident
+import com.schoolapp.core.ui.attachments.AttachmentLinks
 import com.schoolapp.core.ui.formatTimestamp
 import com.schoolapp.feature.health.R
 
@@ -56,6 +57,10 @@ internal fun IncidentCard(
         incident.actionTaken?.takeIf { it.isNotBlank() }?.let {
             Spacer(Modifier.height(4.dp))
             Text(stringResource(R.string.health_action_taken_value, it), style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
+        }
+        if (incident.attachments.isNotEmpty()) {
+            Spacer(Modifier.height(8.dp))
+            AttachmentLinks(incident.attachments)
         }
         incident.reportedByName?.let {
             Spacer(Modifier.height(4.dp))

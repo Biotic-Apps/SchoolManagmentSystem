@@ -1,7 +1,7 @@
 # Web / Android Parity (Phase 5 §H)
 
 Per role: every menu entry from `docs/navigation.md` and its key actions, web panel vs Android app.
-Snapshot 2026-10-06, taken from the code (`SchoolWeb/src/features/*`, `SchoolApp/feature/*`, `SchoolApp/app/.../navigation/AppShellContent.kt`).
+Snapshot 2026-10-06, updated 2026-10-07 after the Phase 5 parity pass, taken from the code (`SchoolWeb/src/features/*`, `SchoolApp/feature/*`, `SchoolApp/app/.../navigation/AppShellContent.kt`).
 
 **Status:** `Same` = same capability on both · `Android (subset)` = the mobile-relevant part only, with the rest on web · `Web-only (by design)` = a desk task, not built for the phone · `Gap` = missing on Android with no design reason; fix or accept.
 
@@ -41,20 +41,20 @@ Snapshot 2026-10-06, taken from the code (`SchoolWeb/src/features/*`, `SchoolApp
 | syllabus | plan editor, book lists, coverage, review | yes | coverage read-only, link to Approvals | Android (subset) | plan authoring is web |
 | diary | missing list, moderation/return | yes | `SupervisorDiaryRoute` (missing, return with comment) | Same | |
 | activities | create/edit, approve/reject, start/complete/cancel, participants, consent tracker | yes | list, propose, detail approve/reject, consent summary | Android (subset) | lifecycle (start/complete/cancel) and participant editing are web |
-| notices | compose, audience, pin, expiry, read receipts | yes | feed + compose (FAB when `notices.add`) | Android (subset) | no read-receipt list or edit/archive |
-| attendance | branch summary, registers, corrections, **staff attendance**, leave review | yes | `BranchTodayRoute` (sections by day) | Gap | staff attendance marking missing |
+| notices | compose, audience, pin, expiry, read receipts | yes | feed + compose (FAB when `notices.add`) | Android (subset) | read-receipt list and edit/archive are web-only by design (see rationale) |
+| attendance | branch summary, registers, corrections, staff attendance, leave review | yes | `SupervisorAttendanceRoute`: Classes (`BranchTodayRoute`) + Staff (`StaffMarkRoute`: date, branch picker for global roles, P/A/L/Lv/½, check-in/out, remark, mark all present) when `attendance.approve` | Same | Phase 5: staff attendance marking added |
 | exams | exams CRUD, schedule, grading schemes, completeness, accept/return sheets, results publish, report cards, promotions | yes | completeness board + sheet review accept/return (`exams/board`, `review`) | Android (subset) | exam setup, grading, promotions and publishing are web |
 | fees | finance overview, structure (heads/plans), invoices generate/issue/cancel, payments, receipts, reversals, refunds, concessions, proofs verify, dues, close day, ledger | yes | Today, Dues, Proofs (verify), Record payment (offline-queued), invoice detail/receipt | Android (subset) | fee structure setup, invoicing, concessions/refunds/reversals and close day are web |
 | payroll | structures, adjustments, create/calculate/review/approve/close run, payments, payslips | yes | runs list, run detail (FLAG_SECURE), "Send for approval" | Android (subset) | payroll setup and run processing are web |
 | expenses | expenses, categories, vendors, payments | yes | placeholder (web-only message) | Web-only (by design) | bookkeeping |
 | inventory | items, stock, movements, purchasing, sales, assets | yes | placeholder (web-only message) | Web-only (by design) | store-room/office work |
-| health | incidents, health profiles, allergy alerts, change requests | yes | incidents (close), student health card search, report incident | Android (subset) | change-request review is web; no FLAG_SECURE (see Gaps) |
+| health | incidents, health profiles, allergy alerts, change requests | yes | incidents (close, attachments shown), student health card search, report incident with attachments; FLAG_SECURE on all health screens | Android (subset) | change-request review is web |
 | pickup | early leave, departures, authorised persons | yes | gate desk: approve/reject early leave, record departure | Android (subset) | authorised-person admin is web |
-| complaints | boxes, file, update, assign, escalate, close, reopen | yes | boxes, file (anonymous, attachments), update, escalate/close/reopen | Android (subset) | assign is web; no attachments on updates |
+| complaints | boxes, file, update, assign, escalate, close, reopen | yes | boxes, file (anonymous, attachments), update/comment with attachments, assign (`AssignSheet`, `complaints.edit`), escalate/close/reopen | Same | Phase 5: assign + update attachments added; assign has no branch-first picker (lists staff in scope) |
 | certificates | approve/reject, issue/reissue PDF | yes | review list approve/reject (`certificates/review`) | Android (subset) | issue/reissue (PDF generation) is web |
 | approvals | inbox, detail, approve/reject/return | yes | `feature/approvals` | Same | |
 | reports | catalogue, parameters, export jobs, recent exports | yes | placeholder (web-only message) | Web-only (by design) | XLSX/PDF exports |
-| settings | school/branding, notifications, policies, support (failed notifications, jobs, health), backups, data import | yes (`features/settings`) | placeholder says **"Coming in Phase 5"**, not the web-only message | Web-only (by design) + Gap | by design; but the placeholder message is wrong (add `SETTINGS` to `WebOnlyModules`) |
+| settings | school/branding, notifications, policies, support (failed notifications, jobs, health), backups, data import | yes (`features/settings`) | web-only placeholder (`SETTINGS` in `WebOnlyModules`) | Web-only (by design) | |
 | profile | edit, password, device sessions, notification prefs, 2FA | yes | edit, password, sessions, push prefs | Android (subset) | 2FA setup is web (QR) |
 
 ## PRINCIPAL
@@ -66,7 +66,7 @@ Same as SUPER_ADMIN for the shared entries (branches labelled "Branch & Calendar
 | dashboard | summary + Today pending queue | yes | supervisor grid + Today queue | Same | |
 | branches ("Branch & Calendar") | view own branch, settings | yes | read-only branch detail; calendar under Sessions screen only | Android (subset) | settings are desk work |
 | classes, students, admissions, guardians, staff, timetable, syllabus | as SUPER_ADMIN | yes | as SUPER_ADMIN | Android (subset) | see above |
-| attendance | branch day, corrections, staff attendance, leave approvals | yes | branch day; leave via Approvals | Gap | staff attendance marking missing |
+| attendance | branch day, corrections, staff attendance, leave approvals | yes | Classes + Staff tabs (`StaffMarkRoute`); leave via Approvals | Same | Phase 5: staff attendance marking added |
 | diary | moderation/return | yes | yes | Same | |
 | activities, notices | as SUPER_ADMIN | yes | as SUPER_ADMIN | Android (subset) | |
 | exams | completeness, accept/return, proxy marks (`exams.submit`) | yes | completeness, review, marks entry when `canEdit` | Android (subset) | publish/promotions are web |
@@ -75,7 +75,7 @@ Same as SUPER_ADMIN for the shared entries (branches labelled "Branch & Calendar
 | expenses, inventory, reports | as SUPER_ADMIN | yes | web-only placeholder | Web-only (by design) | |
 | health, pickup, complaints, certificates, approvals | as SUPER_ADMIN | yes | as SUPER_ADMIN | as above | |
 | messages | threads, new thread to guardians, attachments | yes | threads, conversation, new thread, attachments | Same | |
-| meetings | list, complete (notes, follow-ups), cancel, no-show, **publish slots** | yes | list, complete, cancel, no-show, follow-up done | Gap | slot publishing missing (PROGRESS "Not yet") |
+| meetings | list, complete (notes, follow-ups), cancel, no-show, publish slots | yes | list, complete, cancel, no-show, follow-up done, "My slots" tab (week view, publish sheet, remove free slot) when `meetings.add` | Same | Phase 5: slot publishing added |
 | settings (read-only own school) | view settings, import templates | yes | not in principal menu | Web-only (by design) | imports/settings are desk tasks |
 | profile | as above | yes | as above | Android (subset) | 2FA setup web |
 
@@ -94,11 +94,11 @@ Same as SUPER_ADMIN for the shared entries (branches labelled "Branch & Calendar
 | activities | propose, view | yes | list, propose, detail | Same | |
 | exams | completeness, accept/return | yes | yes | Same | |
 | progress | notes, homework ticks | yes | Notes + Homework tabs (`ProgressMenuScreen`) | Same | |
-| health | incidents, cards, report | yes | yes | Same | no FLAG_SECURE (Gaps) |
+| health | incidents, cards, report | yes | yes (FLAG_SECURE) | Same | |
 | pickup | gate | yes | gate desk | Same | |
 | messages | threads | yes | yes | Same | |
-| meetings | run meetings, publish slots | yes | run meetings | Gap | no slot publishing |
-| complaints | routed box, update, escalate | yes | yes (no assign) | Android (subset) | assign is web |
+| meetings | run meetings, publish slots | yes | run meetings + My slots | Same | |
+| complaints | routed box, update, assign, escalate | yes | yes (assign when `complaints.edit`) | Same | |
 | approvals | decide | yes | yes | Same | |
 | my_salary | payslips, own attendance, leave apply | yes | payslips (FLAG_SECURE), own attendance, leave | Same | |
 | profile | | yes | | Android (subset) | 2FA setup web |
@@ -117,7 +117,7 @@ Same as SUPER_ADMIN for the shared entries (branches labelled "Branch & Calendar
 | exams | my mark sheets, enter marks, absent, draft, submit | yes | `MySheetsRoute`, `MarksEntryRoute` (offline queue) | Same | |
 | progress | notes (visible to parent), homework ticks | yes | Notes + Homework tabs | Same | |
 | messages | threads, new thread to guardians, attachments | yes | yes | Same | |
-| meetings | list, complete, cancel, no-show, follow-ups, **publish slots** | yes | all but slots | Gap | slot publishing missing |
+| meetings | list, complete, cancel, no-show, follow-ups, publish slots | yes | all incl. My slots (`MySlotsContent`, `PublishSlotsSheet`) | Same | |
 | complaints | own + routed, file, update | yes | yes | Same | |
 | my_salary | payslips, own attendance, apply leave | yes | yes (FLAG_SECURE) | Same | |
 | profile | | yes | | Android (subset) | 2FA setup web |
@@ -158,14 +158,14 @@ Same as SUPER_ADMIN for the shared entries (branches labelled "Branch & Calendar
 | students ("Child Profile") | profile, guardians, documents, contact change request, link child (OTP) | yes (`ChildProfilePage`, profile `LinkChildCard`, `ContactChangeCard`) | `ChildProfileRoute`, `ContactChangeRoute`, `LinkChildRoute` | Same | |
 | diary | child feed | yes | `ParentDiaryRoute` | Same | |
 | attendance | month calendar, leave request | yes | `ChildAttendanceRoute` + `LeaveRequestSheet` | Same | |
-| progress ("Progress & Results") | results, report card, teacher feedback, **homework status** | yes (Results / Teacher feedback / Homework tabs) | results + report card + teacher notes (`ParentResultsRoute`) | Gap | homework-completion tab missing |
+| progress ("Progress & Results") | results, report card, teacher feedback, homework status | yes (Results / Teacher feedback / Homework tabs) | `ParentProgressScreen` tabs: Results & feedback (`ParentResultsRoute`) / Homework (`ChildHomeworkRoute`, last 30 days, tally + per-item tick) | Same | Phase 5: homework tab added (`GET /students/:id/homework-completion`) |
 | syllabus | plans, book lists | yes | `ParentSyllabusRoute` | Same | |
-| timetable ("Timetable, Calendar & Activities") | week, activities | yes (`ChildTimetableView` + `ChildActivitiesSection`) | week view; activities via Messages shortcut | Android (subset) | activities not inline |
+| timetable ("Timetable, Calendar & Activities") | week, upcoming school calendar, activities + consent | yes (`ChildTimetableView` + `ChildActivitiesSection`) | `ParentTimetableScreen` tabs: Timetable / Calendar (`SchoolCalendarRoute`, `GET /students/:id/calendar`, today..+90 days) / Activities (`ChildActivitiesSection`, consent via detail) | Same | Phase 5: calendar + inline activities added |
 | fees ("Fees, Dues & Receipts") | summary, invoices, receipt, pay online, upload proof | yes | `ParentFeesRoute`, invoice detail, `ProofUploadRoute` | Same | |
 | certificates | request, status | yes | `ParentCertificatesRoute` | Same | |
 | messages ("Messages, Notices & Requests") | threads, new message, shortcuts (notices, activities + consent, pickup, health card, certificates) | yes | threads + `ParentShortcuts` | Same | |
 | – pickup (via shortcut) | authorised persons, early leave | yes | `ParentPickupRoute` | Same | |
-| – health card (via shortcut) | view, propose change | yes | `HealthCardRoute` change request | Same | no FLAG_SECURE (Gaps) |
+| – health card (via shortcut) | view, propose change | yes | `HealthCardRoute` change request (FLAG_SECURE) | Same | |
 | meetings | book a slot, list | yes | `ParentMeetingsRoute`, `BookMeetingRoute` | Same | |
 | complaints | file (anonymous), track | yes | yes | Same | |
 | profile | edit, password, sessions, notification prefs | yes | yes | Android (subset) | 2FA setup web |
@@ -176,19 +176,21 @@ Both clients build the menu from every catalogue `.view` the role holds. On Andr
 ## Android-only capabilities
 - Offline outbox (Room + WorkManager `core/sync`): attendance registers (`AttendanceRegisterEntity`), diary drafts, mark sheets (`MARKS_SAVE/SUBMIT`), cash payment recording (`PAYMENT_RECORD`), syllabus topic progress (`SYLLABUS_PROGRESS`).
 - Push notifications (FCM via `DeviceRegistrar`; NoOp provider until Firebase is configured).
-- `FLAG_SECURE` (`core/ui/SecureWindow.kt`) on payroll run and My Salary screens.
+- `FLAG_SECURE` (`core/ui/SecureWindow.kt`) on payroll run, My Salary and all health screens (health menu/incidents, health card, report incident).
 - Release certificate pinning from Gradle properties (`core/network/security/CertificatePinning.kt`, Phase 5).
 - Branded adaptive launcher icon + SplashScreen (Phase 5).
 
 ## Gaps to fix (prioritised)
-1. **FLAG_SECURE missing on medical screens.** `SecureWindowEffect` is only used in `feature/payroll`. Its own KDoc and security.md §5 cover medical data. Add it to `HealthCardRoute`, the incident detail/list and `ReportIncident`. (Security.)
-2. **Settings placeholder shows "Coming in Phase 5"** instead of the web-panel message. Add `MenuIds.SETTINGS` to `WebOnlyModules` in `feature/home/components/MenuPlaceholder.kt`. (Trivial.)
-3. **Staff attendance marking** (principal / super admin) has no Android screen. Web has `attendance/StaffAttendanceTab`. Done daily at the gate, so it fits the phone.
-4. **Meeting slot publishing** for teachers and supervisors. Web has `meetings/MySlotsTab` + `SlotsDialog`. Without it, parents have no slots to book unless staff use the web. (PROGRESS Phase 3 "Not yet".)
-5. **Parent homework-completion view** under Progress & Results. Web has `progress/ChildHomeworkTab`. Teachers already tick homework on Android.
-6. **Attachments on incident reports and complaint updates** (PROGRESS Phase 3 "Not yet"). Filing a complaint supports attachments; updates and incidents do not.
-7. **Complaint assign** (supervisors). Web has `complaints/AssignDialog`. Low priority: routing is automatic.
-8. Low: parent activities are not inline on Timetable (reachable via the Messages shortcut). Notices have no read-receipt list or edit on Android.
+All resolved in the Phase 5 parity pass (2026-10-07).
+1. **FLAG_SECURE missing on medical screens.** **Fixed** (already done): `SecureWindowEffect()` in `HealthMenuRoute` (incident list/detail), `HealthCardRoute` and `ReportIncidentRoute`.
+2. **Settings placeholder shows "Coming in Phase 5".** **Fixed** (already done): `MenuIds.SETTINGS` is in `WebOnlyModules`.
+3. **Staff attendance marking** (principal / super admin). **Fixed**: `feature/attendance/staffmark` (`StaffMarkRoute/ViewModel`), Staff tab in `SupervisorAttendanceRoute` gated by `attendance.approve`; `GET/PUT /staff-attendance` via `StaffAttendanceApi` + `StaffAttendanceRepository`.
+4. **Meeting slot publishing.** **Fixed**: "My slots" tab in staff meetings (`feature/meetings/staff/slots`), gated by `meetings.add`; `POST /meetings/slots` (batch), `DELETE /meetings/slots/:id`; `SlotValidator` mirrors server rules.
+5. **Parent homework-completion view.** **Fixed**: `ParentProgressScreen` (Results & feedback / Homework tabs), `ChildHomeworkRoute` using `GET /students/:id/homework-completion` (last 30 days, tally, tick per item).
+6. **Attachments on incident reports and complaint updates.** **Fixed**: shared `core/ui/attachments/AttachmentsField` + `AttachmentDraft`, used by file complaint, complaint update/comment (cap 3) and report incident (cap 5); `attachmentFileIds` sent; attachments shown on incident cards and the complaint timeline.
+7. **Complaint assign.** **Fixed**: `AssignSheet` in complaint detail (`complaints.edit`, open complaints), `POST /complaints/:id/assign`.
+8. **Parent activities inline on Timetable.** **Fixed**: `ParentTimetableScreen` tabs Timetable / Calendar / Activities (`ChildActivitiesSection`). Also added the **upcoming school calendar** (`SchoolCalendarRoute`, `GET /students/:studentId/calendar`, today..+90 days).
+   **Notice read receipts and edit/archive: Justified (web-only by design)**. The read-receipt list is a per-recipient table (hundreds of guardians per notice, read/unread filters) and edit/archive belongs to the notice management desk (`NoticesManagePage`, `NoticeReadsDialog`), not the feed. Android keeps the feed and compose (incl. audience), which covers the on-the-go use.
 
 ## Web-only by design (rationale)
 - **Org setup** (schools, users incl. unlock and reset password, roles & permissions matrix, sessions/terms, classes/sections/subjects/rooms, branch settings, timetable editor, staff HR, student registration/transfer/withdraw): low frequency, many fields, wide tables. Done at a desk by admins.
@@ -200,4 +202,5 @@ Both clients build the menu from every catalogue `.view` the role holds. On Andr
 - **Payroll setup and processing** (structures, adjustments, calculate/review/close, payments). Android shows runs and sends them for approval; decisions go through Approvals.
 - **Expenses & vendors, inventory & purchasing**: office bookkeeping.
 - **Exam setup** (exams, schedule, grading schemes, results publish, promotions, report-card generation): Android keeps marks entry and sheet review.
+- **Notice management** (read-receipt tables, edit/archive): desk review of delivery across many recipients; the phone keeps feed + compose.
 - **Admissions data entry** (enquiries, tests, confirmation, documents), **syllabus plan/book-list authoring**, **activity lifecycle and participants editing**: long forms. Android keeps the decisions (offer/waitlist/reject, approve/reject, consent).

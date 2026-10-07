@@ -6,6 +6,7 @@ import com.schoolapp.core.model.syllabus.SyllabusPlan
 import com.schoolapp.core.navigation.MenuIds
 import com.schoolapp.core.navigation.NotificationPreferencesDestination
 import com.schoolapp.feature.activities.ActivitiesMenuScreen
+import com.schoolapp.feature.activities.ChildActivitiesSection
 import com.schoolapp.feature.activities.navigation.activitiesDestinations
 import com.schoolapp.feature.attendance.AttendanceMenuScreen
 import com.schoolapp.feature.attendance.MyAttendanceLeaveScreen
@@ -59,6 +60,7 @@ import com.schoolapp.feature.syllabus.navigation.PlanDetailDestination
 import com.schoolapp.feature.syllabus.navigation.syllabusDestinations
 import com.schoolapp.feature.syllabus.parent.ParentSyllabusRoute
 import com.schoolapp.feature.syllabus.plans.MyPlansRoute
+import com.schoolapp.feature.timetable.ParentTimetableScreen
 import com.schoolapp.feature.timetable.TimetableRoute
 import com.schoolapp.feature.certificates.CertificatesMenuScreen
 import com.schoolapp.feature.certificates.certificatesDestinations
@@ -70,6 +72,7 @@ import com.schoolapp.feature.fees.feesDestinations
 import com.schoolapp.feature.payroll.MySalaryScreen
 import com.schoolapp.feature.payroll.PayrollMenuScreen
 import com.schoolapp.feature.payroll.payrollDestinations
+import com.schoolapp.feature.progress.ParentProgressScreen
 import com.schoolapp.feature.progress.ProgressMenuScreen
 import com.schoolapp.feature.progress.progressDestinations
 
@@ -103,7 +106,13 @@ internal val AppShellContent = ShellContent(
         MenuIds.GUARDIANS to { shell ->
             GuardiansRoute(onOpenApprovals = { shell.openMenu(MenuIds.APPROVALS) }.takeIf { shell.canOpenMenu(MenuIds.APPROVALS) })
         },
-        MenuIds.TIMETABLE to { _ -> TimetableRoute() },
+        MenuIds.TIMETABLE to { shell ->
+            if (shell.activeRole == RoleKey.PARENT) {
+                ParentTimetableScreen(activitiesContent = { ChildActivitiesSection(onOpen = shell::open, modifier = it) })
+            } else {
+                TimetableRoute()
+            }
+        },
         MenuIds.SYLLABUS to { shell ->
             val openPlan = { plan: SyllabusPlan ->
                 shell.open(PlanDetailDestination(plan.id, plan.sectionId, plan.subjectId))
@@ -137,7 +146,7 @@ internal val AppShellContent = ShellContent(
         MenuIds.EXAMS to { shell -> ExamsMenuScreen(role = shell.activeRole, onOpen = shell::open, onOpenApprovals = shell.approvalsLink()) },
         MenuIds.PROGRESS to { shell ->
             if (shell.activeRole == RoleKey.PARENT) {
-                ParentResultsScreen(onOpen = shell::open)
+                ParentProgressScreen(resultsContent = { ParentResultsScreen(onOpen = shell::open, modifier = it) })
             } else {
                 ProgressMenuScreen(role = shell.activeRole, onOpen = shell::open)
             }

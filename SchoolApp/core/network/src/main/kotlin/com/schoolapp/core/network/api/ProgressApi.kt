@@ -11,6 +11,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 /** Teacher feedback and homework completion (phase 4 contract section A3). */
 interface ProgressApi {
@@ -24,4 +25,12 @@ interface ProgressApi {
 
     @PUT("diary/{id}/homework-status")
     suspend fun homeworkStatus(@Path("id") diaryId: String, @Body body: HomeworkStatusBodyDto): ApiEnvelope<JsonElement>
+
+    /** `{ studentId, from, to, entries: HomeworkItemDto[], summary }`; read leniently (array or wrapped). */
+    @GET("students/{id}/homework-completion")
+    suspend fun homeworkCompletion(
+        @Path("id") studentId: String,
+        @Query("from") from: String? = null,
+        @Query("to") to: String? = null,
+    ): ApiEnvelope<JsonElement>
 }

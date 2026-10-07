@@ -1,4 +1,4 @@
-package com.schoolapp.feature.organisation.sessions.components
+package com.schoolapp.core.ui.calendar
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
@@ -17,8 +17,9 @@ import com.schoolapp.core.ui.formatDateRange
 import com.schoolapp.core.ui.humanizeKey
 import androidx.compose.ui.unit.dp
 
+/** A school calendar event: type icon and chip, title, date range and description. Shared by staff and parent calendars. */
 @Composable
-internal fun CalendarEventCard(event: CalendarEvent, modifier: Modifier = Modifier) {
+fun CalendarEventCard(event: CalendarEvent, modifier: Modifier = Modifier) {
     AppCard(modifier.fillMaxWidth(), contentPadding = 0.dp) {
         ListItemRow(
             title = event.title,

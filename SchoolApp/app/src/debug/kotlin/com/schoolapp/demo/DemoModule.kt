@@ -31,6 +31,7 @@ import com.schoolapp.core.data.fees.FeesRepository
 import com.schoolapp.core.data.payroll.PayrollRepository
 import com.schoolapp.core.data.certificates.CertificatesRepository
 import com.schoolapp.ui.LoginFooterContent
+import com.schoolapp.core.data.calendar.StudentCalendarRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -69,6 +70,9 @@ interface DemoModule {
 
     @Binds
     fun bindTimetableRepository(impl: DemoAwareTimetableRepository): TimetableRepository
+
+    @Binds
+    fun bindStudentCalendarRepository(impl: DemoAwareStudentCalendarRepository): StudentCalendarRepository
 
     @Binds
     fun bindSyllabusRepository(impl: DemoAwareSyllabusRepository): SyllabusRepository

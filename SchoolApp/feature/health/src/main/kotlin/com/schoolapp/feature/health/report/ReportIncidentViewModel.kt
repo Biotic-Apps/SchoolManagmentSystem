@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.common.time.AppClock
 import com.schoolapp.core.common.time.TimeFormat
+import com.schoolapp.core.data.files.FilesRepository
 import com.schoolapp.core.data.health.HealthRepository
 import com.schoolapp.core.data.people.StudentsRepository
+import com.schoolapp.core.model.files.AttachmentDraft
 import com.schoolapp.core.model.health.IncidentInput
 import com.schoolapp.core.model.health.IncidentSeverity
 import com.schoolapp.core.model.health.IncidentType
@@ -21,13 +23,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/** Staff first-aid report; guardians are notified by the server on submit (principal too when SERIOUS). */
+/** Staff first-aid report with optional photos/documents; guardians are notified by the server on submit (principal too when SERIOUS). */
 @HiltViewModel
 class ReportIncidentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val healthRepository: HealthRepository,
     private val studentsRepository: StudentsRepository,
     private val clock: AppClock,
+    private val filesRepository: FilesRepository,
 ) : ViewModel() {
 
     private val initialStudentId: String? = savedStateHandle["studentId"]
@@ -83,9 +86,26 @@ class ReportIncidentViewModel @Inject constructor(
 
     fun onActionTakenChange(text: String) = _uiState.update { it.copy(actionTaken = text, errors = it.errors - IncidentField.ACTION_TAKEN) }
 
+    fun onAttach(uri: String) {
+        val state = _uiState.value
+        if (state.isSaving || !state.attachments.canAdd(AttachmentDraft.DEFAULT_MAX)) return
+        _uiState.update { it.copy(attachments = it.attachments.started(), error = null) }
+        viewModelScope.launch {
+            val result = filesRepository.upload(uri)
+            _uiState.update { current ->
+                when (result) {
+                    is AppResult.Success -> current.copy(attachments = current.attachments.added(result.data.toAttachment()))
+                    is AppResult.Failure -> current.copy(attachments = current.attachments.failed(), error = result.error)
+                }
+            }
+        }
+    }
+
+    fun onRemoveAttachment(id: String) = _uiState.update { it.copy(attachments = it.attachments.removed(id)) }
+
     fun submit() {
         val state = _uiState.value
-        if (state.isSaving || state.submitted != null) return
+        if (state.isSaving || state.submitted != null || state.attachments.isUploading) return
         val errors = validateIncident(state, clock.now())
         val occurred = localDateTime(state.date, state.time)
         if (errors.isNotEmpty() || occurred == null || state.studentId == null) {
@@ -100,6 +120,7 @@ class ReportIncidentViewModel @Inject constructor(
             severity = state.severity,
             description = state.description.trim(),
             actionTaken = state.actionTaken.trim(),
+            attachmentFileIds = state.attachments.fileIds,
         )
         viewModelScope.launch {
             when (val result = healthRepository.reportIncident(input)) {

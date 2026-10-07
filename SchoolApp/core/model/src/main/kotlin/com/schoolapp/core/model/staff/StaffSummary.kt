@@ -13,4 +13,6 @@ data class StaffSummary(
     val reviewerName: String?,
     val sectionCount: Int,
     val subjectCount: Int,
+    /** Login of this staff member; null when they have none (cannot be assigned work by user). */
+    val userId: String? = null,
 )

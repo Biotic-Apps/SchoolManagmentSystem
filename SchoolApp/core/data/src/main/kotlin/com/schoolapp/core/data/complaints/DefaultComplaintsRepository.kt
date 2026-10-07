@@ -2,6 +2,7 @@ package com.schoolapp.core.data.complaints
 
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.common.clean
+import com.schoolapp.core.data.common.orNullIfEmpty
 import com.schoolapp.core.model.complaint.Complaint
 import com.schoolapp.core.model.complaint.ComplaintBox
 import com.schoolapp.core.model.complaint.ComplaintInput
@@ -9,6 +10,7 @@ import com.schoolapp.core.model.complaint.ComplaintStatus
 import com.schoolapp.core.network.ApiCaller
 import com.schoolapp.core.network.api.ComplaintsApi
 import com.schoolapp.core.network.dto.common.ReasonBodyDto
+import com.schoolapp.core.network.dto.complaint.AssignComplaintBodyDto
 import com.schoolapp.core.network.dto.complaint.ComplaintDto
 import com.schoolapp.core.network.dto.complaint.ComplaintUpdateBodyDto
 import kotlinx.serialization.json.Json
@@ -34,8 +36,17 @@ class DefaultComplaintsRepository @Inject constructor(
     override suspend fun file(input: ComplaintInput): AppResult<Complaint> =
         apiCaller.call { api.file(input.toBody()).data.toModel() }
 
-    override suspend fun addUpdate(id: String, message: String, status: ComplaintStatus?): AppResult<Complaint> =
-        action(id) { api.addUpdate(id, ComplaintUpdateBodyDto(message.trim(), status?.name)).data }
+    override suspend fun assign(id: String, assigneeUserId: String): AppResult<Complaint> =
+        action(id) { api.assign(id, AssignComplaintBodyDto(assigneeUserId)).data }
+
+    override suspend fun addUpdate(
+        id: String,
+        message: String,
+        status: ComplaintStatus?,
+        attachmentFileIds: List<String>,
+    ): AppResult<Complaint> = action(id) {
+        api.addUpdate(id, ComplaintUpdateBodyDto(message.trim(), status?.name, attachmentFileIds.orNullIfEmpty())).data
+    }
 
     override suspend fun escalate(id: String, reason: String?): AppResult<Complaint> =
         action(id) { api.escalate(id, ReasonBodyDto(reason.clean())).data }

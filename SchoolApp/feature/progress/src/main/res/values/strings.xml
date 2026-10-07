@@ -49,4 +49,14 @@
     <string name="progress_status_partial">Partial</string>
     <string name="progress_status_not_done">Not done</string>
     <string name="progress_due">Due %1$s</string>
+    <string name="progress_tab_results">Results &amp; feedback</string>
+    <string name="progress_no_child">Link a child to see their homework</string>
+    <string name="progress_child_homework_title">Homework</string>
+    <string name="progress_child_homework_window">Last %1$d days, newest first</string>
+    <string name="progress_child_homework_empty">No homework set in this period</string>
+    <string name="progress_status_unchecked">Not checked yet</string>
+    <string name="progress_tally_done">%1$d done</string>
+    <string name="progress_tally_partial">%1$d partial</string>
+    <string name="progress_tally_not_done">%1$d not done</string>
+    <string name="progress_tally_unchecked">%1$d not checked</string>
 </resources>

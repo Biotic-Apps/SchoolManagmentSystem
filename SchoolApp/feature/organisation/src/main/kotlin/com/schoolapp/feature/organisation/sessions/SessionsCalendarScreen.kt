@@ -19,12 +19,12 @@ import com.schoolapp.core.model.organisation.AcademicSession
 import com.schoolapp.core.model.organisation.BranchOption
 import com.schoolapp.core.model.organisation.CalendarEvent
 import com.schoolapp.core.ui.appErrorMessage
+import com.schoolapp.core.ui.calendar.CalendarEventCard
 import com.schoolapp.feature.organisation.R
 import com.schoolapp.feature.organisation.components.PullableState
 import com.schoolapp.feature.organisation.components.RefreshErrorBanner
 import com.schoolapp.feature.organisation.scope.BranchScopeBar
 import com.schoolapp.feature.organisation.scope.ScopedPane
-import com.schoolapp.feature.organisation.sessions.components.CalendarEventCard
 import com.schoolapp.feature.organisation.sessions.components.SessionCard
 
 @Composable

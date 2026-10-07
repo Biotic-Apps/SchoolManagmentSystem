@@ -1,6 +1,7 @@
 package com.schoolapp.core.network.dto.health
 
 import com.schoolapp.core.network.dto.common.IdNameDto
+import com.schoolapp.core.network.dto.files.AttachmentDto
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
@@ -63,6 +64,7 @@ data class IncidentDto(
     val actionTaken: String? = null,
     val status: String? = null,
     val reportedBy: IdNameDto? = null,
+    val attachments: List<AttachmentDto> = emptyList(),
 )
 
 @Serializable

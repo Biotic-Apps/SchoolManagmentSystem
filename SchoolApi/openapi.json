@@ -3609,6 +3609,1076 @@
         ]
       }
     },
+    "/api/v1/students/{studentId}/calendar": {
+      "get": {
+        "operationId": "StudentCalendarController_list",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Default: today in the school's time zone.",
+            "schema": {
+              "format": "date",
+              "example": "2026-04-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "description": "Default: `from` + 90 days. At most 366 days after `from`.",
+            "schema": {
+              "format": "date",
+              "example": "2026-04-01",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CalendarEventDto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Holidays and events of the student's branch; parents hold no `sessions.view`.",
+        "tags": [
+          "calendar"
+        ]
+      }
+    },
+    "/api/v1/students": {
+      "get": {
+        "operationId": "StudentsController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 30,
+              "type": "string"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "classId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sectionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/StudentSummaryDto"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer"
+                        },
+                        "pageSize": {
+                          "type": "integer"
+                        },
+                        "total": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      },
+      "post": {
+        "operationId": "StudentsController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterStudentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/StudentDetailDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/api/v1/students/{id}": {
+      "get": {
+        "operationId": "StudentsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/StudentDetailDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      },
+      "patch": {
+        "operationId": "StudentsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStudentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/StudentDetailDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/api/v1/students/{id}/enrollments": {
+      "get": {
+        "operationId": "StudentsController_enrollments",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/EnrollmentDto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/api/v1/students/{id}/withdraw": {
+      "post": {
+        "operationId": "StudentsController_withdraw",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawStudentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/EnrollmentDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/api/v1/students/{id}/change-section": {
+      "post": {
+        "operationId": "StudentsController_changeSection",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeSectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/EnrollmentDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/api/v1/students/{id}/transfers": {
+      "post": {
+        "operationId": "TransfersController_request",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestTransferDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/TransferDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/api/v1/transfers": {
+      "get": {
+        "operationId": "TransfersController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "direction",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "IN",
+                "OUT"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "REQUESTED",
+                "ACCEPTED",
+                "REJECTED",
+                "CANCELLED"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/TransferDto"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer"
+                        },
+                        "pageSize": {
+                          "type": "integer"
+                        },
+                        "total": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/api/v1/transfers/{id}/accept": {
+      "post": {
+        "operationId": "TransfersController_accept",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptTransferDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/TransferDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/api/v1/transfers/{id}/reject": {
+      "post": {
+        "operationId": "TransfersController_reject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferReasonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/TransferDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/api/v1/transfers/{id}/cancel": {
+      "post": {
+        "operationId": "TransfersController_cancel",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferReasonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/TransferDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/api/v1/students/{id}/id-card": {
+      "post": {
+        "operationId": "IdCardController_request",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/IdCardJobDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      },
+      "get": {
+        "operationId": "IdCardController_status",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/IdCardStatusDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/api/v1/documents": {
+      "get": {
+        "operationId": "DocumentsController_list",
+        "parameters": [
+          {
+            "name": "ownerType",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "STUDENT",
+                "GUARDIAN",
+                "STAFF",
+                "APPLICATION"
+              ]
+            }
+          },
+          {
+            "name": "ownerId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DocumentDto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "documents"
+        ]
+      },
+      "post": {
+        "operationId": "DocumentsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDocumentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/DocumentDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "documents"
+        ]
+      }
+    },
+    "/api/v1/documents/{id}/verify": {
+      "post": {
+        "operationId": "DocumentsController_verify",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyDocumentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/DocumentDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "documents"
+        ]
+      }
+    },
+    "/api/v1/documents/{id}/reject": {
+      "post": {
+        "operationId": "DocumentsController_reject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectDocumentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/DocumentDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "documents"
+        ]
+      }
+    },
     "/api/v1/classes": {
       "get": {
         "operationId": "ClassesController_list",
@@ -5865,1010 +6935,6 @@
         ],
         "tags": [
           "timetable"
-        ]
-      }
-    },
-    "/api/v1/students": {
-      "get": {
-        "operationId": "StudentsController_list",
-        "parameters": [
-          {
-            "name": "page",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "minimum": 1,
-              "default": 1,
-              "type": "number"
-            }
-          },
-          {
-            "name": "pageSize",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "minimum": 1,
-              "maximum": 100,
-              "default": 20,
-              "type": "number"
-            }
-          },
-          {
-            "name": "search",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "maxLength": 100,
-              "type": "string"
-            }
-          },
-          {
-            "name": "status",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "maxLength": 30,
-              "type": "string"
-            }
-          },
-          {
-            "name": "branchId",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "format": "uuid",
-              "type": "string"
-            }
-          },
-          {
-            "name": "sessionId",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "format": "uuid",
-              "type": "string"
-            }
-          },
-          {
-            "name": "classId",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "format": "uuid",
-              "type": "string"
-            }
-          },
-          {
-            "name": "sectionId",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "format": "uuid",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/StudentSummaryDto"
-                      }
-                    },
-                    "meta": {
-                      "type": "object",
-                      "properties": {
-                        "page": {
-                          "type": "integer"
-                        },
-                        "pageSize": {
-                          "type": "integer"
-                        },
-                        "total": {
-                          "type": "integer"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "students"
-        ]
-      },
-      "post": {
-        "operationId": "StudentsController_register",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegisterStudentDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/StudentDetailDto"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StudentDetailDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "students"
-        ]
-      }
-    },
-    "/api/v1/students/{id}": {
-      "get": {
-        "operationId": "StudentsController_get",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/StudentDetailDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "students"
-        ]
-      },
-      "patch": {
-        "operationId": "StudentsController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateStudentDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/StudentDetailDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "students"
-        ]
-      }
-    },
-    "/api/v1/students/{id}/enrollments": {
-      "get": {
-        "operationId": "StudentsController_enrollments",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/EnrollmentDto"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "students"
-        ]
-      }
-    },
-    "/api/v1/students/{id}/withdraw": {
-      "post": {
-        "operationId": "StudentsController_withdraw",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/WithdrawStudentDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/EnrollmentDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "students"
-        ]
-      }
-    },
-    "/api/v1/students/{id}/change-section": {
-      "post": {
-        "operationId": "StudentsController_changeSection",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChangeSectionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/EnrollmentDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "students"
-        ]
-      }
-    },
-    "/api/v1/students/{id}/transfers": {
-      "post": {
-        "operationId": "TransfersController_request",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RequestTransferDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/TransferDto"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TransferDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "students"
-        ]
-      }
-    },
-    "/api/v1/transfers": {
-      "get": {
-        "operationId": "TransfersController_list",
-        "parameters": [
-          {
-            "name": "page",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "minimum": 1,
-              "default": 1,
-              "type": "number"
-            }
-          },
-          {
-            "name": "pageSize",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "minimum": 1,
-              "maximum": 100,
-              "default": 20,
-              "type": "number"
-            }
-          },
-          {
-            "name": "branchId",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "format": "uuid",
-              "type": "string"
-            }
-          },
-          {
-            "name": "direction",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "IN",
-                "OUT"
-              ]
-            }
-          },
-          {
-            "name": "status",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "REQUESTED",
-                "ACCEPTED",
-                "REJECTED",
-                "CANCELLED"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/TransferDto"
-                      }
-                    },
-                    "meta": {
-                      "type": "object",
-                      "properties": {
-                        "page": {
-                          "type": "integer"
-                        },
-                        "pageSize": {
-                          "type": "integer"
-                        },
-                        "total": {
-                          "type": "integer"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "students"
-        ]
-      }
-    },
-    "/api/v1/transfers/{id}/accept": {
-      "post": {
-        "operationId": "TransfersController_accept",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AcceptTransferDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/TransferDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "students"
-        ]
-      }
-    },
-    "/api/v1/transfers/{id}/reject": {
-      "post": {
-        "operationId": "TransfersController_reject",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TransferReasonDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/TransferDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "students"
-        ]
-      }
-    },
-    "/api/v1/transfers/{id}/cancel": {
-      "post": {
-        "operationId": "TransfersController_cancel",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TransferReasonDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/TransferDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "students"
-        ]
-      }
-    },
-    "/api/v1/students/{id}/id-card": {
-      "post": {
-        "operationId": "IdCardController_request",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/IdCardJobDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "students"
-        ]
-      },
-      "get": {
-        "operationId": "IdCardController_status",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/IdCardStatusDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "students"
-        ]
-      }
-    },
-    "/api/v1/documents": {
-      "get": {
-        "operationId": "DocumentsController_list",
-        "parameters": [
-          {
-            "name": "ownerType",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "STUDENT",
-                "GUARDIAN",
-                "STAFF",
-                "APPLICATION"
-              ]
-            }
-          },
-          {
-            "name": "ownerId",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "format": "uuid",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/DocumentDto"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "documents"
-        ]
-      },
-      "post": {
-        "operationId": "DocumentsController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateDocumentDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/DocumentDto"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DocumentDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "documents"
-        ]
-      }
-    },
-    "/api/v1/documents/{id}/verify": {
-      "post": {
-        "operationId": "DocumentsController_verify",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/VerifyDocumentDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/DocumentDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "documents"
-        ]
-      }
-    },
-    "/api/v1/documents/{id}/reject": {
-      "post": {
-        "operationId": "DocumentsController_reject",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RejectDocumentDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/DocumentDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "documents"
         ]
       }
     },
@@ -23465,6 +23531,995 @@
           }
         }
       },
+      "NamePhoneDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "phone"
+        ]
+      },
+      "StudentSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "admissionNo": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "photoUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "OTHER",
+              "MALE",
+              "FEMALE"
+            ]
+          },
+          "dob": {
+            "type": "string"
+          },
+          "className": {
+            "type": "string",
+            "nullable": true
+          },
+          "sectionName": {
+            "type": "string",
+            "nullable": true
+          },
+          "sectionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "branchName": {
+            "type": "string",
+            "nullable": true
+          },
+          "rollNo": {
+            "type": "number",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "WITHDRAWN",
+              "ACTIVE",
+              "TRANSFERRED",
+              "GRADUATED"
+            ]
+          },
+          "primaryGuardian": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NamePhoneDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "admissionNo",
+          "name",
+          "photoUrl",
+          "gender",
+          "dob",
+          "className",
+          "sectionName",
+          "sectionId",
+          "branchName",
+          "rollNo",
+          "status",
+          "primaryGuardian"
+        ]
+      },
+      "EnrollmentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "branchId": {
+            "type": "string"
+          },
+          "branchName": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "sessionName": {
+            "type": "string"
+          },
+          "sectionId": {
+            "type": "string"
+          },
+          "className": {
+            "type": "string"
+          },
+          "sectionName": {
+            "type": "string"
+          },
+          "rollNo": {
+            "type": "number",
+            "nullable": true
+          },
+          "startDate": {
+            "type": "string"
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "enum": [
+              "WITHDRAWN",
+              "ACTIVE",
+              "GRADUATED",
+              "TRANSFERRED_OUT",
+              "PROMOTED",
+              "REPEATED"
+            ],
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "branchId",
+          "branchName",
+          "sessionId",
+          "sessionName",
+          "sectionId",
+          "className",
+          "sectionName",
+          "rollNo",
+          "startDate",
+          "endDate",
+          "status",
+          "reason"
+        ]
+      },
+      "GuardianDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "relation": {
+            "enum": [
+              "OTHER",
+              "GUARDIAN",
+              "FATHER",
+              "MOTHER"
+            ],
+            "type": "string"
+          },
+          "cnic": {
+            "type": "string",
+            "nullable": true,
+            "description": "Masked unless `people.sensitive.view`."
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "occupation": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "hasAccount": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "relation",
+          "cnic",
+          "phone",
+          "email",
+          "occupation",
+          "address",
+          "userId",
+          "hasAccount"
+        ]
+      },
+      "GuardianLinkDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "guardian": {
+            "$ref": "#/components/schemas/GuardianDto"
+          },
+          "relation": {
+            "enum": [
+              "OTHER",
+              "GUARDIAN",
+              "FATHER",
+              "MOTHER"
+            ],
+            "type": "string"
+          },
+          "isPrimary": {
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "REJECTED",
+              "REQUESTED",
+              "VERIFIED",
+              "REVOKED"
+            ],
+            "type": "string"
+          },
+          "verifiedAt": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "guardian",
+          "relation",
+          "isPrimary",
+          "status",
+          "verifiedAt"
+        ]
+      },
+      "DocumentFileDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "mime": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "mime",
+          "size"
+        ]
+      },
+      "DocumentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "ownerType": {
+            "enum": [
+              "STUDENT",
+              "STAFF",
+              "GUARDIAN",
+              "APPLICATION"
+            ],
+            "type": "string"
+          },
+          "ownerId": {
+            "type": "string"
+          },
+          "docType": {
+            "enum": [
+              "OTHER",
+              "BIRTH_CERTIFICATE",
+              "B_FORM",
+              "CNIC",
+              "PHOTO",
+              "PREVIOUS_RESULT",
+              "LEAVING_CERTIFICATE",
+              "MEDICAL"
+            ],
+            "type": "string"
+          },
+          "file": {
+            "$ref": "#/components/schemas/DocumentFileDto"
+          },
+          "status": {
+            "enum": [
+              "REJECTED",
+              "UPLOADED",
+              "VERIFIED"
+            ],
+            "type": "string"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "verifiedBy": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IdNameDto"
+              }
+            ]
+          },
+          "verifiedAt": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "ownerType",
+          "ownerId",
+          "docType",
+          "file",
+          "status",
+          "note",
+          "verifiedBy",
+          "verifiedAt"
+        ]
+      },
+      "MedicalDto": {
+        "type": "object",
+        "properties": {
+          "allergies": {
+            "type": "string",
+            "nullable": true
+          },
+          "conditions": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "allergies",
+          "conditions",
+          "notes"
+        ]
+      },
+      "StudentDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "admissionNo": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "photoUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "enum": [
+              "OTHER",
+              "MALE",
+              "FEMALE"
+            ],
+            "type": "string"
+          },
+          "dob": {
+            "type": "string"
+          },
+          "className": {
+            "type": "string",
+            "nullable": true
+          },
+          "sectionName": {
+            "type": "string",
+            "nullable": true
+          },
+          "sectionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "branchName": {
+            "type": "string",
+            "nullable": true
+          },
+          "rollNo": {
+            "type": "number",
+            "nullable": true
+          },
+          "status": {
+            "enum": [
+              "WITHDRAWN",
+              "ACTIVE",
+              "TRANSFERRED",
+              "GRADUATED"
+            ],
+            "type": "string"
+          },
+          "primaryGuardian": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NamePhoneDto"
+              }
+            ]
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "bForm": {
+            "type": "string",
+            "nullable": true,
+            "description": "Masked unless `people.sensitive.view`."
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "admissionDate": {
+            "type": "string"
+          },
+          "enrollment": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EnrollmentDto"
+              }
+            ]
+          },
+          "guardians": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GuardianLinkDto"
+            }
+          },
+          "documents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentDto"
+            }
+          },
+          "medical": {
+            "nullable": true,
+            "description": "Only with `health.view`.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MedicalDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "admissionNo",
+          "name",
+          "photoUrl",
+          "gender",
+          "dob",
+          "className",
+          "sectionName",
+          "sectionId",
+          "branchName",
+          "rollNo",
+          "status",
+          "primaryGuardian",
+          "firstName",
+          "lastName",
+          "bForm",
+          "address",
+          "admissionDate",
+          "enrollment",
+          "guardians",
+          "documents",
+          "medical"
+        ]
+      },
+      "ChildInputDto": {
+        "type": "object",
+        "properties": {
+          "dob": {
+            "type": "string",
+            "example": "2026-04-01",
+            "format": "date"
+          },
+          "firstName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 60
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "OTHER"
+            ]
+          },
+          "bForm": {
+            "type": "string"
+          },
+          "previousSchool": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "photoFileId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "dob",
+          "firstName",
+          "lastName",
+          "gender"
+        ]
+      },
+      "PrimaryGuardianInputDto": {
+        "type": "object",
+        "properties": {
+          "isPrimary": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "relation": {
+            "type": "string",
+            "enum": [
+              "FATHER",
+              "MOTHER",
+              "GUARDIAN",
+              "OTHER"
+            ]
+          },
+          "cnic": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email"
+          },
+          "occupation": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "isPrimary",
+          "name",
+          "relation",
+          "phone"
+        ]
+      },
+      "MedicalInputDto": {
+        "type": "object",
+        "properties": {
+          "allergies": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "conditions": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "RegisterStudentDto": {
+        "type": "object",
+        "properties": {
+          "admissionDate": {
+            "type": "string",
+            "example": "2026-04-01",
+            "format": "date"
+          },
+          "child": {
+            "$ref": "#/components/schemas/ChildInputDto"
+          },
+          "guardians": {
+            "description": "At least one; exactly one `isPrimary`.",
+            "minItems": 1,
+            "maxItems": 4,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PrimaryGuardianInputDto"
+            }
+          },
+          "sectionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "medical": {
+            "$ref": "#/components/schemas/MedicalInputDto"
+          }
+        },
+        "required": [
+          "admissionDate",
+          "child",
+          "guardians",
+          "sectionId"
+        ]
+      },
+      "UpdateStudentDto": {
+        "type": "object",
+        "properties": {
+          "dob": {
+            "type": "string",
+            "example": "2026-04-01",
+            "format": "date"
+          },
+          "firstName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 60
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "OTHER"
+            ]
+          },
+          "bForm": {
+            "type": "string"
+          },
+          "photoFileId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 300
+          }
+        }
+      },
+      "WithdrawStudentDto": {
+        "type": "object",
+        "properties": {
+          "effectiveDate": {
+            "type": "string",
+            "example": "2026-04-01",
+            "format": "date"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "effectiveDate",
+          "reason"
+        ]
+      },
+      "ChangeSectionDto": {
+        "type": "object",
+        "properties": {
+          "effectiveDate": {
+            "type": "string",
+            "example": "2026-04-01",
+            "format": "date"
+          },
+          "sectionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500
+          },
+          "rollNo": {
+            "type": "number",
+            "description": "Omit to take the next free roll number of the target section.",
+            "minimum": 1,
+            "maximum": 999
+          }
+        },
+        "required": [
+          "effectiveDate",
+          "sectionId",
+          "reason"
+        ]
+      },
+      "TransferStudentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "admissionNo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "admissionNo"
+        ]
+      },
+      "TransferDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "student": {
+            "$ref": "#/components/schemas/TransferStudentDto"
+          },
+          "fromBranch": {
+            "$ref": "#/components/schemas/IdNameDto"
+          },
+          "toBranch": {
+            "$ref": "#/components/schemas/IdNameDto"
+          },
+          "effectiveDate": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "REJECTED",
+              "CANCELLED",
+              "REQUESTED",
+              "ACCEPTED"
+            ],
+            "type": "string"
+          },
+          "decisionReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "student",
+          "fromBranch",
+          "toBranch",
+          "effectiveDate",
+          "reason",
+          "status",
+          "decisionReason",
+          "createdAt"
+        ]
+      },
+      "RequestTransferDto": {
+        "type": "object",
+        "properties": {
+          "effectiveDate": {
+            "type": "string",
+            "example": "2026-04-01",
+            "format": "date"
+          },
+          "toBranchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "effectiveDate",
+          "toBranchId",
+          "reason"
+        ]
+      },
+      "AcceptTransferDto": {
+        "type": "object",
+        "properties": {
+          "sectionId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "sectionId"
+        ]
+      },
+      "TransferReasonDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "IdCardJobDto": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "description": "Id of the card version being rendered; poll `GET /students/:id/id-card`."
+          }
+        },
+        "required": [
+          "jobId"
+        ]
+      },
+      "IdCardStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "FAILED",
+              "READY"
+            ]
+          },
+          "fileUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "version": {
+            "type": "number"
+          },
+          "generatedAt": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "status",
+          "fileUrl",
+          "version",
+          "generatedAt"
+        ]
+      },
+      "CreateDocumentDto": {
+        "type": "object",
+        "properties": {
+          "ownerType": {
+            "type": "string",
+            "enum": [
+              "STUDENT",
+              "GUARDIAN",
+              "STAFF",
+              "APPLICATION"
+            ]
+          },
+          "ownerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "docType": {
+            "type": "string",
+            "enum": [
+              "BIRTH_CERTIFICATE",
+              "B_FORM",
+              "CNIC",
+              "PHOTO",
+              "PREVIOUS_RESULT",
+              "LEAVING_CERTIFICATE",
+              "MEDICAL",
+              "OTHER"
+            ]
+          },
+          "fileId": {
+            "type": "string",
+            "description": "From `POST /files` with purpose DOCUMENT (or a photo purpose).",
+            "format": "uuid"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "ownerType",
+          "ownerId",
+          "docType",
+          "fileId"
+        ]
+      },
+      "VerifyDocumentDto": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      },
+      "RejectDocumentDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
       "SchoolClassDto": {
         "type": "object",
         "properties": {
@@ -25233,995 +26288,6 @@
           "sectionId",
           "periodIndex",
           "substituteStaffId",
-          "reason"
-        ]
-      },
-      "NamePhoneDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "phone": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "name",
-          "phone"
-        ]
-      },
-      "StudentSummaryDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "admissionNo": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "photoUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "gender": {
-            "type": "string",
-            "enum": [
-              "OTHER",
-              "MALE",
-              "FEMALE"
-            ]
-          },
-          "dob": {
-            "type": "string"
-          },
-          "className": {
-            "type": "string",
-            "nullable": true
-          },
-          "sectionName": {
-            "type": "string",
-            "nullable": true
-          },
-          "sectionId": {
-            "type": "string",
-            "nullable": true
-          },
-          "branchName": {
-            "type": "string",
-            "nullable": true
-          },
-          "rollNo": {
-            "type": "number",
-            "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "WITHDRAWN",
-              "ACTIVE",
-              "TRANSFERRED",
-              "GRADUATED"
-            ]
-          },
-          "primaryGuardian": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/NamePhoneDto"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "admissionNo",
-          "name",
-          "photoUrl",
-          "gender",
-          "dob",
-          "className",
-          "sectionName",
-          "sectionId",
-          "branchName",
-          "rollNo",
-          "status",
-          "primaryGuardian"
-        ]
-      },
-      "EnrollmentDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "branchId": {
-            "type": "string"
-          },
-          "branchName": {
-            "type": "string"
-          },
-          "sessionId": {
-            "type": "string"
-          },
-          "sessionName": {
-            "type": "string"
-          },
-          "sectionId": {
-            "type": "string"
-          },
-          "className": {
-            "type": "string"
-          },
-          "sectionName": {
-            "type": "string"
-          },
-          "rollNo": {
-            "type": "number",
-            "nullable": true
-          },
-          "startDate": {
-            "type": "string"
-          },
-          "endDate": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "enum": [
-              "WITHDRAWN",
-              "ACTIVE",
-              "GRADUATED",
-              "TRANSFERRED_OUT",
-              "PROMOTED",
-              "REPEATED"
-            ],
-            "type": "string"
-          },
-          "reason": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": [
-          "id",
-          "branchId",
-          "branchName",
-          "sessionId",
-          "sessionName",
-          "sectionId",
-          "className",
-          "sectionName",
-          "rollNo",
-          "startDate",
-          "endDate",
-          "status",
-          "reason"
-        ]
-      },
-      "GuardianDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "relation": {
-            "enum": [
-              "OTHER",
-              "GUARDIAN",
-              "FATHER",
-              "MOTHER"
-            ],
-            "type": "string"
-          },
-          "cnic": {
-            "type": "string",
-            "nullable": true,
-            "description": "Masked unless `people.sensitive.view`."
-          },
-          "phone": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "occupation": {
-            "type": "string",
-            "nullable": true
-          },
-          "address": {
-            "type": "string",
-            "nullable": true
-          },
-          "userId": {
-            "type": "string",
-            "nullable": true
-          },
-          "hasAccount": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "relation",
-          "cnic",
-          "phone",
-          "email",
-          "occupation",
-          "address",
-          "userId",
-          "hasAccount"
-        ]
-      },
-      "GuardianLinkDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "guardian": {
-            "$ref": "#/components/schemas/GuardianDto"
-          },
-          "relation": {
-            "enum": [
-              "OTHER",
-              "GUARDIAN",
-              "FATHER",
-              "MOTHER"
-            ],
-            "type": "string"
-          },
-          "isPrimary": {
-            "type": "boolean"
-          },
-          "status": {
-            "enum": [
-              "REJECTED",
-              "REQUESTED",
-              "VERIFIED",
-              "REVOKED"
-            ],
-            "type": "string"
-          },
-          "verifiedAt": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": [
-          "id",
-          "guardian",
-          "relation",
-          "isPrimary",
-          "status",
-          "verifiedAt"
-        ]
-      },
-      "DocumentFileDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "url": {
-            "type": "string"
-          },
-          "mime": {
-            "type": "string"
-          },
-          "size": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "id",
-          "url",
-          "mime",
-          "size"
-        ]
-      },
-      "DocumentDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "ownerType": {
-            "enum": [
-              "STUDENT",
-              "STAFF",
-              "GUARDIAN",
-              "APPLICATION"
-            ],
-            "type": "string"
-          },
-          "ownerId": {
-            "type": "string"
-          },
-          "docType": {
-            "enum": [
-              "OTHER",
-              "BIRTH_CERTIFICATE",
-              "B_FORM",
-              "CNIC",
-              "PHOTO",
-              "PREVIOUS_RESULT",
-              "LEAVING_CERTIFICATE",
-              "MEDICAL"
-            ],
-            "type": "string"
-          },
-          "file": {
-            "$ref": "#/components/schemas/DocumentFileDto"
-          },
-          "status": {
-            "enum": [
-              "REJECTED",
-              "UPLOADED",
-              "VERIFIED"
-            ],
-            "type": "string"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
-          },
-          "verifiedBy": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/IdNameDto"
-              }
-            ]
-          },
-          "verifiedAt": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": [
-          "id",
-          "ownerType",
-          "ownerId",
-          "docType",
-          "file",
-          "status",
-          "note",
-          "verifiedBy",
-          "verifiedAt"
-        ]
-      },
-      "MedicalDto": {
-        "type": "object",
-        "properties": {
-          "allergies": {
-            "type": "string",
-            "nullable": true
-          },
-          "conditions": {
-            "type": "string",
-            "nullable": true
-          },
-          "notes": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": [
-          "allergies",
-          "conditions",
-          "notes"
-        ]
-      },
-      "StudentDetailDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "admissionNo": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "photoUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "gender": {
-            "enum": [
-              "OTHER",
-              "MALE",
-              "FEMALE"
-            ],
-            "type": "string"
-          },
-          "dob": {
-            "type": "string"
-          },
-          "className": {
-            "type": "string",
-            "nullable": true
-          },
-          "sectionName": {
-            "type": "string",
-            "nullable": true
-          },
-          "sectionId": {
-            "type": "string",
-            "nullable": true
-          },
-          "branchName": {
-            "type": "string",
-            "nullable": true
-          },
-          "rollNo": {
-            "type": "number",
-            "nullable": true
-          },
-          "status": {
-            "enum": [
-              "WITHDRAWN",
-              "ACTIVE",
-              "TRANSFERRED",
-              "GRADUATED"
-            ],
-            "type": "string"
-          },
-          "primaryGuardian": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/NamePhoneDto"
-              }
-            ]
-          },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "bForm": {
-            "type": "string",
-            "nullable": true,
-            "description": "Masked unless `people.sensitive.view`."
-          },
-          "address": {
-            "type": "string",
-            "nullable": true
-          },
-          "admissionDate": {
-            "type": "string"
-          },
-          "enrollment": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/EnrollmentDto"
-              }
-            ]
-          },
-          "guardians": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GuardianLinkDto"
-            }
-          },
-          "documents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DocumentDto"
-            }
-          },
-          "medical": {
-            "nullable": true,
-            "description": "Only with `health.view`.",
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MedicalDto"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "admissionNo",
-          "name",
-          "photoUrl",
-          "gender",
-          "dob",
-          "className",
-          "sectionName",
-          "sectionId",
-          "branchName",
-          "rollNo",
-          "status",
-          "primaryGuardian",
-          "firstName",
-          "lastName",
-          "bForm",
-          "address",
-          "admissionDate",
-          "enrollment",
-          "guardians",
-          "documents",
-          "medical"
-        ]
-      },
-      "ChildInputDto": {
-        "type": "object",
-        "properties": {
-          "dob": {
-            "type": "string",
-            "example": "2026-04-01",
-            "format": "date"
-          },
-          "firstName": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 60
-          },
-          "lastName": {
-            "type": "string",
-            "maxLength": 60
-          },
-          "gender": {
-            "type": "string",
-            "enum": [
-              "MALE",
-              "FEMALE",
-              "OTHER"
-            ]
-          },
-          "bForm": {
-            "type": "string"
-          },
-          "previousSchool": {
-            "type": "string",
-            "maxLength": 150
-          },
-          "photoFileId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "address": {
-            "type": "string",
-            "maxLength": 300
-          }
-        },
-        "required": [
-          "dob",
-          "firstName",
-          "lastName",
-          "gender"
-        ]
-      },
-      "PrimaryGuardianInputDto": {
-        "type": "object",
-        "properties": {
-          "isPrimary": {
-            "type": "boolean"
-          },
-          "name": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 100
-          },
-          "relation": {
-            "type": "string",
-            "enum": [
-              "FATHER",
-              "MOTHER",
-              "GUARDIAN",
-              "OTHER"
-            ]
-          },
-          "cnic": {
-            "type": "string"
-          },
-          "phone": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string",
-            "maxLength": 254,
-            "format": "email"
-          },
-          "occupation": {
-            "type": "string",
-            "maxLength": 100
-          },
-          "address": {
-            "type": "string",
-            "maxLength": 300
-          }
-        },
-        "required": [
-          "isPrimary",
-          "name",
-          "relation",
-          "phone"
-        ]
-      },
-      "MedicalInputDto": {
-        "type": "object",
-        "properties": {
-          "allergies": {
-            "type": "string",
-            "maxLength": 1000
-          },
-          "conditions": {
-            "type": "string",
-            "maxLength": 1000
-          },
-          "notes": {
-            "type": "string",
-            "maxLength": 2000
-          }
-        }
-      },
-      "RegisterStudentDto": {
-        "type": "object",
-        "properties": {
-          "admissionDate": {
-            "type": "string",
-            "example": "2026-04-01",
-            "format": "date"
-          },
-          "child": {
-            "$ref": "#/components/schemas/ChildInputDto"
-          },
-          "guardians": {
-            "description": "At least one; exactly one `isPrimary`.",
-            "minItems": 1,
-            "maxItems": 4,
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PrimaryGuardianInputDto"
-            }
-          },
-          "sectionId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "medical": {
-            "$ref": "#/components/schemas/MedicalInputDto"
-          }
-        },
-        "required": [
-          "admissionDate",
-          "child",
-          "guardians",
-          "sectionId"
-        ]
-      },
-      "UpdateStudentDto": {
-        "type": "object",
-        "properties": {
-          "dob": {
-            "type": "string",
-            "example": "2026-04-01",
-            "format": "date"
-          },
-          "firstName": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 60
-          },
-          "lastName": {
-            "type": "string",
-            "maxLength": 60
-          },
-          "gender": {
-            "type": "string",
-            "enum": [
-              "MALE",
-              "FEMALE",
-              "OTHER"
-            ]
-          },
-          "bForm": {
-            "type": "string"
-          },
-          "photoFileId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "address": {
-            "type": "string",
-            "maxLength": 300
-          }
-        }
-      },
-      "WithdrawStudentDto": {
-        "type": "object",
-        "properties": {
-          "effectiveDate": {
-            "type": "string",
-            "example": "2026-04-01",
-            "format": "date"
-          },
-          "reason": {
-            "type": "string",
-            "minLength": 3,
-            "maxLength": 500
-          }
-        },
-        "required": [
-          "effectiveDate",
-          "reason"
-        ]
-      },
-      "ChangeSectionDto": {
-        "type": "object",
-        "properties": {
-          "effectiveDate": {
-            "type": "string",
-            "example": "2026-04-01",
-            "format": "date"
-          },
-          "sectionId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "reason": {
-            "type": "string",
-            "minLength": 3,
-            "maxLength": 500
-          },
-          "rollNo": {
-            "type": "number",
-            "description": "Omit to take the next free roll number of the target section.",
-            "minimum": 1,
-            "maximum": 999
-          }
-        },
-        "required": [
-          "effectiveDate",
-          "sectionId",
-          "reason"
-        ]
-      },
-      "TransferStudentDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "admissionNo": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "admissionNo"
-        ]
-      },
-      "TransferDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "student": {
-            "$ref": "#/components/schemas/TransferStudentDto"
-          },
-          "fromBranch": {
-            "$ref": "#/components/schemas/IdNameDto"
-          },
-          "toBranch": {
-            "$ref": "#/components/schemas/IdNameDto"
-          },
-          "effectiveDate": {
-            "type": "string"
-          },
-          "reason": {
-            "type": "string"
-          },
-          "status": {
-            "enum": [
-              "REJECTED",
-              "CANCELLED",
-              "REQUESTED",
-              "ACCEPTED"
-            ],
-            "type": "string"
-          },
-          "decisionReason": {
-            "type": "string",
-            "nullable": true
-          },
-          "createdAt": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "student",
-          "fromBranch",
-          "toBranch",
-          "effectiveDate",
-          "reason",
-          "status",
-          "decisionReason",
-          "createdAt"
-        ]
-      },
-      "RequestTransferDto": {
-        "type": "object",
-        "properties": {
-          "effectiveDate": {
-            "type": "string",
-            "example": "2026-04-01",
-            "format": "date"
-          },
-          "toBranchId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "reason": {
-            "type": "string",
-            "minLength": 3,
-            "maxLength": 500
-          }
-        },
-        "required": [
-          "effectiveDate",
-          "toBranchId",
-          "reason"
-        ]
-      },
-      "AcceptTransferDto": {
-        "type": "object",
-        "properties": {
-          "sectionId": {
-            "type": "string",
-            "format": "uuid"
-          }
-        },
-        "required": [
-          "sectionId"
-        ]
-      },
-      "TransferReasonDto": {
-        "type": "object",
-        "properties": {
-          "reason": {
-            "type": "string",
-            "minLength": 3,
-            "maxLength": 500
-          }
-        },
-        "required": [
-          "reason"
-        ]
-      },
-      "IdCardJobDto": {
-        "type": "object",
-        "properties": {
-          "jobId": {
-            "type": "string",
-            "description": "Id of the card version being rendered; poll `GET /students/:id/id-card`."
-          }
-        },
-        "required": [
-          "jobId"
-        ]
-      },
-      "IdCardStatusDto": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "PENDING",
-              "FAILED",
-              "READY"
-            ]
-          },
-          "fileUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "version": {
-            "type": "number"
-          },
-          "generatedAt": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": [
-          "status",
-          "fileUrl",
-          "version",
-          "generatedAt"
-        ]
-      },
-      "CreateDocumentDto": {
-        "type": "object",
-        "properties": {
-          "ownerType": {
-            "type": "string",
-            "enum": [
-              "STUDENT",
-              "GUARDIAN",
-              "STAFF",
-              "APPLICATION"
-            ]
-          },
-          "ownerId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "docType": {
-            "type": "string",
-            "enum": [
-              "BIRTH_CERTIFICATE",
-              "B_FORM",
-              "CNIC",
-              "PHOTO",
-              "PREVIOUS_RESULT",
-              "LEAVING_CERTIFICATE",
-              "MEDICAL",
-              "OTHER"
-            ]
-          },
-          "fileId": {
-            "type": "string",
-            "description": "From `POST /files` with purpose DOCUMENT (or a photo purpose).",
-            "format": "uuid"
-          },
-          "note": {
-            "type": "string",
-            "maxLength": 500
-          }
-        },
-        "required": [
-          "ownerType",
-          "ownerId",
-          "docType",
-          "fileId"
-        ]
-      },
-      "VerifyDocumentDto": {
-        "type": "object",
-        "properties": {
-          "note": {
-            "type": "string",
-            "maxLength": 500
-          }
-        }
-      },
-      "RejectDocumentDto": {
-        "type": "object",
-        "properties": {
-          "reason": {
-            "type": "string",
-            "minLength": 3,
-            "maxLength": 500
-          }
-        },
-        "required": [
           "reason"
         ]
       },

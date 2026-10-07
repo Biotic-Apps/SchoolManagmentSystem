@@ -21,7 +21,8 @@ export function useSettingsRoute() {
     setTab: (value: string) => setTab(value as SettingsTabId),
     canEdit,
     isSuperAdmin,
-    showSupport: can("settings.view"),
+    // Every /support/* endpoint is super-admin only (phase5-contract §C).
+    showSupport: isSuperAdmin,
     showBackups: isSuperAdmin,
     showImports: canEdit || isPrincipal,
   };

@@ -23,3 +23,16 @@ data class HomeworkStatusBodyDto(val entries: List<HomeworkEntryDto>)
 
 @Serializable
 data class HomeworkEntryDto(val studentId: String, val status: String)
+
+/** One published diary homework of a student's section plus the teacher's tick (`status` null = not checked yet). */
+@Serializable
+data class HomeworkItemDto(
+    val diaryEntryId: String? = null,
+    val id: String? = null,
+    val date: String,
+    val dueDate: String? = null,
+    val subject: IdNameDto? = null,
+    val subjectName: String? = null,
+    val homework: String? = null,
+    val status: String? = null,
+)

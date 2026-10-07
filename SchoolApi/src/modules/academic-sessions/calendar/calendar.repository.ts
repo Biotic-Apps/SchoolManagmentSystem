@@ -41,6 +41,25 @@ export class CalendarRepository {
     });
   }
 
+  /** Events of one branch plus its school's whole-school events (caller already checked access). */
+  listForBranch(
+    branch: { id: string; schoolId: string },
+    from: Date,
+    to: Date,
+  ) {
+    return this.prisma.calendarEvent.findMany({
+      where: {
+        schoolId: branch.schoolId,
+        OR: [{ branchId: branch.id }, { branchId: null }],
+        status: 'ACTIVE',
+        endDate: { gte: from },
+        startDate: { lte: to },
+      },
+      orderBy: { startDate: 'asc' },
+      take: MAX_EVENTS,
+    });
+  }
+
   findById(id: string) {
     return this.prisma.calendarEvent.findFirst({
       where: { id, status: 'ACTIVE' },

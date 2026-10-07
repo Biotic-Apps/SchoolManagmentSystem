@@ -18,7 +18,7 @@ export function SecurityPolicySection() {
         <TextField
           name="sessionTimeoutMinutes"
           label="Sign out after inactivity (minutes)"
-          hint="Between 5 and 480 minutes."
+          hint="Between 5 and 1440 minutes (24 hours)."
           inputMode="numeric"
           autoComplete="off"
           required

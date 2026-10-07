@@ -57,3 +57,16 @@ data class CompleteMeetingBodyDto(
 
 @Serializable
 data class FollowUpBodyDto(val title: String, val ownerUserId: String? = null, val dueDate: String)
+
+/** `POST /meetings/slots`: several slots at once (max 50). */
+@Serializable
+data class CreateSlotsBodyDto(val slots: List<SlotBodyDto>)
+
+@Serializable
+data class SlotBodyDto(
+    val date: String,
+    val startTime: String,
+    val endTime: String,
+    val mode: String,
+    val location: String? = null,
+)

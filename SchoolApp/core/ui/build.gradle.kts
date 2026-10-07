@@ -10,4 +10,5 @@ dependencies {
     api(projects.core.common)
     api(projects.core.model)
     implementation(projects.core.designsystem)
+    implementation(libs.androidx.activity.compose)
 }

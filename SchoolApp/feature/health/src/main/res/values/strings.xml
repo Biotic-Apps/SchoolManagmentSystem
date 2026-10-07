@@ -92,4 +92,5 @@
     <string name="health_notified_guardians">Guardians have been notified</string>
     <string name="health_notified_guardians_principal">Guardians and the principal have been notified</string>
     <string name="health_done">Done</string>
+    <string name="health_attachments">Photos or documents</string>
 </resources>

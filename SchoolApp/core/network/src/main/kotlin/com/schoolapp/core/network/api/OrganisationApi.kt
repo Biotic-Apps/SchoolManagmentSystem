@@ -40,6 +40,14 @@ interface OrganisationApi {
         @Query("pageSize") pageSize: Int = Paging.MAX_PAGE_SIZE,
     ): ApiEnvelope<List<CalendarEventDto>>
 
+    /** Parent view: school + branch events for the student's branch; server default range is today..+90 days. */
+    @GET("students/{studentId}/calendar")
+    suspend fun studentCalendar(
+        @Path("studentId") studentId: String,
+        @Query("from") from: String? = null,
+        @Query("to") to: String? = null,
+    ): ApiEnvelope<List<CalendarEventDto>>
+
     @GET("classes")
     suspend fun classes(
         @Query("schoolId") schoolId: String?,

@@ -35,9 +35,6 @@
     <string name="complaints_no_child">Not about a child</string>
     <string name="complaints_anonymous">File anonymously</string>
     <string name="complaints_anonymous_help">Only the principal can see who filed it</string>
-    <string name="complaints_attachments">Attachments</string>
-    <string name="complaints_attach">Attach file</string>
-    <string name="complaints_uploading">Uploading attachment…</string>
     <string name="complaints_required">Required</string>
     <string name="complaints_pick_category">Pick a category</string>
     <string name="complaints_submit">Submit complaint</string>
@@ -73,4 +70,12 @@
     <string name="complaints_reopen_help">Reopen if the issue is not solved. Allowed within 7 days of resolution.</string>
     <string name="complaints_save">Save</string>
     <string name="complaints_done">Done</string>
+
+    <string name="complaints_assign">Assign</string>
+    <string name="complaints_assign_help">The assignee is notified and becomes responsible for resolving it.</string>
+    <string name="complaints_assign_search">Search staff</string>
+    <string name="complaints_assign_empty">No staff with a login to assign.</string>
+    <string name="complaints_assign_pick">Choose a staff member</string>
+    <string name="complaints_assign_current">Current assignee</string>
+    <string name="complaints_assign_retry">Retry</string>
 </resources>

@@ -8,11 +8,11 @@ import com.schoolapp.core.model.RoleRef
 import com.schoolapp.feature.attendance.child.ChildAttendanceRoute
 import com.schoolapp.feature.attendance.mark.MarkHomeRoute
 import com.schoolapp.feature.attendance.staff.MyAttendanceLeaveRoute
-import com.schoolapp.feature.attendance.supervisor.BranchTodayRoute
+import com.schoolapp.feature.attendance.supervisor.SupervisorAttendanceRoute
 
 /**
  * Menu `attendance`: teachers and helpers mark their sections, parents see the active child,
- * supervisors (and custom roles) get the branch's day.
+ * supervisors (and custom roles) get the branch's day, plus a Staff tab when they may mark staff attendance.
  */
 @Composable
 fun AttendanceMenuScreen(role: RoleRef, onOpen: (Any) -> Unit, modifier: Modifier = Modifier) {
@@ -20,7 +20,7 @@ fun AttendanceMenuScreen(role: RoleRef, onOpen: (Any) -> Unit, modifier: Modifie
     when (role) {
         RoleKey.TEACHER, RoleKey.HELPER -> MarkHomeRoute(onOpen, modifier, hiltViewModel(key = key))
         RoleKey.PARENT -> ChildAttendanceRoute(modifier, hiltViewModel(key = key))
-        else -> BranchTodayRoute(onOpen, modifier, hiltViewModel(key = key))
+        else -> SupervisorAttendanceRoute(role.key, onOpen, modifier)
     }
 }
 

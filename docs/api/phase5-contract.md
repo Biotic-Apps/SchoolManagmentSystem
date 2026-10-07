@@ -217,6 +217,10 @@ Paths and documented fields are unchanged unless listed. Additions and clarifica
     - Everything else: management scope over the file's school.
   - **Attaching files**: `FileRefService` accepts only the caller's own upload, or a file of a school the caller manages.
   - **Diary**: archived or quarantined diary attachments are no longer signed.
+- **Student calendar** (new; parent calendar in docs/parity.md): `GET /students/:studentId/calendar?from=&to=` (`timetable.view`) → `CalendarEventDto[]`, the same DTO as `GET /calendar`.
+  - Events of the branch of the student's current enrollment (ACTIVE, else the latest) plus whole-school events: ACTIVE only, overlapping the range, oldest first, at most 500. No enrollment → `[]`.
+  - Range: `from` defaults to today (APP_TIMEZONE), `to` to `from` + 90 days. `to` before `from`, or more than 366 days → 400.
+  - Parents: verified children only, else 404. Staff: the student must be in scope (else 403), as for `GET /students/:id`.
 - **ID card**: `POST /students/:id/id-card` now needs `students.edit` and management scope over the student's branch (was `students.view`). `GET` is unchanged.
 - **Carry-overs**:
   - **Payroll adjustment cancel**: `POST /payroll/adjustments/:id/cancel { reason (3–500) }` (`payroll.edit`, 200).

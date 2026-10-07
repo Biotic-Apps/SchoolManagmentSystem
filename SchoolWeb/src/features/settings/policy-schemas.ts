@@ -27,7 +27,7 @@ export const policySettingsSchema = z
   .object({
     passwordMinLength: wholeNumberIn(8, 64),
     requireDigit: z.boolean(),
-    sessionTimeoutMinutes: wholeNumberIn(5, 480),
+    sessionTimeoutMinutes: wholeNumberIn(5, 1440),
     twoFactorRequiredFor: z.array(z.string()),
     attendanceLockTime: timeOfDay,
     diaryModeration: z.boolean(),

@@ -2,6 +2,7 @@ package com.schoolapp.feature.health.report
 
 import androidx.compose.runtime.Immutable
 import com.schoolapp.core.common.result.AppError
+import com.schoolapp.core.model.files.AttachmentDraft
 import com.schoolapp.core.model.health.Incident
 import com.schoolapp.core.model.health.IncidentSeverity
 import com.schoolapp.core.model.health.IncidentType
@@ -23,6 +24,7 @@ data class ReportIncidentUiState(
     val severity: IncidentSeverity = IncidentSeverity.MINOR,
     val description: String = "",
     val actionTaken: String = "",
+    val attachments: AttachmentDraft = AttachmentDraft(),
     val errors: Set<IncidentField> = emptySet(),
     val isSaving: Boolean = false,
     val error: AppError? = null,

@@ -39,6 +39,7 @@ import com.schoolapp.core.model.health.IncidentSeverity
 import com.schoolapp.core.model.health.IncidentType
 import com.schoolapp.core.model.people.StudentSummary
 import com.schoolapp.core.ui.appErrorMessage
+import com.schoolapp.core.ui.attachments.AttachmentsField
 import com.schoolapp.core.ui.formatDate
 import com.schoolapp.core.ui.formatTime
 import com.schoolapp.feature.health.R
@@ -57,6 +58,9 @@ internal class ReportIncidentCallbacks(
     val onSeverityChange: (IncidentSeverity) -> Unit,
     val onDescriptionChange: (String) -> Unit,
     val onActionTakenChange: (String) -> Unit,
+    /** Picked content Uri (as string); uploaded by the ViewModel. */
+    val onAttach: (String) -> Unit,
+    val onRemoveAttachment: (String) -> Unit,
     val onSubmit: () -> Unit,
 )
 
@@ -137,7 +141,23 @@ internal fun ReportIncidentForm(state: ReportIncidentUiState, callbacks: ReportI
                 errorText = stringResource(R.string.health_required).takeIf { IncidentField.ACTION_TAKEN in state.errors },
             )
         }
-        item(key = "submit") { PrimaryButton(stringResource(R.string.health_submit_report), callbacks.onSubmit, loading = state.isSaving) }
+        item(key = "attachments") {
+            AttachmentsField(
+                draft = state.attachments,
+                onPicked = callbacks.onAttach,
+                onRemove = callbacks.onRemoveAttachment,
+                label = stringResource(R.string.health_attachments),
+                enabled = enabled,
+            )
+        }
+        item(key = "submit") {
+            PrimaryButton(
+                stringResource(R.string.health_submit_report),
+                callbacks.onSubmit,
+                loading = state.isSaving,
+                enabled = !state.attachments.isUploading,
+            )
+        }
     }
     if (pickDate) {
         AppDatePickerDialog(

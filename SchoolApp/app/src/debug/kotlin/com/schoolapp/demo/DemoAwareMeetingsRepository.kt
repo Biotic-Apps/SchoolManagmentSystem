@@ -12,6 +12,7 @@ import com.schoolapp.core.model.meeting.Meeting
 import com.schoolapp.core.model.meeting.MeetingBox
 import com.schoolapp.core.model.meeting.MeetingSlot
 import com.schoolapp.core.model.meeting.MeetingStatus
+import com.schoolapp.core.model.meeting.SlotInput
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,6 +30,39 @@ class DemoAwareMeetingsRepository @Inject constructor(
                 it.status == DemoMeetingsData.OPEN && DemoDates.inRange(it.date, from, to) && (staffUserId == null || it.staff?.id == staffUserId)
             },
         )
+    }
+
+    override suspend fun mySlots(staffUserId: String, from: String, to: String): AppResult<List<MeetingSlot>> {
+        if (!auth.isDemoActive) return real.mySlots(staffUserId, from, to)
+        val me = DemoActors.forRole(auth.demoSession.value?.activeRole).id
+        return AppResult.Success(
+            DemoMeetingsData.slots.value
+                .filter { it.staff?.id == me && it.status != CANCELLED && DemoDates.inRange(it.date, from, to) }
+                .sortedBy { it.date + it.startTime },
+        )
+    }
+
+    override suspend fun publishSlots(slots: List<SlotInput>): AppResult<List<MeetingSlot>> {
+        if (!auth.isDemoActive) return real.publishSlots(slots)
+        val me = DemoActors.forRole(auth.demoSession.value?.activeRole)
+        val existing = DemoMeetingsData.slots.value.filter { it.staff?.id == me.id && it.status != CANCELLED }
+        val clash = slots.any { s -> existing.any { it.date == s.date && it.startTime < s.endTime && s.startTime < it.endTime } }
+        if (clash) return AppResult.Failure(AppError.Server(409, "CONFLICT", "Slot overlaps an existing slot"))
+        val stamp = System.currentTimeMillis()
+        val created = slots.mapIndexed { index, s ->
+            MeetingSlot("demo-slot-new-$stamp-$index", me, s.date, s.startTime, s.endTime, s.mode, s.location?.trim()?.ifBlank { null }, DemoMeetingsData.OPEN)
+        }
+        DemoMeetingsData.slots.update { it + created }
+        return AppResult.Success(created)
+    }
+
+    override suspend fun removeSlot(id: String): AppResult<MeetingSlot> {
+        if (!auth.isDemoActive) return real.removeSlot(id)
+        val slot = DemoMeetingsData.slots.value.firstOrNull { it.id == id }
+            ?: return AppResult.Failure(AppError.Server(404, "NOT_FOUND", null))
+        if (slot.status != DemoMeetingsData.OPEN) return AppResult.Failure(AppError.Server(409, "CONFLICT", "Only open slots can be removed"))
+        setSlotStatus(id, CANCELLED)
+        return AppResult.Success(slot.copy(status = CANCELLED))
     }
 
     override suspend fun book(slotId: String, studentId: String, agenda: String): AppResult<Meeting> {
@@ -98,6 +132,8 @@ class DemoAwareMeetingsRepository @Inject constructor(
     }
 
     internal companion object {
+        private const val CANCELLED = "CANCELLED"
+
         fun demoMeetings(box: MeetingBox, studentId: String?): List<Meeting> {
             val today = DemoDates.todayKey()
             return DemoMeetingsData.meetings.value

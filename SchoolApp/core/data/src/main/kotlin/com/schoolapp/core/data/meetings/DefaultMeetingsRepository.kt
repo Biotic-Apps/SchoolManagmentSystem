@@ -7,6 +7,7 @@ import com.schoolapp.core.model.meeting.FollowUp
 import com.schoolapp.core.model.meeting.Meeting
 import com.schoolapp.core.model.meeting.MeetingBox
 import com.schoolapp.core.model.meeting.MeetingSlot
+import com.schoolapp.core.model.meeting.SlotInput
 import com.schoolapp.core.network.ApiCaller
 import com.schoolapp.core.network.api.MeetingsApi
 import com.schoolapp.core.network.dto.common.ReasonBodyDto
@@ -26,6 +27,15 @@ class DefaultMeetingsRepository @Inject constructor(
                 .filter { it.status == null || it.status == OPEN }
                 .sortedWith(compareBy({ it.date }, { it.startTime }))
         }
+
+    override suspend fun mySlots(staffUserId: String, from: String, to: String): AppResult<List<MeetingSlot>> =
+        apiCaller.call { api.slots(staffUserId, from, to).data.toOwnSlots() }
+
+    override suspend fun publishSlots(slots: List<SlotInput>): AppResult<List<MeetingSlot>> =
+        apiCaller.call { api.createSlots(slots.toCreateBody()).data.map { it.toModel() } }
+
+    override suspend fun removeSlot(id: String): AppResult<MeetingSlot> =
+        apiCaller.call { api.deleteSlot(id).data.toModel() }
 
     override suspend fun book(slotId: String, studentId: String, agenda: String): AppResult<Meeting> =
         apiCaller.call { api.book(BookMeetingBodyDto(slotId, studentId, agenda.trim())).data.toModel() }

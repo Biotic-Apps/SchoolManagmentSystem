@@ -1,6 +1,7 @@
 package com.schoolapp.core.model.complaint
 
 import com.schoolapp.core.model.common.PersonRef
+import com.schoolapp.core.model.files.Attachment
 
 enum class ComplaintCategory { ACADEMIC, STAFF_BEHAVIOUR, FACILITY, TRANSPORT, FEE, SAFETY, OTHER }
 
@@ -30,4 +31,11 @@ data class Complaint(
     val isOpen: Boolean get() = status != ComplaintStatus.RESOLVED && status != ComplaintStatus.CLOSED
 }
 
-data class ComplaintUpdate(val id: String, val authorName: String?, val message: String, val status: ComplaintStatus?, val at: String?)
+data class ComplaintUpdate(
+    val id: String,
+    val authorName: String?,
+    val message: String,
+    val status: ComplaintStatus?,
+    val at: String?,
+    val attachments: List<Attachment> = emptyList(),
+)

@@ -1,6 +1,7 @@
 package com.schoolapp.core.data.progress
 
 import com.schoolapp.core.common.result.AppResult
+import com.schoolapp.core.model.progress.HomeworkCompletionItem
 import com.schoolapp.core.model.progress.HomeworkTick
 import com.schoolapp.core.model.progress.ProgressNote
 import com.schoolapp.core.model.progress.ProgressNoteInput
@@ -14,4 +15,7 @@ interface ProgressRepository {
 
     /** `PUT /diary/:id/homework-status`. */
     suspend fun saveHomeworkStatus(diaryId: String, ticks: List<HomeworkTick>): AppResult<Unit>
+
+    /** Parent view: the child's homework between [from] and [to] (ISO dates; server default = last 30 days), newest first. */
+    suspend fun homeworkCompletion(studentId: String, from: String? = null, to: String? = null): AppResult<List<HomeworkCompletionItem>>
 }

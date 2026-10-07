@@ -23,7 +23,7 @@ class ReportIncidentViewModelTest {
     private val clock = AppClock { LocalDateTime.of(2026, 10, 6, 11, 30) }
 
     private fun viewModel(studentId: String? = "s1") =
-        ReportIncidentViewModel(SavedStateHandle(mapOf("studentId" to studentId)), health, FakeStudentsRepository(), clock)
+        ReportIncidentViewModel(SavedStateHandle(mapOf("studentId" to studentId)), health, FakeStudentsRepository(), clock, FakeHealthFilesRepository())
 
     @Test
     fun description_and_action_taken_are_required() {

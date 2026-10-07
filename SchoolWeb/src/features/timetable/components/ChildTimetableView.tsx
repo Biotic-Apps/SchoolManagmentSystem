@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { ChildActivitiesSection } from "@/features/activities/components/ChildActivitiesSection";
+import { ChildCalendarSection } from "@/features/sessions/components/ChildCalendarSection";
 import { useChildTimetable } from "../use-child-timetable";
 import { TeacherWeekGrid } from "./TeacherWeekGrid";
 import { WeekNav } from "./WeekNav";
@@ -31,6 +32,7 @@ export function ChildTimetableView() {
             showSection={false}
             emptyDescription="No published timetable for this week yet."
           />
+          <ChildCalendarSection className="mt-4" />
           <ChildActivitiesSection className="mt-4" />
         </>
       )}

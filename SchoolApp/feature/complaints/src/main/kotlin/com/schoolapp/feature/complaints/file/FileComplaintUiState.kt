@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.model.ChildSummary
 import com.schoolapp.core.model.complaint.ComplaintCategory
-import com.schoolapp.core.model.files.Attachment
+import com.schoolapp.core.model.files.AttachmentDraft
 
 @Immutable
 data class FileComplaintUiState(
@@ -16,8 +16,7 @@ data class FileComplaintUiState(
     val subject: String = "",
     val description: String = "",
     val anonymous: Boolean = false,
-    val attachments: List<Attachment> = emptyList(),
-    val uploadingCount: Int = 0,
+    val attachments: AttachmentDraft = AttachmentDraft(),
     val categoryMissing: Boolean = false,
     val subjectMissing: Boolean = false,
     val descriptionMissing: Boolean = false,

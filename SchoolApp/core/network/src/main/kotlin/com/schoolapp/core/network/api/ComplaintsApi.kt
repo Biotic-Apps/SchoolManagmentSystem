@@ -1,6 +1,7 @@
 package com.schoolapp.core.network.api
 
 import com.schoolapp.core.network.dto.common.ReasonBodyDto
+import com.schoolapp.core.network.dto.complaint.AssignComplaintBodyDto
 import com.schoolapp.core.network.dto.complaint.ComplaintBodyDto
 import com.schoolapp.core.network.dto.complaint.ComplaintDto
 import com.schoolapp.core.network.dto.complaint.ComplaintUpdateBodyDto
@@ -26,6 +27,9 @@ interface ComplaintsApi {
 
     @POST("complaints")
     suspend fun file(@Body body: ComplaintBodyDto): ApiEnvelope<ComplaintDto>
+
+    @POST("complaints/{id}/assign")
+    suspend fun assign(@Path("id") id: String, @Body body: AssignComplaintBodyDto): ApiEnvelope<JsonObject>
 
     @POST("complaints/{id}/updates")
     suspend fun addUpdate(@Path("id") id: String, @Body body: ComplaintUpdateBodyDto): ApiEnvelope<JsonObject>

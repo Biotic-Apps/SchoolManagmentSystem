@@ -5,7 +5,11 @@ import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.model.meeting.FollowUp
 import com.schoolapp.core.model.meeting.Meeting
 
-enum class StaffMeetingsTab { UPCOMING, PAST, FOLLOW_UPS }
+/** Tab order matches web; [SLOTS] only shows for staff who can publish slots. */
+enum class StaffMeetingsTab { UPCOMING, PAST, SLOTS, FOLLOW_UPS }
+
+internal fun visibleStaffTabs(canPublishSlots: Boolean): List<StaffMeetingsTab> =
+    StaffMeetingsTab.entries.filter { it != StaffMeetingsTab.SLOTS || canPublishSlots }
 
 @Immutable
 data class StaffMeetingsUiState(

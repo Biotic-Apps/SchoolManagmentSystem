@@ -3,14 +3,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
 import { errorMessage } from "@/lib/error-messages";
-import { IDLE_TIMEOUT_MINUTES } from "@/config/env";
 import { useLoginMutation } from "./api";
 import { safeNextPath } from "./login-redirect";
 import { loginSchema, type LoginInput } from "./schemas";
 import { useRedirectIfSignedIn } from "./use-require-session";
 
 const REASON_NOTICE: Record<string, string> = {
-  idle: `You were signed out after ${IDLE_TIMEOUT_MINUTES} minutes without activity.`,
+  // The timeout comes from the school policy, which is gone once signed out.
+  idle: "You were signed out after a period without activity.",
   expired: "Your session has ended. Please sign in again.",
   reset: "Your password was changed. Sign in with the new password.",
 };

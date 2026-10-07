@@ -1,6 +1,7 @@
 package com.schoolapp.core.data.complaints
 
 import com.schoolapp.core.data.common.orNullIfEmpty
+import com.schoolapp.core.data.common.toAttachments
 import com.schoolapp.core.data.common.toRef
 import com.schoolapp.core.model.common.enumOrDefault
 import com.schoolapp.core.model.common.enumOrNull
@@ -39,6 +40,7 @@ internal fun ComplaintUpdateDto.toModel(index: Int) = ComplaintUpdate(
     message = message.orEmpty(),
     status = enumOrNull<ComplaintStatus>(status),
     at = at ?: createdAt,
+    attachments = attachments.toAttachments(),
 )
 
 internal fun ComplaintInput.toBody() = ComplaintBodyDto(

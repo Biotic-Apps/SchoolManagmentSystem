@@ -3,11 +3,13 @@ package com.schoolapp.core.network.api
 import com.schoolapp.core.network.dto.common.ReasonBodyDto
 import com.schoolapp.core.network.dto.meeting.BookMeetingBodyDto
 import com.schoolapp.core.network.dto.meeting.CompleteMeetingBodyDto
+import com.schoolapp.core.network.dto.meeting.CreateSlotsBodyDto
 import com.schoolapp.core.network.dto.meeting.FollowUpDto
 import com.schoolapp.core.network.dto.meeting.MeetingDto
 import com.schoolapp.core.network.dto.meeting.MeetingSlotDto
 import com.schoolapp.core.network.model.ApiEnvelope
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -21,6 +23,14 @@ interface MeetingsApi {
         @Query("from") from: String? = null,
         @Query("to") to: String? = null,
     ): ApiEnvelope<List<MeetingSlotDto>>
+
+    /** Staff publish one or more slots (server rejects overlaps and past dates). */
+    @POST("meetings/slots")
+    suspend fun createSlots(@Body body: CreateSlotsBodyDto): ApiEnvelope<List<MeetingSlotDto>>
+
+    /** Only the owner's OPEN slots; 409 once booked. */
+    @DELETE("meetings/slots/{id}")
+    suspend fun deleteSlot(@Path("id") id: String): ApiEnvelope<MeetingSlotDto>
 
     @POST("meetings")
     suspend fun book(@Body body: BookMeetingBodyDto): ApiEnvelope<MeetingDto>

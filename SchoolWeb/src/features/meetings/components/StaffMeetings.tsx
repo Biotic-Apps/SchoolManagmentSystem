@@ -4,6 +4,7 @@ import { CalendarPlus } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
+import { useCan } from "@/features/auth/use-can";
 import { useDialogState } from "@/lib/use-dialog-state";
 import { FollowUpsTab } from "./FollowUpsTab";
 import { MeetingsListTab } from "./MeetingsListTab";
@@ -12,6 +13,7 @@ import { RequestMeetingDialog } from "./RequestMeetingDialog";
 
 export function StaffMeetings() {
   const request = useDialogState<true>();
+  const canRequest = useCan()("meetings.add");
 
   return (
     <div className="flex flex-col gap-6">
@@ -19,10 +21,12 @@ export function StaffMeetings() {
         title="Meetings & Appointments"
         description="Parent meetings, the slots parents can book, and the follow-ups you agreed on."
         actions={
-          <Button onClick={() => request.show(true)}>
-            <CalendarPlus />
-            Request meeting
-          </Button>
+          canRequest && (
+            <Button onClick={() => request.show(true)}>
+              <CalendarPlus />
+              Request meeting
+            </Button>
+          )
         }
       />
       <Tabs defaultValue="upcoming">

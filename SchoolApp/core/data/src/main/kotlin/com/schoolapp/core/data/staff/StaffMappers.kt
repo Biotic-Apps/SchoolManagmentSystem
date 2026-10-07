@@ -11,13 +11,13 @@ import com.schoolapp.core.network.dto.staff.StaffWorkloadDto
 
 internal fun StaffSummaryDto.toModel() = StaffSummary(
     id, name, photoUrl, employeeNo, designation, branchName, status, roles, requiresReview, reviewer?.name,
-    sectionCount, subjectCount,
+    sectionCount, subjectCount, userId,
 )
 
 internal fun StaffDetailDto.toModel() = StaffDetail(
     summary = StaffSummary(
         id, name, photoUrl, employeeNo, designation, branchName, status, roles, requiresReview, reviewer?.name,
-        sectionCount, subjectCount,
+        sectionCount, subjectCount, userId,
     ),
     email = email,
     phone = phone,
