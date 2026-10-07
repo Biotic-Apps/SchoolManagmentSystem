@@ -26,8 +26,19 @@ const SERVER_MESSAGE_CODES = new Set(["CONFLICT", "RECORD_LOCKED", "CLEARANCE_RE
 
 const FALLBACK = "Something went wrong. Please try again.";
 
+const ROUTE_MISSING = /^Cannot (GET|POST|PUT|PATCH|DELETE) /;
+
+/** A 404 for the endpoint itself (API older than the web app), not for a record. */
+export function isRouteMissing(error: unknown): boolean {
+  return error instanceof ApiError && error.code === "NOT_FOUND" && ROUTE_MISSING.test(error.message);
+}
+
+const OUT_OF_DATE = "The server is out of date or not reachable. Please try again in a moment.";
+
+
 export function errorMessage(error: unknown): string {
   if (!(error instanceof ApiError)) return FALLBACK;
+  if (isRouteMissing(error)) return OUT_OF_DATE;
   if (SERVER_MESSAGE_CODES.has(error.code) && error.message) return error.message;
   return FRIENDLY[error.code] ?? FALLBACK;
 }

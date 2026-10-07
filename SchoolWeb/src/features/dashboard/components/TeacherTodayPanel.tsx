@@ -32,7 +32,8 @@ export function TeacherTodayPanel() {
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
         <TeacherPeriodsCard periods={today.periods} href={links.timetable} />
-        <div className="flex flex-col gap-4">
+        {/* The stacked cards share the height of the periods card next to them. */}
+        <div className="flex flex-col gap-4 [&>*]:flex-1">
           <TeacherRegistersCard registers={today.registers} href={links.attendance} />
           <TeacherDiariesCard diaries={today.diaries} href={links.diary} />
         </div>

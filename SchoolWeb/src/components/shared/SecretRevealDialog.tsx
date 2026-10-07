@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import {
   Dialog,
@@ -11,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
+import { CopyButton } from "./CopyButton";
 
 interface SecretRevealDialogProps {
   secret: string | null;
@@ -21,14 +20,6 @@ interface SecretRevealDialogProps {
 
 /** Shows a one-time secret (e.g. a temporary password); it is never shown again after closing. */
 export function SecretRevealDialog({ secret, title, description, onClose }: SecretRevealDialogProps) {
-  const [copied, setCopied] = useState(false);
-
-  const copy = async () => {
-    if (!secret) return;
-    await navigator.clipboard.writeText(secret);
-    setCopied(true);
-  };
-
   return (
     <Dialog open={!!secret} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-md">
@@ -38,9 +29,7 @@ export function SecretRevealDialog({ secret, title, description, onClose }: Secr
         </DialogHeader>
         <div className="flex items-center gap-2 rounded-input border border-border bg-background px-3 py-2">
           <code className="flex-1 select-all break-all font-mono text-body text-fg">{secret}</code>
-          <Button variant="ghost" size="sm" onClick={copy} aria-label="Copy">
-            {copied ? <Check /> : <Copy />}
-          </Button>
+          {secret && <CopyButton text={secret} />}
         </div>
         <p className="text-caption text-fg-muted">The user must change it at first sign-in.</p>
         <DialogFooter>

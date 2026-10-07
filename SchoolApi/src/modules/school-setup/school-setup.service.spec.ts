@@ -250,6 +250,32 @@ describe('SchoolSetupService', () => {
     expect(t.subjects.create).not.toHaveBeenCalled();
   });
 
+  it('creates only the picked classes and subjects, keeping preset order', async () => {
+    const t = setup();
+    const result = await t.service.setup(
+      SUPER,
+      baseDto({
+        academics: {
+          classNames: ['Class 2', 'Nursery'],
+          subjectNames: ['Urdu'],
+        },
+      }),
+    );
+    expect(result.counts).toEqual({ classes: 2, sections: 2, subjects: 1 });
+    const classes = t.classes.create.mock.calls.map((c) => [
+      c[0].name,
+      c[0].levelOrder,
+    ]);
+    expect(classes).toEqual([
+      ['Nursery', 2],
+      ['Class 2', 5],
+    ]);
+    expect(t.subjects.create.mock.calls[0][0]).toMatchObject({
+      code: 'URDU',
+      name: 'Urdu',
+    });
+  });
+
   it('skips academics when createSession is false', async () => {
     const t = setup();
     const result = await t.service.setup(

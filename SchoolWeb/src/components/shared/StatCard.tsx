@@ -14,7 +14,7 @@ interface StatCardProps {
 
 export function StatCard({ label, value, hint, icon: Icon, loading }: StatCardProps) {
   return (
-    <Card className="flex flex-col gap-3 p-5">
+    <Card className="flex h-full flex-col gap-3 p-5">
       <div className="flex items-center justify-between gap-2">
         <span className="text-label text-fg-muted">{label}</span>
         {Icon && (

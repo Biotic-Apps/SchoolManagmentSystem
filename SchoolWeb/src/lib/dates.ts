@@ -52,3 +52,37 @@ export function addDays(iso: string, days: number): string {
   const [year, month, day] = iso.split("-").map(Number);
   return toIsoDate(new Date(year, month - 1, day + days));
 }
+
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+
+/** "2026-04-01" → "1 Apr 2026" (school-local, no time zone shift). */
+export function formatDayMonthYear(iso: string | null | undefined): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso ?? "");
+  if (!match) return "";
+  const month = MONTHS[Number(match[2]) - 1];
+  return `${Number(match[3])} ${month.charAt(0).toUpperCase()}${month.slice(1)} ${match[1]}`;
+}
+
+function validIso(year: number, month: number, day: number): string | null {
+  const date = new Date(year, month - 1, day);
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+  return toIsoDate(date);
+}
+
+/** Reads "2026-04-01", "1/4/2026" (day first) or "1 Apr 2026"; returns ISO or null. */
+export function parseDateText(text: string): string | null {
+  const value = text.trim().toLowerCase();
+  let match = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(value);
+  if (match) return validIso(Number(match[1]), Number(match[2]), Number(match[3]));
+  match = /^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/.exec(value);
+  if (match) return validIso(Number(match[3]), Number(match[2]), Number(match[1]));
+  match = /^(\d{1,2})\s+([a-z]{3})[a-z]*,?\s+(\d{4})$/.exec(value);
+  if (match && MONTHS.includes(match[2])) return validIso(Number(match[3]), MONTHS.indexOf(match[2]) + 1, Number(match[1]));
+  return null;
+}
+
+/** Month view that contains an ISO date (or today). */
+export function monthOf(iso: string | null | undefined): MonthRef {
+  const match = /^(\d{4})-(\d{2})/.exec(iso ?? "");
+  return match ? { year: Number(match[1]), month: Number(match[2]) - 1 } : currentMonth();
+}

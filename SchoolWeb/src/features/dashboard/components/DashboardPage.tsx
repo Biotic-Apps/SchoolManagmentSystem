@@ -2,6 +2,7 @@
 
 import { PageHeader } from "@/components/shared/PageHeader";
 import { NoticesFeedCard } from "@/features/notices/components/NoticesFeedCard";
+import { SetupChecklistCard } from "@/features/school-setup/components/SetupChecklistCard";
 import { useDashboard } from "../use-dashboard";
 import { AttendanceTodayCard } from "./AttendanceTodayCard";
 import { ChildTodayPanel } from "./ChildTodayPanel";
@@ -22,6 +23,7 @@ export function DashboardPage() {
       ) : (
         <>
           <DashboardScopeBar scope={dashboard.scope} />
+          <SetupChecklistCard branchId={dashboard.scope.scope.branchId} />
           {dashboard.showPending && <PendingPanel branchId={dashboard.scope.scope.branchId} />}
           {dashboard.view === "teacher" && <TeacherTodayPanel />}
           {dashboard.attendanceToday && (

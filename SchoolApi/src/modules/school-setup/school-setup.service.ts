@@ -115,6 +115,8 @@ export class SchoolSetupService {
       sectionsPerClass:
         input.sectionsPerClass ?? SETUP_DEFAULTS.sectionsPerClass,
       subjectsPreset: input.subjectsPreset ?? SETUP_DEFAULTS.subjectsPreset,
+      classNames: input.classNames,
+      subjectNames: input.subjectNames,
     };
   }
 

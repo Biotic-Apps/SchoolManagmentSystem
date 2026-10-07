@@ -23,6 +23,11 @@ export const SUBJECT_PRESETS = {
   NONE: [],
 } as const satisfies Record<string, readonly { code: string; name: string }[]>;
 
+/** Every name a partial selection may use (the STANDARD presets). */
+export const PRESET_CLASS_NAMES: readonly string[] = CLASS_PRESETS.STANDARD;
+export const PRESET_SUBJECT_NAMES: readonly string[] =
+  SUBJECT_PRESETS.STANDARD.map((s) => s.name);
+
 export type ClassesPreset = keyof typeof CLASS_PRESETS;
 export type SubjectsPreset = keyof typeof SUBJECT_PRESETS;
 export const PRESET_NAMES = ['STANDARD', 'NONE'] as const;

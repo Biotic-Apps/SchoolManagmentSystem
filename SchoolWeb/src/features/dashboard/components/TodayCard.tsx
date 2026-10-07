@@ -12,10 +12,10 @@ interface TodayCardProps {
   children: ReactNode;
 }
 
-/** Dashboard card with a title, an optional link to the full screen and its content. */
+/** Dashboard card (fills its grid cell, so cards in a row match) with a title, an optional link to the full screen and its content. */
 export function TodayCard({ title, href, linkLabel = "Open", children }: TodayCardProps) {
   return (
-    <Card className="flex flex-col">
+    <Card className="flex h-full flex-col">
       <CardHeader className="flex-row items-center justify-between gap-3">
         <CardTitle>{title}</CardTitle>
         {href && (

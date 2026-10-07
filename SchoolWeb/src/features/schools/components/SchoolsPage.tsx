@@ -7,6 +7,7 @@ import { FilterSelect } from "@/components/shared/FilterSelect";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { RECORD_STATUS_OPTIONS } from "@/config/options";
+import { SchoolSetupDialog } from "@/features/school-setup/components/SchoolSetupDialog";
 import { useSchoolsPage } from "../use-schools-page";
 import { SchoolDetailDrawer } from "./SchoolDetailDrawer";
 import { SchoolFormDialog } from "./SchoolFormDialog";
@@ -22,10 +23,10 @@ export function SchoolsPage() {
         title="Schools"
         description="Schools in the system, their branches and contact details."
         actions={
-          page.canAdd && (
-            <Button onClick={() => page.form.show()}>
+          page.canSetup && (
+            <Button onClick={() => page.setup.show()}>
               <Plus />
-              Add school
+              New school
             </Button>
           )
         }
@@ -50,10 +51,11 @@ export function SchoolsPage() {
         onRetry={() => query.refetch()}
         onRowClick={page.detail.show}
         emptyTitle="No schools found"
-        emptyDescription="Add a school to start setting up branches and sessions."
+        emptyDescription="Use New school to set up a school, its main branch and principal in one go."
         pagination={page.pagination}
       />
-      {page.form.open && <SchoolFormDialog school={page.form.item} onClose={page.form.close} />}
+      {page.setup.open && <SchoolSetupDialog onClose={page.setup.close} />}
+      {page.form.open && page.form.item && <SchoolFormDialog school={page.form.item} onClose={page.form.close} />}
       <SchoolStatusDialog school={page.statusTarget.item} onClose={page.statusTarget.close} />
       <SchoolDetailDrawer
         school={page.detail.item}

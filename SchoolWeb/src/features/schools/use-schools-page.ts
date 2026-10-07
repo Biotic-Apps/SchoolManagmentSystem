@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useSession } from "@/features/auth/session-context";
 import { useCan } from "@/features/auth/use-can";
 import { paginationFrom } from "@/lib/pagination";
 import { useDialogState } from "@/lib/use-dialog-state";
@@ -9,13 +10,16 @@ import type { School } from "./types";
 
 export function useSchoolsPage() {
   const can = useCan();
+  const isSuperAdmin = useSession().session?.activeRole === "SUPER_ADMIN";
   const list = useListState<{ status?: string }>({ status: undefined });
   const query = useSchools(list.params);
   const form = useDialogState<School>();
   const statusTarget = useDialogState<School>();
   const detail = useDialogState<School>();
+  const setup = useDialogState<never>();
 
-  const canAdd = can("schools.add");
+  // One-form provisioning creates the branch and principal too, so it needs all three grants.
+  const canSetup = isSuperAdmin && can("schools.add") && can("branches.add") && can("users.add");
   const canEdit = can("schools.edit");
   const canArchive = can("schools.delete");
 
@@ -37,8 +41,9 @@ export function useSchoolsPage() {
     rows: query.data?.data,
     pagination: paginationFrom(query.data?.meta, list.setPage),
     columns,
-    canAdd,
+    canSetup,
     canEdit,
+    setup,
     form,
     statusTarget,
     detail,

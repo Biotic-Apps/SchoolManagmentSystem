@@ -8,7 +8,7 @@ import { NoChildState } from "@/features/auth/components/NoChildState";
 import { useChildTodayPanel } from "../use-child-today";
 import { ChildDiaryCard } from "./ChildDiaryCard";
 import { ChildNoticesCard } from "./ChildNoticesCard";
-import { CountLinkCard } from "./CountLinkCard";
+import { ConsentFormsCard } from "./ConsentFormsCard";
 import { NextMeetingCard } from "./NextMeetingCard";
 import { TodayCard } from "./TodayCard";
 
@@ -38,9 +38,7 @@ export function ChildTodayPanel() {
             )}
           </div>
         </TodayCard>
-        {links.timetable ? (
-          <CountLinkCard label="Consent forms waiting for you" count={data.consentsPending} href={links.timetable} />
-        ) : null}
+        {links.timetable ? <ConsentFormsCard count={data.consentsPending} href={links.timetable} /> : null}
       </div>
       <ChildDiaryCard entries={data.diary} href={links.diary} />
       <div className="grid gap-4 lg:grid-cols-2">

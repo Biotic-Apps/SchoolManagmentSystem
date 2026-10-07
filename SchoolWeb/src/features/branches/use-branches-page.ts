@@ -6,6 +6,7 @@ import { useListState } from "@/lib/use-list-state";
 import { useBranches } from "./api";
 import { branchColumns } from "./branch-columns";
 import type { Branch } from "./types";
+import { useBranchDeepLink } from "./use-branch-deep-link";
 import { useBranchPermissions } from "./use-branch-permissions";
 
 export function useBranchesPage() {
@@ -18,6 +19,7 @@ export function useBranchesPage() {
   const principal = useDialogState<Branch>();
   const settings = useDialogState<Branch>();
   const detail = useDialogState<Branch>();
+  useBranchDeepLink(detail.show);
 
   const showSchool = schools.options.length > 1;
   const columns = useMemo(

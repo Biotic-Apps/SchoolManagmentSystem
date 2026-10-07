@@ -10,7 +10,7 @@ export function CountLinkCard({ label, count, href }: { label: string; count: nu
     <Link
       href={href}
       className={cn(
-        "flex items-center justify-between gap-3 rounded-card border border-border bg-surface px-5 py-4 transition-colors hover:bg-selected/60",
+        "flex h-full items-center justify-between gap-3 rounded-card border border-border bg-surface px-5 py-4 transition-colors hover:bg-selected/60",
         focusRing,
       )}
     >

@@ -22,6 +22,9 @@ export interface AcademicsPlan {
   classesPreset: ClassesPreset;
   sectionsPerClass: number;
   subjectsPreset: SubjectsPreset;
+  /** Partial picks; when set they replace the presets. */
+  classNames?: readonly string[];
+  subjectNames?: readonly string[];
 }
 
 /** ACTIVE session, preset classes with their sections, preset subjects (contract §1 item 4). */
@@ -57,13 +60,13 @@ export class AcademicsStep {
     );
 
     let sectionCount = 0;
-    const names = CLASS_PRESETS[plan.classesPreset];
-    for (const [index, name] of names.entries()) {
+    const names = pickClasses(plan);
+    for (const { name, levelOrder } of names) {
       const schoolClass = await this.classes.create(
         {
           schoolId: branch.schoolId,
           name,
-          levelOrder: index + 1,
+          levelOrder,
           createdById: ctx.actorId,
         },
         ctx.tx,
@@ -100,7 +103,7 @@ export class AcademicsStep {
       }
     }
 
-    const presets = SUBJECT_PRESETS[plan.subjectsPreset];
+    const presets = pickSubjects(plan);
     for (const preset of presets) {
       const subject = await this.subjects.create(
         { schoolId: branch.schoolId, ...preset, createdById: ctx.actorId },
@@ -143,4 +146,21 @@ export class AcademicsStep {
       after,
     });
   }
+}
+
+/** Preset order is kept, so levelOrder stays Playgroup → Class 10 even with gaps. */
+function pickClasses(plan: AcademicsPlan) {
+  const all = plan.classNames
+    ? CLASS_PRESETS.STANDARD
+    : CLASS_PRESETS[plan.classesPreset];
+  return all
+    .map((name, i) => ({ name, levelOrder: i + 1 }))
+    .filter((c) => !plan.classNames || plan.classNames.includes(c.name));
+}
+
+function pickSubjects(plan: AcademicsPlan) {
+  if (!plan.subjectNames) return SUBJECT_PRESETS[plan.subjectsPreset];
+  return SUBJECT_PRESETS.STANDARD.filter((s) =>
+    plan.subjectNames!.includes(s.name),
+  );
 }
