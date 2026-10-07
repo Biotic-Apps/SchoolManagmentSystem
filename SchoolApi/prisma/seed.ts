@@ -8,6 +8,8 @@ async function main(): Promise<void> {
     const production = process.env.NODE_ENV === 'production';
     await runSeed(prisma, {
       demo: !production,
+      // SEED_DEMO=false: dev conveniences only (super admin Demo@1234), no demo school.
+      demoData: process.env.SEED_DEMO !== 'false',
       resetSystemRoles: !production || process.env.SEED_RESET_ROLE_PERMISSIONS === 'true',
       adminEmail: process.env.SEED_ADMIN_EMAIL,
       adminPassword: process.env.SEED_ADMIN_PASSWORD,

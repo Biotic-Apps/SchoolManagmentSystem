@@ -7,6 +7,8 @@ import { ensureAssignment, ensureUser } from './users';
 
 export interface SeedOptions {
   demo: boolean;
+  /** Skip the demo school/people when false (default true). */
+  demoData?: boolean;
   resetSystemRoles: boolean;
   adminEmail?: string;
   adminPassword?: string;
@@ -34,7 +36,7 @@ export async function runSeed(prisma: SeedClient, options: SeedOptions): Promise
   await ensureAssignment(prisma, { userId: admin.id, roleId: roles.SUPER_ADMIN, scopeType: 'GLOBAL' });
   console.log(`Seed: catalogue, system roles and super admin ${email} ready.`);
 
-  if (options.demo) {
+  if (options.demo && options.demoData !== false) {
     await seedDemo(prisma, roles);
     console.log(`Seed: demo data ready (password ${DEMO_PASSWORD}).`);
   }
