@@ -29,6 +29,7 @@ export class DirectMessageProcessor
   async process(input: DirectMessageInput): Promise<void> {
     if (input.to) {
       await this.channels.get(input.channel).send({
+        userId: input.userId,
         title: input.title,
         body: input.body,
         email: input.to.email,

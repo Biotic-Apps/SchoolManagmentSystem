@@ -9,6 +9,9 @@ import com.schoolapp.core.common.dispatcher.IoDispatcher
 import com.schoolapp.core.datastore.EncryptedSessionStore
 import com.schoolapp.core.datastore.SessionDataStore
 import com.schoolapp.core.datastore.SessionStore
+import com.schoolapp.core.datastore.applock.AppLockDataStore
+import com.schoolapp.core.datastore.applock.AppLockPreferences
+import com.schoolapp.core.datastore.applock.PreferencesAppLockPreferences
 import com.schoolapp.core.datastore.branding.BrandingCache
 import com.schoolapp.core.datastore.branding.BrandingDataStore
 import com.schoolapp.core.datastore.branding.PreferencesBrandingCache
@@ -36,6 +39,9 @@ internal abstract class DataStoreModule {
     abstract fun bindBrandingCache(impl: PreferencesBrandingCache): BrandingCache
 
     @Binds
+    abstract fun bindAppLockPreferences(impl: PreferencesAppLockPreferences): AppLockPreferences
+
+    @Binds
     abstract fun bindCipher(impl: KeystoreStringCipher): StringCipher
 
     companion object {
@@ -59,6 +65,17 @@ internal abstract class DataStoreModule {
         ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
             scope = CoroutineScope(io + SupervisorJob()),
             produceFile = { context.preferencesDataStoreFile("branding") },
+        )
+
+        @Provides
+        @Singleton
+        @AppLockDataStore
+        fun provideAppLockDataStore(
+            @ApplicationContext context: Context,
+            @IoDispatcher io: CoroutineDispatcher,
+        ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
+            scope = CoroutineScope(io + SupervisorJob()),
+            produceFile = { context.preferencesDataStoreFile("app_lock") },
         )
     }
 }

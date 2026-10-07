@@ -15,4 +15,7 @@ dependencies {
     implementation(projects.core.database)
     implementation(projects.core.sync)
     implementation(libs.timber)
+    implementation(libs.androidx.biometric)
+
+    testImplementation(projects.core.testing)
 }

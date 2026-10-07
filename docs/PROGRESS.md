@@ -68,15 +68,32 @@ Definition of Done per module: schema + migration · API with permission/scope g
 - [x] Reports & exports
 
 ## Phase 5 — Hardening & parity
-- [ ] Settings & branding
-- [ ] Failed notifications
-- [ ] Backups + restore verification
-- [ ] Data import
-- [ ] Web/app parity check
-- [ ] Security review
+- [x] Settings & branding
+- [x] Failed notifications
+- [x] Backups + restore verification
+- [x] Data import
+- [x] Web/app parity check
+- [x] Security review
 
 ## Phase 6 — Pilot & rollout
-- [ ] Pilot branch
+- [x] Real delivery: SMTP email, SMS driver (log | twilio | http), FCM push check
+- [x] Parent phone + OTP sign-in (API, web, Android)
+- [x] Production deploy kit: Dockerfiles, docker-compose.prod.yml, Caddy TLS, prod env template
+- [x] CI (GitHub Actions): API build/lint/unit/e2e, web tsc/lint/build, Android build + unit tests
+- [x] Production bootstrap (first super admin, no demo data) + docs/deployment.md (backups off-site, restore drill, updates/rollback, monitoring)
+- [x] docs/pilot.md: school onboarding runbook, UAT checklist per role, go-live checklist, support process
+- [x] Android: optional biometric/PIN app lock, merge staff-attendance Hilt modules
+- [ ] Android: phone check of Phase 5/6 screens, release cold start (needs a connected phone)
+- [x] Demo seed: calendar events
+- [ ] Pilot branch live (needs: server, domain, SMS/email provider, Firebase project, pilot school data)
+
+## Phase 6 notes (code part done 2026-10-07)
+- API: EMAIL_DRIVER log|smtp (nodemailer), SMS_DRIVER log|twilio|http, production refuses log channels unless ALLOW_LOG_CHANNELS=true; POST /support/test-message; parent phone + OTP sign-in (/auth/otp/request, /auth/otp/verify; migration phase6_pilot adds login_otps); demo calendar events; production seed forces the first super admin to change password. 697 unit + 150 e2e tests. Deviations in docs/api/phase6-contract.md.
+- Web: "Sign in with phone code" (verified in Chrome: SMS code from API log → dashboard), Support "Send test message" card.
+- Android: phone + OTP sign-in, optional biometric/device-credential app lock (Profile), Hilt modules merged. 474 unit tests; assembleDebug + assembleRelease pass.
+- Deploy kit: SchoolApi/SchoolWeb Dockerfiles, infra/docker-compose.prod.yml (postgres, redis, clamav, api, web, caddy; minio optional), Caddy TLS, infra/.env.production.example, infra/scripts (off-site backup, update with rollback, decrypt, restore drill), .github/workflows/ci.yml. NOT yet run: Docker is not installed on this machine, and CI first runs after push.
+- Docs: docs/deployment.md, docs/pilot.md (6-week pilot plan, onboarding runbook, UAT per role, go-live checklist).
+- Waiting on user: server, domains, SMTP + SMS provider, Firebase project, off-site backup target, pilot school + data, Play Store vs APK.
 
 ## Phase 5 notes (complete 2026-10-07)
 - API: settings & branding, notification switches, policies, support tools, TOTP 2FA + recovery codes, unlock, password policy, encrypted backups + restore verify, XLSX/CSV data import, S3 driver, image re-encode, ClamAV hook, audit_logs monthly partitions, trusted proxy, security e2e suites, parent school calendar `GET /students/:id/calendar`. 642 unit + 137 e2e tests; npm audit 0 vulnerabilities. Real backup on dev DB restore-verified (PASSED). Deviations in docs/api/phase5-contract.md.

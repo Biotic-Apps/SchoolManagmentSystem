@@ -1,5 +1,7 @@
 package com.schoolapp.di
 
+import com.schoolapp.core.data.applock.AppLockRepository
+import com.schoolapp.core.data.applock.DefaultAppLockRepository
 import com.schoolapp.core.data.approvals.ApprovalsRepository
 import com.schoolapp.core.data.approvals.DefaultApprovalsRepository
 import com.schoolapp.core.data.auth.AuthRepository
@@ -28,6 +30,8 @@ import com.schoolapp.core.data.admissions.AdmissionsRepository
 import com.schoolapp.core.data.admissions.DefaultAdmissionsRepository
 import com.schoolapp.core.data.attendance.AttendanceRepository
 import com.schoolapp.core.data.attendance.DefaultAttendanceRepository
+import com.schoolapp.core.data.attendance.DefaultStaffAttendanceRepository
+import com.schoolapp.core.data.attendance.StaffAttendanceRepository
 import com.schoolapp.core.data.leave.LeaveRepository
 import com.schoolapp.core.data.leave.DefaultLeaveRepository
 import com.schoolapp.core.data.diary.DiaryRepository
@@ -113,6 +117,9 @@ interface RepositoryModule {
     fun bindAttendanceRepository(impl: DefaultAttendanceRepository): AttendanceRepository
 
     @Binds
+    fun bindStaffAttendanceRepository(impl: DefaultStaffAttendanceRepository): StaffAttendanceRepository
+
+    @Binds
     fun bindLeaveRepository(impl: DefaultLeaveRepository): LeaveRepository
 
     @Binds
@@ -162,4 +169,7 @@ interface RepositoryModule {
 
     @Binds
     fun bindBrandingRepository(impl: DefaultBrandingRepository): BrandingRepository
+
+    @Binds
+    fun bindAppLockRepository(impl: DefaultAppLockRepository): AppLockRepository
 }

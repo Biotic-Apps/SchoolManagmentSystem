@@ -13,6 +13,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Self-contained server in .next/standalone for the Docker image (ignored by `next dev`).
+  output: "standalone",
   poweredByHeader: false,
   async headers() {
     return [

@@ -57,3 +57,22 @@ export const resetPasswordSchema = z
   });
 
 export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
+
+export const otpPhoneSchema = z.object({
+  phone: z
+    .string()
+    .trim()
+    .min(1, "Enter your mobile number")
+    .regex(/^\+?[\d\s()-]{7,20}$/, "Enter a mobile number like 0300 1234567"),
+});
+
+export type OtpPhoneValues = z.infer<typeof otpPhoneSchema>;
+
+export const otpCodeSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .refine((value) => /^\d{6}$/.test(value.replace(/\s/g, "")), "Enter the 6-digit code from the SMS"),
+});
+
+export type OtpCodeValues = z.infer<typeof otpCodeSchema>;

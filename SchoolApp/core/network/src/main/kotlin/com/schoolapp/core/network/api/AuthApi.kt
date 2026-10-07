@@ -7,6 +7,9 @@ import com.schoolapp.core.network.dto.auth.DeviceSessionDto
 import com.schoolapp.core.network.dto.auth.ForgotPasswordRequestDto
 import com.schoolapp.core.network.dto.auth.LoginRequestDto
 import com.schoolapp.core.network.dto.auth.LoginResponseDto
+import com.schoolapp.core.network.dto.auth.OtpRequestDto
+import com.schoolapp.core.network.dto.auth.OtpRequestResponseDto
+import com.schoolapp.core.network.dto.auth.OtpVerifyRequestDto
 import com.schoolapp.core.network.dto.auth.RefreshRequestDto
 import com.schoolapp.core.network.dto.auth.ResetPasswordRequestDto
 import com.schoolapp.core.network.dto.auth.TwoFactorVerifyRequestDto
@@ -28,6 +31,16 @@ interface AuthApi {
     @Headers("${AuthHeaders.SKIP_AUTH}: true")
     @POST("auth/2fa/verify")
     suspend fun verifyTwoFactor(@Body body: TwoFactorVerifyRequestDto): ApiEnvelope<AuthTokensDto>
+
+    /** Parent phone sign-in, step 1 (contract phase 6 §B). */
+    @Headers("${AuthHeaders.SKIP_AUTH}: true")
+    @POST("auth/otp/request")
+    suspend fun requestOtp(@Body body: OtpRequestDto): ApiEnvelope<OtpRequestResponseDto>
+
+    /** Parent phone sign-in, step 2: same result as [login] (tokens or a 2FA challenge). */
+    @Headers("${AuthHeaders.SKIP_AUTH}: true")
+    @POST("auth/otp/verify")
+    suspend fun verifyOtp(@Body body: OtpVerifyRequestDto): ApiEnvelope<LoginResponseDto>
 
     @Headers("${AuthHeaders.SKIP_AUTH}: true")
     @POST("auth/password/forgot")

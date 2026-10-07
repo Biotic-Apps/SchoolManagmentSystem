@@ -21,7 +21,11 @@ internal fun DemoRolePicker(
     viewModel: DemoViewModel = hiltViewModel(),
 ) {
     AppCard(modifier) {
-        SectionHeader(title = "Preview a role", subtitle = "Debug build only. Uses local demo data, no server.")
+        SectionHeader(
+            title = "Preview a role",
+            subtitle = "Debug build only. Uses local demo data, no server. " +
+                "Phone code sign-in: ${DemoOtp.PHONE} with code ${DemoOtp.CODE} (parent).",
+        )
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),

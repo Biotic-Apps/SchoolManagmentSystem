@@ -8,6 +8,11 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LockoutService } from './lockout.service';
+import { LoginOtpRepository } from './otp/login-otp.repository';
+import { OtpLoginController } from './otp/otp-login.controller';
+import { OtpRequestService } from './otp/otp-request.service';
+import { OtpVerifyService } from './otp/otp-verify.service';
+import { ParentPhoneService } from './otp/parent-phone.service';
 import { PasswordPolicyService } from './password/password-policy.service';
 import { UserAuthPolicyService } from './policy/user-auth-policy.service';
 import { SessionIssuer } from './sessions/session-issuer';
@@ -35,7 +40,7 @@ import { UserAccountRepository } from './user-account.repository';
       }),
     }),
   ],
-  controllers: [AuthController, TwoFactorController],
+  controllers: [AuthController, TwoFactorController, OtpLoginController],
   providers: [
     TokenService,
     PasswordHasher,
@@ -53,6 +58,10 @@ import { UserAccountRepository } from './user-account.repository';
     TwoFactorLoginService,
     AuthService,
     PasswordService,
+    LoginOtpRepository,
+    ParentPhoneService,
+    OtpRequestService,
+    OtpVerifyService,
     // Order matters: authenticate, then check permissions.
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: PolicyGuard },

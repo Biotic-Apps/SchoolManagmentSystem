@@ -1,10 +1,13 @@
 package com.schoolapp.demo
 
+import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
+import com.schoolapp.core.data.applock.AppLockRepository
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.data.auth.AuthState
 import com.schoolapp.core.data.auth.DefaultAuthRepository
 import com.schoolapp.core.data.auth.LoginOutcome
+import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.RoleRef
 import com.schoolapp.core.model.SessionContext
 import com.schoolapp.core.model.User
@@ -23,6 +26,7 @@ import javax.inject.Singleton
 @Singleton
 class DemoAwareAuthRepository @Inject constructor(
     private val real: DefaultAuthRepository,
+    private val appLock: AppLockRepository,
 ) : AuthRepository {
 
     private val demo = MutableStateFlow<SessionContext?>(null)
@@ -47,6 +51,19 @@ class DemoAwareAuthRepository @Inject constructor(
     override suspend fun login(identifier: String, password: String): AppResult<LoginOutcome> {
         demo.value = null
         return real.login(identifier, password)
+    }
+
+    override suspend fun requestOtp(phone: String): AppResult<Int> =
+        if (DemoOtp.isDemoPhone(phone)) AppResult.Success(DemoOtp.RESEND_AFTER_SECONDS) else real.requestOtp(phone)
+
+    override suspend fun verifyOtp(phone: String, code: String): AppResult<LoginOutcome> {
+        if (!DemoOtp.isDemoPhone(phone)) {
+            demo.value = null
+            return real.verifyOtp(phone, code)
+        }
+        if (!DemoOtp.accepts(phone, code)) return AppResult.Failure(AppError.Unauthorized)
+        startDemo(RoleKey.PARENT)
+        return AppResult.Success(LoginOutcome.SignedIn)
     }
 
     override suspend fun verifyTwoFactor(challengeId: String, code: String): AppResult<Unit> =
@@ -75,12 +92,18 @@ class DemoAwareAuthRepository @Inject constructor(
         if (isDemoActive) AppResult.Success(Unit) else real.changePassword(currentPassword, newPassword)
 
     override suspend fun logout() {
-        if (demo.value != null) demo.value = null else real.logout()
+        if (demo.value != null) endDemo() else real.logout()
     }
 
     override suspend fun logoutAll(): AppResult<Unit> {
         if (demo.value == null) return real.logoutAll()
-        demo.value = null
+        endDemo()
         return AppResult.Success(Unit)
+    }
+
+    /** Mirrors [com.schoolapp.core.data.auth.LocalSessionTerminator]: the app lock is per signed-in person. */
+    private suspend fun endDemo() {
+        demo.value = null
+        appLock.setEnabled(false)
     }
 }

@@ -28,6 +28,9 @@ import com.schoolapp.feature.auth.components.LoginBrandPanel
 import com.schoolapp.feature.auth.components.LoginForm
 import com.schoolapp.feature.auth.components.LoginHeader
 import com.schoolapp.feature.auth.components.TwoFactorForm
+import com.schoolapp.feature.auth.phone.PhoneSignInActions
+import com.schoolapp.feature.auth.phone.PhoneSignInUiState
+import com.schoolapp.feature.auth.phone.components.PhoneSignInForm
 
 private val TwoPaneMinWidth = 840.dp
 
@@ -37,6 +40,8 @@ fun LoginScreen(
     brand: LoginBrandUiState,
     actions: LoginActions,
     modifier: Modifier = Modifier,
+    phone: PhoneSignInUiState = PhoneSignInUiState(),
+    phoneActions: PhoneSignInActions = PhoneSignInActions(),
     footer: @Composable () -> Unit = {},
 ) {
     AppScaffold(modifier = modifier, contentWindowInsets = WindowInsets(0)) { padding ->
@@ -55,9 +60,10 @@ fun LoginScreen(
                         verticalArrangement = Arrangement.spacedBy(24.dp),
                     ) {
                         if (!twoPane) LoginHeader(brand)
-                        when (state.step) {
-                            LoginStep.PASSWORD -> LoginForm(state, actions)
-                            LoginStep.TWO_FACTOR -> TwoFactorForm(state, actions)
+                        when {
+                            state.step == LoginStep.TWO_FACTOR -> TwoFactorForm(state, actions)
+                            phone.active -> PhoneSignInForm(phone, phoneActions)
+                            else -> LoginForm(state, actions)
                         }
                         footer()
                     }
@@ -88,6 +94,17 @@ private fun LoginScreenTwoFactorPreview() = SchoolTheme {
         LoginUiState(step = LoginStep.TWO_FACTOR, failure = LoginFailure.INVALID_CODE),
         LoginBrandUiState(name = "Green Valley School"),
         LoginActions(),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LoginScreenPhonePreview() = SchoolTheme {
+    LoginScreen(
+        LoginUiState(),
+        LoginBrandUiState(),
+        LoginActions(),
+        phone = PhoneSignInUiState(active = true, phone = "0300 1234567"),
     )
 }
 

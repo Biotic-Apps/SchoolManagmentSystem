@@ -1,13 +1,14 @@
 package com.schoolapp
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.schoolapp.applock.AppLockGate
 import com.schoolapp.core.designsystem.theme.SchoolTheme
 import com.schoolapp.navigation.AppNavHost
 import com.schoolapp.navigation.AppShellContent
@@ -18,7 +19,7 @@ import java.util.Optional
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     @Inject
     lateinit var loginFooter: Optional<LoginFooterContent>
@@ -33,12 +34,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             val state by viewModel.uiState.collectAsStateWithLifecycle()
             SchoolTheme {
-                AppNavHost(
-                    uiState = state,
-                    shellContent = AppShellContent,
-                    onSignOut = viewModel::onSignOut,
-                    loginFooter = { footer?.Content() },
-                )
+                AppLockGate(onSignOut = viewModel::onSignOut) {
+                    AppNavHost(
+                        uiState = state,
+                        shellContent = AppShellContent,
+                        onSignOut = viewModel::onSignOut,
+                        loginFooter = { footer?.Content() },
+                    )
+                }
             }
         }
     }

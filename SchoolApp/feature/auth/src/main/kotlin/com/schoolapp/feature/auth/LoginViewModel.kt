@@ -101,6 +101,12 @@ class LoginViewModel @Inject constructor(
         backToPassword(failure = null)
     }
 
+    /** A phone-code sign-in that also needs 2FA continues on the shared verification step. */
+    fun onTwoFactorChallenge(challengeId: String) {
+        if (_uiState.value.step == LoginStep.TWO_FACTOR) return
+        startTwoFactor(challengeId)
+    }
+
     private fun startTwoFactor(challengeId: String) {
         savedStateHandle[KEY_CHALLENGE] = challengeId
         savedStateHandle[KEY_MODE] = TwoFactorMode.AUTHENTICATOR.name

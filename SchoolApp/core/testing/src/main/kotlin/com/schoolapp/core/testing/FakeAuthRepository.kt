@@ -30,6 +30,11 @@ class FakeAuthRepository(initial: SessionContext? = null) : AuthRepository {
     override suspend fun login(identifier: String, password: String): AppResult<LoginOutcome> =
         result().map { nextLoginOutcome }
 
+    override suspend fun requestOtp(phone: String): AppResult<Int> = result().map { RESEND_AFTER_SECONDS }
+
+    override suspend fun verifyOtp(phone: String, code: String): AppResult<LoginOutcome> =
+        result().map { nextLoginOutcome }
+
     override suspend fun verifyTwoFactor(challengeId: String, code: String): AppResult<Unit> {
         verifyCalls += challengeId to code
         return result()
@@ -70,4 +75,8 @@ class FakeAuthRepository(initial: SessionContext? = null) : AuthRepository {
     }
 
     private fun result(): AppResult<Unit> = nextError?.let { AppResult.Failure(it) } ?: AppResult.Success(Unit)
+
+    private companion object {
+        const val RESEND_AFTER_SECONDS = 60
+    }
 }

@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { http } from "@/lib/http";
-import { loginRequest, verifyTwoFactorRequest } from "./auth-client";
+import { loginRequest, verifyOtpRequest, verifyTwoFactorRequest } from "./auth-client";
 import type { ChangePasswordValues, LoginInput } from "./schemas";
 import { useSession } from "./session-context";
 import { isTwoFactorChallenge, type TwoFactorChallenge } from "./types";
@@ -15,6 +15,24 @@ export function useLoginMutation() {
       return null;
     },
   });
+}
+
+/** Phone sign-in step 2: like useLoginMutation, resolves to a 2FA challenge or null once signed in. */
+export function useOtpLoginMutation() {
+  const { signIn } = useSession();
+  return useMutation({
+    mutationFn: async ({ phone, code }: { phone: string; code: string }): Promise<TwoFactorChallenge | null> => {
+      const result = await verifyOtpRequest(phone, code);
+      if (isTwoFactorChallenge(result)) return result;
+      await signIn(result);
+      return null;
+    },
+  });
+}
+
+/** Always `ok` (no enumeration); a code is only sent to parent accounts. */
+export function requestLoginCode(phone: string) {
+  return http.post<{ ok: boolean; resendAfterSeconds: number }>("/auth/otp/request", { phone });
 }
 
 export function useVerifyTwoFactorMutation() {

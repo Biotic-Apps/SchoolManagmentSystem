@@ -24,6 +24,7 @@ fun ProfileScreen(
     onDeviceSessions: () -> Unit,
     modifier: Modifier = Modifier,
     onNotificationPreferences: () -> Unit = {},
+    appLock: @Composable () -> Unit = {},
 ) {
     if (state.isLoading) {
         LoadingState(modifier)
@@ -41,6 +42,7 @@ fun ProfileScreen(
                 onDeviceSessions = onDeviceSessions,
             )
         }
+        item(key = "app_lock") { appLock() }
     }
 }
 

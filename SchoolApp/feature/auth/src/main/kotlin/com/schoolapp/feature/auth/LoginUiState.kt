@@ -14,6 +14,7 @@ enum class LoginFailure {
     UNKNOWN,
     INVALID_CODE,
     CHALLENGE_EXPIRED,
+    OTP_INVALID,
 }
 
 enum class LoginStep { PASSWORD, TWO_FACTOR }

@@ -1,0 +1,2 @@
+# Production secrets live in infra/.env (ignored by the root .gitignore); only the template is committed.
+!.env.production.example

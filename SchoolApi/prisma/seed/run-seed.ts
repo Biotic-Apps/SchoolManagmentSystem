@@ -24,7 +24,13 @@ export async function runSeed(prisma: SeedClient, options: SeedOptions): Promise
     throw new Error('SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD are required');
   }
   assertPasswordPolicy(password);
-  const admin = await ensureUser(prisma, { email, name: 'Super Admin', password, resetPassword: options.demo });
+  const admin = await ensureUser(prisma, {
+    email,
+    name: 'Super Admin',
+    password,
+    resetPassword: options.demo,
+    mustChangePassword: !options.demo,
+  });
   await ensureAssignment(prisma, { userId: admin.id, roleId: roles.SUPER_ADMIN, scopeType: 'GLOBAL' });
   console.log(`Seed: catalogue, system roles and super admin ${email} ready.`);
 

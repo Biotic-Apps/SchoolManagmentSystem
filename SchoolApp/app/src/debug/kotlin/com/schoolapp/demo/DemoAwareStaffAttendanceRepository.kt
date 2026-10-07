@@ -5,10 +5,6 @@ import com.schoolapp.core.data.attendance.DefaultStaffAttendanceRepository
 import com.schoolapp.core.data.attendance.StaffAttendanceRepository
 import com.schoolapp.core.model.attendance.StaffAttendanceSheet
 import com.schoolapp.core.model.attendance.StaffMark
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,11 +19,4 @@ class DemoAwareStaffAttendanceRepository @Inject constructor(
 
     override suspend fun save(branchId: String, date: String, marks: List<StaffMark>): AppResult<StaffAttendanceSheet> =
         if (auth.isDemoActive) AppResult.Success(DemoStaffSheetData.save(branchId, date, marks)) else real.save(branchId, date, marks)
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-interface DemoStaffAttendanceModule {
-    @Binds
-    fun bindStaffAttendanceRepository(impl: DemoAwareStaffAttendanceRepository): StaffAttendanceRepository
 }

@@ -1,5 +1,7 @@
 package com.schoolapp.demo
 
+import com.schoolapp.core.data.applock.AppLockRepository
+import com.schoolapp.core.data.applock.DefaultAppLockRepository
 import com.schoolapp.core.data.approvals.ApprovalsRepository
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.data.branding.BrandingRepository
@@ -14,6 +16,7 @@ import com.schoolapp.core.data.timetable.TimetableRepository
 import com.schoolapp.core.data.syllabus.SyllabusRepository
 import com.schoolapp.core.data.admissions.AdmissionsRepository
 import com.schoolapp.core.data.attendance.AttendanceRepository
+import com.schoolapp.core.data.attendance.StaffAttendanceRepository
 import com.schoolapp.core.data.leave.LeaveRepository
 import com.schoolapp.core.data.diary.DiaryRepository
 import com.schoolapp.core.data.files.FilesRepository
@@ -84,6 +87,9 @@ interface DemoModule {
     fun bindAttendanceRepository(impl: DemoAwareAttendanceRepository): AttendanceRepository
 
     @Binds
+    fun bindStaffAttendanceRepository(impl: DemoAwareStaffAttendanceRepository): StaffAttendanceRepository
+
+    @Binds
     fun bindLeaveRepository(impl: DemoAwareLeaveRepository): LeaveRepository
 
     @Binds
@@ -133,6 +139,10 @@ interface DemoModule {
 
     @Binds
     fun bindBrandingRepository(impl: DemoAwareBrandingRepository): BrandingRepository
+
+    /** Device setting, not demo data: the real repository in both build types. */
+    @Binds
+    fun bindAppLockRepository(impl: DefaultAppLockRepository): AppLockRepository
 
     @Binds
     fun bindLoginFooter(impl: DemoLoginFooter): LoginFooterContent

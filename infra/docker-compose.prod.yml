@@ -1,0 +1,212 @@
+# eSchool production stack (single server). See docs/deployment.md.
+#   cd infra && cp .env.production.example .env   # fill in, chmod 600 .env
+#   docker compose -f docker-compose.prod.yml up -d --build
+# Only Caddy publishes ports (80/443). Everything else talks on the private "eschool" network.
+# Optional MinIO (S3) storage: add `--profile minio` (see docs/deployment.md).
+
+name: eschool-prod
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "20m"
+    max-file: "10"
+
+services:
+  postgres:
+    image: postgres:16-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_SUPERUSER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_SUPERUSER_PASSWORD:?set POSTGRES_SUPERUSER_PASSWORD in infra/.env}
+      POSTGRES_DB: ${POSTGRES_DB:-eschool}
+      APP_DB_USER: ${APP_DB_USER:-eschool_app}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?set APP_DB_PASSWORD in infra/.env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Runs once, on an empty data volume: creates the least-privilege app role (owner of the app database).
+      # (The healthcheck uses TCP so it stays unhealthy until this init has finished.)
+      - ./postgres/init-app-user.sh:/docker-entrypoint-initdb.d/10-init-app-user.sh:ro
+    shm_size: 256mb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks: [eschool]
+    logging: *logging
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    # BullMQ needs noeviction; AOF keeps queued jobs across restarts.
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --maxmemory-policy
+      - noeviction
+      - --requirepass
+      - ${REDIS_PASSWORD:?set REDIS_PASSWORD in infra/.env}
+    environment:
+      REDISCLI_AUTH: ${REDIS_PASSWORD}
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [eschool]
+    logging: *logging
+
+  clamav:
+    image: clamav/clamav:stable
+    restart: unless-stopped
+    # Signature download on first start takes a few minutes; the image ships its own healthcheck.
+    volumes:
+      - clamavdb:/var/lib/clamav
+    networks: [eschool]
+    logging: *logging
+
+  api:
+    build:
+      context: ../SchoolApi
+      dockerfile: Dockerfile
+    image: eschool-api:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    init: true
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      # Process clock in school time: the job crons (backup 02:00, restore check Sun 03:30) run in local time.
+      TZ: ${APP_TIMEZONE:-Asia/Karachi}
+      APP_URL: https://${API_DOMAIN:?set API_DOMAIN in infra/.env}
+      CORS_ORIGINS: https://${APP_DOMAIN:?set APP_DOMAIN in infra/.env}
+      DATABASE_URL: postgresql://${APP_DB_USER:-eschool_app}:${APP_DB_PASSWORD}@postgres:5432/${POSTGRES_DB:-eschool}?schema=public
+      # env_file also carries the Postgres superuser secret; the API only needs the app role.
+      POSTGRES_SUPERUSER_PASSWORD: ""
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      JOBS_DRIVER: bullmq
+      CACHE_DRIVER: redis
+      # Caddy and the web BFF sit on this private subnet; the API trusts their X-Forwarded-For.
+      TRUSTED_PROXIES: ${DOCKER_SUBNET:-172.30.0.0/24}
+      CLAMAV_HOST: clamav
+      CLAMAV_PORT: "3310"
+      STORAGE_LOCAL_DIR: /app/storage
+    # Apply pending migrations, then start. A failed migration stops the container (check `docker compose logs api`).
+    command: ["sh", "-c", "./node_modules/.bin/prisma migrate deploy && exec node dist/main.js"]
+    volumes:
+      - apistorage:/app/storage
+      # Optional Firebase key file: set FCM_SERVICE_ACCOUNT_JSON=/run/secrets/fcm.json in .env and uncomment.
+      # - ./secrets/fcm.json:/run/secrets/fcm.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      clamav:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 90s
+    networks: [eschool]
+    logging: *logging
+
+  web:
+    build:
+      context: ../SchoolWeb
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: https://${API_DOMAIN}/api/v1
+        NEXT_PUBLIC_IDLE_TIMEOUT_MINUTES: ${WEB_IDLE_TIMEOUT_MINUTES:-30}
+        NEXT_PUBLIC_ASSET_ORIGINS: ${WEB_ASSET_ORIGINS:-}
+    image: eschool-web:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+      # Server-side BFF calls go straight to the API container.
+      API_URL: http://api:3000/api/v1
+      REFRESH_TTL_DAYS: ${REFRESH_TTL_DAYS:-30}
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/login').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks: [eschool]
+    logging: *logging
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN}
+      API_DOMAIN: ${API_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL in infra/.env}
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+      - caddyconfig:/config
+    # service_started (not healthy): Caddy should come up and answer even while the apps restart.
+    depends_on:
+      web:
+        condition: service_started
+      api:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks: [eschool]
+    logging: *logging
+
+  # Optional S3-compatible storage on the same server: docker compose --profile minio ...
+  minio:
+    image: minio/minio:latest
+    profiles: ["minio"]
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-eschool}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-}
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    networks: [eschool]
+    logging: *logging
+
+networks:
+  eschool:
+    ipam:
+      config:
+        - subnet: ${DOCKER_SUBNET:-172.30.0.0/24}
+
+volumes:
+  pgdata:
+  redisdata:
+  clamavdb:
+  apistorage:
+  caddydata:
+  caddyconfig:
+  miniodata:

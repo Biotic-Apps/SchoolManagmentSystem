@@ -4,6 +4,7 @@ import { useApiMutation } from "@/lib/use-api-mutation";
 import { settingsKeys } from "./keys";
 import { normaliseList } from "./list-response";
 import type { FailedNotification, JobRun, SystemHealth } from "./support-types";
+import type { TestMessageResult, TestMessageValues } from "./test-message-schema";
 
 const supportKeys = ["settings", "support"] as const;
 
@@ -53,4 +54,9 @@ export function useRetryJob() {
     invalidate: [supportKeys],
     success: "Job queued to retry",
   });
+}
+
+/** One synchronous message through the configured email/SMS provider (super admin). */
+export function sendTestMessage(body: TestMessageValues) {
+  return http.post<TestMessageResult>("/support/test-message", body);
 }

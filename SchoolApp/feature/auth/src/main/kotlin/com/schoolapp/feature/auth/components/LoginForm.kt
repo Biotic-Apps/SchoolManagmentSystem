@@ -70,6 +70,12 @@ internal fun LoginForm(state: LoginUiState, actions: LoginActions, modifier: Mod
                 loading = state.isSubmitting,
                 modifier = Modifier.fillMaxWidth(),
             )
+            AppTextButton(
+                text = stringResource(R.string.auth_use_phone_code),
+                onClick = actions.onUsePhoneCode,
+                enabled = !state.isSubmitting,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            )
         }
     }
 }

@@ -1,0 +1,42 @@
+# eSchool reverse proxy. Caddy obtains and renews Let's Encrypt certificates for both domains
+# automatically (DNS A/AAAA records must point at this server and ports 80/443 must be open).
+
+{
+	email {$ACME_EMAIL}
+}
+
+(common) {
+	encode zstd gzip
+
+	# Defaults only (`?`): the apps already send their own headers (helmet on the API, CSP + HSTS from Next).
+	header {
+		?Strict-Transport-Security "max-age=63072000; includeSubDomains"
+		?X-Content-Type-Options "nosniff"
+		?Referrer-Policy "strict-origin-when-cross-origin"
+		?X-Frame-Options "DENY"
+		-Server
+		-X-Powered-By
+		defer
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}
+
+{$APP_DOMAIN} {
+	import common
+	reverse_proxy web:3000
+}
+
+{$API_DOMAIN} {
+	import common
+
+	# Uploads: images 5 MB, PDFs 10 MB, imports 5 MB; leave headroom for multipart overhead.
+	request_body {
+		max_size 20MB
+	}
+
+	reverse_proxy api:3000
+}

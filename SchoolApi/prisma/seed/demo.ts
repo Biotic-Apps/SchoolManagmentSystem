@@ -2,6 +2,7 @@ import { RoleKey } from '../../src/core/rbac/role-key.enum';
 import type { SeedClient } from './client';
 import { seedAcademics } from './demo-academics';
 import { seedAdmissions } from './demo-admissions';
+import { seedUpcomingCalendar } from './demo-calendar';
 import { loadOrg, seedStudents } from './demo-people';
 import { seedAssignments, seedStaff } from './demo-staff';
 import { seedSyllabus } from './demo-syllabus';
@@ -14,6 +15,7 @@ import type { SystemRoleIds } from './system-roles';
 import { ensureAssignment, ensureUser } from './users';
 
 const PASSWORD = 'Demo@1234';
+const PARENT_PHONE = '+923001112233';
 
 const BRANCH_STAFF = [
   ['principal@eschool.local', 'Demo Principal', RoleKey.PRINCIPAL],
@@ -26,7 +28,7 @@ const BRANCH_STAFF = [
   ['helper@eschool.local', 'Demo Helper', RoleKey.HELPER],
 ] as const;
 
-/** Phase 1 §14 accounts, Phase 2 §9 people/academics, Phase 3 daily operations, Phase 4 finance/results (dev only). */
+/** Phase 1 §14 accounts, Phase 2 §9 people/academics, Phase 3 daily operations, Phase 4 finance/results, Phase 6 calendar + parent phone (dev only). */
 export async function seedDemo(prisma: SeedClient, roles: SystemRoleIds): Promise<void> {
   const org = await seedOrganisation(prisma);
   await seedAcademics(prisma, org);
@@ -46,6 +48,8 @@ export async function seedDemo(prisma: SeedClient, roles: SystemRoleIds): Promis
 
   const parent = await ensureUser(prisma, { email: 'parent@eschool.local', name: 'Demo Parent', password: PASSWORD, resetPassword: true });
   await ensureAssignment(prisma, { userId: parent.id, roleId: roles.PARENT, scopeType: 'GUARDIAN', schoolId: org.school.id });
+  // Phase 6: phone + OTP sign-in (same number as the guardian record).
+  await prisma.user.update({ where: { id: parent.id }, data: { phone: PARENT_PHONE } });
 
   const both = await ensureUser(prisma, { email: 'teacherparent@eschool.local', name: 'Demo Teacher Parent', password: PASSWORD, resetPassword: true });
   await ensureAssignment(prisma, { userId: both.id, roleId: roles.TEACHER, scopeType: 'BRANCH', ...place });
@@ -62,4 +66,5 @@ export async function seedDemo(prisma: SeedClient, roles: SystemRoleIds): Promis
   await seedAdmissions(prisma, people);
   await seedDailyOperations(prisma, people);
   await seedFinanceAndResults(prisma, people);
+  await seedUpcomingCalendar(prisma, ids);
 }

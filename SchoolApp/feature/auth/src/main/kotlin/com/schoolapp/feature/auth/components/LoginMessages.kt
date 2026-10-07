@@ -25,6 +25,7 @@ internal fun LoginFailure.messageRes(): Int = when (this) {
     LoginFailure.UNKNOWN -> R.string.auth_failure_unknown
     LoginFailure.INVALID_CODE -> R.string.auth_failure_invalid_code
     LoginFailure.CHALLENGE_EXPIRED -> R.string.auth_failure_challenge_expired
+    LoginFailure.OTP_INVALID -> R.string.auth_failure_otp_invalid
 }
 
 /** A timed-out verification step is a notice rather than an error. */

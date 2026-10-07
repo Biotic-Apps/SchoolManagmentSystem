@@ -1,0 +1,26 @@
+# Rebuilt inside the image
+node_modules
+dist
+src/generated
+coverage
+*.tsbuildinfo
+
+# Local data and secrets
+.env
+.env.*
+!.env.example
+.pgdata
+.pgdata-*
+storage
+
+# Not needed in the image
+test
+scripts
+openapi.json
+README.md
+.git
+.vscode
+.idea
+*.log
+Dockerfile
+.dockerignore

@@ -106,6 +106,11 @@ describe('validateEnv', () => {
     ...validEnv,
     NODE_ENV: 'production',
     BACKUP_ENCRYPTION_KEY: Buffer.alloc(32, 1).toString('base64'),
+    EMAIL_DRIVER: 'smtp',
+    SMTP_HOST: 'smtp.example.com',
+    EMAIL_FROM: 'eSchool <no-reply@example.com>',
+    SMS_DRIVER: 'http',
+    SMS_HTTP_URL: 'https://sms.example.com/send',
   };
 
   it('accepts a complete production environment', () => {
@@ -147,5 +152,62 @@ describe('validateEnv', () => {
     expect(env.BACKUP_RETENTION_MONTHLY).toBe(12);
     expect(env.TOTP_ISSUER).toBe('eSchool');
     expect(env.CLAMAV_PORT).toBe(3310);
+  });
+
+  describe('delivery channels (Phase 6)', () => {
+    it('defaults to the log drivers outside production', () => {
+      const env = validateEnv(validEnv);
+      expect(env.EMAIL_DRIVER).toBe('log');
+      expect(env.SMS_DRIVER).toBe('log');
+      expect(env.SMTP_PORT).toBe(587);
+      expect(env.SMTP_SECURE).toBe(false);
+      expect(env.SMS_HTTP_METHOD).toBe('POST');
+      expect(env.DEFAULT_PHONE_COUNTRY).toBe('+92');
+      expect(env.ALLOW_LOG_CHANNELS).toBe(false);
+    });
+
+    it('refuses the log drivers in production unless explicitly allowed', () => {
+      const run = (extra: Record<string, string>) => () =>
+        validateEnv({
+          ...productionEnv,
+          EMAIL_DRIVER: 'log',
+          SMS_DRIVER: 'log',
+          ...extra,
+        });
+      expect(run({})).toThrow(/EMAIL_DRIVER: log driver/);
+      expect(run({})).toThrow(/SMS_DRIVER: log driver/);
+      expect(run({ ALLOW_LOG_CHANNELS: 'true' })()).toMatchObject({
+        ALLOW_LOG_CHANNELS: true,
+      });
+    });
+
+    it('requires the settings of the selected drivers', () => {
+      const run = (extra: Record<string, string>) => () =>
+        validateEnv({ ...validEnv, ...extra });
+      expect(run({ EMAIL_DRIVER: 'smtp' })).toThrow(/SMTP_HOST/);
+      expect(run({ EMAIL_DRIVER: 'smtp' })).toThrow(/EMAIL_FROM/);
+      expect(run({ SMS_DRIVER: 'twilio' })).toThrow(/TWILIO_AUTH_TOKEN/);
+      expect(run({ SMS_DRIVER: 'http' })).toThrow(/SMS_HTTP_URL/);
+    });
+
+    it('parses SMS_HTTP_HEADERS as a JSON object of strings', () => {
+      const env = validateEnv({
+        ...validEnv,
+        SMS_HTTP_HEADERS: '{"Authorization":"Bearer x"}',
+      });
+      expect(env.SMS_HTTP_HEADERS).toEqual({ Authorization: 'Bearer x' });
+      expect(() =>
+        validateEnv({ ...validEnv, SMS_HTTP_HEADERS: '[1]' }),
+      ).toThrow(/SMS_HTTP_HEADERS/);
+      expect(() =>
+        validateEnv({ ...validEnv, SMS_HTTP_HEADERS: 'not json' }),
+      ).toThrow(/SMS_HTTP_HEADERS/);
+    });
+
+    it('validates DEFAULT_PHONE_COUNTRY', () => {
+      expect(() =>
+        validateEnv({ ...validEnv, DEFAULT_PHONE_COUNTRY: '92' }),
+      ).toThrow(/DEFAULT_PHONE_COUNTRY/);
+    });
   });
 });

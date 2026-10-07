@@ -46,4 +46,20 @@
     <string name="auth_reset_error_short">Use at least 8 characters</string>
     <string name="auth_reset_error_mix">Include at least one letter and one number</string>
     <string name="auth_reset_error_mismatch">Passwords do not match</string>
+    <string name="auth_use_phone_code">Parent? Sign in with a phone code</string>
+    <string name="auth_phone_title">Sign in with a phone code</string>
+    <string name="auth_phone_message">For parents. Enter the mobile number your school has on record and we will text you a 6-digit code.</string>
+    <string name="auth_phone_label">Mobile number</string>
+    <string name="auth_phone_hint">For example 0300 1234567 or +92 300 1234567</string>
+    <string name="auth_phone_send">Send code</string>
+    <string name="auth_phone_code_message">If %1$s belongs to a parent account, a 6-digit code is on its way. It expires in 5 minutes.</string>
+    <string name="auth_phone_code_label">6-digit code</string>
+    <string name="auth_phone_verify">Sign in</string>
+    <string name="auth_phone_resend">Resend code</string>
+    <string name="auth_phone_resend_in">Resend code in %1$d:%2$02d</string>
+    <string name="auth_phone_change_number">Change number</string>
+    <string name="auth_phone_use_password">Use email and password instead</string>
+    <string name="auth_phone_error_invalid">Enter a valid mobile number</string>
+    <string name="auth_phone_error_code">Enter the 6 digits from the text message</string>
+    <string name="auth_failure_otp_invalid">That code is wrong or has expired. Check the text message or request a new code.</string>
 </resources>

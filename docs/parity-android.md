@@ -15,6 +15,7 @@ Snapshot 2026-10-06, updated 2026-10-07 after the Phase 5 parity pass, taken fro
 | Branding on login + top bar | `/branding` logo/colour | `features/branding` | `core/data/branding`, `designsystem/brand` (Phase 5, in progress) | Same | |
 | Forgot / reset password | request, token + new password | `(auth)/forgot-password`, `reset-password` | Phase 5, in progress (`ForgotPasswordRequestDto`) | Same | |
 | 2FA verify on login | challenge → code | `TwoFactorLoginForm` | `TwoFactorUiState/Validator` (Phase 5, in progress) | Same | |
+| Phone + OTP sign-in (parents) | phone → texted 6-digit code → same post-login flow incl. 2FA; resend after 60 s | login page "Sign in with phone code" (Phase 6 §B) | `feature/auth/phone` (`PhoneSignInViewModel`, `PhoneSignInForm`) via `AuthRepository.requestOtp/verifyOtp`; a 2FA challenge continues on the shared `TwoFactorForm` (Phase 6) | Same | debug demo: `03001234567` + code `123456` signs in as the demo parent |
 | 2FA setup / disable / recovery codes | QR, enable, disable, codes | `profile/TwoFactorCard`, `TwoFactorSetupPanel`, `RecoveryCodesDialog` | – | Web-only (by design) | the QR must be scanned from a second screen; codes are shown once |
 | Role switch / child switcher | switch active role/child | yes | `RoleShellViewModel.onRoleSelected/onChildSelected` | Same | |
 | Notifications inbox | list, unread filter, mark all read | `NotificationBell` | `feature/notifications` | Same | |
@@ -55,7 +56,7 @@ Snapshot 2026-10-06, updated 2026-10-07 after the Phase 5 parity pass, taken fro
 | approvals | inbox, detail, approve/reject/return | yes | `feature/approvals` | Same | |
 | reports | catalogue, parameters, export jobs, recent exports | yes | placeholder (web-only message) | Web-only (by design) | XLSX/PDF exports |
 | settings | school/branding, notifications, policies, support (failed notifications, jobs, health), backups, data import | yes (`features/settings`) | web-only placeholder (`SETTINGS` in `WebOnlyModules`) | Web-only (by design) | |
-| profile | edit, password, device sessions, notification prefs, 2FA | yes | edit, password, sessions, push prefs | Android (subset) | 2FA setup is web (QR) |
+| profile | edit, password, device sessions, notification prefs, 2FA | yes | edit, password, sessions, push prefs, app lock (Android-only) | Android (subset) | 2FA setup is web (QR) |
 
 ## PRINCIPAL
 
@@ -179,6 +180,7 @@ Both clients build the menu from every catalogue `.view` the role holds. On Andr
 - `FLAG_SECURE` (`core/ui/SecureWindow.kt`) on payroll run, My Salary and all health screens (health menu/incidents, health card, report incident).
 - Release certificate pinning from Gradle properties (`core/network/security/CertificatePinning.kt`, Phase 5).
 - Branded adaptive launcher icon + SplashScreen (Phase 5).
+- Optional app lock (security.md §8, Phase 6 §E): Profile › App lock switch for every role (off by default, "Recommended" text for staff, explains when the phone has no screen lock). Uses `BiometricPrompt` with BIOMETRIC_STRONG or DEVICE_CREDENTIAL (BIOMETRIC_WEAK + credential on Android 9–10). Locks on cold start and after > 5 min in the background (`ProcessLifecycleOwner` → `AppLockController`); the lock screen always offers Sign out; the setting lives in DataStore and is cleared on sign-out (`core/data/applock`, `app/applock`).
 
 ## Gaps to fix (prioritised)
 All resolved in the Phase 5 parity pass (2026-10-07).

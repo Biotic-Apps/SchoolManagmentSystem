@@ -25,6 +25,24 @@ class FakeAuthRepository : AuthRepository {
     var nextError: AppError? = null
     var challengeId: String? = null
     var gate: CompletableDeferred<Unit>? = null
+    val otpRequests = mutableListOf<String>()
+    val otpVerifyCalls = mutableListOf<Pair<String, String>>()
+    var resendAfterSeconds = 60
+
+    override suspend fun requestOtp(phone: String): AppResult<Int> {
+        otpRequests += phone
+        gate?.await()
+        return nextError?.let { AppResult.Failure(it) } ?: AppResult.Success(resendAfterSeconds)
+    }
+
+    override suspend fun verifyOtp(phone: String, code: String): AppResult<LoginOutcome> {
+        otpVerifyCalls += phone to code
+        gate?.await()
+        nextError?.let { return AppResult.Failure(it) }
+        challengeId?.let { return AppResult.Success(LoginOutcome.TwoFactorRequired(it)) }
+        signIn()
+        return AppResult.Success(LoginOutcome.SignedIn)
+    }
 
     override val authState: Flow<AuthState> =
         sessionState.map { it?.let(AuthState::SignedIn) ?: AuthState.SignedOut }

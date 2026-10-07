@@ -27,3 +27,9 @@ private const val CHALLENGE_EXPIRED = "CHALLENGE_EXPIRED"
 private const val HTTP_BAD_REQUEST = 400
 private const val HTTP_GONE = 410
 private const val HTTP_TOO_MANY = 429
+
+/** `POST /auth/otp/verify` errors: a wrong, expired or used code is 401 "Invalid or expired code". */
+internal fun AppError.toOtpFailure(): LoginFailure = when (this) {
+    AppError.Unauthorized, is AppError.Validation -> LoginFailure.OTP_INVALID
+    else -> toLoginFailure()
+}

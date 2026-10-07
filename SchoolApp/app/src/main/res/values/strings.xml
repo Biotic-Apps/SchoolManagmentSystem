@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">eSchool</string>
+    <string name="app_lock_title">eSchool is locked</string>
+    <string name="app_lock_message">Unlock with your fingerprint, face or phone screen lock to continue.</string>
+    <string name="app_lock_unavailable">This phone no longer has a screen lock, so the app cannot be unlocked. Sign out, then sign in again.</string>
+    <string name="app_lock_unlock">Unlock</string>
+    <string name="app_lock_sign_out">Sign out</string>
+    <string name="app_lock_prompt_title">Unlock eSchool</string>
+    <string name="app_lock_prompt_subtitle">Confirm it is you</string>
 </resources>

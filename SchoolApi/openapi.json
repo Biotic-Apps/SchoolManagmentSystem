@@ -711,6 +711,85 @@
         ]
       }
     },
+    "/api/v1/auth/otp/request": {
+      "post": {
+        "operationId": "OtpLoginController_request",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestOtpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/OtpRequestResultDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/otp/verify": {
+      "post": {
+        "operationId": "OtpLoginController_verify",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyOtpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/AuthTokensDto"
+                        },
+                        {
+                          "$ref": "#/components/schemas/TwoFactorChallengeDto"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/api/v1/notifications": {
       "get": {
         "operationId": "NotificationsController_list",
@@ -20968,6 +21047,48 @@
         ]
       }
     },
+    "/api/v1/support/test-message": {
+      "post": {
+        "operationId": "SupportController_testMessage",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/TestMessageResultDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Phase 6 §A: one synchronous message through the configured provider.",
+        "tags": [
+          "support"
+        ]
+      }
+    },
     "/api/v1/backups": {
       "get": {
         "operationId": "BackupsController_list",
@@ -21835,6 +21956,68 @@
         "required": [
           "code",
           "challengeId"
+        ]
+      },
+      "OtpRequestResultDto": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "resendAfterSeconds": {
+            "type": "number",
+            "description": "Seconds before another code can be requested for this phone."
+          }
+        },
+        "required": [
+          "ok",
+          "resendAfterSeconds"
+        ]
+      },
+      "RequestOtpDto": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "description": "Parent's mobile number, any common format (`0300-1112233`, `+92…`).",
+            "minLength": 6,
+            "maxLength": 20
+          }
+        },
+        "required": [
+          "phone"
+        ]
+      },
+      "VerifyOtpDto": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20
+          },
+          "code": {
+            "type": "string",
+            "description": "The 6-digit code from the SMS (spaces ignored).",
+            "minLength": 1,
+            "maxLength": 12
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "WEB",
+              "ANDROID"
+            ]
+          },
+          "deviceName": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "phone",
+          "code",
+          "platform"
         ]
       },
       "NotificationDto": {
@@ -38434,6 +38617,43 @@
           "lastBackup",
           "lastRestoreVerified",
           "version"
+        ]
+      },
+      "TestMessageResultDto": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "string",
+            "description": "Provider error (sanitised, ≤ 300 characters) when `ok` is false."
+          }
+        },
+        "required": [
+          "ok"
+        ]
+      },
+      "TestMessageDto": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "enum": [
+              "EMAIL",
+              "SMS"
+            ],
+            "type": "string"
+          },
+          "to": {
+            "type": "string",
+            "description": "Email address (EMAIL) or phone number (SMS).",
+            "minLength": 3,
+            "maxLength": 254
+          }
+        },
+        "required": [
+          "channel",
+          "to"
         ]
       },
       "BackupCheckDto": {

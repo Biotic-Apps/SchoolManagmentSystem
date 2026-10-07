@@ -18,6 +18,9 @@ import com.schoolapp.core.network.api.MeApi
 import com.schoolapp.core.network.dto.auth.ChangePasswordRequestDto
 import com.schoolapp.core.network.dto.auth.ForgotPasswordRequestDto
 import com.schoolapp.core.network.dto.auth.LoginRequestDto
+import com.schoolapp.core.network.dto.auth.LoginResponseDto
+import com.schoolapp.core.network.dto.auth.OtpRequestDto
+import com.schoolapp.core.network.dto.auth.OtpVerifyRequestDto
 import com.schoolapp.core.network.dto.auth.RefreshRequestDto
 import com.schoolapp.core.network.dto.auth.ResetPasswordRequestDto
 import com.schoolapp.core.network.dto.auth.TwoFactorVerifyRequestDto
@@ -72,10 +75,25 @@ class DefaultAuthRepository @Inject constructor(
 
     override suspend fun login(identifier: String, password: String): AppResult<LoginOutcome> {
         val request = LoginRequestDto(identifier.trim(), password, LoginRequestDto.PLATFORM_ANDROID, deviceName)
-        val response = when (val result = apiCaller.call { authApi.login(request).data }) {
-            is AppResult.Failure -> return result
-            is AppResult.Success -> result.data
+        return when (val result = apiCaller.call { authApi.login(request).data }) {
+            is AppResult.Failure -> result
+            is AppResult.Success -> completeSignIn(result.data)
         }
+    }
+
+    override suspend fun requestOtp(phone: String): AppResult<Int> =
+        apiCaller.call { authApi.requestOtp(OtpRequestDto(phone.trim())).data }.map { it.resendAfterSeconds }
+
+    override suspend fun verifyOtp(phone: String, code: String): AppResult<LoginOutcome> {
+        val request = OtpVerifyRequestDto(phone.trim(), code.trim(), LoginRequestDto.PLATFORM_ANDROID, deviceName)
+        return when (val result = apiCaller.call { authApi.verifyOtp(request).data }) {
+            is AppResult.Failure -> result
+            is AppResult.Success -> completeSignIn(result.data)
+        }
+    }
+
+    /** Shared by password and phone-code sign-in: same `LoginResult` body (tokens or a 2FA challenge). */
+    private suspend fun completeSignIn(response: LoginResponseDto): AppResult<LoginOutcome> {
         if (response.twoFactorRequired) {
             val challengeId = response.challengeId?.takeIf { it.isNotBlank() }
                 ?: return AppResult.Failure(AppError.Unknown(IllegalStateException("2FA challenge without id")))

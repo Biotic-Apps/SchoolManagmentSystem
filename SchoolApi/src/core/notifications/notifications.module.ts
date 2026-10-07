@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ChannelRegistry } from './channels/channel-registry';
 import { EmailChannel } from './channels/email.channel';
 import { PushChannel } from './channels/push.channel';
+import { SenderIdentityResolver } from './channels/sender-identity';
 import { SmsChannel } from './channels/sms.channel';
 import { DirectMessageProcessor } from './jobs/direct-message.processor';
 import { RecipientSwitches } from './jobs/recipient-switches';
@@ -17,6 +18,7 @@ import { NotificationPreferencesService } from './preferences/notification-prefe
 @Module({
   controllers: [NotificationsController, NotificationPreferencesController],
   providers: [
+    SenderIdentityResolver,
     PushChannel,
     EmailChannel,
     SmsChannel,

@@ -10,6 +10,8 @@ export interface SeedUser {
   password: string;
   /** Overwrite the password of an existing account (demo accounts only). */
   resetPassword: boolean;
+  /** New account must change its password at first sign-in (production bootstrap). */
+  mustChangePassword?: boolean;
 }
 
 export async function ensureUser(prisma: SeedClient, user: SeedUser) {
@@ -18,7 +20,12 @@ export async function ensureUser(prisma: SeedClient, user: SeedUser) {
   const passwordHash = await hasher.hash(user.password);
   return prisma.user.upsert({
     where: { email: user.email },
-    create: { email: user.email, name: user.name, passwordHash },
+    create: {
+      email: user.email,
+      name: user.name,
+      passwordHash,
+      mustChangePassword: user.mustChangePassword ?? false,
+    },
     update: {
       name: user.name,
       passwordHash,

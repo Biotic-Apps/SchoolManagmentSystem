@@ -156,6 +156,15 @@ class TwoFactorStepTest {
     }
 
     @Test
+    fun phone_sign_in_challenge_opens_the_shared_code_step() {
+        viewModel.onTwoFactorChallenge("ch-phone")
+        assertEquals(LoginStep.TWO_FACTOR, viewModel.uiState.value.step)
+        verify("123456")
+        assertEquals(listOf("ch-phone" to "123456"), repository.verifyCalls)
+        assertTrue(repository.loginCalls.isEmpty())
+    }
+
+    @Test
     fun step_and_mode_survive_recreation() {
         reachCodeStep()
         viewModel.onToggleCodeMode()

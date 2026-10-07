@@ -1,0 +1,134 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    name: API (build, lint, unit, e2e)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: SchoolApi
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: eschool
+          POSTGRES_PASSWORD: eschool
+          POSTGRES_DB: eschool_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U eschool -d eschool_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      # test/support/e2e-db.ts reads this; global-setup resets, migrates and seeds it.
+      E2E_DATABASE_URL: postgresql://eschool:eschool@localhost:5432/eschool_test?schema=public
+      # prisma.config.ts / `prisma generate` only need a syntactically valid URL.
+      DATABASE_URL: postgresql://eschool:eschool@localhost:5432/eschool_test?schema=public
+      CHECKPOINT_DISABLE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: SchoolApi/package-lock.json
+      - name: Install (runs prisma generate)
+        run: npm ci --no-audit --no-fund
+      - name: Build
+        run: npm run build
+      - name: Lint
+        # The script runs eslint --fix; fail if it had to change anything.
+        run: |
+          npm run lint
+          git diff --exit-code -- .
+      - name: Unit tests
+        run: npm test -- --ci
+      - name: E2E tests
+        run: npm run test:e2e -- --ci
+      - name: Validate Prisma schema
+        run: npm run prisma:validate
+
+  web:
+    name: Web (typecheck, lint, build)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: SchoolWeb
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      NEXT_PUBLIC_API_URL: https://api.example.invalid/api/v1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: SchoolWeb/package-lock.json
+      - name: Install
+        run: npm ci --no-audit --no-fund
+      - name: Typecheck
+        # next-env.d.ts and .next/types are git-ignored; typegen creates them without a full build.
+        run: |
+          npx next typegen
+          npx tsc --noEmit
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+
+  android:
+    name: Android (assembleDebug, unit tests)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: SchoolApp
+    steps:
+      - uses: actions/checkout@v4
+      - name: JDK 17 (+ JDK 25 for the Gradle daemon, see gradle/gradle-daemon-jvm.properties)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          # The last entry becomes JAVA_HOME. Sources compile for Java 17 (build-logic AppSdk.JAVA).
+          java-version: |
+            17
+            25
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+      - name: Make the wrapper executable
+        run: chmod +x gradlew
+      - name: Build and unit test
+        run: ./gradlew assembleDebug testDebugUnitTest --stacktrace
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-test-reports
+          path: SchoolApp/**/build/reports/tests/
+          retention-days: 7
+      - name: Upload debug APK
+        if: success() && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: SchoolApp/app/build/outputs/apk/debug/*.apk
+          retention-days: 14

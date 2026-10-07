@@ -74,4 +74,11 @@
     <string name="notifications_leave_hint">Leave requests and decisions</string>
     <string name="notifications_approval">Approvals</string>
     <string name="notifications_approval_hint">Requests waiting for you and their outcomes</string>
+    <string name="profile_app_lock">App lock</string>
+    <string name="profile_app_lock_hint">Ask for your fingerprint, face or phone screen lock when you open the app or return after 5 minutes away.</string>
+    <string name="profile_app_lock_hint_staff">Recommended for staff accounts. Asks for your fingerprint, face or phone screen lock when you open the app or return after 5 minutes away.</string>
+    <string name="profile_app_lock_no_device_lock">Unavailable: set up a screen lock (PIN, pattern, password or fingerprint) in your phone settings first.</string>
+    <string name="profile_app_lock_unsupported">Unavailable: this phone does not support fingerprint or screen-lock checks.</string>
+    <string name="profile_app_lock_prompt_title">Turn on app lock</string>
+    <string name="profile_app_lock_prompt_subtitle">Confirm it is you</string>
 </resources>

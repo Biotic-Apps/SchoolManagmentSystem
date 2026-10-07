@@ -53,6 +53,7 @@ model User {
   refreshSessions     RefreshSession[]
   passwordResetTokens PasswordResetToken[]
   otpCodes            OtpCode[]
+  loginOtps           LoginOtp[]
   roleAssignments     RoleAssignment[]        @relation("AssignedUser")
   grantedAssignments  RoleAssignment[]        @relation("AssignmentGrantedBy")
   devices             UserDevice[]
@@ -145,6 +146,26 @@ model OtpCode {
   @@index([userId])
   @@index([expiresAt])
   @@map("otp_codes")
+}
+
+/// Parent phone sign-in codes (phase6-contract §B): HMAC-SHA256 hash only.
+model LoginOtp {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  /// E.164 number the code was sent to.
+  phone     String
+  codeHash  String    @map("code_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(3)
+  attempts  Int       @default(0)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([phone, createdAt])
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("login_otps")
 }
 
 model Role {

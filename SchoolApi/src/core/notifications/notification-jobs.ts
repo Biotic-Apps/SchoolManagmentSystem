@@ -19,7 +19,10 @@ export interface NotifyInput {
 
 /** One-off message with no stored row (e.g. password reset codes, OTPs). */
 export interface DirectMessageInput {
-  /** Account to reach; or give an explicit address in `to` (no account needed). */
+  /**
+   * Account to reach; or give an explicit address in `to` (no account
+   * needed; a userId given with it only picks the school sender name).
+   */
   userId?: string;
   to?: { phone?: string | null; email?: string | null };
   channel: Exclude<NotificationChannel, 'IN_APP'>;

@@ -26,7 +26,13 @@ Production seeds only the catalogue, system roles and the super admin from `SEED
 | `STORAGE_DRIVER` | `local` (default) / `s3` | `local`: files under `STORAGE_LOCAL_DIR`. `s3`: AWS S3 / MinIO / R2 (`S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_REGION`, optional `S3_ENDPOINT` + `S3_FORCE_PATH_STYLE`), SSE-AES256 on upload. Files are always served through HMAC-signed 5-minute API URLs; S3 presigned URLs are used for backup downloads. |
 | `CLAMAV_HOST` / `CLAMAV_PORT` | unset / `3310` | When set, every upload is scanned via clamd INSTREAM before it is stored (infected → 400, scanner error → 503, nothing stored). Unset: files stay `scan_status=PENDING` (not scanned). Images are always re-encoded with sharp (EXIF stripped, max 2048 px, JPEG or PNG). |
 
-Push, email and SMS channels log messages in development and mark deliveries `FAILED` ("provider not configured") in production until real providers are added.
+| `EMAIL_DRIVER` | `log` (default) / `smtp` | `smtp` (nodemailer): `SMTP_HOST` (required), `SMTP_PORT` (587), `SMTP_SECURE` (`false` = STARTTLS required, `true` = implicit TLS on 465), `SMTP_USER`, `SMTP_PASSWORD`, `EMAIL_FROM` (required, `eSchool <no-reply@school.pk>`). The school's `notifications.email.fromName` replaces the display name. |
+| `SMS_DRIVER` | `log` (default) / `twilio` / `http` | `twilio`: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` (Messages API over plain fetch). `http` (any local gateway): `SMS_HTTP_URL` (required; `{{to}}` etc. allowed, URL-encoded), `SMS_HTTP_METHOD` (`POST` / `PUT` / `GET`; GET sends no body), `SMS_HTTP_HEADERS` (JSON object, e.g. `{"Authorization":"Bearer …"}`), `SMS_HTTP_BODY` template with `{{to}}`, `{{message}}`, `{{senderId}}` (escaped for the Content-Type; unset = JSON `{"to","message","senderId"}`). Success = any 2xx. `senderId` = school `notifications.sms.senderId`. |
+| `ALLOW_LOG_CHANNELS` | `false` | Production refuses to start with `EMAIL_DRIVER=log` or `SMS_DRIVER=log` unless this is `true` (staging boxes); the log driver then logs title + user id only, never the body. |
+| `DEFAULT_PHONE_COUNTRY` | `+92` | Numbers without a country code are normalised to E.164 with it (`0300-1234567` → `+923001234567`) for SMS and phone sign-in. |
+| `FCM_SERVICE_ACCOUNT_JSON` | unset | Firebase service account JSON (or a path). Set = real FCM HTTP v1 push; unset = push is logged in development and fails in production. |
+
+In development the log drivers print messages (incl. codes) to the console. Provider failures are thrown, so deliveries end up `FAILED` (retry + Settings › Support); the stored error is cut to 300 characters with configured secrets, auth headers and full phone numbers removed. `POST /support/test-message { channel: EMAIL|SMS, to }` (super admin) sends one message synchronously and answers `{ ok, error? }`.
 
 ## Phase 5 operations
 - **Settings & branding**: `GET /branding` (public) feeds the login screen; `/settings/school|notifications|policies` (principal read-only, super admin edits). Policies drive password rules, the web session idle timeout (`sessionTimeoutMinutes`, enforced on WEB refresh) and `twoFactorRequiredFor`.
@@ -36,6 +42,10 @@ Push, email and SMS channels log messages in development and mark deliveries `FA
 - **Support**: `/support/notifications/failed` (+resend), `/support/jobs` (+retry), `/support/health` — super admin only.
 - **Proxies**: set `TRUSTED_PROXIES` (IPs/CIDRs) to the web BFF / load balancer so rate limits and audit see the real client IP (unset = loopback in dev, nobody in production).
 - **audit_logs** is range-partitioned by month; `maintenance.auditPartitions` (daily) keeps the next two months ready.
+
+## Phase 6 pilot
+- **Parent phone sign-in**: `POST /auth/otp/request { phone }` (always `{ ok, resendAfterSeconds: 60 }`) → SMS with a 6-digit code (5 minutes, 5 attempts, HMAC-SHA256 in `login_otps`) → `POST /auth/otp/verify { phone, code, platform }` → same answer as `/auth/login` (tokens or a 2FA challenge). Only ACTIVE users with an active PARENT role get a code; wrong codes count toward the account lockout. Demo: `parent@eschool.local` has phone `+923001112233`; with the log driver the code is printed in the API console.
+- **Demo calendar**: the seed adds a holiday, a mid-term exam week and a parent-teacher day 18–55 days after the seed date.
 
 ## Scripts
 | Script | What |

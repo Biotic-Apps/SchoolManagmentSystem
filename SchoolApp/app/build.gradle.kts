@@ -47,6 +47,7 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.model)
     implementation(projects.core.designsystem)
+    implementation(projects.core.ui)
     implementation(projects.core.navigation)
     implementation(projects.core.data)
     implementation(projects.core.sync)
@@ -84,6 +85,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.process)
+    implementation(libs.androidx.fragment)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.work)
@@ -92,6 +95,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.timber)
+
+    testImplementation(projects.core.testing)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
