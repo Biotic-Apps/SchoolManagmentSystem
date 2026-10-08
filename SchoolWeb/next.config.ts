@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // No floating Next.js dev badge over the portal.
   devIndicators: false,
+  // Let phones/laptops on the same Wi-Fi open `next dev` by the PC's LAN IP.
+  allowedDevOrigins: ["192.168.*.*"],
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
