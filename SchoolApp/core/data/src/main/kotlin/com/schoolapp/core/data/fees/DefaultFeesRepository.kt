@@ -12,6 +12,8 @@ import com.schoolapp.core.model.fees.FeeSummary
 import com.schoolapp.core.model.fees.FinanceOverview
 import com.schoolapp.core.model.fees.Invoice
 import com.schoolapp.core.model.fees.InvoiceStatus
+import com.schoolapp.core.model.fees.Payment
+import com.schoolapp.core.model.fees.RefundInput
 import com.schoolapp.core.model.fees.PaymentInput
 import com.schoolapp.core.model.fees.PaymentOutcome
 import com.schoolapp.core.model.fees.PaymentProof
@@ -20,7 +22,11 @@ import com.schoolapp.core.model.fees.ProofStatus
 import com.schoolapp.core.network.ApiCaller
 import com.schoolapp.core.network.api.FeesApi
 import com.schoolapp.core.network.dto.common.ReasonBodyDto
+import com.schoolapp.core.network.dto.fees.CloseDayBodyDto
+import com.schoolapp.core.network.dto.fees.DueRemindersBodyDto
 import com.schoolapp.core.network.dto.fees.OnlineInitiateBodyDto
+import com.schoolapp.core.network.dto.fees.RefundBodyDto
+import com.schoolapp.core.network.dto.fees.ReversePaymentBodyDto
 import com.schoolapp.core.network.dto.fees.PaymentBodyDto
 import com.schoolapp.core.network.dto.fees.ProofBodyDto
 import com.schoolapp.core.network.dto.fees.VerifyProofBodyDto
@@ -118,6 +124,22 @@ class DefaultFeesRepository @Inject constructor(
 
     override suspend fun dailyCollection(date: String, branchId: String?): AppResult<DailyCollection> =
         apiCaller.call { api.dailyCollection(branchId, date).data.toModel(date) }
+
+    override suspend fun sendDueReminders(studentIds: List<String>): AppResult<Unit> =
+        apiCaller.call { api.sendDueReminders(DueRemindersBodyDto(studentIds.distinct())); Unit }
+
+    override suspend fun reversePayment(paymentId: String, reason: String): AppResult<Payment> =
+        apiCaller.call { api.reversePayment(paymentId, ReversePaymentBodyDto(reason.trim())).data.toModel() }
+
+    override suspend fun requestRefund(input: RefundInput): AppResult<Unit> = apiCaller.call {
+        api.requestRefund(RefundBodyDto(input.paymentId, input.amountMinor, input.reason.trim(), input.method.name))
+        Unit
+    }
+
+    override suspend fun closeDay(date: String, cashCountedMinor: Long, note: String?, branchId: String?): AppResult<DailyCollection> {
+        val branch = branchId ?: return AppResult.Failure(AppError.Unknown())
+        return apiCaller.call { api.closeDay(CloseDayBodyDto(branch, date, cashCountedMinor, note.clean())).data.toModel(date) }
+    }
 
     override suspend fun financeOverview(branchId: String?, month: String?): AppResult<FinanceOverview> =
         apiCaller.call { api.financeDashboard(branchId, month).data.toModel() }

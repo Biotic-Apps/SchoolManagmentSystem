@@ -128,4 +128,24 @@
     <string name="exams_note_behaviour">Behaviour</string>
     <string name="exams_note_learning">Learning</string>
     <string name="exams_note_achievement">Achievement</string>
+
+    <!-- Staff class results -->
+    <string name="exams_tab_mark_sheets">Mark sheets</string>
+    <string name="exams_tab_completeness">Completeness</string>
+    <string name="exams_tab_class_results">Class results</string>
+    <string name="exams_class_results_title">Class results</string>
+    <string name="exams_class_results_section">Choose a section</string>
+    <string name="exams_class_results_none">No results to show</string>
+    <string name="exams_class_results_none_message">Results appear here once exam results are approved.</string>
+    <string name="exams_class_results_no_sections">This exam has no sections you can see.</string>
+    <string name="exams_class_results_empty">No results for this section</string>
+    <string name="exams_class_results_empty_message">Results are computed once all mark sheets are accepted.</string>
+    <string name="exams_class_results_not_approved">These results are not approved yet. Parents see them only after publishing.</string>
+    <string name="exams_exam_with_term">%1$s · %2$s</string>
+    <string name="exams_result_summary">%1$s / %2$s · %3$s%% · Grade %4$s</string>
+    <string name="exams_result_position">Position %1$d</string>
+    <string name="exams_result_caption_roll">Roll no %1$d</string>
+    <string name="exams_percentage">Percentage</string>
+    <string name="exams_result">Result</string>
+    <string name="exams_result_remarks">Result remarks</string>
 </resources>

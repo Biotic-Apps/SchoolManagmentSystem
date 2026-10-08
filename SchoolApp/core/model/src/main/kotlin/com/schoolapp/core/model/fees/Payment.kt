@@ -13,7 +13,19 @@ data class Payment(
     val receivedOn: String?,
     val cashierName: String?,
     val status: String?,
-)
+    val currency: String = "PKR",
+) {
+    /** Reverse / refund are offered only while the payment still stands. */
+    val isActive: Boolean get() = status != STATUS_REVERSED && status != STATUS_REVERSAL_PENDING
+
+    companion object {
+        const val STATUS_REVERSED = "REVERSED"
+        const val STATUS_REVERSAL_PENDING = "REVERSAL_PENDING"
+    }
+}
+
+/** Refund request against a payment; paid out only after approval. */
+data class RefundInput(val paymentId: String, val amountMinor: Long, val method: PaymentMethod, val reason: String)
 
 data class PaymentInput(
     val studentId: String,

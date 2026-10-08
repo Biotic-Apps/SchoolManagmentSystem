@@ -19,6 +19,8 @@ data class PaymentProof(
     val reason: String?,
     val submittedBy: String?,
     val createdAt: String?,
+    val studentId: String? = null,
+    val note: String? = null,
 )
 
 data class ProofInput(

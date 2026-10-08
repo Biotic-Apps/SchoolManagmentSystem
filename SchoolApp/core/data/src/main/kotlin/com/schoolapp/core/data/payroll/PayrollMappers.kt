@@ -60,10 +60,12 @@ internal fun PayrollRunDto.toModel(): PayrollRun {
         month = month,
         status = enumOrDefault(status, PayrollRunStatus.DRAFT),
         staffCount = staffCount ?: lineModels.size,
-        netMinor = netMinor ?: lineModels.sumOf { it.netMinor },
-        paidMinor = paidMinor ?: lineModels.sumOf { it.paidMinor },
-        balanceMinor = balanceMinor ?: lineModels.sumOf { it.balanceMinor },
-        approvalId = approvalId,
+        netMinor = totals?.netMinor ?: netMinor ?: lineModels.sumOf { it.netMinor },
+        paidMinor = totals?.paidMinor ?: paidMinor ?: lineModels.sumOf { it.paidMinor },
+        balanceMinor = totals?.balanceMinor ?: balanceMinor ?: lineModels.sumOf { it.balanceMinor },
+        approvalId = approval?.takeIf { it.status == null || it.status == APPROVAL_PENDING }?.id ?: approvalId,
         lines = lineModels,
     )
 }
+
+private const val APPROVAL_PENDING = "PENDING"

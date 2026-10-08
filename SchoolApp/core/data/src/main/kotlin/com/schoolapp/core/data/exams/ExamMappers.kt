@@ -11,17 +11,26 @@ import com.schoolapp.core.model.exams.MarkRow
 import com.schoolapp.core.model.exams.MarkSheet
 import com.schoolapp.core.model.exams.MarkSheetStatus
 import com.schoolapp.core.network.dto.exams.ExamDto
+import com.schoolapp.core.network.dto.exams.ExamTermDto
 import com.schoolapp.core.network.dto.exams.MarkInputDto
 import com.schoolapp.core.network.dto.exams.MarkRowDto
 import com.schoolapp.core.network.dto.exams.MarkSheetDto
 
-internal fun ExamDto.toModel() = Exam(
+/** [termNames] maps term id to name (from `sessions/:id/terms`); an embedded term name wins. */
+internal fun ExamDto.toModel(termNames: Map<String, String> = emptyMap()) = Exam(
     id = id,
     name = name,
     type = enumOrNull<ExamType>(type),
     status = enumOrDefault(status, ExamStatus.DRAFT),
-    termName = termName ?: term?.name,
+    termName = termName?.takeIf { it.isNotBlank() } ?: term?.name?.takeIf { it.isNotBlank() } ?: termId?.let(termNames::get),
+    sessionId = sessionId,
+    termId = termId ?: term?.id,
+    computedAt = computedAt,
 )
+
+/** Term id to name, skipping unnamed terms. */
+internal fun List<ExamTermDto>.toTermNames(): Map<String, String> =
+    filter { it.name.isNotBlank() }.associate { it.id to it.name }
 
 internal fun MarkSheetDto.toModel(examName: String? = null): MarkSheet {
     val rowModels = rows.orEmpty().map { it.toModel() }.sortedWith(compareBy(nullsLast()) { it.rollNo })

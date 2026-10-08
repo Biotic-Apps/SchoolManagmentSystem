@@ -10,7 +10,7 @@ data class SubjectResult(
     val passed: Boolean,
 )
 
-/** One student's published result for one exam. */
+/** One student's computed result for one exam (parents only see published ones). */
 data class StudentResult(
     val studentId: String,
     val name: String,
@@ -27,6 +27,8 @@ data class StudentResult(
     val passed: Boolean,
     val remarks: String?,
     val teacherRemark: String?,
+    val classId: String? = null,
+    val sectionId: String? = null,
 )
 
 data class TrendPoint(val examId: String, val examName: String, val percent: Double)

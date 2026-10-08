@@ -10,6 +10,7 @@ import com.schoolapp.core.model.exams.MarkSheet
 import com.schoolapp.core.model.exams.MarkSheetOutcome
 import com.schoolapp.core.model.exams.MarkSheetSyncState
 import com.schoolapp.core.model.exams.ReportCard
+import com.schoolapp.core.model.exams.StudentResult
 import kotlinx.coroutines.flow.Flow
 
 interface ExamsRepository {
@@ -40,6 +41,9 @@ interface ExamsRepository {
     suspend fun returnSheet(id: String, comment: String): AppResult<MarkSheet>
 
     suspend fun childResults(studentId: String): AppResult<ChildResults>
+
+    /** Computed results of [examId] (one section, or every section the user may see), in roll order. */
+    suspend fun sectionResults(examId: String, sectionId: String?): AppResult<List<StudentResult>>
 
     suspend fun reportCard(studentId: String, examId: String): AppResult<ReportCard>
 }

@@ -7,6 +7,7 @@ import com.schoolapp.core.data.people.StudentsRepository
 import com.schoolapp.core.model.ChildSummary
 import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.fees.DailyCollection
+import com.schoolapp.core.model.fees.DayClosing
 import com.schoolapp.core.model.fees.DuesRow
 import com.schoolapp.core.model.fees.FeeSummary
 import com.schoolapp.core.model.fees.FinanceOverview
@@ -18,6 +19,7 @@ import com.schoolapp.core.model.fees.PaymentOutcome
 import com.schoolapp.core.model.fees.PaymentProof
 import com.schoolapp.core.model.fees.ProofInput
 import com.schoolapp.core.model.fees.ProofStatus
+import com.schoolapp.core.model.fees.RefundInput
 import com.schoolapp.core.model.people.StudentDetail
 import com.schoolapp.core.model.people.StudentSummary
 import com.schoolapp.core.testing.TestSessions
@@ -67,10 +69,46 @@ class FakeFeesRepository : FeesRepository {
 
     override suspend fun payOnline(invoiceId: String): AppResult<String> = payOnlineResult
 
-    override suspend fun dues(search: String?, branchId: String?): AppResult<List<DuesRow>> = AppResult.Success(emptyList())
+    var duesRows: List<DuesRow> = emptyList()
+    var collection: DailyCollection? = null
+    val reminderCalls = mutableListOf<List<String>>()
+    val reverseCalls = mutableListOf<Pair<String, String>>()
+    val refundCalls = mutableListOf<RefundInput>()
+    val closeCalls = mutableListOf<Triple<String, Long, String?>>()
+    var actionResult: AppResult<Unit> = AppResult.Success(Unit)
+
+    override suspend fun dues(search: String?, branchId: String?): AppResult<List<DuesRow>> = AppResult.Success(duesRows)
 
     override suspend fun dailyCollection(date: String, branchId: String?): AppResult<DailyCollection> =
-        AppResult.Success(DailyCollection(date, 0, emptyList(), emptyList(), emptyList(), closed = false))
+        AppResult.Success(collection ?: DailyCollection(date, 0, emptyList(), emptyList(), emptyList()))
+
+    override suspend fun sendDueReminders(studentIds: List<String>): AppResult<Unit> {
+        reminderCalls += studentIds
+        return actionResult
+    }
+
+    override suspend fun reversePayment(paymentId: String, reason: String): AppResult<Payment> {
+        reverseCalls += paymentId to reason
+        return when (val result = actionResult) {
+            is AppResult.Failure -> result
+            is AppResult.Success -> AppResult.Success(FeesFixtures.payment("RCT-1", 1_000).copy(id = paymentId, status = "REVERSAL_PENDING"))
+        }
+    }
+
+    override suspend fun requestRefund(input: RefundInput): AppResult<Unit> {
+        refundCalls += input
+        return actionResult
+    }
+
+    override suspend fun closeDay(date: String, cashCountedMinor: Long, note: String?, branchId: String?): AppResult<DailyCollection> {
+        closeCalls += Triple(date, cashCountedMinor, note)
+        return when (val result = actionResult) {
+            is AppResult.Failure -> result
+            is AppResult.Success -> AppResult.Success(
+                DailyCollection(date, 0, emptyList(), emptyList(), emptyList(), DayClosing("Me", null, 0, cashCountedMinor, cashCountedMinor, note)),
+            )
+        }
+    }
 
     override suspend fun financeOverview(branchId: String?, month: String?): AppResult<FinanceOverview> =
         AppResult.Success(FinanceOverview(0, 0, 0, 0, 0.0, 0, 0, 0))

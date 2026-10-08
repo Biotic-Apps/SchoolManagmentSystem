@@ -83,5 +83,12 @@ class TeacherSetupTest {
         assertEquals("Sana", greetingName("Ms. Sana Khan"))
         assertEquals("Imran", greetingName("Imran Ali"))
         assertEquals("A B", greetingName("A B"))
+        assertEquals("Emaan", greetingName("Mam Emaan"))
+        assertEquals("Emaan", greetingName("Ma'am Emaan"))
+        assertEquals("Fatima", greetingName("Madam Fatima"))
+        assertEquals("Ahmed", greetingName("Sir Ahmed Raza"))
+        assertEquals("Hina", greetingName("Prof. Dr. Hina"))
+        assertEquals("Zara", greetingName("Miss Zara"))
+        assertEquals("Ali", greetingName("Mr M. Ali"))
     }
 }

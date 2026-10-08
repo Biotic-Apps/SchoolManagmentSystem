@@ -10,4 +10,8 @@ data class Exam(
     val type: ExamType?,
     val status: ExamStatus,
     val termName: String?,
+    val sessionId: String? = null,
+    val termId: String? = null,
+    /** Set once results have been computed. */
+    val computedAt: String? = null,
 )

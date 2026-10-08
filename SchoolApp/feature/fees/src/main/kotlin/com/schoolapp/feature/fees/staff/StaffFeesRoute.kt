@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -22,15 +23,22 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.designsystem.component.AppFloatingButton
 import com.schoolapp.core.designsystem.component.AppTabs
+import com.schoolapp.core.designsystem.component.InlineMessage
+import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.ui.rememberExternalActions
 import com.schoolapp.feature.fees.R
 import com.schoolapp.feature.fees.RecordPaymentDestination
+import com.schoolapp.feature.fees.staff.dues.DuesActions
 import com.schoolapp.feature.fees.staff.dues.DuesTab
 import com.schoolapp.feature.fees.staff.dues.DuesViewModel
 import com.schoolapp.feature.fees.staff.proofs.ProofsActions
 import com.schoolapp.feature.fees.staff.proofs.ProofsTab
 import com.schoolapp.feature.fees.staff.proofs.ProofsViewModel
+import com.schoolapp.feature.fees.staff.payments.PaymentActionsHost
+import com.schoolapp.feature.fees.staff.payments.PaymentActionsViewModel
+import com.schoolapp.feature.fees.staff.payments.PaymentNotice
 import com.schoolapp.feature.fees.staff.today.TodayTab
+import com.schoolapp.feature.fees.staff.today.components.CloseDayActions
 import com.schoolapp.feature.fees.staff.today.TodayViewModel
 
 /** Accountant / principal / super admin: Today (collection), Dues and Proofs tabs plus "Record payment". */
@@ -43,7 +51,11 @@ internal fun StaffFeesRoute(
     todayViewModel: TodayViewModel = hiltViewModel(key = "fees_today_$roleKey"),
     duesViewModel: DuesViewModel = hiltViewModel(key = "fees_dues_$roleKey"),
     proofsViewModel: ProofsViewModel = hiltViewModel(key = "fees_proofs_$roleKey"),
+    paymentsViewModel: PaymentActionsViewModel = hiltViewModel(key = "fees_payments_$roleKey"),
 ) {
+    val payments by paymentsViewModel.uiState.collectAsStateWithLifecycle()
+    val paymentChanges by paymentsViewModel.changes.collectAsStateWithLifecycle()
+    LaunchedEffect(paymentChanges) { if (paymentChanges > 0) todayViewModel.refresh() }
     val today by todayViewModel.uiState.collectAsStateWithLifecycle()
     val dues by duesViewModel.uiState.collectAsStateWithLifecycle()
     val proofs by proofsViewModel.uiState.collectAsStateWithLifecycle()
@@ -67,8 +79,45 @@ internal fun StaffFeesRoute(
                 onSelect = { tab = it },
             )
             when (tab) {
-                0 -> TodayTab(today, todayViewModel::retry, todayViewModel::refresh, onOpenApprovals)
-                1 -> DuesTab(dues, duesViewModel::onSearchChange, duesViewModel::retry, duesViewModel::refresh)
+                0 -> Column(Modifier.fillMaxSize()) {
+                    payments.notice?.let { notice ->
+                        InlineMessage(
+                            stringResource(if (notice == PaymentNotice.REVERSAL_SENT) R.string.fees_reversal_sent else R.string.fees_refund_sent),
+                            StatusTone.Success,
+                            Modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp),
+                        )
+                    }
+                    TodayTab(
+                        state = today,
+                        onRetry = todayViewModel::retry,
+                        onRefresh = todayViewModel::refresh,
+                        onOpenApprovals = onOpenApprovals,
+                        onOpenPayment = paymentsViewModel::open,
+                        onOpenCloseDay = todayViewModel::openCloseDay,
+                        closeActions = CloseDayActions(
+                            onCashChange = todayViewModel::onCashChange,
+                            onNoteChange = todayViewModel::onNoteChange,
+                            onSubmit = todayViewModel::submitCloseDay,
+                            onConfirm = todayViewModel::confirmCloseDay,
+                            onCancelConfirm = todayViewModel::cancelCloseConfirm,
+                            onDismiss = todayViewModel::dismissCloseDay,
+                        ),
+                    )
+                }
+                1 -> DuesTab(
+                    state = dues,
+                    actions = DuesActions(
+                        onSearchChange = duesViewModel::onSearchChange,
+                        onRetry = duesViewModel::retry,
+                        onRefresh = duesViewModel::refresh,
+                        onToggle = duesViewModel::toggle,
+                        onToggleAll = duesViewModel::toggleAll,
+                        onClear = duesViewModel::clearSelection,
+                        onAskSend = duesViewModel::askToSendReminders,
+                        onConfirmSend = duesViewModel::sendReminders,
+                        onDismissSend = duesViewModel::dismissReminders,
+                    ),
+                )
                 else -> ProofsTab(
                     state = proofs,
                     actions = ProofsActions(
@@ -84,6 +133,7 @@ internal fun StaffFeesRoute(
                 )
             }
         }
+        PaymentActionsHost(paymentsViewModel, payments, external::open)
         if (today.canRecord) {
             AppFloatingButton(
                 text = stringResource(R.string.fees_record_payment),

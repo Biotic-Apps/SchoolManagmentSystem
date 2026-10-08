@@ -3,7 +3,9 @@ package com.schoolapp.core.data.fees
 import com.schoolapp.core.model.common.enumOrDefault
 import com.schoolapp.core.model.fees.CashierTotal
 import com.schoolapp.core.model.fees.DailyCollection
+import com.schoolapp.core.model.fees.DayClosing
 import com.schoolapp.core.model.fees.DuesAging
+import com.schoolapp.core.model.fees.DuesGuardian
 import com.schoolapp.core.model.fees.DuesRow
 import com.schoolapp.core.model.fees.FeeSummary
 import com.schoolapp.core.model.fees.FinanceOverview
@@ -76,9 +78,11 @@ internal fun PaymentProofDto.toModel() = PaymentProof(
     fileUrl = file?.url ?: fileUrl,
     fileMime = file?.mime,
     status = enumOrDefault(status, ProofStatus.SUBMITTED),
-    reason = reason?.takeIf(String::isNotBlank),
+    reason = (rejectReason ?: reason)?.takeIf(String::isNotBlank),
     submittedBy = submittedBy?.name,
     createdAt = createdAt,
+    studentId = student?.id,
+    note = note?.takeIf(String::isNotBlank),
 )
 
 internal fun PaymentDto.toModel() = Payment(
@@ -90,21 +94,26 @@ internal fun PaymentDto.toModel() = Payment(
     method = enumOrDefault(method, PaymentMethod.CASH),
     reference = reference?.takeIf(String::isNotBlank),
     receivedOn = receivedOn,
-    cashierName = cashier?.name,
+    cashierName = (receivedBy ?: cashier)?.name,
     status = status,
+    currency = currency ?: DEFAULT_CURRENCY,
 )
 
 internal fun DuesRowDto.toModel(): DuesRow? {
     val id = studentId ?: student?.id ?: return null
     return DuesRow(
         studentId = id,
-        studentName = name ?: student?.name.orEmpty(),
-        admissionNo = admissionNo,
-        className = className,
-        sectionName = sectionName,
+        studentName = student?.name ?: name.orEmpty(),
+        admissionNo = student?.admissionNo ?: admissionNo,
+        className = student?.className ?: className,
+        sectionName = student?.sectionName ?: sectionName,
         balanceMinor = balanceMinor,
-        oldestDueDays = oldestDueDays ?: days,
+        oldestDueDays = oldestOverdueDays ?: oldestDueDays ?: days,
         aging = aging?.let { DuesAging(it.d0to30, it.d31to60, it.d61to90, it.d90plus) },
+        overdueMinor = overdueMinor,
+        guardian = guardian?.let { g ->
+            g.name?.takeIf(String::isNotBlank)?.let { DuesGuardian(it, g.phone?.takeIf(String::isNotBlank), g.relation) }
+        },
     )
 }
 
@@ -114,7 +123,10 @@ internal fun DailyCollectionDto.toModel(requestedDate: String) = DailyCollection
     byMethod = byMethod.map { MethodTotal(enumOrDefault(it.method, PaymentMethod.CASH), it.amountMinor, it.count) },
     byCashier = byCashier.map { CashierTotal(it.cashier?.name ?: it.name.orEmpty(), it.amountMinor, it.count) },
     payments = payments.map { it.toModel() },
-    closed = closed,
+    closing = closed?.let {
+        DayClosing(it.closedBy?.name, it.closedAt, it.cashExpectedMinor, it.cashCountedMinor, it.differenceMinor, it.note?.takeIf(String::isNotBlank))
+    },
+    cashMinor = cashMinor,
 )
 
 internal fun FinanceDashboardDto.toModel() = FinanceOverview(

@@ -53,7 +53,12 @@ private fun GuardianRow(link: GuardianLink, onCall: (String) -> Unit, onSms: (St
     Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(guardian.name, style = MaterialTheme.typography.bodyLarge, color = AppColors.TextPrimary)
+                Text(
+                    guardian.name,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = AppColors.TextPrimary,
+                    modifier = Modifier.weight(1f, fill = false),
+                )
                 if (link.isPrimary) {
                     Spacer(Modifier.width(8.dp))
                     StatusChip(stringResource(R.string.students_primary), StatusTone.Info)

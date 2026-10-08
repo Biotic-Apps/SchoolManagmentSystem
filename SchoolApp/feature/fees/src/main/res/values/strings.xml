@@ -154,4 +154,66 @@
         <item quantity="one">%1$d student</item>
         <item quantity="other">%1$d students</item>
     </plurals>
+    <!-- Dues reminders -->
+    <string name="fees_select_all">Select all</string>
+    <string name="fees_clear_selection">Clear</string>
+    <string name="fees_send_reminders">Send reminders</string>
+    <string name="fees_reminders_confirm_title">Send fee reminders?</string>
+
+    <!-- Payment actions -->
+    <string name="fees_payment_title">Payment</string>
+    <string name="fees_amount">Amount</string>
+    <string name="fees_cashier">Received by</string>
+    <string name="fees_download_receipt">Download receipt</string>
+    <string name="fees_refund">Refund</string>
+    <string name="fees_reverse_payment">Reverse payment</string>
+    <string name="fees_payment_reversal_state">This payment is reversed or waiting for reversal approval.</string>
+    <string name="fees_reverse_help">The payment stays on record; after approval a reversing entry restores the invoice balances.</string>
+    <string name="fees_refund_help">The refund is paid out only after it is approved.</string>
+    <string name="fees_refund_amount">Refund amount</string>
+    <string name="fees_refund_max">Payment amount %1$s</string>
+    <string name="fees_refund_over_payment">A refund cannot be more than the payment</string>
+    <string name="fees_refund_method">Paid back by</string>
+    <string name="fees_action_reason">Reason</string>
+    <string name="fees_reason_too_short">Enter at least 3 characters</string>
+    <string name="fees_send_for_approval">Send for approval</string>
+    <string name="fees_reverse_confirm_title">Reverse %1$s?</string>
+    <string name="fees_reverse_confirm_message">%1$s will be reversed once the reversal is approved.</string>
+    <string name="fees_refund_confirm_title">Refund %1$s?</string>
+    <string name="fees_refund_confirm_message">A refund of %1$s will be sent for approval.</string>
+    <string name="fees_reversal_sent">Reversal sent for approval.</string>
+    <string name="fees_refund_sent">Refund request sent for approval.</string>
+
+    <!-- Close day -->
+    <string name="fees_close_day">Close day</string>
+    <string name="fees_close_day_title">Close %1$s</string>
+    <string name="fees_close_day_help">Count the cash in the drawer. After closing, cash payments can no longer be back-dated to this day.</string>
+    <string name="fees_cash_counted">Cash counted</string>
+    <string name="fees_expected_cash">Expected cash</string>
+    <string name="fees_cash_difference">Difference</string>
+    <string name="fees_close_note">Note</string>
+    <string name="fees_close_note_help">Explain any shortage or excess.</string>
+    <string name="fees_close_day_confirm_title">Close %1$s?</string>
+    <string name="fees_close_day_confirm_message">Cash counted %1$s against %2$s expected. This cannot be undone.</string>
+    <string name="fees_day_closed_title">Day closed</string>
+    <string name="fees_closed_by">Closed by</string>
+    <string name="fees_closed_at">Closed at</string>
+
+    <!-- Proofs -->
+    <string name="fees_proof_note_label">Note</string>
+    <string name="fees_parent_proofs">Submitted payment proofs</string>
+    <string name="fees_proof_rejected_reason">Rejected: %1$s</string>
+
+    <plurals name="fees_selected_count">
+        <item quantity="one">%1$d selected</item>
+        <item quantity="other">%1$d selected</item>
+    </plurals>
+    <plurals name="fees_reminders_sent">
+        <item quantity="one">Reminder queued for the guardians of %1$d student.</item>
+        <item quantity="other">Reminders queued for the guardians of %1$d students.</item>
+    </plurals>
+    <plurals name="fees_reminders_confirm_message">
+        <item quantity="one">The guardians of %1$d student get a fee reminder.</item>
+        <item quantity="other">The guardians of %1$d students get a fee reminder.</item>
+    </plurals>
 </resources>

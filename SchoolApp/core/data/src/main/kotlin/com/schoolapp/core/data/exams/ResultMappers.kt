@@ -33,6 +33,8 @@ internal fun StudentResultDto.toModel() = StudentResult(
     passed = passed,
     remarks = remarks?.takeIf { it.isNotBlank() },
     teacherRemark = teacherRemark?.takeIf { it.isNotBlank() },
+    classId = classId,
+    sectionId = sectionId,
 )
 
 private fun SubjectResultDto.toModel() = SubjectResult(

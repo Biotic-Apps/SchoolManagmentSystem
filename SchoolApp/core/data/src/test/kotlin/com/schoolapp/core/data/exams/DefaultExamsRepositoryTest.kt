@@ -10,21 +10,10 @@ import com.schoolapp.core.model.exams.MarkSheetOutcome
 import com.schoolapp.core.model.exams.MarkSheetSyncState
 import com.schoolapp.core.network.ApiCaller
 import com.schoolapp.core.network.NetworkJson
-import com.schoolapp.core.network.api.ExamsApi
-import com.schoolapp.core.network.dto.common.CommentBodyDto
-import com.schoolapp.core.network.dto.exams.ExamDto
-import com.schoolapp.core.network.dto.exams.MarkRowDto
 import com.schoolapp.core.network.dto.exams.MarkSheetBodyDto
-import com.schoolapp.core.network.dto.exams.MarkSheetDto
-import com.schoolapp.core.network.dto.exams.PaperDto
-import com.schoolapp.core.network.dto.exams.ReportCardDto
-import com.schoolapp.core.network.dto.exams.StudentResultDto
-import com.schoolapp.core.network.model.ApiEnvelope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -38,7 +27,9 @@ class DefaultExamsRepositoryTest {
     private val api = FakeExamsApi()
     private val outbox = InMemoryOutboxDao()
     private val sync = CountingSyncScheduler()
-    private val repository = DefaultExamsRepository(api, ApiCaller(NetworkJson, dispatcher), outbox, sync, NetworkJson, dispatcher)
+    private val repository = ApiCaller(NetworkJson, dispatcher).let { caller ->
+        DefaultExamsRepository(api, caller, outbox, sync, NetworkJson, dispatcher, ExamTermNames(api, caller))
+    }
     private val entries = listOf(MarkEntry("s1", 0.0, false), MarkEntry("s2", null, false, " late "), MarkEntry("s3", 40.0, true))
 
     @Test
@@ -118,67 +109,5 @@ class DefaultExamsRepositoryTest {
     fun offline_without_cached_copy_is_a_network_failure() = runTest(dispatcher) {
         api.fail = IOException("offline")
         assertEquals(AppResult.Failure(AppError.Network), repository.markSheet("ms1"))
-    }
-
-    private class FakeExamsApi : ExamsApi {
-        var fail: Exception? = null
-        var saveCalls = 0
-        var lastSubmitKey: String? = null
-        var submitResponse: JsonObject = NetworkJson.encodeToJsonElement(MarkSheetDto.serializer(), sheet("SUBMITTED")).jsonObject
-
-        private fun check() = fail?.let { throw it }
-
-        override suspend fun exams(branchId: String?, sessionId: String?, status: String?): ApiEnvelope<List<ExamDto>> {
-            check()
-            return ApiEnvelope(emptyList())
-        }
-
-        override suspend fun markSheets(examId: String, sectionId: String?, subjectId: String?): ApiEnvelope<List<MarkSheetDto>> {
-            check()
-            return ApiEnvelope(listOf(sheet("DRAFT")))
-        }
-
-        override suspend fun markSheet(id: String): ApiEnvelope<MarkSheetDto> {
-            check()
-            return ApiEnvelope(sheet("DRAFT"))
-        }
-
-        override suspend fun saveMarks(id: String, body: MarkSheetBodyDto, idempotencyKey: String): ApiEnvelope<MarkSheetDto> {
-            check()
-            saveCalls++
-            return ApiEnvelope(sheet("DRAFT"))
-        }
-
-        override suspend fun submit(id: String, idempotencyKey: String): ApiEnvelope<JsonObject> {
-            check()
-            lastSubmitKey = idempotencyKey
-            return ApiEnvelope(submitResponse)
-        }
-
-        override suspend fun accept(id: String, body: CommentBodyDto): ApiEnvelope<MarkSheetDto> = ApiEnvelope(sheet("ACCEPTED"))
-
-        override suspend fun returnSheet(id: String, body: CommentBodyDto): ApiEnvelope<MarkSheetDto> = ApiEnvelope(sheet("RETURNED"))
-
-        override suspend fun studentResults(studentId: String): ApiEnvelope<JsonElement> = error("unused")
-
-        override suspend fun results(examId: String, sectionId: String?): ApiEnvelope<List<StudentResultDto>> = error("unused")
-
-        override suspend fun reportCard(studentId: String, examId: String): ApiEnvelope<ReportCardDto> = error("unused")
-
-        companion object {
-            fun sheet(status: String) = MarkSheetDto(
-                id = "ms1",
-                examId = "ex1",
-                paper = PaperDto(className = "Class 5", maxMarks = 100.0, passMarks = 33.0),
-                sectionId = "sec",
-                sectionName = "A",
-                status = status,
-                rows = listOf(
-                    MarkRowDto("s1", "A", 1, 10.0, false),
-                    MarkRowDto("s2", "B", 2, null, false),
-                    MarkRowDto("s3", "C", 3, null, true),
-                ),
-            )
-        }
     }
 }

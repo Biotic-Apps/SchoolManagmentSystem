@@ -3,6 +3,12 @@ package com.schoolapp.core.network.api
 import com.schoolapp.core.network.AuthHeaders
 import com.schoolapp.core.network.dto.common.ReasonBodyDto
 import com.schoolapp.core.network.dto.fees.DailyCollectionDto
+import com.schoolapp.core.network.dto.fees.ReversePaymentBodyDto
+import com.schoolapp.core.network.dto.fees.RefundDto
+import com.schoolapp.core.network.dto.fees.RefundBodyDto
+import com.schoolapp.core.network.dto.fees.JobRefDto
+import com.schoolapp.core.network.dto.fees.DueRemindersBodyDto
+import com.schoolapp.core.network.dto.fees.CloseDayBodyDto
 import com.schoolapp.core.network.dto.fees.DuesRowDto
 import com.schoolapp.core.network.dto.fees.FeeSummaryDto
 import com.schoolapp.core.network.dto.fees.FileUrlDto
@@ -73,6 +79,22 @@ interface FeesApi {
         @Query("search") search: String? = null,
         @Query("pageSize") pageSize: Int = Paging.MAX_PAGE_SIZE,
     ): ApiEnvelope<List<DuesRowDto>>
+
+    /** Queues reminder notices to the guardians of the given students (`fees.edit`). */
+    @POST("dues/reminders")
+    suspend fun sendDueReminders(@Body body: DueRemindersBodyDto): ApiEnvelope<JobRefDto>
+
+    /** Sends the reversal for approval; the payment shows `REVERSAL_PENDING` until decided (`fees.edit`). */
+    @POST("payments/{id}/reverse")
+    suspend fun reversePayment(@Path("id") id: String, @Body body: ReversePaymentBodyDto): ApiEnvelope<PaymentDto>
+
+    /** Refund request; paid out only after approval (`fees.add`). */
+    @POST("refunds")
+    suspend fun requestRefund(@Body body: RefundBodyDto): ApiEnvelope<RefundDto>
+
+    /** Stores the cash count; back-dated cash payments to that day are blocked afterwards (`fees.approve`). */
+    @POST("collections/daily/close")
+    suspend fun closeDay(@Body body: CloseDayBodyDto): ApiEnvelope<DailyCollectionDto>
 
     @GET("collections/daily")
     suspend fun dailyCollection(@Query("branchId") branchId: String?, @Query("date") date: String): ApiEnvelope<DailyCollectionDto>

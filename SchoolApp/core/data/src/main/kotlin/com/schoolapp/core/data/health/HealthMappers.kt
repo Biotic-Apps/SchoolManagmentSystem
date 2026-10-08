@@ -46,7 +46,7 @@ internal fun HealthAlertDto.toModel(): HealthAlert? {
     val id = studentId ?: student?.id ?: return null
     return HealthAlert(
         studentId = id,
-        studentName = student?.name ?: studentName,
+        studentName = (name ?: student?.name ?: studentName)?.takeIf(String::isNotBlank),
         allergies = allergies.mapNotNull { element ->
             when (element) {
                 is JsonPrimitive -> element.content.takeIf { element.isString }

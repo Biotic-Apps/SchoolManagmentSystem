@@ -23,4 +23,6 @@ internal data class TimetableWeek(
     val sectionVersion: Int? = null,
     /** Class teacher looking at their own section's unpublished draft. */
     val draftNote: Boolean = false,
+    /** The caller may edit this section's draft (class teacher of the section). */
+    val sectionEditable: Boolean = false,
 )

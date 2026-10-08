@@ -19,4 +19,12 @@
     <string name="ds_percent">%1$d%%</string>
     <string name="ds_remove_attachment">Remove %1$s</string>
     <string name="ds_attachment">Attachment</string>
+    <string name="ds_decrease">Decrease %1$s</string>
+    <string name="ds_increase">Increase %1$s</string>
+    <string name="ds_saving">Saving…</string>
+    <string name="ds_all_saved">All changes saved</string>
+    <string name="ds_save_failed">Could not save</string>
+    <string name="ds_create_named">Create “%1$s”</string>
+    <string name="ds_search_or_new">Search or type a new name</string>
+    <string name="ds_no_matches">Nothing matches</string>
 </resources>

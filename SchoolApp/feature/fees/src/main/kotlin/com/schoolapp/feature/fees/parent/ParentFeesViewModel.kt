@@ -65,10 +65,11 @@ class ParentFeesViewModel @Inject constructor(
 
     private suspend fun load() {
         val childId = _uiState.value.childId ?: return
-        val (summary, invoices) = coroutineScope {
+        val (summary, invoices, proofs) = coroutineScope {
             val summary = async { repository.feeSummary(childId) }
             val invoices = async { repository.invoices(studentId = childId) }
-            summary.await() to invoices.await()
+            val proofs = async { repository.proofs() }
+            Triple(summary.await(), invoices.await(), proofs.await())
         }
         _uiState.update { current ->
             if (current.childId != childId) return@update current
@@ -79,6 +80,8 @@ class ParentFeesViewModel @Inject constructor(
                 error = error,
                 summary = (summary as? AppResult.Success)?.data ?: current.summary,
                 invoices = (invoices as? AppResult.Success)?.data ?: current.invoices,
+                // Proofs are a side list: a failure keeps the previous rows instead of failing the screen.
+                proofs = (proofs as? AppResult.Success)?.data?.filter { it.studentId == null || it.studentId == childId } ?: current.proofs,
             )
         }
     }

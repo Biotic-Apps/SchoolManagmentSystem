@@ -33,7 +33,9 @@ class DuesViewModel @Inject constructor(
 
     init {
         loadJob = viewModelScope.launch {
-            branchId = authRepository.session.filterNotNull().first().activeBranchId
+            val session = authRepository.session.filterNotNull().first()
+            branchId = session.activeBranchId
+            _uiState.update { it.copy(canRemind = session.has(FEES_EDIT)) }
             load()
         }
     }
@@ -44,6 +46,47 @@ class DuesViewModel @Inject constructor(
         loadJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_MS)
             load()
+        }
+    }
+
+    fun toggle(studentId: String) {
+        if (!_uiState.value.canRemind) return
+        _uiState.update {
+            val next = if (studentId in it.selected) it.selected - studentId else it.selected + studentId
+            it.copy(selected = next, remindersSent = null, actionError = null)
+        }
+    }
+
+    /** Selects every listed student, or clears them when all are already selected. */
+    fun toggleAll() {
+        if (!_uiState.value.canRemind) return
+        _uiState.update { state ->
+            val ids = state.rows.map { it.studentId }.toSet()
+            state.copy(selected = if (state.allSelected) state.selected - ids else state.selected + ids, remindersSent = null)
+        }
+    }
+
+    fun clearSelection() = _uiState.update { it.copy(selected = emptySet()) }
+
+    fun askToSendReminders() {
+        if (_uiState.value.canRemind && _uiState.value.selected.isNotEmpty()) _uiState.update { it.copy(confirmingReminders = true) }
+    }
+
+    fun dismissReminders() = _uiState.update { it.copy(confirmingReminders = false) }
+
+    fun sendReminders() {
+        val state = _uiState.value
+        if (!state.canRemind || state.selected.isEmpty() || state.isSending) return
+        val ids = state.selected.toList()
+        _uiState.update { it.copy(confirmingReminders = false, isSending = true, actionError = null, remindersSent = null) }
+        viewModelScope.launch {
+            val result = repository.sendDueReminders(ids)
+            _uiState.update {
+                when (result) {
+                    is AppResult.Success -> it.copy(isSending = false, selected = emptySet(), remindersSent = ids.size)
+                    is AppResult.Failure -> it.copy(isSending = false, actionError = result.error)
+                }
+            }
         }
     }
 
@@ -80,5 +123,6 @@ class DuesViewModel @Inject constructor(
 
     private companion object {
         const val SEARCH_DEBOUNCE_MS = 300L
+        const val FEES_EDIT = "fees.edit"
     }
 }

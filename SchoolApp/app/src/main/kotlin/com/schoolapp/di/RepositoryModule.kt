@@ -76,6 +76,14 @@ import com.schoolapp.core.data.certificates.CertificatesRepository
 import com.schoolapp.core.data.certificates.DefaultCertificatesRepository
 import com.schoolapp.core.data.calendar.DefaultStudentCalendarRepository
 import com.schoolapp.core.data.calendar.StudentCalendarRepository
+import com.schoolapp.core.data.academics.CatalogueRepository
+import com.schoolapp.core.data.academics.ClassStructureRepository
+import com.schoolapp.core.data.academics.DefaultCatalogueRepository
+import com.schoolapp.core.data.academics.DefaultClassStructureRepository
+import com.schoolapp.core.data.academics.DefaultTeacherAllocationRepository
+import com.schoolapp.core.data.academics.TeacherAllocationRepository
+import com.schoolapp.core.data.timetable.DefaultTimetableBuilderRepository
+import com.schoolapp.core.data.timetable.TimetableBuilderRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -122,6 +130,18 @@ interface RepositoryModule {
 
     @Binds
     fun bindAllocationRepository(impl: DefaultAllocationRepository): AllocationRepository
+
+    @Binds
+    fun bindClassStructureRepository(impl: DefaultClassStructureRepository): ClassStructureRepository
+
+    @Binds
+    fun bindTeacherAllocationRepository(impl: DefaultTeacherAllocationRepository): TeacherAllocationRepository
+
+    @Binds
+    fun bindCatalogueRepository(impl: DefaultCatalogueRepository): CatalogueRepository
+
+    @Binds
+    fun bindTimetableBuilderRepository(impl: DefaultTimetableBuilderRepository): TimetableBuilderRepository
 
     @Binds
     fun bindTimetableRepository(impl: DefaultTimetableRepository): TimetableRepository

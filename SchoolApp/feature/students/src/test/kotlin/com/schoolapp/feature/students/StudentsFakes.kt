@@ -19,7 +19,12 @@ internal fun studentDetail(id: String, name: String) = StudentDetail(
 
 internal class FakeStudentsRepository : StudentsRepository {
     val requested = mutableListOf<String>()
-    override suspend fun students(sectionId: String?, search: String?): AppResult<List<StudentSummary>> = AppResult.Success(emptyList())
+    val searches = mutableListOf<String?>()
+    var searchResults: List<StudentSummary> = emptyList()
+    override suspend fun students(sectionId: String?, search: String?): AppResult<List<StudentSummary>> {
+        searches += search
+        return AppResult.Success(searchResults)
+    }
     override suspend fun student(id: String): AppResult<StudentDetail> {
         requested += id
         return AppResult.Success(studentDetail(id, "Child $id"))

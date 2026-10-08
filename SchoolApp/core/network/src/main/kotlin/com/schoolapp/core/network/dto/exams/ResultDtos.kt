@@ -20,6 +20,8 @@ data class StudentResultDto(
     val name: String = "",
     val rollNo: Int? = null,
     val examId: String = "",
+    val classId: String? = null,
+    val sectionId: String? = null,
     val exam: IdNameDto? = null,
     val examName: String? = null,
     val publishedAt: String? = null,

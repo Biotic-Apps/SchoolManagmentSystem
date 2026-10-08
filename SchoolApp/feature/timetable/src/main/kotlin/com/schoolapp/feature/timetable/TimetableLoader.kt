@@ -81,7 +81,7 @@ internal class TimetableLoader @Inject constructor(
             dateFor = week::dateFor,
             holidays = closed,
         )
-        return TimetableWeek(status, days, timetable.state, timetable.version, draftNote)
+        return TimetableWeek(status, days, timetable.state, timetable.version, draftNote, sectionEditable = timetable.canEdit)
     }
 
     /** No lessons: unassigned teachers are told so; otherwise nothing is published yet, or the week is free. */

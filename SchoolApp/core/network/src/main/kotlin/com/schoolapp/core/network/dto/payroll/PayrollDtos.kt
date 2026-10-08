@@ -57,5 +57,13 @@ data class PayrollRunDto(
     val paidMinor: Long? = null,
     val balanceMinor: Long? = null,
     val approvalId: String? = null,
+    val approval: RunApprovalDto? = null,
+    val totals: PayrollTotalsDto? = null,
     val lines: List<PayrollLineDto>? = null,
 )
+
+@Serializable
+data class RunApprovalDto(val id: String? = null, val status: String? = null)
+
+@Serializable
+data class PayrollTotalsDto(val netMinor: Long? = null, val paidMinor: Long? = null, val balanceMinor: Long? = null)

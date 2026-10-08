@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -12,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -25,9 +29,23 @@ import com.schoolapp.feature.fees.components.classLabel
 
 /** Student, class and balance; aging buckets as four right-aligned columns. */
 @Composable
-internal fun DuesRowCard(row: DuesRow, currency: String, modifier: Modifier = Modifier) {
+internal fun DuesRowCard(
+    row: DuesRow,
+    currency: String,
+    modifier: Modifier = Modifier,
+    selected: Boolean? = null,
+    onToggle: () -> Unit = {},
+) {
+    val selectable = if (selected != null) {
+        Modifier.toggleable(value = selected, role = Role.Checkbox, onValueChange = { onToggle() })
+    } else {
+        Modifier
+    }
     AppCard(modifier = modifier, contentPadding = 12.dp) {
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
+        Row(selectable, horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
+            if (selected != null) {
+                Checkbox(checked = selected, onCheckedChange = null, colors = CheckboxDefaults.colors(checkedColor = AppColors.Primary))
+            }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(row.studentName, style = MaterialTheme.typography.bodyLarge, color = AppColors.TextPrimary)
                 val details = listOfNotNull(classLabel(row.className, row.sectionName), row.admissionNo).joinToString(" Â· ")
@@ -37,6 +55,13 @@ internal fun DuesRowCard(row: DuesRow, currency: String, modifier: Modifier = Mo
                         pluralStringResource(R.plurals.fees_oldest_due_days, it, it),
                         style = MaterialTheme.typography.bodySmall,
                         color = if (it > OVERDUE_DAYS) AppColors.Error else AppColors.TextSecondary,
+                    )
+                }
+                row.guardian?.let { guardian ->
+                    Text(
+                        listOfNotNull(guardian.name, guardian.phone).joinToString(" · "),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = AppColors.TextSecondary,
                     )
                 }
             }

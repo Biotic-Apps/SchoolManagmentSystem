@@ -3,6 +3,7 @@ package com.schoolapp.core.network.api
 import com.schoolapp.core.network.AuthHeaders
 import com.schoolapp.core.network.dto.common.CommentBodyDto
 import com.schoolapp.core.network.dto.exams.ExamDto
+import com.schoolapp.core.network.dto.exams.ExamTermDto
 import com.schoolapp.core.network.dto.exams.MarkSheetBodyDto
 import com.schoolapp.core.network.dto.exams.MarkSheetDto
 import com.schoolapp.core.network.dto.exams.ReportCardDto
@@ -62,8 +63,13 @@ interface ExamsApi {
     @GET("students/{id}/results")
     suspend fun studentResults(@Path("id") studentId: String): ApiEnvelope<JsonElement>
 
+    /** Computed results of an exam; teachers get their own sections only. Sorted by section, roll no, name. */
     @GET("results")
     suspend fun results(@Query("examId") examId: String, @Query("sectionId") sectionId: String? = null): ApiEnvelope<List<StudentResultDto>>
+
+    /** Terms of an academic session (`sessions.view`), used to label exams by their `termId`. */
+    @GET("sessions/{id}/terms")
+    suspend fun sessionTerms(@Path("id") sessionId: String): ApiEnvelope<List<ExamTermDto>>
 
     @GET("students/{id}/report-cards")
     suspend fun reportCard(@Path("id") studentId: String, @Query("examId") examId: String): ApiEnvelope<ReportCardDto>

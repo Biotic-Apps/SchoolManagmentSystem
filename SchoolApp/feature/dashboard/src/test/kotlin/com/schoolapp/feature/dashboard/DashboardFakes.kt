@@ -56,6 +56,15 @@ class FakeTimetableRepository(private val week: List<TeacherSlot>) : TimetableRe
 
     override suspend fun sectionTimetable(sectionId: String): AppResult<SectionTimetable> =
         section?.let { AppResult.Success(it) } ?: AppResult.Failure(AppError.Network)
+
+    override suspend fun overrides(branchId: String, date: String): AppResult<List<com.schoolapp.core.model.timetable.TimetableOverride>> =
+        AppResult.Success(emptyList())
+
+    override suspend fun assignSubstitute(
+        input: com.schoolapp.core.model.timetable.OverrideInput,
+    ): AppResult<com.schoolapp.core.model.timetable.TimetableOverride> = AppResult.Failure(AppError.Network)
+
+    override suspend fun removeOverride(id: String): AppResult<Unit> = AppResult.Failure(AppError.Network)
 }
 
 /** Organisation stub that only answers what `ScopedSections` asks for. */

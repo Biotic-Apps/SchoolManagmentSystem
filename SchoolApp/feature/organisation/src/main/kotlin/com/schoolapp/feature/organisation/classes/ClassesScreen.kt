@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,11 +18,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppTabs
-import com.schoolapp.core.designsystem.component.DataList
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
-import com.schoolapp.core.designsystem.component.ListItemRow
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.PrimaryButton
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.theme.SchoolTheme
 import com.schoolapp.core.model.organisation.BranchOption
@@ -33,11 +32,36 @@ import com.schoolapp.core.model.organisation.SectionOverview
 import com.schoolapp.core.model.timetable.TimetableState
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.organisation.R
+import com.schoolapp.feature.organisation.catalogue.CatalogueTab
+import com.schoolapp.feature.organisation.classes.components.AddClassSheet
 import com.schoolapp.feature.organisation.classes.components.ClassOverviewCard
+import com.schoolapp.feature.organisation.classes.components.ClassReorderList
+import com.schoolapp.feature.organisation.classes.components.ClassesToolbar
 import com.schoolapp.feature.organisation.components.PullableState
 import com.schoolapp.feature.organisation.components.RefreshErrorBanner
 import com.schoolapp.feature.organisation.scope.BranchScopeBar
 import com.schoolapp.feature.organisation.scope.ScopedPane
+
+/** Callbacks of the Classes tab; everything except loading is permission-gated by the view model state. */
+data class ClassesActions(
+    val onOpenClass: (String) -> Unit = {},
+    val onAddClass: () -> Unit = {},
+    val onReorder: () -> Unit = {},
+    val reorder: ReorderActions = ReorderActions(),
+    val addClass: AddClassActions = AddClassActions(),
+)
+
+data class ReorderActions(
+    val onMove: (Int, Int) -> Unit = { _, _ -> },
+    val onSave: () -> Unit = {},
+    val onCancel: () -> Unit = {},
+)
+
+data class AddClassActions(
+    val onNameChange: (String) -> Unit = {},
+    val onSubmit: () -> Unit = {},
+    val onDismiss: () -> Unit = {},
+)
 
 @Composable
 fun ClassesScreen(
@@ -47,55 +71,69 @@ fun ClassesScreen(
     onRetry: () -> Unit,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
+    actions: ClassesActions = ClassesActions(),
 ) {
     ScopedPane(modifier) {
         AppTabs(
-            titles = listOf(stringResource(R.string.org_tab_classes), stringResource(R.string.org_tab_subjects)),
+            titles = listOf(stringResource(R.string.org_tab_classes), stringResource(R.string.org_tab_catalogue)),
             selectedIndex = state.tab.ordinal,
             onSelect = { onTabSelected(ClassesTab.entries[it]) },
         )
         BranchScopeBar(state.branches, state.selectedBranchId, onBranchSelected)
-        if (state.isLoading) {
-            LoadingState()
-        } else {
-            RefreshBox(state.isRefreshing, onRefresh, Modifier.fillMaxWidth().weight(1f)) {
+        when {
+            state.tab == ClassesTab.SUBJECTS -> state.selectedBranchId?.let { branchId ->
+                CatalogueTab(branchId = branchId, schoolId = state.schoolId, modifier = Modifier.weight(1f))
+            }
+            state.isLoading -> LoadingState()
+            else -> RefreshBox(state.isRefreshing, onRefresh, Modifier.fillMaxWidth().weight(1f)) {
                 if (state.error != null && !state.hasContent) {
                     PullableState { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
                 } else {
                     Column(Modifier.fillMaxSize()) {
                         RefreshErrorBanner(state.error, Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp))
-                        ClassesTabContent(state)
+                        ClassesContent(state, actions)
                     }
                 }
             }
         }
     }
+    state.addClass?.let { AddClassSheet(it, actions.addClass) }
 }
 
 @Composable
-private fun ClassesTabContent(state: ClassesUiState) {
-    when (state.tab) {
-        ClassesTab.CLASSES -> if (state.classes.isEmpty()) {
-            PullableState { EmptyState(stringResource(R.string.org_classes_empty), message = state.sessionName, icon = Icons.Outlined.Layers) }
-        } else {
-            // One column on phones, two or three on tablets and wide windows.
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 300.dp),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                items(state.classes, key = { it.id }) { ClassOverviewCard(it) }
-            }
+private fun ClassesContent(state: ClassesUiState, actions: ClassesActions) {
+    val reorder = state.reorder
+    when {
+        reorder != null -> ClassReorderList(reorder, state.reorderSaving, state.actionError, actions.reorder)
+        state.classes.isEmpty() -> PullableState {
+            EmptyState(
+                title = stringResource(R.string.org_classes_empty),
+                message = if (state.canAdd) stringResource(R.string.org_classes_empty_hint) else state.sessionName,
+                icon = Icons.Outlined.Layers,
+                action = if (state.canAdd) {
+                    { PrimaryButton(stringResource(R.string.org_add_class), onClick = actions.onAddClass) }
+                } else {
+                    null
+                },
+            )
         }
-        ClassesTab.SUBJECTS -> DataList(
-            items = state.subjects,
-            key = { it.id },
-            modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp),
-            emptyContent = { PullableState { EmptyState(stringResource(R.string.org_subjects_empty)) } },
-        ) { item ->
-            ListItemRow(title = item.name, supporting = item.code, leadingIcon = Icons.AutoMirrored.Outlined.MenuBook)
+        // One column on phones, two or three on tablets and wide windows.
+        else -> LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 300.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            if (state.canAdd || (state.canReorder && state.classes.size > 1)) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    ClassesToolbar(
+                        onAdd = actions.onAddClass.takeIf { state.canAdd },
+                        onReorder = actions.onReorder.takeIf { state.canReorder && state.classes.size > 1 },
+                    )
+                }
+            }
+            items(state.classes, key = { it.id }) { ClassOverviewCard(it, onClick = { actions.onOpenClass(it.id) }) }
         }
     }
 }
@@ -106,6 +144,8 @@ private fun ClassesScreenPreview() = SchoolTheme {
     ClassesScreen(
         state = ClassesUiState(
             isLoading = false,
+            canAdd = true,
+            canReorder = true,
             branches = listOf(BranchOption("b1", "Main Branch", "s1")),
             selectedBranchId = "b1",
             classes = listOf(

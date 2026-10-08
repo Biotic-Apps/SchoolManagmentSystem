@@ -47,6 +47,7 @@ internal fun SetupChecklistCard(
 private fun SetupRowItem(row: SetupRow, onClick: (() -> Unit)?) {
     ListItemRow(
         title = stringResource(row.labelRes),
+        supporting = row.hintRes?.let { stringResource(it) },
         onClick = onClick,
         leading = {
             Icon(
@@ -58,7 +59,7 @@ private fun SetupRowItem(row: SetupRow, onClick: (() -> Unit)?) {
         },
         trailing = {
             Text(
-                text = row.count.toString(),
+                text = if (row.remaining && !row.done) stringResource(R.string.dashboard_setup_left, row.count.toInt()) else row.count.toString(),
                 style = MaterialTheme.typography.titleMedium,
                 color = if (row.done) AppColors.TextPrimary else AppColors.TextSecondary,
             )

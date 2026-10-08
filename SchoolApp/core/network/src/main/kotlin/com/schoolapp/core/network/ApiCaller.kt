@@ -30,6 +30,9 @@ class ApiCaller @Inject constructor(
             AppResult.Failure(AppError.Network)
         } catch (e: SerializationException) {
             AppResult.Failure(AppError.Unknown(e))
+        } catch (e: IllegalArgumentException) {
+            // Retrofit/converter setup errors (e.g. an unsupported body type) must not crash the app.
+            AppResult.Failure(AppError.Unknown(e))
         }
     }
 
@@ -39,7 +42,7 @@ class ApiCaller @Inject constructor(
         }.getOrNull()
         return when {
             code() == 401 -> AppError.Unauthorized
-            code() == 403 -> AppError.Forbidden(apiError?.code)
+            code() == 403 -> AppError.Forbidden(apiError?.code, apiError?.message)
             apiError?.code == ApiErrorCodes.VALIDATION_FAILED -> AppError.Validation(apiError.message)
             else -> AppError.Server(code(), apiError?.code, apiError?.message, apiError?.details?.toString())
         }

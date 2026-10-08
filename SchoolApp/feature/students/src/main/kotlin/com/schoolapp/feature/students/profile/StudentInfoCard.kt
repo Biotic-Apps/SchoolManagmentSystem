@@ -18,12 +18,10 @@ internal fun StudentInfoCard(detail: StudentDetail, modifier: Modifier = Modifie
     AppCard(modifier.fillMaxWidth()) {
         SectionHeader(title = stringResource(R.string.students_profile))
         KeyValueRow(stringResource(R.string.students_admission_no), student.admissionNo)
-        KeyValueRow(stringResource(R.string.students_roll), student.rollNo?.toString())
         KeyValueRow(stringResource(R.string.students_dob), formatDate(student.dob))
         KeyValueRow(stringResource(R.string.students_gender), student.gender?.let(::humanizeKey))
         KeyValueRow(stringResource(R.string.students_bform), detail.bForm)
         KeyValueRow(stringResource(R.string.students_admission_date), formatDate(detail.admissionDate))
-        KeyValueRow(stringResource(R.string.students_branch), detail.branchName)
         KeyValueRow(stringResource(R.string.students_address), detail.address)
     }
 }

@@ -29,27 +29,27 @@ Snapshot **2026-10-08** (after `9fb30fe`). Static comparison of the web panel (`
 | admissions | enquiries, application add/edit, test schedule/result, waiting list, decide, confirm admission, documents | list + detail + decide (`admissions`) | ⚠️ decide only |
 | guardians | list, edit, link/unlink child, link requests | list + link-request tab (approve via Approvals) | ⚠️ no edit, link or unlink |
 | staff | add, edit, status, assign classes, sign-in create/reset, probation, assignments tab, workload | `feature/staff` add, edit, status, assign classes, sign-in, workload | ⚠️ no probation, no generic assignments tab |
-| timetable | builder, bell schedule, substitutions/overrides, teacher week | `TimetableRoute` read-only week/day | ⏳ builder and bell; ❌ substitutions |
+| timetable | builder, bell schedule, substitutions/overrides, teacher week | `TimetableAdminRoute` + Substitutions tab (list by date; assign/remove with `timetable.edit`) | ⏳ builder and bell; ✅ substitutions |
 | syllabus | plan editor, book-list editor + history, coverage, review | `CoverageRoute` (review via Approvals) | ⚠️ no plan or book-list authoring |
 | diary | missing list, moderation, return | `SupervisorDiaryRoute` | ✅ |
 | activities | add/edit, approve/reject, start/complete/cancel, participants, consent tracker | list, propose, approve/reject, consent summary | ⚠️ no lifecycle, participants edit or edit |
 | notices | compose (audience), publish, pin, expiry, edit/archive, read receipts | feed + compose + publish | ⚠️ no edit, archive or read receipts |
 | attendance | branch summary, registers, corrections, staff attendance, leave review, student history | `SupervisorAttendanceRoute` (classes + staff mark), leave review | ✅ |
 | exams | exam add/edit, schedule, grading schemes, completeness, accept/return, results, publish, report cards, promotions | completeness + sheet review (`exams/board`, `review`) | ⚠️ no setup, results, publish or promotions |
-| fees | overview, structure (heads/plans), invoices generate/issue/cancel, payments, receipts, reversals, refunds, concessions, proofs verify, dues + reminders, close day, ledger | Today, Dues, Proofs verify, Record payment, invoice/receipt (`feature/fees`) | ⚠️ ⏳ fee plan; ❌ invoicing, concessions, refunds, reversal, close day, reminders, ledger; 🐞 dues aging/rows |
-| payroll | structures, adjustments, run create/calculate/review/approve/close, payments, payslips | runs list + run detail + approve (`feature/payroll`) | ⚠️ view and approve only; 🐞 run totals/approvalId |
+| fees | overview, structure (heads/plans), invoices generate/issue/cancel, payments, receipts, reversals, refunds, concessions, proofs verify, dues + reminders, close day, ledger | Today (close day, payment sheet: receipt/refund/reverse), Dues (+ reminders), Proofs verify, Record payment, invoice/receipt (`feature/fees`) | ⚠️ ⏳ fee plan; ❌ invoicing, concessions, ledger |
+| payroll | structures, adjustments, run create/calculate/review/approve/close, payments, payslips | runs list + run detail + approve (`feature/payroll`) | ⚠️ view and approve only |
 | expenses | expenses, categories, vendors, payments | placeholder | 🚧 |
 | inventory | items, stock, movements, purchasing, sales, assets | placeholder | 🚧 |
 | health | incidents, health profiles edit, allergy alerts, change-request review | incidents, close, report, health card search | ⚠️ no profile edit or change-request review |
 | pickup | early leave, departures, authorised persons (add/revoke) | gate desk: approve/reject early leave, record departure | ⚠️ no staff-side authorised persons |
 | complaints | boxes, file, update, assign, escalate, close, reopen | all | ✅ |
-| certificates | review approve/reject, issue/reissue PDF, download | review approve/reject | ⚠️ no issue/reissue/download; 🐞 serial/reason |
+| certificates | review approve/reject, issue/reissue PDF, download | review approve/reject | ⚠️ no issue/reissue/download |
 | approvals | inbox, detail, decide | `feature/approvals` | ✅ |
 | reports | catalogue, parameters, export jobs | placeholder | 🚧 |
 | settings | branding, notifications, policies, support, backups, imports | placeholder | 🚧 |
 | profile | edit, password, sessions, notification prefs, 2FA setup | all except 2FA setup (app lock is Android-only) | ⚠️ no 2FA setup |
 | entity history | audit trail drawer (`audit/EntityHistory`) | none | ❌ |
-| navigation | – | 🐞 bottom bar = Dashboard, **Schools, Users** (both placeholders), Approvals | 🐞 |
+| navigation | – | bottom bar = Home, Branches, Staff, Approvals (web-only ids never fill a slot) | ✅ |
 
 ## PRINCIPAL
 Same as SUPER_ADMIN for shared pages, scoped to the principal's branch. Rows that differ:
@@ -63,14 +63,14 @@ Same as SUPER_ADMIN for shared pages, scoped to the principal's branch. Rows tha
 | admissions | as SUPER_ADMIN | decide only | ⚠️ |
 | guardians | as SUPER_ADMIN | list + link requests | ⚠️ |
 | staff | add, edit, status, assign, sign-in, probation, workload | add, edit, status, assign, sign-in, workload | ⚠️ no probation |
-| timetable | builder, publish/discard, bell schedule, substitutions | read-only | ⏳ builder and bell; ❌ substitutions |
+| timetable | builder, publish/discard, bell schedule, substitutions | Substitutions tab | ⏳ builder and bell; ✅ substitutions |
 | attendance | branch day, corrections, staff attendance, leave approvals | classes + staff tabs, leave review | ✅ |
 | diary | moderation/return | `SupervisorDiaryRoute` | ✅ |
 | syllabus | coverage, review, plan and book-list authoring | coverage | ⚠️ |
 | activities | add, approve/reject, lifecycle, participants | propose, approve/reject, consents | ⚠️ |
 | notices | compose, publish, edit/archive, read receipts | compose + publish | ⚠️ |
 | exams | completeness, accept/return, proxy marks, publish, promotions, report cards | completeness, review, marks entry when `canEdit` | ⚠️ |
-| fees | as SUPER_ADMIN + approve within limit | Today/Dues/Proofs/Record payment + Approvals link | ⚠️ ⏳ fee plan; 🐞 dues |
+| fees | as SUPER_ADMIN + approve within limit | Today/Dues/Proofs/Record payment, reminders, refund/reverse, close day + Approvals link | ⚠️ ⏳ fee plan |
 | payroll | approve run (not own), close | runs + approve | ⚠️ no close, payments |
 | expenses, inventory, reports | as SUPER_ADMIN | placeholder | 🚧 |
 | settings ("Settings") | own-school settings, import templates | placeholder | 🚧 |
@@ -88,12 +88,12 @@ Same as SUPER_ADMIN for shared pages, scoped to the principal's branch. Rows tha
 | classes | overview, view class setup | read-only `ClassesRoute` (branch from assignments) | ✅ |
 | students | view scope, profile | section → roster → profile | ✅ |
 | staff | view, workload | list + detail + workload | ✅ |
-| timetable | view; **draft branch-wide** (new builder role rule); substitutions | read-only | ⏳ drafting; ❌ substitutions |
+| timetable | view; **draft branch-wide** (new builder role rule); substitutions | Substitutions tab | ⏳ drafting; ✅ substitutions |
 | attendance | branch day, proxy register, corrections, leave review | `BranchTodayRoute`, register, leave review | ✅ |
 | diary | missing, moderation, return | yes | ✅ |
 | syllabus | coverage, review | coverage + Approvals link | ✅ |
 | activities | propose, view | list, propose, detail | ✅ |
-| exams | completeness, accept/return, class results | completeness + review | ⚠️ no class results (`ExamsApi.results` is declared but never called) |
+| exams | completeness, accept/return, class results | completeness + review + Class results tab (`exams.view`) | ✅ |
 | progress | notes, homework ticks | Notes + Homework tabs | ✅ |
 | health | incidents, cards, report, change requests | incidents, cards, report | ⚠️ no change-request review |
 | pickup | gate, authorised persons | gate desk | ⚠️ |
@@ -111,11 +111,11 @@ Same as SUPER_ADMIN for shared pages, scoped to the principal's branch. Rows tha
 | dashboard | today periods, registers, pending diaries | `TeacherTodayContent` | ✅ |
 | classes ("My Classes & Students") | sections, roster, student profile | `MyClassesRoute` → roster → detail | ✅ |
 | timetable | my week, section view; **class teacher drafts own section** | week/day view (`TimetableRoute`) | ⏳ drafting (needs builder); view ✅ |
-| attendance | mark, mark all, draft, submit, correction request, health alerts, student leave review | `MarkHomeRoute`, `RegisterRoute` (offline), `LeaveReviewRoute` | ✅ 🐞 health-alert names blank |
+| attendance | mark, mark all, draft, submit, correction request, health alerts, student leave review | `MarkHomeRoute`, `RegisterRoute` (offline), `LeaveReviewRoute` | ✅ |
 | diary | write, attachments, draft, publish | `TeacherDiaryRoute`, `DiaryEditorRoute` (offline) | ✅ |
 | syllabus | my plans, topic progress, plan authoring (`PlanEditorDialog`) | `MyPlansRoute`, topic sheet | ⚠️ no plan authoring |
 | activities | propose, view | yes | ✅ |
-| exams | my sheets, marks entry, absent, submit, class results | `MySheetsRoute`, `MarksEntryRoute` (offline) | ⚠️ no class results |
+| exams | my sheets, marks entry, absent, submit, class results | `MySheetsRoute`, `MarksEntryRoute` (offline), Class results tab | ✅ |
 | progress | notes, homework ticks | yes | ✅ |
 | messages | threads, new thread, attachments | yes | ✅ |
 | meetings | list, complete, cancel, no-show, follow-ups, slots | yes | ✅ |
@@ -129,7 +129,7 @@ Same as SUPER_ADMIN for shared pages, scoped to the principal's branch. Rows tha
 |---|---|---|---|
 | dashboard | today | teacher-mode dashboard | ✅ |
 | classes | assigned sections, roster | `MyClassesRoute` | ✅ |
-| attendance | draft register only | register (`canEdit` limits to draft) | ✅ 🐞 health-alert names |
+| attendance | draft register only | register (`canEdit` limits to draft) | ✅ |
 | diary | draft only | editor draft | ✅ |
 | activities | view | yes | ✅ |
 | complaints | own | yes | ✅ |
@@ -141,17 +141,17 @@ Same as SUPER_ADMIN for shared pages, scoped to the principal's branch. Rows tha
 | Page (web) | Actions | Android | Status |
 |---|---|---|---|
 | dashboard | finance overview | Welcome + "Finance this month" card | ✅ |
-| students | branch list with finance columns, search, ledger (`fees/.../StudentLedgerDialog`) | section browse + read-only profile | ⚠️ no search or ledger |
+| students | branch list with finance columns, search, ledger (`fees/.../StudentLedgerDialog`) | section browse + student search + read-only profile | ⚠️ no ledger |
 | fees › overview | collection rate, billed/collected | `OverviewTiles` (Today tab) | ✅ |
-| fees › collections | daily totals, close day | daily collection card | ⚠️ no close day |
-| fees › payments | record, receipt, reverse, refund | record (offline) + receipt | ⚠️ no reverse or refund |
+| fees › collections | daily totals, close day | daily collection card + close day (`fees.approve`) + closing card | ✅ |
+| fees › payments | record, receipt, reverse, refund | record (offline); tap a Today payment: receipt, refund (`fees.add`), reverse (`fees.edit`), both confirmed | ✅ (today's payments only; no full payments list) |
 | fees › invoices | add, generate bulk, issue, cancel, challan print | invoice detail (read) | ❌ |
-| fees › dues | list, aging, select + send reminders | Dues tab | ⚠️ no reminders; 🐞 aging always 0, class/adm no/days blank |
+| fees › dues | list, aging, select + send reminders | Dues tab with aging, guardian, multi-select reminders (`fees.edit`) | ✅ (no class / min-days filters) |
 | fees › proofs | verify, reject | verify, reject | ✅ |
 | fees › concessions | add, approve flow | none | ❌ |
 | fees › structure | heads, plans, late fee | none | ⏳ fee plan |
-| payroll | structures, adjustments, run create/calculate/review, payments, payslips | runs list + detail | ⚠️ view only; 🐞 run totals/approvalId |
-| expenses | | placeholder | 🚧 (and in the bottom bar 🐞) |
+| payroll | structures, adjustments, run create/calculate/review, payments, payslips | runs list + detail | ⚠️ view only |
+| expenses | | placeholder | 🚧 |
 | inventory | | placeholder | 🚧 |
 | complaints | own + routed | yes | ✅ |
 | reports | exports | placeholder | 🚧 |
@@ -169,8 +169,8 @@ Same as SUPER_ADMIN for shared pages, scoped to the principal's branch. Rows tha
 | progress ("Progress & Results") | results, report card, feedback, homework | `ParentProgressScreen` | ✅ |
 | syllabus | plans, book lists | `ParentSyllabusRoute` | ✅ |
 | timetable ("Timetable, Calendar & Activities") | week, calendar, activities + consent | `ParentTimetableScreen` 3 tabs | ✅ |
-| fees ("Fees, Dues & Receipts") | summary, invoices, receipt, pay online, upload proof, proof status | `ParentFeesRoute`, invoice detail, `ProofUploadRoute` | ✅ 🐞 rejected-proof reason not shown |
-| certificates | request, status, download | `ParentCertificatesRoute` | ⚠️ 🐞 rejection reason and serial never shown |
+| fees ("Fees, Dues & Receipts") | summary, invoices, receipt, pay online, upload proof, proof status | `ParentFeesRoute` (+ submitted proofs with status and rejection reason), invoice detail, `ProofUploadRoute` | ✅ |
+| certificates | request, status, download | `ParentCertificatesRoute` | ⚠️ (serial and rejection reason now shown) |
 | messages | threads, new message, shortcuts (pickup, health card…) | threads + `ParentShortcuts` | ✅ |
 | – pickup | authorised persons, early leave | `ParentPickupRoute` | ✅ |
 | – health card | view, propose change | `HealthCardRoute` | ✅ |
@@ -194,6 +194,8 @@ Same as SUPER_ADMIN for shared pages, scoped to the principal's branch. Rows tha
 
 ## Suspected bugs (🐞), confirmed against live JSON
 
+**Status 2026-10-08:** B1–B8 fixed (B8: exam term name resolved from `sessions/{id}/terms`, cached) (DTO/mapper aliases + mapper tests built from live JSON in `core/data/src/test`); B6 also maps `approval.id` only while the approval is `PENDING`. Extra mismatch found and fixed: `collections/daily` sends `closed` as an object (`DayClosingDto`) or null, not a boolean, and payments carry the cashier as `receivedBy`.
+
 | # | Where (app) | API sends | App reads | Effect | Fix |
 |---|---|---|---|---|---|
 | B1 | `core/network/.../dto/fees/CollectionDtos.kt:9-12` `AgingDto` | `aging.d0_30, d31_60, d61_90, d90plus` | `@SerialName("0-30")…"90+"` | Dues aging buckets always 0 | Change the four `@SerialName`s |
@@ -215,17 +217,17 @@ Non-bugs that were checked: every path in `app_eps` matches the API. `classes/{i
 
 | # | Gap | Web | App | Hint |
 |---|---|---|---|---|
-| 1 | Dues aging + row details blank (B1, B2) | `features/fees/components/dues/DuesTab` | `feature/fees` DuesTab, `core/network/dto/fees/CollectionDtos.kt` | Fix DTO names; no UI change needed |
-| 2 | Health-alert student names blank in the register (B3) | `attendance/HealthAlertsNotice` | `feature/attendance/HealthAlertSheet`, `HealthDtos.kt` | Add `name` to `HealthAlertDto` |
-| 3 | Rejected proof/certificate reasons hidden from parents (B4, B5) | `fees/ParentProofsSection`, `certificates/CertificateDetailDrawer` | `feature/fees` parent, `feature/certificates` | Alias `rejectReason` / `rejectionReason`, `serialNo` |
-| 4 | Bottom bar opens placeholders (B7) | `config/navigation.ts` | `core/navigation/PrimaryNavigation.kt` | Drop unmapped ids from `Preferred` (filter by `AppShellContent` keys) |
-| 5 | Fee reminders from Dues | `fees/components/dues/DuesSelectionBar` | `feature/fees` DuesTab | Multi-select rows + `POST dues/reminders` |
-| 6 | Payment reversal / refund | `fees/ReversePaymentDialog`, `RefundDialog` | `feature/fees` receipt / invoice detail | `POST payments/{id}/reverse` and `POST refunds`, each with a reason sheet |
-| 7 | Close day | `fees/CloseDayDialog`, `CollectionClosingCard` | `feature/fees` TodayTab `DailyCollectionCard` | "Close day" action on the Today card → `POST collections/daily/close` |
-| 8 | Timetable substitutions (absent-teacher cover) | `timetable/SubstitutionsTab`, `OverrideFormDialog` | `feature/timetable` | `GET/POST/DELETE timetable-overrides` list + add sheet; not in the in-progress builder scope |
-| 9 | Student search (principal, accountant) | `students/StudentSearchField`, `StudentsTab` | `feature/students/sections` | Search bar on `GET students?q=` above the section list |
-| 10 | Staff class results view | `exams/ResultsTab`, `StudentResultDrawer` | `feature/exams` | Wire the unused `ExamsApi.results(examId, sectionId)` into a results tab |
-| 11 | Payroll run approval link (B6) | `payroll/RunActionsBar` | `feature/payroll` PayrollRunRoute | Read `approval.id` and open Approval detail |
+| 1 | ✅ done 2026-10-08: Dues aging + row details blank (B1, B2) | `features/fees/components/dues/DuesTab` | `feature/fees` DuesTab, `core/network/dto/fees/CollectionDtos.kt` | Fix DTO names; no UI change needed |
+| 2 | ✅ done 2026-10-08: Health-alert student names blank in the register (B3) | `attendance/HealthAlertsNotice` | `feature/attendance/HealthAlertSheet`, `HealthDtos.kt` | Add `name` to `HealthAlertDto` |
+| 3 | ✅ done 2026-10-08: Rejected proof/certificate reasons hidden from parents (B4, B5) | `fees/ParentProofsSection`, `certificates/CertificateDetailDrawer` | `feature/fees` parent, `feature/certificates` | Alias `rejectReason` / `rejectionReason`, `serialNo` |
+| 4 | ✅ done 2026-10-08: Bottom bar opens placeholders (B7) | `config/navigation.ts` | `core/navigation/PrimaryNavigation.kt` | Drop unmapped ids from `Preferred` (filter by `AppShellContent` keys) |
+| 5 | ✅ done 2026-10-08: Fee reminders from Dues | `fees/components/dues/DuesSelectionBar` | `feature/fees` DuesTab | Multi-select rows + `POST dues/reminders` |
+| 6 | ✅ done 2026-10-08: Payment reversal / refund | `fees/ReversePaymentDialog`, `RefundDialog` | `feature/fees` receipt / invoice detail | `POST payments/{id}/reverse` and `POST refunds`, each with a reason sheet |
+| 7 | ✅ done 2026-10-08: Close day | `fees/CloseDayDialog`, `CollectionClosingCard` | `feature/fees` TodayTab `DailyCollectionCard` | "Close day" action on the Today card → `POST collections/daily/close` |
+| 8 | ✅ done 2026-10-08: Timetable substitutions (absent-teacher cover) | `timetable/SubstitutionsTab`, `OverrideFormDialog` | `feature/timetable` | `GET/POST/DELETE timetable-overrides` list + add sheet; not in the in-progress builder scope |
+| 9 | ✅ done 2026-10-08: Student search (principal, accountant) | `students/StudentSearchField`, `StudentsTab` | `feature/students/sections` | Search bar on `GET students?q=` above the section list |
+| 10 | ✅ done 2026-10-08: Staff class results view | `exams/ResultsTab`, `StudentResultDrawer` | `feature/exams` | Wire the unused `ExamsApi.results(examId, sectionId)` into a results tab |
+| 11 | ✅ done 2026-10-08: Payroll run approval link (B6) | `payroll/RunActionsBar` | `feature/payroll` PayrollRunRoute | Read `approval.id` and open Approval detail |
 
 **P2: management parity (desk tasks that principals now want on the phone)**
 
@@ -264,7 +266,7 @@ Non-bugs that were checked: every path in `app_eps` matches the API. `classes/{i
 | 7 | Audit history | `audit/EntityHistory` | none | Bottom sheet on student/staff detail |
 | 8 | Student ID card, document upload | `students/IdCardPanel`, `documents/DocumentUploadDialog` | `feature/students/profile/DocumentsCard` | Upload via `FilesApi` + attach |
 | 9 | Student ledger (accountant) | `fees/StudentLedgerDialog` | `feature/students/detail` | Ledger list on the fee summary |
-| 10 | Exam term label (B8) | `exams/ExamHeader` | `feature/exams` | Resolve `termId` |
+| 10 | ✅ done 2026-10-08: Exam term label (B8) | `exams/ExamHeader` | `feature/exams` | Resolve `termId` |
 
 ## Android-only (unchanged)
 Offline outbox (registers, diary, mark sheets, cash payments, syllabus progress), push notifications (FCM via `DeviceRegistrar`), `FLAG_SECURE` on payroll, my salary and health screens, release certificate pinning, app lock (biometric/device credential), pull-to-refresh, branded splash/launcher icon.

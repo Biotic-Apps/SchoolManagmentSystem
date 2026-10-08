@@ -24,7 +24,7 @@ class ClassesOverviewViewModelTest {
 
     @Test
     fun loads_one_card_per_class_for_the_active_session() {
-        val vm = ClassesViewModel(loader, repository, overview, SavedStateHandle())
+        val vm = ClassesViewModel(loader, repository, overview, FakeClassStructureRepository(), FakeAuthRepository(TestSessions.session(RoleKey.PRINCIPAL, "branches.view")), com.schoolapp.core.data.academics.AcademicsEvents(), SavedStateHandle())
         val state = vm.uiState.value
         assertEquals(ClassesTab.CLASSES, state.tab)
         assertEquals(listOf(Triple("b1", "s1", "se1")), overview.requests)
@@ -36,7 +36,7 @@ class ClassesOverviewViewModelTest {
 
     @Test
     fun saved_tab_from_older_version_falls_back_to_classes() {
-        val vm = ClassesViewModel(loader, repository, overview, SavedStateHandle(mapOf("tab" to "SECTIONS")))
+        val vm = ClassesViewModel(loader, repository, overview, FakeClassStructureRepository(), FakeAuthRepository(TestSessions.session(RoleKey.PRINCIPAL, "branches.view")), com.schoolapp.core.data.academics.AcademicsEvents(), SavedStateHandle(mapOf("tab" to "SECTIONS")))
         assertEquals(ClassesTab.CLASSES, vm.uiState.value.tab)
         vm.onTabSelected(ClassesTab.SUBJECTS)
         assertEquals(ClassesTab.SUBJECTS, vm.uiState.value.tab)

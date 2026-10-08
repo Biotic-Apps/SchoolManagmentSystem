@@ -70,7 +70,7 @@ class TimetableViewModel @Inject internal constructor(
     fun onTeacherViewSelected(view: TeacherView) {
         val state = _uiState.value
         if (state.teacherView == null || state.teacherView == view) return
-        _uiState.update { it.copy(teacherView = view, days = emptyList(), sectionState = null, draftNote = false, error = null) }
+        _uiState.update { it.copy(teacherView = view, days = emptyList(), sectionState = null, draftNote = false, sectionEditable = false, error = null) }
         when (view) {
             TeacherView.WEEK -> launchLoad { loadOwnWeek() }
             TeacherView.SECTIONS -> {
@@ -157,6 +157,7 @@ class TimetableViewModel @Inject internal constructor(
                         sectionState = data.sectionState,
                         sectionVersion = data.sectionVersion,
                         draftNote = data.draftNote,
+                        sectionEditable = data.sectionEditable,
                         openLesson = null,
                     )
                 }

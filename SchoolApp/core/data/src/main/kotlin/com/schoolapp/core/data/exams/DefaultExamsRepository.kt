@@ -19,6 +19,7 @@ import com.schoolapp.core.model.exams.MarkSheet
 import com.schoolapp.core.model.exams.MarkSheetOutcome
 import com.schoolapp.core.model.exams.MarkSheetSyncState
 import com.schoolapp.core.model.exams.ReportCard
+import com.schoolapp.core.model.exams.StudentResult
 import com.schoolapp.core.network.ApiCaller
 import com.schoolapp.core.network.api.ExamsApi
 import com.schoolapp.core.network.dto.common.CommentBodyDto
@@ -50,12 +51,19 @@ class DefaultExamsRepository @Inject constructor(
     private val syncScheduler: SyncScheduler,
     private val json: Json,
     @IoDispatcher private val io: CoroutineDispatcher,
+    private val termNames: ExamTermNames,
 ) : ExamsRepository {
 
     private val lastServerCopy = ConcurrentHashMap<String, MarkSheet>()
 
     override suspend fun exams(status: ExamStatus?, branchId: String?): AppResult<List<Exam>> =
-        apiCaller.call { api.exams(branchId = branchId, status = status?.name).data.map { it.toModel() } }
+        when (val result = apiCaller.call { api.exams(branchId = branchId, status = status?.name).data }) {
+            is AppResult.Failure -> result
+            is AppResult.Success -> {
+                val names = termNames.forExams(result.data)
+                AppResult.Success(result.data.map { it.toModel(names) })
+            }
+        }
 
     override suspend fun markSheets(examId: String): AppResult<List<MarkSheet>> =
         apiCaller.call { api.markSheets(examId).data.map { it.toModel() }.sortedForList() }
@@ -156,6 +164,9 @@ class DefaultExamsRepository @Inject constructor(
 
     override suspend fun childResults(studentId: String): AppResult<ChildResults> =
         apiCaller.call { api.studentResults(studentId).data.toChildResults(json) }
+
+    override suspend fun sectionResults(examId: String, sectionId: String?): AppResult<List<StudentResult>> =
+        apiCaller.call { api.results(examId, sectionId).data.map { it.toModel() } }
 
     override suspend fun reportCard(studentId: String, examId: String): AppResult<ReportCard> =
         apiCaller.call { api.reportCard(studentId, examId).data.toModel() }

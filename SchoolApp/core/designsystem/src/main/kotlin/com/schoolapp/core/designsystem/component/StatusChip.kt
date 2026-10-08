@@ -35,7 +35,7 @@ fun StatusChip(
             Icon(icon, contentDescription = null, tint = colors.content, modifier = Modifier.size(14.dp))
             Spacer(Modifier.width(4.dp))
         }
-        Text(text = text, style = MaterialTheme.typography.labelSmall, color = colors.content)
+        Text(text = text, style = MaterialTheme.typography.labelSmall, color = colors.content, maxLines = 1, softWrap = false)
     }
 }
 

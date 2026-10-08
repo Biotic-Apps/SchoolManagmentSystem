@@ -76,4 +76,31 @@
         <item>Saturday</item>
         <item>Sunday</item>
     </string-array>
+    <string name="timetable_tab_substitutions">Substitutions</string>
+    <string name="timetable_subs_date">Date</string>
+    <string name="timetable_subs_assign">Assign substitute</string>
+    <string name="timetable_subs_form_message">The substitute teacher is notified and sees the period in their week.</string>
+    <string name="timetable_subs_section">Class section</string>
+    <string name="timetable_subs_period">Period</string>
+    <string name="timetable_subs_period_slot">Slot %1$d</string>
+    <string name="timetable_subs_teacher">Substitute teacher</string>
+    <string name="timetable_subs_reason">Reason</string>
+    <string name="timetable_subs_reason_hint">e.g. Class teacher on leave</string>
+    <string name="timetable_subs_section_required">Choose a section</string>
+    <string name="timetable_subs_period_required">Choose a period</string>
+    <string name="timetable_subs_teacher_required">Choose a substitute teacher</string>
+    <string name="timetable_subs_reason_required">Enter a reason (3–300 characters)</string>
+    <string name="timetable_subs_no_periods">No teaching periods on this day</string>
+    <string name="timetable_subs_empty_title">No substitutions on %1$s</string>
+    <string name="timetable_subs_empty_message">Assign a substitute when a teacher is absent; they see the period in their week.</string>
+    <string name="timetable_subs_substitute">Substitute: %1$s</string>
+    <string name="timetable_subs_original">Instead of %1$s</string>
+    <string name="timetable_subs_no_teacher">No timetabled teacher</string>
+    <string name="timetable_subs_unknown_class">Unknown section</string>
+    <string name="timetable_subs_remove">Remove</string>
+    <string name="timetable_subs_remove_for">Remove substitution for %1$s</string>
+    <string name="timetable_subs_remove_title">Remove this substitution?</string>
+    <string name="timetable_subs_remove_message">The period goes back to the timetabled teacher.</string>
+    <string name="timetable_subs_assigned">Substitute assigned — teacher notified</string>
+    <string name="timetable_subs_removed">Substitution removed</string>
 </resources>

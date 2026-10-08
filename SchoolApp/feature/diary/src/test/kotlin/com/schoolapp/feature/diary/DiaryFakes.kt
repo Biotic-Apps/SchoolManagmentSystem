@@ -88,6 +88,15 @@ internal class FakeFilesRepository : FilesRepository {
 internal class FakeTimetableRepository(private val slots: List<TeacherSlot> = emptyList()) : TimetableRepository {
     override suspend fun myWeek(weekOf: String?, studentId: String?): AppResult<List<TeacherSlot>> = AppResult.Success(slots)
     override suspend fun sectionTimetable(sectionId: String): AppResult<SectionTimetable> = AppResult.Failure(AppError.Network)
+
+    override suspend fun overrides(branchId: String, date: String): AppResult<List<com.schoolapp.core.model.timetable.TimetableOverride>> =
+        AppResult.Success(emptyList())
+
+    override suspend fun assignSubstitute(
+        input: com.schoolapp.core.model.timetable.OverrideInput,
+    ): AppResult<com.schoolapp.core.model.timetable.TimetableOverride> = AppResult.Failure(AppError.Network)
+
+    override suspend fun removeOverride(id: String): AppResult<Unit> = AppResult.Failure(AppError.Network)
 }
 
 internal class FakeOrganisationRepository(

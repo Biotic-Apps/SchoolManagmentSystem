@@ -3,7 +3,6 @@ package com.schoolapp.feature.organisation
 import androidx.lifecycle.SavedStateHandle
 import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.model.RoleKey
-import com.schoolapp.core.model.organisation.Subject
 import com.schoolapp.core.testing.FakeAuthRepository
 import com.schoolapp.core.testing.MainDispatcherRule
 import com.schoolapp.core.testing.TestSessions
@@ -32,19 +31,19 @@ class ScopedRefreshTest {
 
     @Test
     fun classes_refresh_reloads_selected_branch() {
-        val vm = ClassesViewModel(loader, repository, overview, SavedStateHandle())
-        repository.subjects = listOf(Subject("m", "MTH", "Maths"), Subject("e", "ENG", "English"))
+        val vm = ClassesViewModel(loader, repository, overview, FakeClassStructureRepository(), FakeAuthRepository(TestSessions.session(RoleKey.PRINCIPAL, "branches.view")), com.schoolapp.core.data.academics.AcademicsEvents(), SavedStateHandle())
+        repository.classes = repository.classes + com.schoolapp.core.model.organisation.SchoolClass("c6", "Class 6", 6, 0)
         vm.refresh()
         val state = vm.uiState.value
         assertEquals("b1", state.selectedBranchId)
-        assertEquals(2, state.subjects.size)
+        assertEquals(2, state.classes.size)
         assertFalse(state.isRefreshing)
         assertFalse(state.isLoading)
     }
 
     @Test
     fun classes_failed_refresh_keeps_lists() {
-        val vm = ClassesViewModel(loader, repository, overview, SavedStateHandle())
+        val vm = ClassesViewModel(loader, repository, overview, FakeClassStructureRepository(), FakeAuthRepository(TestSessions.session(RoleKey.PRINCIPAL, "branches.view")), com.schoolapp.core.data.academics.AcademicsEvents(), SavedStateHandle())
         repository.failure = AppError.Network
         vm.refresh()
         val state = vm.uiState.value
@@ -58,7 +57,7 @@ class ScopedRefreshTest {
     @Test
     fun classes_branch_switch_failure_does_not_show_previous_branch() {
         repository.branches = listOf(branch("b1"), branch("b2"))
-        val vm = ClassesViewModel(loader, repository, overview, SavedStateHandle())
+        val vm = ClassesViewModel(loader, repository, overview, FakeClassStructureRepository(), FakeAuthRepository(TestSessions.session(RoleKey.PRINCIPAL, "branches.view")), com.schoolapp.core.data.academics.AcademicsEvents(), SavedStateHandle())
         repository.failure = AppError.Network
         vm.onBranchSelected("b2")
         val state = vm.uiState.value

@@ -1,11 +1,16 @@
 package com.schoolapp.core.model.setup
 
-/** The steps of `GET /setup/checklist`, in the order the card lists them. */
-enum class SetupStep(val key: String) {
+/**
+ * The steps of `GET /setup/checklist`, in the order the card lists them. [countsRemaining] steps report
+ * what is still left (allocation: section × subject pairs without a teacher), the rest count what exists.
+ */
+enum class SetupStep(val key: String, val countsRemaining: Boolean = false) {
     SESSION("session"),
     CLASSES("classes"),
     SUBJECTS("subjects"),
+    BELL_SCHEDULE("bellSchedule"),
     TEACHERS("teachers"),
+    ALLOCATION("allocation", countsRemaining = true),
     STUDENTS("students"),
     TIMETABLE("timetable"),
     FEE_PLAN("feePlan"),

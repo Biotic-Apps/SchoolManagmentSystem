@@ -27,7 +27,7 @@ fun KeyValueRow(label: String, value: String?, modifier: Modifier = Modifier) {
             modifier = Modifier.weight(0.45f),
         )
         Text(
-            text = value?.takeIf { it.isNotBlank() } ?: "-",
+            text = value?.takeIf { it.isNotBlank() } ?: "—",
             style = MaterialTheme.typography.bodyMedium,
             color = AppColors.TextPrimary,
             textAlign = TextAlign.End,

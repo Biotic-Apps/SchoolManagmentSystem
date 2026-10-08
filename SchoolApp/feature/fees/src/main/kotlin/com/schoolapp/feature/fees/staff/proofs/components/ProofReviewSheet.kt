@@ -25,6 +25,7 @@ import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.core.ui.formatDate
 import com.schoolapp.core.ui.formatTimestamp
+import com.schoolapp.core.model.fees.ProofStatus
 import com.schoolapp.feature.fees.R
 import com.schoolapp.feature.fees.components.label
 import com.schoolapp.feature.fees.components.tone
@@ -54,6 +55,8 @@ internal fun ProofReviewSheet(
         KeyValueRow(stringResource(R.string.fees_paid_on), formatDate(proof.paidOn))
         KeyValueRow(stringResource(R.string.fees_submitted_by), proof.submittedBy)
         KeyValueRow(stringResource(R.string.fees_submitted_at), formatTimestamp(proof.createdAt))
+        if (proof.status == ProofStatus.REJECTED) proof.reason?.let { KeyValueRow(stringResource(R.string.fees_reject_reason), it) }
+        proof.note?.let { KeyValueRow(stringResource(R.string.fees_proof_note_label), it) }
         val fileUrl = proof.fileUrl
         if (fileUrl != null) {
             AttachmentChips(

@@ -71,6 +71,19 @@ class DefaultSetupRepositoryTest {
     }
 
     @Test
+    fun allocation_count_is_what_is_left_so_only_the_flag_marks_it_done() = runTest(dispatcher) {
+        api.response = NetworkJson.decodeFromString<SetupChecklistDto>(
+            """{ "complete": false, "items": [
+                 { "key": "allocation", "done": false, "count": 55 }, { "key": "bellSchedule", "done": true, "count": 8 },
+                 { "key": "teachers", "done": true, "count": 10 } ] }""",
+        )
+        val data = (repository.checklist(null) as AppResult.Success).data
+        assertEquals(listOf(SetupStep.BELL_SCHEDULE, SetupStep.TEACHERS, SetupStep.ALLOCATION), data.items.map { it.step })
+        assertFalse(data.items.last().done)
+        assertEquals(55L, data.items.last().count)
+    }
+
+    @Test
     fun all_known_steps_done_is_complete() = runTest(dispatcher) {
         api.response = SetupChecklistDto(items = SetupStep.entries.map { SetupItemDto(it.key, true, 1) })
         assertTrue((repository.checklist(null) as AppResult.Success).data.complete)

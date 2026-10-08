@@ -12,9 +12,11 @@ import com.schoolapp.core.model.organisation.AcademicSession
 import com.schoolapp.core.model.organisation.CalendarEvent
 import com.schoolapp.core.model.organisation.Section
 import com.schoolapp.core.model.timetable.BellSchedule
+import com.schoolapp.core.model.timetable.OverrideInput
 import com.schoolapp.core.model.timetable.Period
 import com.schoolapp.core.model.timetable.SectionTimetable
 import com.schoolapp.core.model.timetable.TeacherSlot
+import com.schoolapp.core.model.timetable.TimetableOverride
 import com.schoolapp.core.testing.FakeAuthRepository
 import java.lang.reflect.Proxy
 import java.time.LocalDateTime
@@ -54,6 +56,32 @@ internal class FakeTimetables : TimetableRepository {
         failure?.let { AppResult.Failure(it) }
             ?: sections[sectionId]?.let { AppResult.Success(it) }
             ?: AppResult.Failure(AppError.Server(404, "NOT_FOUND", null))
+
+    var overrides: List<TimetableOverride> = emptyList()
+    var writeFailure: AppError? = null
+    val overrideQueries = mutableListOf<Pair<String, String>>()
+    val assigned = mutableListOf<OverrideInput>()
+    val removed = mutableListOf<String>()
+
+    override suspend fun overrides(branchId: String, date: String): AppResult<List<TimetableOverride>> {
+        overrideQueries += branchId to date
+        return failure?.let { AppResult.Failure(it) } ?: AppResult.Success(overrides.filter { it.date == date })
+    }
+
+    override suspend fun assignSubstitute(input: OverrideInput): AppResult<TimetableOverride> {
+        writeFailure?.let { return AppResult.Failure(it) }
+        assigned += input
+        val created = TimetableOverride("new", input.sectionId, input.date, input.periodIndex, input.substituteStaffId, null, "Omar", input.reason)
+        overrides = overrides + created
+        return AppResult.Success(created)
+    }
+
+    override suspend fun removeOverride(id: String): AppResult<Unit> {
+        writeFailure?.let { return AppResult.Failure(it) }
+        removed += id
+        overrides = overrides.filterNot { it.id == id }
+        return AppResult.Success(Unit)
+    }
 }
 
 internal class FakeBell(var schedule: BellSchedule? = Bell.schedule) : BellScheduleRepository {

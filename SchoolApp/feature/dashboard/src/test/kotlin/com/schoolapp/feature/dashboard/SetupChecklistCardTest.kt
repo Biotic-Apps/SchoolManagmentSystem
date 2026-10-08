@@ -9,11 +9,13 @@ import com.schoolapp.core.model.dashboard.DashboardMetric
 import com.schoolapp.core.model.setup.SetupChecklist
 import com.schoolapp.core.model.setup.SetupItem
 import com.schoolapp.core.model.setup.SetupStep
+import com.schoolapp.core.navigation.BellScheduleDestination
 import com.schoolapp.core.testing.FakeAuthRepository
 import com.schoolapp.core.testing.MainDispatcherRule
 import com.schoolapp.core.testing.TestSessions
 import com.schoolapp.feature.dashboard.finance.FinanceLoader
 import com.schoolapp.feature.dashboard.setup.SetupChecklistLoader
+import com.schoolapp.feature.dashboard.setup.toCard
 import com.schoolapp.feature.dashboard.supervisor.SupervisorLoader
 import com.schoolapp.feature.dashboard.teacher.TeacherDayLoader
 import org.junit.Assert.assertEquals
@@ -56,12 +58,29 @@ class SetupChecklistCardTest {
         )
         val card = stateFor(RoleKey.PRINCIPAL).setup!!
         assertEquals(SetupStep.entries, card.rows.map { it.step })
-        assertEquals(listOf(true, true, true, false, false, false, false), card.rows.map { it.done })
+        assertEquals(listOf(true, true, true, false, false, false, false, false, false), card.rows.map { it.done })
         assertEquals(5L, card.rows.first().count)
         assertEquals(3, card.doneCount)
         assertEquals(DashboardLink.Menu("staff"), card.rows.first { it.step == SetupStep.TEACHERS }.link)
         assertEquals(DashboardLink.Menu("classes"), card.rows.first { it.step == SetupStep.SUBJECTS }.link)
         assertEquals(listOf<String?>("b1"), setup.calls)
+        assertEquals(DashboardLink.Menu("classes"), card.rows.first { it.step == SetupStep.ALLOCATION }.link)
+        assertTrue(card.rows.first { it.step == SetupStep.ALLOCATION }.remaining)
+        assertEquals(DashboardLink.Screen(BellScheduleDestination()), card.rows.first { it.step == SetupStep.BELL_SCHEDULE }.link)
+    }
+
+    @Test
+    fun fee_plan_is_status_only_with_a_hint_unless_the_role_can_add_fees() {
+        setup.result = AppResult.Success(
+            SetupChecklist("b1", complete = false, items = listOf(item(SetupStep.CLASSES, 2), item(SetupStep.FEE_PLAN, 0))),
+        )
+        val principal = stateFor(RoleKey.PRINCIPAL).setup!!.rows.last()
+        assertNull(principal.link)
+        assertEquals(R.string.dashboard_setup_fee_plan_hint, principal.hintRes)
+
+        val withFees = SetupChecklist("b1", false, listOf(item(SetupStep.FEE_PLAN, 0))).toCard(canSetUpFees = true)!!.rows.single()
+        assertEquals(DashboardLink.Menu("fees"), withFees.link)
+        assertNull(withFees.hintRes)
     }
 
     @Test

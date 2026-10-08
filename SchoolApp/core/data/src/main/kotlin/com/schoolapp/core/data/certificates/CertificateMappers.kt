@@ -14,18 +14,18 @@ internal fun CertificateDto.toModel() = Certificate(
     id = id,
     type = enumOrDefault(type, CertificateType.CHARACTER),
     status = enumOrDefault(status, CertificateStatus.REQUESTED),
-    serial = serial,
+    serial = (serialNo ?: serial)?.takeIf(String::isNotBlank),
     studentId = student?.id,
     studentName = student?.name.orEmpty(),
     className = student?.className,
     sectionName = student?.sectionName,
     purpose = purpose?.takeIf(String::isNotBlank),
     requestedBy = requestedBy?.toRef(),
-    createdAt = createdAt,
+    createdAt = requestedAt ?: createdAt,
     issuedOn = issuedOn ?: issuedAt,
     fileUrl = fileUrl,
-    reason = (rejectReason ?: reason)?.takeIf(String::isNotBlank),
-    duplicate = duplicate,
+    reason = (rejectionReason ?: rejectReason ?: reason)?.takeIf(String::isNotBlank),
+    duplicate = isDuplicate || duplicate,
 )
 
 /** Parses the `details` of `409 CLEARANCE_REQUIRED`; unknown shapes give an empty block. */

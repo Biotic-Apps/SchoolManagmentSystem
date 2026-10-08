@@ -2,7 +2,10 @@ package com.schoolapp.feature.fees.staff.today
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.LockClock
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,14 +20,19 @@ import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.LoadingState
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScreenColumn
+import com.schoolapp.core.designsystem.component.SecondaryButton
 import com.schoolapp.core.designsystem.component.SectionHeader
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.designsystem.money.MoneyFormat
 import com.schoolapp.core.designsystem.theme.AppColors
+import com.schoolapp.core.model.fees.Payment
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.core.ui.formatDate
 import com.schoolapp.feature.fees.R
+import com.schoolapp.feature.fees.staff.today.components.CloseDayActions
+import com.schoolapp.feature.fees.staff.today.components.CloseDaySheet
 import com.schoolapp.feature.fees.staff.today.components.DailyCollectionCard
+import com.schoolapp.feature.fees.staff.today.components.DayClosingCard
 import com.schoolapp.feature.fees.staff.today.components.OverviewTiles
 import com.schoolapp.feature.fees.staff.today.components.PaymentRow
 
@@ -35,6 +43,9 @@ internal fun TodayTab(
     onRefresh: () -> Unit,
     onOpenApprovals: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    onOpenPayment: ((Payment) -> Unit)? = null,
+    closeActions: CloseDayActions? = null,
+    onOpenCloseDay: () -> Unit = {},
 ) {
     val currency = MoneyFormat.DEFAULT_CURRENCY
     val hasData = state.overview != null || state.collection != null
@@ -59,17 +70,29 @@ internal fun TodayTab(
                     item(key = "collection_header") {
                         SectionHeader(title = stringResource(R.string.fees_daily_collection), subtitle = formatDate(collection.date))
                     }
-                    if (collection.closed) {
-                        item(key = "closed") { InlineMessage(stringResource(R.string.fees_day_closed_banner), StatusTone.Info) }
-                    }
                     item(key = "collection") { DailyCollectionCard(collection, currency) }
+                    val closing = collection.closing
+                    if (closing != null) {
+                        item(key = "closed") { DayClosingCard(closing, currency) }
+                    } else if (state.showCloseDay) {
+                        item(key = "close_day") {
+                            SecondaryButton(
+                                stringResource(R.string.fees_close_day),
+                                onOpenCloseDay,
+                                Modifier.fillMaxWidth(),
+                                leadingIcon = Icons.Outlined.LockClock,
+                            )
+                        }
+                    }
                     item(key = "payments_header") { SectionHeader(title = stringResource(R.string.fees_payments)) }
                     if (collection.payments.isEmpty()) {
                         item(key = "payments_empty") {
                             Text(stringResource(R.string.fees_no_payments_today), style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
                         }
                     }
-                    items(collection.payments, key = { "pay_${it.id}" }) { PaymentRow(it, currency) }
+                    items(collection.payments, key = { "pay_${it.id}" }) { payment ->
+                        PaymentRow(payment, currency, onClick = onOpenPayment?.let { open -> { open(payment) } })
+                    }
                 }
                 if (onOpenApprovals != null) {
                     item(key = "approvals") {
@@ -81,5 +104,10 @@ internal fun TodayTab(
                 }
             }
         }
+    }
+    val form = state.closeForm
+    val collection = state.collection
+    if (form != null && collection != null && closeActions != null) {
+        CloseDaySheet(form, collection.date, collection.cashMinor, currency, closeActions)
     }
 }

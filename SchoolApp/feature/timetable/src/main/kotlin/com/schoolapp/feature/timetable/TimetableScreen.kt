@@ -15,6 +15,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Edit
+import com.schoolapp.core.designsystem.component.AppTextButton
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.FilterChipRow
 import com.schoolapp.core.designsystem.component.LoadingState
@@ -46,6 +50,7 @@ fun TimetableScreen(
     onRefresh: () -> Unit = onRetry,
     onLessonSelected: (ScheduleRow?) -> Unit = {},
     lessonActions: LessonActions = LessonActions(),
+    onEditSection: ((sectionId: String, title: String) -> Unit)? = null,
 ) {
     var weekLayout by rememberSaveable { mutableStateOf(false) }
     Column(modifier.fillMaxSize()) {
@@ -58,6 +63,16 @@ fun TimetableScreen(
                 selectedId = state.selectedSectionId,
                 onSelect = onSectionSelected,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            )
+        }
+        val editable = state.selectedSectionId?.takeIf { state.teacherView == TeacherView.SECTIONS && state.sectionEditable }
+        if (editable != null && onEditSection != null) {
+            val title = state.sections.firstOrNull { it.id == editable }?.label.orEmpty()
+            AppTextButton(
+                text = stringResource(R.string.tt_edit_draft),
+                onClick = { onEditSection(editable, title) },
+                leadingIcon = Icons.Outlined.Edit,
+                modifier = Modifier.padding(horizontal = 8.dp),
             )
         }
         state.subtitle?.takeIf { !state.showsSections }?.let {

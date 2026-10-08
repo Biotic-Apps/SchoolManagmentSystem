@@ -63,6 +63,10 @@ import com.schoolapp.feature.syllabus.parent.ParentSyllabusRoute
 import com.schoolapp.feature.syllabus.plans.MyPlansRoute
 import com.schoolapp.feature.timetable.ParentTimetableScreen
 import com.schoolapp.feature.timetable.TimetableRoute
+import com.schoolapp.feature.timetable.builder.TimetableAdminRoute
+import com.schoolapp.feature.timetable.navigation.timetableDestinations
+import com.schoolapp.feature.timetable.substitutions.substitutionsTab
+import com.schoolapp.core.navigation.TimetableBuilderDestination
 import com.schoolapp.feature.certificates.CertificatesMenuScreen
 import com.schoolapp.feature.certificates.certificatesDestinations
 import com.schoolapp.feature.exams.ExamsMenuScreen
@@ -93,7 +97,7 @@ internal val AppShellContent = ShellContent(
         },
         MenuIds.BRANCHES to { shell -> BranchesRoute(onOpenBranch = { shell.open(BranchDetailDestination(it)) }) },
         MenuIds.SESSIONS to { _ -> SessionsCalendarRoute() },
-        MenuIds.CLASSES to { shell -> if (shell.activeRole in SECTION_STAFF) MyClasses(shell) else ClassesRoute() },
+        MenuIds.CLASSES to { shell -> if (shell.activeRole in SECTION_STAFF) MyClasses(shell) else ClassesRoute(onOpenClass = shell::open) },
         MenuIds.STUDENTS to { shell ->
             if (shell.activeRole == RoleKey.PARENT) {
                 ChildProfileRoute(
@@ -110,8 +114,14 @@ internal val AppShellContent = ShellContent(
         MenuIds.TIMETABLE to { shell ->
             if (shell.activeRole == RoleKey.PARENT) {
                 ParentTimetableScreen(activitiesContent = { ChildActivitiesSection(onOpen = shell::open, modifier = it) })
+            } else if (shell.activeRole in TIMETABLE_BUILDERS) {
+                TimetableAdminRoute(extraTab = substitutionsTab())
             } else {
-                TimetableRoute(onOpenMenu = shell::openMenu, canOpenMenu = shell::canOpenMenu)
+                TimetableRoute(
+                    onOpenMenu = shell::openMenu,
+                    canOpenMenu = shell::canOpenMenu,
+                    onEditSection = { id, title -> shell.open(TimetableBuilderDestination(id, title)) },
+                )
             }
         },
         MenuIds.SYLLABUS to { shell ->
@@ -160,7 +170,8 @@ internal val AppShellContent = ShellContent(
         approvalsDestinations(navController)
         profileDestinations(navController)
         notificationsDestinations(navController)
-        organisationDestinations(navController)
+        organisationDestinations(navController, canBuildTimetable = { true })
+        timetableDestinations(navController)
         studentsDestinations(navController)
         syllabusDestinations(navController)
         admissionsDestinations(navController)
@@ -183,6 +194,9 @@ internal val AppShellContent = ShellContent(
 )
 
 private val SECTION_STAFF = setOf(RoleKey.TEACHER, RoleKey.HELPER)
+
+/** Roles whose Timetable menu is the builder + bell schedule (the API still checks each section). */
+private val TIMETABLE_BUILDERS = setOf(RoleKey.SUPER_ADMIN, RoleKey.PRINCIPAL, RoleKey.COORDINATOR, RoleKey.HEAD_TEACHER)
 
 /** Opens the Approvals menu, or null when the role has none. */
 private fun ShellNavigator.approvalsLink(): (() -> Unit)? = { openMenu(MenuIds.APPROVALS) }.takeIf { canOpenMenu(MenuIds.APPROVALS) }

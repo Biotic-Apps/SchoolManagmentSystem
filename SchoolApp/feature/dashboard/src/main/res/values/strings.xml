@@ -101,4 +101,8 @@
     <string name="dashboard_setup_students">Students</string>
     <string name="dashboard_setup_timetable">Timetable</string>
     <string name="dashboard_setup_fee_plan">Fee plan</string>
+    <string name="dashboard_setup_bell_schedule">Bell schedule</string>
+    <string name="dashboard_setup_allocation">Subject teachers</string>
+    <string name="dashboard_setup_left">%1$d left</string>
+    <string name="dashboard_setup_fee_plan_hint">Your accountant sets this up</string>
 </resources>

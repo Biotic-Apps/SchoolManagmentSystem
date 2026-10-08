@@ -7,6 +7,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.navigation.MenuIds
 import com.schoolapp.feature.timetable.components.LessonActions
+import com.schoolapp.feature.timetable.substitutions.SupervisorTimetableTabs
 
 /**
  * [onOpenMenu] / [canOpenMenu] let a teacher jump from a lesson to Attendance or the Diary of their own
@@ -18,6 +19,7 @@ fun TimetableRoute(
     viewModel: TimetableViewModel = hiltViewModel(),
     onOpenMenu: (String) -> Unit = {},
     canOpenMenu: (String) -> Boolean = { false },
+    onEditSection: ((sectionId: String, title: String) -> Unit)? = null,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val teacherWeek = state.mode == TimetableMode.MY_WEEK && !state.showsSections
@@ -29,15 +31,20 @@ fun TimetableRoute(
     } else {
         null
     }
-    TimetableScreen(
-        state = state,
-        onDaySelected = viewModel::onDaySelected,
-        onSectionSelected = viewModel::onSectionSelected,
-        onRetry = viewModel::retry,
-        modifier = modifier,
-        onTeacherViewSelected = viewModel::onTeacherViewSelected,
-        onRefresh = viewModel::refresh,
-        onLessonSelected = viewModel::onLessonSelected,
-        lessonActions = LessonActions(onMarkAttendance = action(MenuIds.ATTENDANCE), onWriteDiary = action(MenuIds.DIARY)),
-    )
+    // Supervisors also get a "Substitutions" tab (absent-teacher cover).
+    val screen: @Composable (Modifier) -> Unit = { screenModifier ->
+        TimetableScreen(
+            state = state,
+            onDaySelected = viewModel::onDaySelected,
+            onSectionSelected = viewModel::onSectionSelected,
+            onRetry = viewModel::retry,
+            modifier = screenModifier,
+            onTeacherViewSelected = viewModel::onTeacherViewSelected,
+            onRefresh = viewModel::refresh,
+            onLessonSelected = viewModel::onLessonSelected,
+            lessonActions = LessonActions(onMarkAttendance = action(MenuIds.ATTENDANCE), onWriteDiary = action(MenuIds.DIARY)),
+            onEditSection = onEditSection,
+        )
+    }
+    if (state.mode == TimetableMode.SECTION) SupervisorTimetableTabs(modifier, timetable = screen) else screen(modifier)
 }

@@ -47,6 +47,9 @@ data class HealthAlertDto(
     val studentId: String? = null,
     val student: IdNameDto? = null,
     val studentName: String? = null,
+    /** The live API sends the student's name flat as `name` with `rollNo`. */
+    val name: String? = null,
+    val rollNo: Int? = null,
     val allergies: List<JsonElement> = emptyList(),
     val conditions: List<String> = emptyList(),
     val instructions: String? = null,

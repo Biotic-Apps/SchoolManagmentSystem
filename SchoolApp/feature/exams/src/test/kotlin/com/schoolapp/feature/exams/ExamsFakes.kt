@@ -48,6 +48,11 @@ internal class FakeExamsRepository(var loaded: LoadedMarkSheet) : ExamsRepositor
     var discardCalls = 0
     var childResults: Map<String, ChildResults> = emptyMap()
     var reportCard: ReportCard = ReportCard(ReportCardStatus.PENDING, null, null)
+    var examList: List<Exam> = emptyList()
+    var sheetsByExam: Map<String, List<MarkSheet>> = emptyMap()
+    var resultsBySection: Map<String, List<StudentResult>> = emptyMap()
+    var resultsFailure: AppError? = null
+    val resultCalls = mutableListOf<Pair<String, String?>>()
 
     private fun next(entries: List<MarkEntry>, status: MarkSheetStatus): AppResult<MarkSheetOutcome> = outcomes.removeFirstOrNull()
         ?: run {
@@ -56,8 +61,9 @@ internal class FakeExamsRepository(var loaded: LoadedMarkSheet) : ExamsRepositor
             AppResult.Success(MarkSheetOutcome.Saved(loaded.sheet.copy(rows = rows, status = status)))
         }
 
-    override suspend fun exams(status: ExamStatus?, branchId: String?): AppResult<List<Exam>> = AppResult.Success(emptyList())
-    override suspend fun markSheets(examId: String): AppResult<List<MarkSheet>> = AppResult.Success(emptyList())
+    override suspend fun exams(status: ExamStatus?, branchId: String?): AppResult<List<Exam>> =
+        AppResult.Success(examList.filter { status == null || it.status == status })
+    override suspend fun markSheets(examId: String): AppResult<List<MarkSheet>> = AppResult.Success(sheetsByExam[examId].orEmpty())
     override suspend fun myMarkSheets(): AppResult<List<MarkSheet>> = AppResult.Success(emptyList())
     override suspend fun markSheet(id: String): AppResult<LoadedMarkSheet> = AppResult.Success(loaded)
 
@@ -85,6 +91,12 @@ internal class FakeExamsRepository(var loaded: LoadedMarkSheet) : ExamsRepositor
 
     override suspend fun childResults(studentId: String): AppResult<ChildResults> =
         childResults[studentId]?.let { AppResult.Success(it) } ?: AppResult.Failure(AppError.Server(404, "NOT_FOUND", null))
+
+    override suspend fun sectionResults(examId: String, sectionId: String?): AppResult<List<StudentResult>> {
+        resultCalls += examId to sectionId
+        resultsFailure?.let { return AppResult.Failure(it) }
+        return AppResult.Success(resultsBySection[sectionId].orEmpty())
+    }
 
     override suspend fun reportCard(studentId: String, examId: String): AppResult<ReportCard> = AppResult.Success(reportCard)
 }

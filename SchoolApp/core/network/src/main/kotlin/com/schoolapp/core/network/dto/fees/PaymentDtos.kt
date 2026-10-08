@@ -18,7 +18,10 @@ data class PaymentProofDto(
     val file: AttachmentDto? = null,
     val fileUrl: String? = null,
     val status: String? = null,
+    val rejectReason: String? = null,
     val reason: String? = null,
+    val note: String? = null,
+    val fileId: String? = null,
     val submittedBy: IdNameDto? = null,
     val createdAt: String? = null,
 )
@@ -50,8 +53,20 @@ data class PaymentDto(
     val reference: String? = null,
     val receivedOn: String? = null,
     val cashier: IdNameDto? = null,
+    val receivedBy: IdNameDto? = null,
     val status: String? = null,
+    val reversalReason: String? = null,
+    val currency: String? = null,
 )
+
+@Serializable
+data class ReversePaymentBodyDto(val reason: String)
+
+@Serializable
+data class RefundBodyDto(val paymentId: String, val amountMinor: Long, val reason: String, val method: String)
+
+@Serializable
+data class RefundDto(val id: String, val status: String? = null, val amountMinor: Long = 0, val approvalId: String? = null)
 
 @Serializable
 data class PaymentBodyDto(

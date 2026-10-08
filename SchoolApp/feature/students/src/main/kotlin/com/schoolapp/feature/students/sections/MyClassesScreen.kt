@@ -15,7 +15,6 @@ import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.ListItemRow
 import com.schoolapp.core.designsystem.component.LoadingState
-import com.schoolapp.core.designsystem.component.SearchField
 import com.schoolapp.core.designsystem.theme.SchoolTheme
 import com.schoolapp.core.model.organisation.Section
 import com.schoolapp.core.ui.appErrorMessage
@@ -34,13 +33,11 @@ fun MyClassesScreen(
     modifier: Modifier = Modifier,
 ) {
     CenteredColumn(modifier) {
-        SearchField(
-            value = state.query,
-            onValueChange = onQueryChange,
-            placeholder = stringResource(R.string.students_search_hint),
-            modifier = Modifier.padding(16.dp),
-        )
+        if (state.canSearch) {
+            StudentSearchBar(query = state.query, onQueryChange = onQueryChange, modifier = Modifier.padding(16.dp))
+        }
         val listModifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)
+            .padding(top = if (state.canSearch) 0.dp else 16.dp)
         when {
             state.showsSearch -> when {
                 state.isSearching -> LoadingState()
@@ -80,6 +77,7 @@ private fun MyClassesScreenPreview() = SchoolTheme {
     MyClassesScreen(
         state = MyClassesUiState(
             isLoading = false,
+            canSearch = true,
             sections = listOf(Section("1", "c5", "Class 5", "A", 35, "Room 12", 32, "ACTIVE")),
         ),
         onQueryChange = {}, onOpenSection = {}, onOpenStudent = {}, onRetry = {},

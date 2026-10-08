@@ -34,6 +34,8 @@ data class TimetableUiState(
     val sectionVersion: Int? = null,
     /** Class teacher viewing their own section's draft. */
     val draftNote: Boolean = false,
+    /** Teacher viewing a section whose draft they may build (their class-teacher section). */
+    val sectionEditable: Boolean = false,
     /** Lesson whose detail sheet is open. */
     val openLesson: ScheduleRow? = null,
 ) {

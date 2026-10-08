@@ -20,8 +20,8 @@ import com.schoolapp.feature.fees.components.label
 
 /** Receipt number, student, method and cashier; amount right aligned. */
 @Composable
-internal fun PaymentRow(payment: Payment, currency: String, modifier: Modifier = Modifier) {
-    AppCard(modifier = modifier, contentPadding = 12.dp) {
+internal fun PaymentRow(payment: Payment, currency: String, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null) {
+    AppCard(modifier = modifier, onClick = onClick, contentPadding = 12.dp) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
@@ -34,6 +34,9 @@ internal fun PaymentRow(payment: Payment, currency: String, modifier: Modifier =
                     style = MaterialTheme.typography.bodySmall,
                     color = AppColors.TextSecondary,
                 )
+                if (!payment.isActive) {
+                    Text(stringResource(R.string.fees_payment_reversal_state), style = MaterialTheme.typography.bodySmall, color = AppColors.Error)
+                }
                 payment.cashierName?.let {
                     Text(stringResource(R.string.fees_received_by, it), style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)
                 }

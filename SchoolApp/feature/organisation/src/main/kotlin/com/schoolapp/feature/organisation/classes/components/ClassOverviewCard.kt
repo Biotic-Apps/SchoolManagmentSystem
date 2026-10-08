@@ -18,10 +18,10 @@ import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.model.organisation.ClassOverview
 import com.schoolapp.feature.organisation.R
 
-/** One class: totals, section chips with class teachers, subjects, timetable state per section and issues. */
+/** One class (tap opens Class setup): totals, section chips with class teachers, subjects, timetable state per section and issues. */
 @Composable
-internal fun ClassOverviewCard(item: ClassOverview, modifier: Modifier = Modifier) {
-    AppCard(modifier) {
+internal fun ClassOverviewCard(item: ClassOverview, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null) {
+    AppCard(modifier, onClick = onClick) {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Header(item)
             Labelled(stringResource(R.string.org_class_sections_label)) {

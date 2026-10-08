@@ -19,6 +19,7 @@ import com.schoolapp.feature.exams.R
 import com.schoolapp.feature.exams.board.components.ApprovalsNote
 import com.schoolapp.feature.exams.board.components.CompletenessSummary
 import com.schoolapp.feature.exams.components.MarkSheetCard
+import com.schoolapp.feature.exams.components.examOptions
 import com.schoolapp.feature.exams.components.markSheetStatusLabel
 
 internal class CompletenessActions(
@@ -32,7 +33,7 @@ internal class CompletenessActions(
 
 @Composable
 internal fun CompletenessScreen(state: CompletenessUiState, actions: CompletenessActions, modifier: Modifier = Modifier) {
-    val examOptions = state.exams.map { SwitcherOption(it.id, it.name) }
+    val examChips = examOptions(state.exams)
     val filterOptions = listOf(SwitcherOption(CompletenessViewModel.ALL, stringResource(R.string.exams_filter_all, state.sheets.size))) +
         state.statuses.map { (status, count) -> SwitcherOption(status.name, stringResource(R.string.exams_filter_status, markSheetStatusLabel(status), count)) }
     val groups = state.groups
@@ -42,7 +43,7 @@ internal fun CompletenessScreen(state: CompletenessUiState, actions: Completenes
             item(key = "exam_picker") {
                 Column {
                     SectionHeader(title = stringResource(R.string.exams_completeness_title), subtitle = stringResource(R.string.exams_pick_exam))
-                    FilterChipRow(examOptions, state.selectedExamId, actions.onExamSelected)
+                    FilterChipRow(examChips, state.selectedExamId, actions.onExamSelected)
                 }
             }
             val sheetsError = state.sheetsError

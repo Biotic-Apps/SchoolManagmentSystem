@@ -26,7 +26,20 @@ class PrimaryNavigationTest {
         assertEquals(listOf(MenuIds.DASHBOARD, MenuIds.CLASSES, MenuIds.ATTENDANCE, MenuIds.DIARY), primaryIds(RoleKey.TEACHER))
         assertEquals(listOf(MenuIds.DASHBOARD, MenuIds.STUDENTS, MenuIds.DIARY, MenuIds.ATTENDANCE), primaryIds(RoleKey.PARENT))
         assertEquals(listOf(MenuIds.DASHBOARD, MenuIds.CLASSES, MenuIds.STUDENTS, MenuIds.APPROVALS), primaryIds(RoleKey.PRINCIPAL))
-        assertEquals(listOf(MenuIds.DASHBOARD, MenuIds.FEES, MenuIds.PAYROLL, MenuIds.EXPENSES), primaryIds(RoleKey.ACCOUNTANT))
+        assertEquals(listOf(MenuIds.DASHBOARD, MenuIds.STUDENTS, MenuIds.FEES, MenuIds.PAYROLL), primaryIds(RoleKey.ACCOUNTANT))
+        assertEquals(listOf(MenuIds.DASHBOARD, MenuIds.BRANCHES, MenuIds.STAFF, MenuIds.APPROVALS), primaryIds(RoleKey.SUPER_ADMIN))
+    }
+
+    @Test
+    fun bottom_bar_never_holds_web_only_placeholders() {
+        RoleKey.entries.forEach { role ->
+            val primary = PrimaryNavigation.split(fullMenu(role), role).primary.map { it.id }
+            assertTrue("$role $primary", primary.none(PrimaryNavigation.WebOnly::contains))
+        }
+        val custom = NavigationCatalog.entries.filter { it.id in PrimaryNavigation.WebOnly || it.id == MenuIds.DASHBOARD } +
+            NavigationCatalog.entries.filter { it.id == MenuIds.NOTICES }
+        val split = PrimaryNavigation.split(custom, CustomRole("auditor"))
+        assertTrue(split.primary.none { it.id in PrimaryNavigation.WebOnly })
     }
 
     @Test
@@ -61,10 +74,11 @@ class PrimaryNavigationTest {
     fun short_menus_have_no_more_and_custom_roles_take_the_first_four() {
         val small = fullMenu(RoleKey.TEACHER).take(4)
         assertTrue(PrimaryNavigation.split(small, RoleKey.TEACHER).overflow.isEmpty())
-        val custom = NavigationCatalog.entries.take(7)
+        val custom = NavigationCatalog.entries.take(10)
         val split = PrimaryNavigation.split(custom, CustomRole("librarian"))
-        assertEquals(custom.take(4), split.primary)
-        assertEquals(custom.drop(4), split.overflow)
+        val inApp = custom.filterNot { it.id in PrimaryNavigation.WebOnly }
+        assertEquals(inApp.take(4), split.primary)
+        assertEquals(custom.filterNot { it in inApp.take(4) }, split.overflow)
     }
 
     @Test

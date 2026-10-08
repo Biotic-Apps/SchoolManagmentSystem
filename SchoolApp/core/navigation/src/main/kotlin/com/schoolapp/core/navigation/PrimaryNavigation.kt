@@ -14,24 +14,30 @@ data class NavigationSplit(val primary: List<MenuItem>, val overflow: List<MenuI
 object PrimaryNavigation {
     const val MAX_PRIMARY = 4
 
+    /** Modules managed on the web panel only; they open a placeholder in the app, so never fill a bottom-bar slot. */
+    val WebOnly: Set<String> = setOf(
+        MenuIds.SCHOOLS, MenuIds.USERS, MenuIds.ROLES, MenuIds.EXPENSES, MenuIds.INVENTORY, MenuIds.REPORTS,
+        MenuIds.SETTINGS,
+    )
+
     private val Preferred: Map<RoleKey, List<String>> = mapOf(
-        RoleKey.SUPER_ADMIN to listOf(MenuIds.DASHBOARD, MenuIds.SCHOOLS, MenuIds.USERS, MenuIds.APPROVALS),
+        RoleKey.SUPER_ADMIN to listOf(MenuIds.DASHBOARD, MenuIds.BRANCHES, MenuIds.STAFF, MenuIds.APPROVALS),
         RoleKey.PRINCIPAL to listOf(MenuIds.DASHBOARD, MenuIds.CLASSES, MenuIds.STUDENTS, MenuIds.APPROVALS),
         RoleKey.COORDINATOR to listOf(MenuIds.DASHBOARD, MenuIds.CLASSES, MenuIds.ATTENDANCE, MenuIds.APPROVALS),
         RoleKey.HEAD_TEACHER to listOf(MenuIds.DASHBOARD, MenuIds.CLASSES, MenuIds.ATTENDANCE, MenuIds.APPROVALS),
         RoleKey.TEACHER to listOf(MenuIds.DASHBOARD, MenuIds.CLASSES, MenuIds.ATTENDANCE, MenuIds.DIARY),
         RoleKey.HELPER to listOf(MenuIds.DASHBOARD, MenuIds.CLASSES, MenuIds.ATTENDANCE, MenuIds.DIARY),
-        RoleKey.ACCOUNTANT to listOf(MenuIds.DASHBOARD, MenuIds.FEES, MenuIds.PAYROLL, MenuIds.EXPENSES),
+        RoleKey.ACCOUNTANT to listOf(MenuIds.DASHBOARD, MenuIds.STUDENTS, MenuIds.FEES, MenuIds.PAYROLL),
         RoleKey.PARENT to listOf(MenuIds.DASHBOARD, MenuIds.STUDENTS, MenuIds.DIARY, MenuIds.ATTENDANCE),
     )
 
     fun preferred(role: RoleRef): List<String> = (role as? RoleKey)?.let(Preferred::get).orEmpty()
 
     fun split(menu: List<MenuItem>, role: RoleRef, max: Int = MAX_PRIMARY): NavigationSplit {
-        if (menu.size <= max) return NavigationSplit(menu, emptyList())
+        if (menu.size <= max && menu.none { it.id in WebOnly }) return NavigationSplit(menu, emptyList())
         val byId = menu.associateBy { it.id }
-        val chosen = preferred(role).mapNotNull(byId::get).take(max).toMutableList()
-        menu.forEach { if (chosen.size < max && it !in chosen) chosen += it }
+        val chosen = preferred(role).filterNot(WebOnly::contains).mapNotNull(byId::get).take(max).toMutableList()
+        menu.forEach { if (chosen.size < max && it !in chosen && it.id !in WebOnly) chosen += it }
         // Keep the bar in menu order so Home stays first.
         val primary = menu.filter { it in chosen }
         return NavigationSplit(primary, menu.filterNot { it in chosen })

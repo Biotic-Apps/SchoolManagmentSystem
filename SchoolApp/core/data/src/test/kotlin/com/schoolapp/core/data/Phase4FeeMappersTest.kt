@@ -2,12 +2,14 @@ package com.schoolapp.core.data
 
 import com.schoolapp.core.data.fees.toModel
 import com.schoolapp.core.model.fees.DuesAging
+import com.schoolapp.core.model.fees.DuesGuardian
 import com.schoolapp.core.model.fees.InvoiceStatus
 import com.schoolapp.core.model.fees.PaymentMethod
 import com.schoolapp.core.model.fees.ProofMethod
 import com.schoolapp.core.model.fees.ProofStatus
 import com.schoolapp.core.network.NetworkJson
 import com.schoolapp.core.network.dto.common.IdNameDto
+import com.schoolapp.core.network.dto.fees.DailyCollectionDto
 import com.schoolapp.core.network.dto.fees.DuesRowDto
 import com.schoolapp.core.network.dto.fees.FeeSummaryDto
 import com.schoolapp.core.network.dto.fees.FinanceDashboardDto
@@ -130,17 +132,90 @@ class Phase4FeeMappersTest {
     }
 
     @Test
-    fun dues_row_without_student_id_is_dropped_and_aging_keys_are_read() {
+    fun dues_row_without_student_id_is_dropped() {
         assertNull(DuesRowDto(name = "Nobody", balanceMinor = 100).toModel())
+    }
+
+    @Test
+    fun dues_row_reads_live_api_shape_with_nested_student_aging_and_guardian() {
+        // Captured from GET /dues (accountant, demo school).
         val row = NetworkJson.decodeFromString(
             DuesRowDto.serializer(),
-            """{"student":{"id":"s1","name":"Ali"},"balanceMinor":1200000,"days":75,
-               "aging":{"0-30":200000,"31-60":300000,"61-90":700000,"90+":0}}""",
+            """{"student":{"id":"01a1100a-a9f3-7188-83ba-cbb130bceb70","name":"Hamza Butt","admissionNo":"BRIGHT-2026-0022",
+               "className":"Class 5","sectionName":"A"},"branchId":"01a1100a-9fc0-755c-b84b-abbfa92b7671","balanceMinor":1640000,
+               "overdueMinor":940000,"oldestOverdueDays":59,"openInvoices":3,
+               "aging":{"d0_30":1320000,"d31_60":320000,"d61_90":0,"d90plus":0},
+               "guardian":{"name":"Mr. Butt","phone":"+923002000022","relation":"FATHER"},"currency":"PKR"}""",
+        ).toModel()!!
+        assertEquals("01a1100a-a9f3-7188-83ba-cbb130bceb70", row.studentId)
+        assertEquals("Hamza Butt", row.studentName)
+        assertEquals("BRIGHT-2026-0022", row.admissionNo)
+        assertEquals("Class 5", row.className)
+        assertEquals("A", row.sectionName)
+        assertEquals(59, row.oldestDueDays)
+        assertEquals(940_000L, row.overdueMinor)
+        assertEquals(DuesAging(1_320_000, 320_000, 0, 0), row.aging)
+        assertEquals(DuesGuardian("Mr. Butt", "+923002000022", "FATHER"), row.guardian)
+    }
+
+    @Test
+    fun proof_reads_live_reject_reason_note_and_student_id() {
+        // Shape captured from GET /payment-proofs; status/rejectReason/note set as the API sends them after a rejection.
+        val proof = NetworkJson.decodeFromString(
+            PaymentProofDto.serializer(),
+            """{"id":"01a110a4-949e-77ca-ad47-67b7a91278bb","invoiceId":"01a110a4-9278-738e-a58d-e4008a9b4b74",
+               "invoiceNo":"INV-MAIN-202609-0021","student":{"id":"01a1100a-a9ea-77da-9b0f-96476f2ae70f","name":"Ayesha Javed",
+               "admissionNo":"BRIGHT-2026-0021"},"amountMinor":620000,"paidOn":"2026-10-05","method":"BANK",
+               "reference":"MCB-TRX-552901","fileId":"01a110a4-9499-709c-b59b-ca3983caf78f","fileUrl":"http://localhost:3000/api/v1/files/x/content",
+               "status":"REJECTED","submittedBy":{"id":"p1","name":"Demo Parent"},"decidedBy":{"id":"a1","name":"Demo Accountant"},
+               "decidedAt":"2026-10-07T10:00:00.000Z","note":null,"rejectReason":"Amount does not match the bank slip",
+               "paymentId":null,"receiptNo":null,"currency":"PKR","createdAt":"2026-10-06T09:56:23.838Z"}""",
         ).toModel()
-        assertEquals("s1", row?.studentId)
-        assertEquals("Ali", row?.studentName)
-        assertEquals(75, row?.oldestDueDays)
-        assertEquals(DuesAging(200_000, 300_000, 700_000, 0), row?.aging)
+        assertEquals(ProofStatus.REJECTED, proof.status)
+        assertEquals("Amount does not match the bank slip", proof.reason)
+        assertEquals("01a1100a-a9ea-77da-9b0f-96476f2ae70f", proof.studentId)
+        assertNull(proof.note)
+    }
+
+    @Test
+    fun payment_reads_received_by_from_live_api() {
+        // Captured from GET /payments (accountant).
+        val payment = NetworkJson.decodeFromString(
+            PaymentDto.serializer(),
+            """{"id":"01a110a7-7823-77ab-bcfb-69ef6cb8937e","receiptNo":"RCT-MAIN-2026-0097","student":{"id":"01a1100a-a9ea-77da-9b0f-96476f2ae70f",
+               "name":"Ayesha Javed","admissionNo":"BRIGHT-2026-0021"},"amountMinor":100000,"unallocatedMinor":0,"method":"CASH",
+               "reference":null,"receivedOn":"2026-10-06","receivedBy":{"id":"u1","name":"Demo Accountant"},"status":"RECORDED",
+               "reversalReason":null,"reversedAt":null,"gateway":null,"proofId":null,"allocations":[],"currency":"PKR",
+               "createdAt":"2026-10-06T09:59:33.155Z"}""",
+        ).toModel()
+        assertEquals("Demo Accountant", payment.cashierName)
+        assertTrue(payment.isActive)
+        assertFalse(payment.copy(status = "REVERSED").isActive)
+        assertFalse(payment.copy(status = "REVERSAL_PENDING").isActive)
+    }
+
+    @Test
+    fun daily_collection_open_day_has_null_closing_and_closed_day_maps_cash_count() {
+        // Open day captured from GET /collections/daily.
+        val open = NetworkJson.decodeFromString(
+            DailyCollectionDto.serializer(),
+            """{"branchId":"b1","date":"2026-10-08","count":0,"totalMinor":0,"cashMinor":0,"byMethod":[],"byCashier":[],
+               "payments":[],"reversedCount":0,"reversedMinor":0,"reversedPayments":[],"closed":null,"currency":"PKR"}""",
+        ).toModel("2026-10-08")
+        assertFalse(open.closed)
+        val closed = NetworkJson.decodeFromString(
+            DailyCollectionDto.serializer(),
+            """{"branchId":"b1","date":"2026-10-06","count":2,"totalMinor":300000,"cashMinor":200000,
+               "byMethod":[{"method":"CASH","count":1,"amountMinor":200000}],
+               "byCashier":[{"cashier":{"id":"u1","name":"Demo Accountant"},"count":2,"amountMinor":300000}],"payments":[],
+               "closed":{"closedBy":{"id":"u1","name":"Demo Accountant"},"closedAt":"2026-10-06T17:00:00.000Z",
+               "cashExpectedMinor":200000,"cashCountedMinor":195000,"differenceMinor":-5000,"note":"Short 50"},"currency":"PKR"}""",
+        ).toModel("2026-10-06")
+        assertTrue(closed.closed)
+        assertEquals(200_000L, closed.cashMinor)
+        assertEquals(-5_000L, closed.closing?.differenceMinor)
+        assertEquals("Demo Accountant", closed.closing?.closedBy)
+        assertEquals("Demo Accountant", closed.byCashier.single().cashierName)
     }
 
     @Test

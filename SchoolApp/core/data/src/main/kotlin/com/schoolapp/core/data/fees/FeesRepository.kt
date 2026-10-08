@@ -7,6 +7,8 @@ import com.schoolapp.core.model.fees.FeeSummary
 import com.schoolapp.core.model.fees.FinanceOverview
 import com.schoolapp.core.model.fees.Invoice
 import com.schoolapp.core.model.fees.InvoiceStatus
+import com.schoolapp.core.model.fees.Payment
+import com.schoolapp.core.model.fees.RefundInput
 import com.schoolapp.core.model.fees.PaymentInput
 import com.schoolapp.core.model.fees.PaymentOutcome
 import com.schoolapp.core.model.fees.PaymentProof
@@ -45,6 +47,18 @@ interface FeesRepository {
     suspend fun dues(search: String? = null, branchId: String? = null): AppResult<List<DuesRow>>
 
     suspend fun dailyCollection(date: String, branchId: String? = null): AppResult<DailyCollection>
+
+    /** Queues fee reminders to the guardians of [studentIds]. */
+    suspend fun sendDueReminders(studentIds: List<String>): AppResult<Unit>
+
+    /** Sends a payment reversal for approval; returns the payment with its new status. */
+    suspend fun reversePayment(paymentId: String, reason: String): AppResult<Payment>
+
+    /** Sends a refund request for approval. */
+    suspend fun requestRefund(input: RefundInput): AppResult<Unit>
+
+    /** Closes the day with the counted cash; returns the closed collection. */
+    suspend fun closeDay(date: String, cashCountedMinor: Long, note: String?, branchId: String?): AppResult<DailyCollection>
 
     suspend fun financeOverview(branchId: String? = null, month: String? = null): AppResult<FinanceOverview>
 }

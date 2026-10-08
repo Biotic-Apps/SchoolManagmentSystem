@@ -31,6 +31,7 @@ import com.schoolapp.feature.fees.InvoiceDetailDestination
 import com.schoolapp.feature.fees.R
 import com.schoolapp.feature.fees.parent.components.FeeSummaryCard
 import com.schoolapp.feature.fees.parent.components.InvoiceRow
+import com.schoolapp.feature.fees.parent.components.ParentProofRow
 
 @Composable
 internal fun ParentFeesRoute(onOpen: (Any) -> Unit, modifier: Modifier = Modifier, viewModel: ParentFeesViewModel = hiltViewModel()) {
@@ -81,6 +82,10 @@ internal fun ParentFeesScreen(
             }
             items(state.invoices, key = { "inv_${it.id}" }) { invoice ->
                 InvoiceRow(invoice, onClick = { onInvoiceClick(invoice.id) })
+            }
+            if (state.proofs.isNotEmpty()) {
+                item(key = "proofs_header") { SectionHeader(title = stringResource(R.string.fees_parent_proofs)) }
+                items(state.proofs, key = { "proof_${it.id}" }) { proof -> ParentProofRow(proof, state.currency) }
             }
             item(key = "note") {
                 Text(stringResource(R.string.fees_parent_note), style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)

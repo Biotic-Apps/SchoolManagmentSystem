@@ -14,8 +14,12 @@ class SetupChecklistLoader @Inject constructor(private val repository: SetupRepo
     suspend fun load(session: SessionContext): SetupCardState? {
         if (!shows(session)) return null
         return when (val result = repository.checklist(session.activeBranchId)) {
-            is AppResult.Success -> result.data.toCard()
+            is AppResult.Success -> result.data.toCard(canSetUpFees = session.has(FEES_ADD))
             is AppResult.Failure -> null
         }
+    }
+
+    private companion object {
+        const val FEES_ADD = "fees.add"
     }
 }
