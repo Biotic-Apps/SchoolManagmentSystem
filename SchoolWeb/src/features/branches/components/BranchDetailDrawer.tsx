@@ -20,6 +20,10 @@ interface BranchDetailDrawerProps {
   onSettings?: (branch: Branch) => void;
 }
 
+function principalNames(branch: Branch): Record<string, string> | undefined {
+  return branch.principal ? { [branch.principal.id]: branch.principal.name } : undefined;
+}
+
 export function BranchDetailDrawer({ branch, onClose, onEdit, onChangePrincipal, onSettings }: BranchDetailDrawerProps) {
   const query = useBranch(branch?.id ?? null);
   const data = query.data ?? branch;
@@ -72,7 +76,7 @@ export function BranchDetailDrawer({ branch, onClose, onEdit, onChangePrincipal,
               { label: "Created", value: formatDate(data.createdAt) },
             ]}
           />
-          <EntityHistory entityType="Branch" entityId={data.id} />
+          <EntityHistory entityType="Branch" entityId={data.id} names={principalNames(data)} />
         </>
       )}
     </DetailDrawer>

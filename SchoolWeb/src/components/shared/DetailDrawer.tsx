@@ -25,7 +25,7 @@ export function DetailDrawer({ open, onOpenChange, title, description, actions, 
           </div>
           {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
         </div>
-        <div className="flex flex-1 flex-col gap-6 overflow-y-auto px-6 py-5">{children}</div>
+        <div className="flex min-h-0 flex-1 scroll-pt-4 flex-col gap-6 overflow-y-auto px-6 py-5 [&>*]:shrink-0">{children}</div>
       </SheetContent>
     </Sheet>
   );

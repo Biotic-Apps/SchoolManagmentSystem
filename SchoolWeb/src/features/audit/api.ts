@@ -1,29 +1,24 @@
-import { useQuery } from "@tanstack/react-query";
-import type { AuditTimelineEntry } from "@/components/shared/AuditTimeline";
-import { auditChanges } from "@/lib/audit-diff";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { http } from "@/lib/http";
 import type { AuditLog } from "./types";
 
-function onBehalfName(value: AuditLog["onBehalfOf"]): string | null {
-  if (!value) return null;
-  return typeof value === "string" ? value : value.name;
-}
+export const AUDIT_PAGE_SIZE = 20;
 
-function toEntry(log: AuditLog): AuditTimelineEntry {
-  return {
-    id: log.id,
-    action: log.action,
-    actorName: log.actor?.name ?? "System",
-    onBehalfOfName: onBehalfName(log.onBehalfOf),
-    at: log.at,
-    changes: auditChanges(log.before, log.after),
-  };
-}
-
+/** One record's audit trail, newest first, a page at a time (GET /audit?entityType&entityId). */
 export function useAuditLog(entityType: string, entityId: string | null, enabled = true) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["audit", entityType, entityId],
-    queryFn: async () => (await http.get<AuditLog[]>("/audit", { entityType, entityId, pageSize: 50 })).data.map(toEntry),
+    initialPageParam: 1,
+    queryFn: async ({ pageParam }) => {
+      const result = await http.get<AuditLog[]>("/audit", { entityType, entityId, page: pageParam, pageSize: AUDIT_PAGE_SIZE });
+      return { logs: result.data, meta: result.meta };
+    },
+    getNextPageParam: (last, pages) => {
+      const loaded = pages.reduce((sum, page) => sum + page.logs.length, 0);
+      const total = last.meta?.total;
+      const more = total !== undefined ? loaded < total : last.logs.length >= AUDIT_PAGE_SIZE;
+      return more && last.logs.length > 0 ? pages.length + 1 : undefined;
+    },
     enabled: enabled && !!entityId,
   });
 }
