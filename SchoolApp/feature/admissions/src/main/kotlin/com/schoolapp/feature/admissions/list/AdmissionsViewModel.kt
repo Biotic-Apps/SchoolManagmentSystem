@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.admissions.AdmissionsRepository
+import com.schoolapp.core.data.auth.AuthRepository
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import com.schoolapp.core.model.admissions.AdmissionApplication
 import com.schoolapp.core.model.admissions.ApplicationStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +27,8 @@ data class AdmissionsUiState(
     val counts: List<Pair<ApplicationStatus, Int>> = emptyList(),
     val filter: ApplicationStatus? = null,
     val error: AppError? = null,
+    /** `admissions.add`: "New application". */
+    val canAdd: Boolean = false,
 ) {
     val visible: List<AdmissionApplication> get() = applications.filter { filter == null || it.status == filter }
 }
@@ -31,12 +36,17 @@ data class AdmissionsUiState(
 @HiltViewModel
 class AdmissionsViewModel @Inject constructor(
     private val repository: AdmissionsRepository,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AdmissionsUiState())
     val uiState: StateFlow<AdmissionsUiState> = _uiState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            val session = authRepository.session.filterNotNull().first()
+            _uiState.update { it.copy(canAdd = session.has("admissions.add")) }
+        }
         load()
     }
 

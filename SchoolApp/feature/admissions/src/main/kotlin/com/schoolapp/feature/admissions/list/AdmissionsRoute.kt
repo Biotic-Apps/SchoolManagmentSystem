@@ -8,6 +8,8 @@ import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.material.icons.outlined.Add
+import com.schoolapp.core.designsystem.component.PrimaryButton
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -33,10 +35,11 @@ import com.schoolapp.feature.admissions.R
 fun AdmissionsRoute(
     onOpenApplication: (String) -> Unit,
     modifier: Modifier = Modifier,
+    onNewApplication: () -> Unit = {},
     viewModel: AdmissionsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    AdmissionsScreen(state, viewModel::onFilter, onOpenApplication, viewModel::load, modifier)
+    AdmissionsScreen(state, viewModel::onFilter, onOpenApplication, viewModel::load, modifier, onNewApplication)
 }
 
 @Composable
@@ -46,8 +49,17 @@ fun AdmissionsScreen(
     onOpenApplication: (String) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    onNewApplication: () -> Unit = {},
 ) {
     Column(modifier.fillMaxSize()) {
+        if (state.canAdd) {
+            PrimaryButton(
+                stringResource(R.string.admissions_new_title),
+                onClick = onNewApplication,
+                leadingIcon = Icons.Outlined.Add,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp),
+            )
+        }
         when {
             state.isLoading -> LoadingState()
             state.error != null -> ErrorState(appErrorMessage(state.error), onRetry = onRetry)

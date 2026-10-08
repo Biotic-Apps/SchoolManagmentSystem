@@ -29,4 +29,16 @@
     <string name="admissions_reason_required">A reason is required to reject</string>
     <string name="admissions_decided">Decision saved.</string>
     <string name="admissions_primary">Primary</string>
+    <string name="admissions_new_title">New application</string>
+    <string name="admissions_new_no_permission">You cannot take admission applications with this role.</string>
+    <string name="admissions_new_no_session">There is no active session in this branch, so applications cannot be taken yet.</string>
+    <string name="admissions_new_class">Class applied for</string>
+    <string name="admissions_new_class_field">Class</string>
+    <string name="admissions_new_child">Child</string>
+    <string name="admissions_new_guardian_n">Guardian %1$d</string>
+    <string name="admissions_new_add_guardian">Add another guardian</string>
+    <string name="admissions_new_notes">Notes</string>
+    <string name="admissions_new_optional">Optional</string>
+    <string name="admissions_new_fix_fields">Fix the highlighted fields above</string>
+    <string name="admissions_new_submit">Submit application</string>
 </resources>

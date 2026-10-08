@@ -27,6 +27,7 @@ import com.schoolapp.feature.pickup.PickupMenuScreen
 import com.schoolapp.feature.pickup.pickupDestinations
 import com.schoolapp.feature.admissions.list.AdmissionsRoute
 import com.schoolapp.feature.admissions.navigation.ApplicationDetailDestination
+import com.schoolapp.feature.admissions.navigation.NewApplicationDestination
 import com.schoolapp.feature.admissions.navigation.admissionsDestinations
 import com.schoolapp.feature.approvals.ApprovalsRoute
 import com.schoolapp.feature.approvals.navigation.ApprovalDetailDestination
@@ -137,7 +138,12 @@ internal val AppShellContent = ShellContent(
                 )
             }
         },
-        MenuIds.ADMISSIONS to { shell -> AdmissionsRoute(onOpenApplication = { shell.open(ApplicationDetailDestination(it)) }) },
+        MenuIds.ADMISSIONS to { shell ->
+            AdmissionsRoute(
+                onOpenApplication = { shell.open(ApplicationDetailDestination(it)) },
+                onNewApplication = { shell.open(NewApplicationDestination) },
+            )
+        },
         MenuIds.STAFF to { shell -> StaffListRoute(onOpenStaff = { shell.open(StaffDetailDestination(it)) }, onAddStaff = { shell.open(AddStaffDestination) }) },
         MenuIds.ATTENDANCE to { shell -> AttendanceMenuScreen(role = shell.activeRole, onOpen = shell::open) },
         MenuIds.MY_SALARY to { shell -> MySalaryScreen(attendanceContent = { MyAttendanceLeaveScreen(onOpen = shell::open) }) },
