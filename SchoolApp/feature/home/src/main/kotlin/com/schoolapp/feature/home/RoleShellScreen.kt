@@ -70,12 +70,7 @@ fun RoleShellScreen(
         SideEffect { if (entryMenuId != null) lastMenuId = entryMenuId }
         val currentId = entryMenuId ?: lastMenuId ?: state.menu.firstOrNull()?.id
         val onNavigate: (String) -> Unit = { id ->
-            if (id != currentId || !onMenuScreen) {
-                navController.navigate(MenuDestination(id)) {
-                    popUpTo(navController.graph.startDestinationId)
-                    launchSingleTop = true
-                }
-            }
+            if (id != currentId || !onMenuScreen) navController.navigateToMenu(id, state.menu.first().id)
         }
         val primary = remember(state.menu, state.activeRole) { PrimaryNavigation.split(state.menu, state.activeRole).primary }
         val compact = layout == ShellNavigationLayout.BottomBar

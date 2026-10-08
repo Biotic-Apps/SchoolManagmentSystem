@@ -21,7 +21,7 @@ internal fun ShellNavHost(
     content: ShellContent,
     modifier: Modifier = Modifier,
 ) {
-    val navigator = remember(navController, menuIds, activeRole) { ShellNavigator(navController, menuIds, activeRole) }
+    val navigator = remember(navController, menuIds, startMenuId, activeRole) { ShellNavigator(navController, menuIds, startMenuId, activeRole) }
     NavHost(
         navController = navController,
         startDestination = MenuDestination(startMenuId),
