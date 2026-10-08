@@ -34,6 +34,7 @@ internal fun GateContent(
 ) {
     ScreenColumn(modifier) {
         item(key = "today") { SectionHeader(stringResource(R.string.pickup_today, formatDate(state.today).orEmpty())) }
+        state.error?.let { item(key = "refresh_error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
         state.actionError?.let { item(key = "action_error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
         item(key = "leaves_header") { SectionHeader(stringResource(R.string.pickup_early_leaves)) }
         if (state.earlyLeaves.isEmpty()) {

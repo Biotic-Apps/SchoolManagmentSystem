@@ -25,6 +25,7 @@ import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.PullableState
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.SectionHeader
@@ -77,8 +78,9 @@ internal fun BranchTodayScreen(
 ) {
     when {
         state.isLoading -> LoadingState(modifier)
-        state.error != null -> ErrorState(appErrorMessage(state.error), modifier, onRetry = onRetry)
+        state.error != null && state.rows.isEmpty() -> PullableState(modifier) { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
         else -> ScreenColumn(modifier) {
+            state.error?.let { item(key = "refresh_error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
             item(key = "date") { AttendanceDateField(state.date, state.today, onDateSelected) }
             item(key = "totals") { TotalsCard(state.totals) }
             item(key = "leave") { LeaveReviewEntry(onLeaveReview, pendingCount = state.pendingLeaves) }

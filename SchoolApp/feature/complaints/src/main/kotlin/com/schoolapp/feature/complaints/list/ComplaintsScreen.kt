@@ -18,6 +18,7 @@ import com.schoolapp.core.designsystem.component.AppTabs
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.PullableState
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.model.complaint.Complaint
@@ -47,12 +48,14 @@ internal fun ComplaintsScreen(
             RefreshBox(state.isRefreshing, onRefresh, Modifier.fillMaxSize()) {
                 when {
                     state.isLoading -> LoadingState()
-                    state.error != null && state.items.isEmpty() -> ErrorState(appErrorMessage(state.error), onRetry = onRefresh)
-                    state.items.isEmpty() -> EmptyState(
-                        title = stringResource(R.string.complaints_empty_title),
-                        message = stringResource(state.box.emptyRes()),
-                        icon = Icons.Outlined.ReportProblem,
-                    )
+                    state.error != null && state.items.isEmpty() -> PullableState { ErrorState(appErrorMessage(state.error), onRetry = onRefresh) }
+                    state.items.isEmpty() -> PullableState {
+                        EmptyState(
+                            title = stringResource(R.string.complaints_empty_title),
+                            message = stringResource(state.box.emptyRes()),
+                            icon = Icons.Outlined.ReportProblem,
+                        )
+                    }
                     else -> ScreenColumn(contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 88.dp)) {
                         items(state.items.size, key = { state.items[it].id }) { index ->
                             val complaint = state.items[index]

@@ -13,6 +13,7 @@ import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.PullableState
 import com.schoolapp.core.designsystem.component.ScopePicker
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.StatusTone
@@ -38,8 +39,8 @@ internal class StaffMarkActions(
 internal fun StaffMarkScreen(state: StaffMarkUiState, actions: StaffMarkActions, modifier: Modifier = Modifier) {
     when {
         state.isLoading -> LoadingState(modifier)
-        state.error != null && state.entries.isEmpty() -> ErrorState(appErrorMessage(state.error), modifier, onRetry = actions.onRetry)
-        state.branchId == null -> EmptyState(stringResource(R.string.attendance_staff_no_branch), modifier, icon = Icons.Outlined.Business)
+        state.error != null && state.entries.isEmpty() -> PullableState(modifier) { ErrorState(appErrorMessage(state.error), onRetry = actions.onRetry) }
+        state.branchId == null -> PullableState(modifier) { EmptyState(stringResource(R.string.attendance_staff_no_branch), icon = Icons.Outlined.Business) }
         else -> ScreenColumn(modifier, contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 24.dp)) {
             if (state.showBranchPicker) {
                 item(key = "branch") {

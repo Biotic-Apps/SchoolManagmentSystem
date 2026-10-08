@@ -1,6 +1,7 @@
 package com.schoolapp.feature.organisation.sessions
 
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
@@ -21,10 +22,8 @@ import com.schoolapp.core.model.organisation.CalendarEvent
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.core.ui.calendar.CalendarEventCard
 import com.schoolapp.feature.organisation.R
-import com.schoolapp.feature.organisation.components.PullableState
 import com.schoolapp.feature.organisation.components.RefreshErrorBanner
 import com.schoolapp.feature.organisation.scope.BranchScopeBar
-import com.schoolapp.feature.organisation.scope.ScopedPane
 import com.schoolapp.feature.organisation.sessions.components.SessionCard
 
 @Composable
@@ -35,46 +34,42 @@ fun SessionsCalendarScreen(
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    ScopedPane(modifier) {
-        BranchScopeBar(state.branches, state.selectedBranchId, onBranchSelected)
-        if (state.isLoading) {
-            LoadingState()
-        } else {
-            RefreshBox(state.isRefreshing, onRefresh, Modifier.fillMaxWidth().weight(1f)) {
-                when {
-                    state.error != null && !state.hasContent ->
-                        PullableState { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
-                    state.sessions.isEmpty() -> PullableState {
-                        EmptyState(
-                            title = stringResource(R.string.org_sessions_empty),
-                            message = stringResource(R.string.org_read_only_hint),
-                            icon = Icons.Outlined.CalendarMonth,
-                        )
-                    }
-                    else -> SessionsAndEvents(state)
+    RefreshBox(state.isRefreshing, onRefresh, modifier.fillMaxSize()) {
+        ScreenColumn {
+            if (state.branches.isNotEmpty()) {
+                item(key = "scope") { BranchScopeBar(state.branches, state.selectedBranchId, onBranchSelected) }
+            }
+            when {
+                state.isLoading -> item(key = "loading") { LoadingState() }
+                state.error != null && !state.hasContent ->
+                    item(key = "error") { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
+                state.sessions.isEmpty() -> item(key = "empty") {
+                    EmptyState(
+                        title = stringResource(R.string.org_sessions_empty),
+                        message = stringResource(R.string.org_read_only_hint),
+                        icon = Icons.Outlined.CalendarMonth,
+                    )
                 }
+                else -> sessionsAndEvents(state)
             }
         }
     }
 }
 
-@Composable
-private fun SessionsAndEvents(state: SessionsCalendarUiState) {
-    ScreenColumn {
-        if (state.error != null) item(key = "refresh-error") { RefreshErrorBanner(state.error) }
-        item(key = "sessions-header") { SectionHeader(stringResource(R.string.org_sessions_title)) }
-        items(state.sessions, key = { it.id }) { SessionCard(it) }
-        item(key = "calendar-header") {
-            SectionHeader(
-                title = stringResource(R.string.org_calendar_title),
-                subtitle = state.activeSession?.name,
-            )
-        }
-        if (state.events.isEmpty()) {
-            item(key = "calendar-empty") { EmptyState(title = stringResource(R.string.org_calendar_empty)) }
-        }
-        items(state.events, key = { "event-${it.id}" }) { CalendarEventCard(it) }
+private fun LazyListScope.sessionsAndEvents(state: SessionsCalendarUiState) {
+    if (state.error != null) item(key = "refresh-error") { RefreshErrorBanner(state.error) }
+    item(key = "sessions-header") { SectionHeader(stringResource(R.string.org_sessions_title)) }
+    items(state.sessions, key = { it.id }) { SessionCard(it) }
+    item(key = "calendar-header") {
+        SectionHeader(
+            title = stringResource(R.string.org_calendar_title),
+            subtitle = state.activeSession?.name,
+        )
     }
+    if (state.events.isEmpty()) {
+        item(key = "calendar-empty") { EmptyState(title = stringResource(R.string.org_calendar_empty)) }
+    }
+    items(state.events, key = { "event-${it.id}" }) { CalendarEventCard(it) }
 }
 
 @Preview(showBackground = true)

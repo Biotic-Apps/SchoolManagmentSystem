@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.PullableState
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.SectionHeader
@@ -41,9 +42,9 @@ internal fun SchoolCalendarScreen(
     RefreshBox(isRefreshing = state.isRefreshing, onRefresh = onRefresh, modifier = modifier) {
         when {
             state.childId == null && !state.isLoading ->
-                EmptyState(stringResource(R.string.timetable_no_child), icon = Icons.Outlined.FamilyRestroom)
+                PullableState { EmptyState(stringResource(R.string.timetable_no_child), icon = Icons.Outlined.FamilyRestroom) }
             state.isLoading -> LoadingState()
-            error != null -> ErrorState(appErrorMessage(error), onRetry = onRetry)
+            error != null -> PullableState { ErrorState(appErrorMessage(error), onRetry = onRetry) }
             else -> ScreenColumn {
                 item(key = "header") {
                     SectionHeader(

@@ -20,6 +20,7 @@ import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.PullableState
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.StatusTone
@@ -67,8 +68,9 @@ internal fun LeaveReviewRoute(
 internal fun LeaveReviewContent(state: LeaveReviewUiState, onRetry: () -> Unit, onOpen: (String) -> Unit, modifier: Modifier = Modifier) {
     when {
         state.isLoading -> LoadingState(modifier)
-        state.error != null -> ErrorState(appErrorMessage(state.error), modifier, onRetry = onRetry)
+        state.error != null && state.pending.isEmpty() && state.decided.isEmpty() -> PullableState(modifier) { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
         else -> ScreenColumn(modifier) {
+            state.error?.let { item(key = "refresh_error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
             state.message?.let { message ->
                 item(key = "message") {
                     val text = if (message == ReviewMessage.APPROVED) R.string.attendance_leave_approved_message else R.string.attendance_leave_rejected_message

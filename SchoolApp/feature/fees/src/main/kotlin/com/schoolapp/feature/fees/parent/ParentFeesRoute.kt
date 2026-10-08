@@ -3,8 +3,8 @@ package com.schoolapp.feature.fees.parent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.FamilyRestroom
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
+import androidx.compose.material.icons.outlined.FamilyRestroom
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +21,7 @@ import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.PullableState
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.SectionHeader
@@ -67,7 +68,7 @@ internal fun ParentFeesScreen(
             icon = Icons.Outlined.FamilyRestroom,
         )
         state.isLoading && !hasData -> LoadingState(modifier)
-        state.error != null && !hasData -> ErrorState(appErrorMessage(state.error), modifier, onRetry = onRetry)
+        state.error != null && !hasData -> PullableState(modifier) { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
         else -> ScreenColumn(modifier) {
             item(key = "title") {
                 SectionHeader(title = stringResource(R.string.fees_parent_title), subtitle = state.childName)

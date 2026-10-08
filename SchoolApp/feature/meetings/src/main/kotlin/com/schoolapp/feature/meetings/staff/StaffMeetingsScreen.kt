@@ -12,6 +12,7 @@ import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.PullableState
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.StatusTone
@@ -46,7 +47,8 @@ internal fun StaffMeetingsScreen(
     ) {
         when {
             state.isLoading -> LoadingState()
-            state.error != null -> ErrorState(appErrorMessage(state.error), onRetry = onRetry)
+            state.error != null && state.upcoming.isEmpty() && state.past.isEmpty() && state.followUps.isEmpty() ->
+                PullableState { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
             else -> ScreenColumn {
                 item(key = "tabs") {
                     AppTabs(
@@ -55,6 +57,7 @@ internal fun StaffMeetingsScreen(
                         onSelect = { onTabSelected(tabs[it]) },
                     )
                 }
+                state.error?.let { item(key = "refresh_error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
                 state.actionError?.let { item(key = "error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
                 when (state.tab) {
                     StaffMeetingsTab.UPCOMING -> if (state.upcoming.isEmpty()) {

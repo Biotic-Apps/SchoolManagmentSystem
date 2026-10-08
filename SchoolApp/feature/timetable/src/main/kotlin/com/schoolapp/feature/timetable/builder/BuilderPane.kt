@@ -20,6 +20,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.designsystem.component.AppTextButton
+import com.schoolapp.core.designsystem.component.CollapsingHeaderLayout
 import com.schoolapp.core.designsystem.component.ConfirmDialog
 import com.schoolapp.core.designsystem.component.CreatablePickerField
 import com.schoolapp.core.designsystem.component.EmptyState
@@ -44,11 +47,12 @@ import com.schoolapp.core.ui.actionErrorMessage
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.timetable.R
 import com.schoolapp.feature.timetable.components.TimetableStateChip
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 /** Section picker, toolbar (state, save indicator, Publish / Discard, Lessons) and the swipeable day list. */
 @Composable
 internal fun BuilderPane(state: BuilderUiState, viewModel: TimetableBuilderViewModel, showPicker: Boolean, modifier: Modifier = Modifier) {
-    Column(modifier.fillMaxSize()) {
+    val picker: @Composable () -> Unit = {
         if (showPicker && state.choices.isNotEmpty()) {
             CreatablePickerField(
                 label = stringResource(R.string.tt_section),
@@ -58,15 +62,28 @@ internal fun BuilderPane(state: BuilderUiState, viewModel: TimetableBuilderViewM
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             )
         }
-        val builder = state.builder
-        when {
-            state.isLoading -> LoadingState()
-            builder == null && state.choices.isEmpty() && state.error == null ->
-                EmptyState(stringResource(R.string.tt_no_sections_title), message = stringResource(R.string.tt_no_sections_hint))
-            builder == null -> ErrorState(appErrorMessage(state.error ?: AppError.Unknown()), onRetry = viewModel::retry)
-            else -> {
-                Toolbar(state, viewModel)
-                DayPager(state, viewModel, Modifier.weight(1f))
+    }
+    val builder = state.builder
+    if (builder != null && !state.isLoading) {
+        // Picker, toolbar and day chips scroll away with the day's periods so the page reads as one scroll.
+        CollapsingHeaderLayout(
+            header = {
+                Column {
+                    picker()
+                    Toolbar(state, viewModel)
+                    DayChips(state, viewModel)
+                }
+            },
+            modifier = modifier.fillMaxSize(),
+        ) { DayPager(state, viewModel) }
+    } else {
+        Column(modifier.fillMaxSize()) {
+            picker()
+            when {
+                state.isLoading -> LoadingState()
+                state.choices.isEmpty() && state.error == null ->
+                    EmptyState(stringResource(R.string.tt_no_sections_title), message = stringResource(R.string.tt_no_sections_hint))
+                else -> ErrorState(appErrorMessage(state.error ?: AppError.Unknown()), onRetry = viewModel::retry)
             }
         }
     }
@@ -134,24 +151,32 @@ private fun Notice(text: String, tone: StatusTone, onDismiss: () -> Unit) {
     }
 }
 
-/** Day chips stay in step with the swipeable pages. */
 @Composable
-private fun DayPager(state: BuilderUiState, viewModel: TimetableBuilderViewModel, modifier: Modifier) {
-    val builder = state.builder ?: return
-    val days = state.days
-    val pager = rememberPagerState(initialPage = days.indexOf(state.selectedDay).coerceAtLeast(0)) { days.size }
-    LaunchedEffect(state.selectedDay) {
-        val page = days.indexOf(state.selectedDay)
-        if (page >= 0 && page != pager.currentPage) pager.animateScrollToPage(page)
-    }
-    LaunchedEffect(pager) { snapshotFlow { pager.currentPage }.collect { days.getOrNull(it)?.let(viewModel::selectDay) } }
+private fun DayChips(state: BuilderUiState, viewModel: TimetableBuilderViewModel) {
     FilterChipRow(
-        options = days.map { SwitcherOption(it.toString(), stringResource(dayNameRes(it))) },
+        options = state.days.map { SwitcherOption(it.toString(), stringResource(dayNameRes(it))) },
         selectedId = state.selectedDay.toString(),
         onSelect = { viewModel.selectDay(it.toInt()) },
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
     )
-    HorizontalPager(pager, modifier.fillMaxWidth()) { page ->
+}
+
+/** Swipeable days in step with the chips: chip taps scroll the pager, a settled swipe selects the day. */
+@Composable
+private fun DayPager(state: BuilderUiState, viewModel: TimetableBuilderViewModel) {
+    val builder = state.builder ?: return
+    val days = state.days
+    val pager = rememberPagerState(initialPage = days.indexOf(state.selectedDay).coerceAtLeast(0)) { days.size }
+    val currentDays by rememberUpdatedState(days)
+    LaunchedEffect(state.selectedDay) {
+        val page = days.indexOf(state.selectedDay)
+        if (page >= 0 && page != pager.settledPage) pager.animateScrollToPage(page)
+    }
+    // settledPage (not currentPage): mid-animation pages must not re-select a day and bounce the pager back.
+    LaunchedEffect(pager) {
+        snapshotFlow { pager.settledPage }.distinctUntilChanged().collect { currentDays.getOrNull(it)?.let(viewModel::selectDay) }
+    }
+    HorizontalPager(pager, Modifier.fillMaxSize()) { page ->
         DayPeriodsList(builder, days[page], state.canEdit, onOpen = { viewModel.lessons.open(days[page], it) })
     }
 }

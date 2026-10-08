@@ -1,10 +1,8 @@
 package com.schoolapp.feature.timetable.substitutions
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.items
@@ -42,36 +40,36 @@ internal fun SubstitutionsScreen(state: SubstitutionsUiState, viewModel: Substit
     var pickDate by rememberSaveable { mutableStateOf(false) }
     val dateText = formatDate(state.date).orEmpty()
     Box(modifier.fillMaxSize()) {
-        Column(Modifier.fillMaxSize()) {
-            PickerField(
-                value = dateText,
-                label = stringResource(R.string.timetable_subs_date),
-                onClick = { pickDate = true },
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).widthIn(max = 480.dp),
-            )
-            state.actionError?.let { InlineMessage(actionErrorMessage(it), StatusTone.Error, Modifier.padding(horizontal = 16.dp)) }
-            state.notice?.let {
-                val text = stringResource(if (it == SubstitutionNotice.ASSIGNED) R.string.timetable_subs_assigned else R.string.timetable_subs_removed)
-                InlineMessage(text, StatusTone.Success, Modifier.padding(horizontal = 16.dp))
-            }
-            when {
-                state.isLoading -> LoadingState(Modifier.weight(1f))
-                state.error != null && state.items.isEmpty() ->
-                    ErrorState(appErrorMessage(state.error), Modifier.weight(1f), onRetry = viewModel::retry)
-                else -> RefreshBox(state.isRefreshing, viewModel::refresh, Modifier.fillMaxWidth().weight(1f)) {
-                    ScreenColumn(contentPadding = PaddingValues(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 96.dp)) {
-                        if (state.items.isEmpty()) {
-                            item {
-                                EmptyState(
-                                    title = stringResource(R.string.timetable_subs_empty_title, dateText),
-                                    message = stringResource(R.string.timetable_subs_empty_message),
-                                    icon = Icons.Outlined.EventAvailable,
-                                )
-                            }
-                        }
-                        items(state.items, key = { it.id }) { item ->
-                            SubstitutionCard(item, onRemove = if (state.canEdit) ({ viewModel.onRemoveRequested(item) }) else null)
-                        }
+        RefreshBox(state.isRefreshing, viewModel::refresh, Modifier.fillMaxSize()) {
+            ScreenColumn(contentPadding = PaddingValues(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 96.dp)) {
+                item(key = "date") {
+                    PickerField(
+                        value = dateText,
+                        label = stringResource(R.string.timetable_subs_date),
+                        onClick = { pickDate = true },
+                        modifier = Modifier.widthIn(max = 480.dp),
+                    )
+                }
+                state.actionError?.let { item(key = "actionError") { InlineMessage(actionErrorMessage(it), StatusTone.Error) } }
+                state.notice?.let {
+                    item(key = "notice") {
+                        val text = stringResource(if (it == SubstitutionNotice.ASSIGNED) R.string.timetable_subs_assigned else R.string.timetable_subs_removed)
+                        InlineMessage(text, StatusTone.Success)
+                    }
+                }
+                when {
+                    state.isLoading -> item(key = "loading") { LoadingState() }
+                    state.error != null && state.items.isEmpty() ->
+                        item(key = "error") { ErrorState(appErrorMessage(state.error), onRetry = viewModel::retry) }
+                    state.items.isEmpty() -> item(key = "empty") {
+                        EmptyState(
+                            title = stringResource(R.string.timetable_subs_empty_title, dateText),
+                            message = stringResource(R.string.timetable_subs_empty_message),
+                            icon = Icons.Outlined.EventAvailable,
+                        )
+                    }
+                    else -> items(state.items, key = { it.id }) { item ->
+                        SubstitutionCard(item, onRemove = if (state.canEdit) ({ viewModel.onRemoveRequested(item) }) else null)
                     }
                 }
             }

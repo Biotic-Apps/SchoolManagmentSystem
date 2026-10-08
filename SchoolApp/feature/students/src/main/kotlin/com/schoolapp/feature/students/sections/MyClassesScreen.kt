@@ -12,7 +12,8 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.schoolapp.core.designsystem.component.DataList
+import com.schoolapp.core.designsystem.component.ScreenColumn
+import com.schoolapp.core.designsystem.component.dataListItems
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.ListItemRow
@@ -21,7 +22,6 @@ import com.schoolapp.core.designsystem.theme.SchoolTheme
 import com.schoolapp.core.model.organisation.Section
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.students.R
-import com.schoolapp.feature.students.components.CenteredColumn
 import com.schoolapp.feature.students.components.StudentRow
 import com.schoolapp.feature.students.components.sectionLabel
 
@@ -35,37 +35,37 @@ fun MyClassesScreen(
     modifier: Modifier = Modifier,
     onAddStudent: () -> Unit = {},
 ) {
-    CenteredColumn(modifier) {
+    ScreenColumn(modifier, itemSpacing = 0.dp) {
         if (state.canAdd) {
-            PrimaryButton(
-                stringResource(R.string.students_add_title),
-                onClick = onAddStudent,
-                leadingIcon = Icons.Outlined.PersonAdd,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
-            )
+            item(key = "add") {
+                PrimaryButton(
+                    stringResource(R.string.students_add_title),
+                    onClick = onAddStudent,
+                    leadingIcon = Icons.Outlined.PersonAdd,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                )
+            }
         }
         if (state.canSearch) {
-            StudentSearchBar(query = state.query, onQueryChange = onQueryChange, modifier = Modifier.padding(16.dp))
+            item(key = "search") {
+                StudentSearchBar(query = state.query, onQueryChange = onQueryChange, modifier = Modifier.padding(bottom = 16.dp))
+            }
         }
-        val listModifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)
-            .padding(top = if (state.canSearch) 0.dp else 16.dp)
         when {
             state.showsSearch -> when {
-                state.isSearching -> LoadingState()
-                state.searchError != null -> ErrorState(appErrorMessage(state.searchError))
-                else -> DataList(
+                state.isSearching -> item(key = "searching") { LoadingState() }
+                state.searchError != null -> item(key = "searchError") { ErrorState(appErrorMessage(state.searchError)) }
+                else -> dataListItems(
                     items = state.results,
                     key = { it.id },
-                    modifier = listModifier,
                     emptyContent = { EmptyState(stringResource(R.string.students_search_empty), icon = Icons.Outlined.PersonSearch) },
                 ) { StudentRow(it, onClick = { onOpenStudent(it.id) }, showClass = true) }
             }
-            state.isLoading -> LoadingState()
-            state.error != null -> ErrorState(appErrorMessage(state.error), onRetry = onRetry)
-            else -> DataList(
+            state.isLoading -> item(key = "loading") { LoadingState() }
+            state.error != null -> item(key = "error") { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
+            else -> dataListItems(
                 items = state.sections,
                 key = { it.id },
-                modifier = listModifier,
                 emptyContent = { EmptyState(stringResource(R.string.students_sections_empty), icon = Icons.Outlined.Groups) },
             ) { section ->
                 ListItemRow(

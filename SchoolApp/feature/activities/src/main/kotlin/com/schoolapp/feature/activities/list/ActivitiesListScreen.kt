@@ -18,6 +18,7 @@ import com.schoolapp.core.designsystem.component.AppTabs
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.PullableState
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.SectionHeader
@@ -40,8 +41,8 @@ internal fun ActivitiesListScreen(
             when {
                 state.isLoading -> LoadingState()
                 state.error != null && state.visible.isEmpty() && state.awaitingApproval.isEmpty() ->
-                    ErrorState(appErrorMessage(state.error), onRetry = onRetry)
-                state.noChild -> EmptyState(stringResource(R.string.activities_no_child), icon = Icons.Outlined.Celebration)
+                    PullableState { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
+                state.noChild -> PullableState { EmptyState(stringResource(R.string.activities_no_child), icon = Icons.Outlined.Celebration) }
                 else -> ActivitiesList(state, onTabSelected, onOpenActivity)
             }
         }

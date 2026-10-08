@@ -1,9 +1,11 @@
 package com.schoolapp.feature.organisation.catalogue
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
@@ -35,50 +37,56 @@ internal fun CatalogueTab(
     branchId: String,
     schoolId: String?,
     modifier: Modifier = Modifier,
+    header: @Composable () -> Unit = {},
     viewModel: CatalogueViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(branchId, schoolId) { viewModel.bind(branchId, schoolId) }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    when {
-        state.isLoading -> LoadingState(modifier)
-        state.error != null && state.subjects.isEmpty() && state.rooms.isEmpty() ->
-            ErrorState(appErrorMessage(state.error!!), modifier, onRetry = viewModel::load)
-        else -> CatalogueList(state, viewModel, modifier)
-    }
+    CatalogueList(state, viewModel, header, modifier)
     state.editor?.let { CatalogueEditorSheet(it, viewModel) }
 }
 
 @Composable
-private fun CatalogueList(state: CatalogueUiState, viewModel: CatalogueViewModel, modifier: Modifier) {
+private fun CatalogueList(state: CatalogueUiState, viewModel: CatalogueViewModel, header: @Composable () -> Unit, modifier: Modifier) {
     LazyColumn(modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 16.dp)) {
-        item {
-            Text(
-                stringResource(R.string.org_catalogue_hint),
-                style = MaterialTheme.typography.bodyMedium,
-                color = AppColors.TextSecondary,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-            )
+        item(key = "header") { Box(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) { header() } }
+        when {
+            state.isLoading -> item(key = "loading") { LoadingState() }
+            state.error != null && state.subjects.isEmpty() && state.rooms.isEmpty() ->
+                item(key = "error") { ErrorState(appErrorMessage(state.error), onRetry = viewModel::load) }
+            else -> catalogueItems(state, viewModel)
         }
-        item { Header(R.string.org_subjects_title, state.canAddSubject) { viewModel.openNew(CatalogueKind.SUBJECT) } }
-        if (state.subjects.isEmpty()) item { Empty(R.string.org_subjects_empty) }
-        items(state.subjects, key = { "s" + it.id }) { subject ->
-            ListItemRow(
-                title = subject.name,
-                supporting = subject.code,
-                leadingIcon = Icons.AutoMirrored.Outlined.MenuBook,
-                onClick = { viewModel.openEdit(CatalogueKind.SUBJECT, subject.id) }.takeIf { state.canRename },
-            )
-        }
-        item { Header(R.string.org_rooms_title, state.canAddRoom) { viewModel.openNew(CatalogueKind.ROOM) } }
-        if (state.rooms.isEmpty()) item { Empty(R.string.org_rooms_empty) }
-        items(state.rooms, key = { "r" + it.id }) { room ->
-            ListItemRow(
-                title = room.name,
-                supporting = room.capacity?.let { pluralStringResource(R.plurals.org_room_seats, it, it) },
-                leadingIcon = Icons.Outlined.MeetingRoom,
-                onClick = { viewModel.openEdit(CatalogueKind.ROOM, room.id) }.takeIf { state.canRename },
-            )
-        }
+    }
+}
+
+private fun LazyListScope.catalogueItems(state: CatalogueUiState, viewModel: CatalogueViewModel) {
+    item(key = "hint") {
+        Text(
+            stringResource(R.string.org_catalogue_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = AppColors.TextSecondary,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+        )
+    }
+    item(key = "subjects-header") { Header(R.string.org_subjects_title, state.canAddSubject) { viewModel.openNew(CatalogueKind.SUBJECT) } }
+    if (state.subjects.isEmpty()) item(key = "subjects-empty") { Empty(R.string.org_subjects_empty) }
+    items(state.subjects, key = { "s" + it.id }) { subject ->
+        ListItemRow(
+            title = subject.name,
+            supporting = subject.code,
+            leadingIcon = Icons.AutoMirrored.Outlined.MenuBook,
+            onClick = { viewModel.openEdit(CatalogueKind.SUBJECT, subject.id) }.takeIf { state.canRename },
+        )
+    }
+    item(key = "rooms-header") { Header(R.string.org_rooms_title, state.canAddRoom) { viewModel.openNew(CatalogueKind.ROOM) } }
+    if (state.rooms.isEmpty()) item(key = "rooms-empty") { Empty(R.string.org_rooms_empty) }
+    items(state.rooms, key = { "r" + it.id }) { room ->
+        ListItemRow(
+            title = room.name,
+            supporting = room.capacity?.let { pluralStringResource(R.plurals.org_room_seats, it, it) },
+            leadingIcon = Icons.Outlined.MeetingRoom,
+            onClick = { viewModel.openEdit(CatalogueKind.ROOM, room.id) }.takeIf { state.canRename },
+        )
     }
 }
 

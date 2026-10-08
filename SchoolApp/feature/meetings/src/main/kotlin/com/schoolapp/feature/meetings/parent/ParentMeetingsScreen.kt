@@ -16,10 +16,13 @@ import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppFloatingButton
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
+import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.PullableState
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.SectionHeader
+import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.meetings.R
 import com.schoolapp.feature.meetings.components.MeetingCard
@@ -36,9 +39,10 @@ internal fun ParentMeetingsScreen(
         RefreshBox(isRefreshing = state.isRefreshing, onRefresh = onRefresh) {
             when {
                 state.isLoading -> LoadingState()
-                state.noChild -> EmptyState(stringResource(R.string.meetings_no_child), icon = Icons.Outlined.Groups)
-                state.error != null -> ErrorState(appErrorMessage(state.error), onRetry = onRetry)
+                state.noChild -> PullableState { EmptyState(stringResource(R.string.meetings_no_child), icon = Icons.Outlined.Groups) }
+                state.error != null && state.upcoming.isEmpty() && state.past.isEmpty() -> PullableState { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
                 else -> ScreenColumn(contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 88.dp)) {
+                    state.error?.let { item(key = "refresh_error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
                     item(key = "upcoming_header") { SectionHeader(stringResource(R.string.meetings_upcoming)) }
                     if (state.upcoming.isEmpty()) {
                         item(key = "upcoming_empty") {

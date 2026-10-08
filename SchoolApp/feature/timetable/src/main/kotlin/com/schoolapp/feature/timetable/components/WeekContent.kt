@@ -16,11 +16,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.schoolapp.core.designsystem.component.CollapsingHeaderLayout
 import com.schoolapp.core.designsystem.component.ContentMaxWidth
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.StatusTone
@@ -40,29 +43,44 @@ internal fun WeekContent(
     onWeekLayout: (Boolean) -> Unit,
     onDaySelected: (Int) -> Unit,
     onOpen: (ScheduleRow) -> Unit,
+    header: @Composable () -> Unit = {},
 ) {
     val days = state.days
     val showGrid = wide && weekLayout
-    Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Column(Modifier.widthIn(max = ContentMaxWidth).fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (wide) LayoutSwitch(weekLayout, onWeekLayout)
-            if (!showGrid) DaySelector(days, state.selectedDay, state.today, onDaySelected)
-            WeekNotes(state)
+    val fullHeader: @Composable () -> Unit = {
+        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            header()
+            Column(Modifier.widthIn(max = ContentMaxWidth).fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (wide) LayoutSwitch(weekLayout, onWeekLayout)
+                if (!showGrid) DaySelector(days, state.selectedDay, state.today, onDaySelected)
+                WeekNotes(state)
+            }
         }
+    }
+    CollapsingHeaderLayout(fullHeader, Modifier.fillMaxSize()) {
         if (showGrid) {
             WeekGrid(days, state.today, onOpen)
-            return@Column
+        } else {
+            DayPager(state, onDaySelected, onOpen)
         }
-        val selectedPage = days.indexOfFirst { it.day == state.selectedDay }.coerceAtLeast(0)
-        val pager = rememberPagerState(initialPage = selectedPage) { days.size }
-        LaunchedEffect(selectedPage) { if (pager.currentPage != selectedPage) pager.animateScrollToPage(selectedPage) }
-        LaunchedEffect(pager, days) {
-            snapshotFlow { pager.settledPage }.distinctUntilChanged().collect { page -> days.getOrNull(page)?.let { onDaySelected(it.day) } }
-        }
-        HorizontalPager(pager, Modifier.fillMaxSize(), key = { days[it].day }) { page ->
-            val plan = days[page]
-            DayTimeline(plan, isToday = plan.day == state.today, markerFor = state::markerFor, onOpen = onOpen)
-        }
+    }
+}
+
+/** Swipeable day timelines; the pager follows chip taps and reports swipes once a page settles. */
+@Composable
+private fun DayPager(state: TimetableUiState, onDaySelected: (Int) -> Unit, onOpen: (ScheduleRow) -> Unit) {
+    val days = state.days
+    val selectedPage = days.indexOfFirst { it.day == state.selectedDay }.coerceAtLeast(0)
+    val pager = rememberPagerState(initialPage = selectedPage) { days.size }
+    val currentDays by rememberUpdatedState(days)
+    val onSelect by rememberUpdatedState(onDaySelected)
+    LaunchedEffect(selectedPage) { if (pager.settledPage != selectedPage) pager.animateScrollToPage(selectedPage) }
+    LaunchedEffect(pager) {
+        snapshotFlow { pager.settledPage }.distinctUntilChanged().collect { page -> currentDays.getOrNull(page)?.let { onSelect(it.day) } }
+    }
+    HorizontalPager(pager, Modifier.fillMaxSize(), key = { days[it].day }) { page ->
+        val plan = days[page]
+        DayTimeline(plan, isToday = plan.day == state.today, markerFor = state::markerFor, onOpen = onOpen)
     }
 }
 

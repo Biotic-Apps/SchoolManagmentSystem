@@ -13,11 +13,11 @@ import com.schoolapp.core.designsystem.component.AppTopBar
 import com.schoolapp.core.designsystem.component.BackButton
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.PullableState
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.organisation.R
 import com.schoolapp.feature.organisation.branches.components.BranchOverviewContent
-import com.schoolapp.feature.organisation.components.PullableState
 
 @Composable
 fun BranchDetailRoute(

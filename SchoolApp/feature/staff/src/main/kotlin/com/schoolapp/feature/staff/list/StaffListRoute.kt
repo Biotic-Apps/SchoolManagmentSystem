@@ -1,7 +1,7 @@
 package com.schoolapp.feature.staff.list
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -16,13 +16,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.designsystem.component.AppFloatingButton
-import com.schoolapp.core.designsystem.component.DataList
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.ListItemRow
 import com.schoolapp.core.designsystem.component.LoadingState
 import com.schoolapp.core.designsystem.component.PersonAvatar
+import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.SearchField
+import com.schoolapp.core.designsystem.component.dataListItems
 import com.schoolapp.core.designsystem.component.StatusChip
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.ui.appErrorMessage
@@ -60,15 +61,17 @@ fun StaffListScreen(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier.fillMaxSize()) {
-        SearchField(state.query, onQueryChange, Modifier.padding(16.dp), placeholder = stringResource(R.string.staff_search_hint))
+    val bottom = if (state.canAdd) FAB_CLEARANCE else 16.dp
+    ScreenColumn(modifier, contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = bottom), itemSpacing = 0.dp) {
+        item(key = "search") {
+            SearchField(state.query, onQueryChange, Modifier.padding(bottom = 16.dp), placeholder = stringResource(R.string.staff_search_hint))
+        }
         when {
-            state.isLoading -> LoadingState()
-            state.error != null -> ErrorState(appErrorMessage(state.error), onRetry = onRetry)
-            else -> DataList(
+            state.isLoading -> item(key = "loading") { LoadingState() }
+            state.error != null -> item(key = "error") { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
+            else -> dataListItems(
                 items = state.staff,
                 key = { it.id },
-                modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = if (state.canAdd) FAB_CLEARANCE else 16.dp),
                 emptyContent = { EmptyState(stringResource(R.string.staff_empty), icon = Icons.Outlined.Badge) },
             ) { member ->
                 ListItemRow(

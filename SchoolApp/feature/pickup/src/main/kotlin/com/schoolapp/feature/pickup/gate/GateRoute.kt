@@ -27,7 +27,9 @@ internal fun GateRoute(
     val error = state.error
     when {
         state.isLoading -> LoadingState(modifier)
-        error != null -> ErrorState(appErrorMessage(error), modifier, onRetry = viewModel::refresh)
+        // A failed background refresh keeps today's lists on screen (with a banner) instead of swapping them out.
+        error != null && state.earlyLeaves.isEmpty() && state.departures.isEmpty() ->
+            ErrorState(appErrorMessage(error), modifier, onRetry = viewModel::refresh)
         else -> RefreshBox(isRefreshing = state.isRefreshing, onRefresh = viewModel::refresh, modifier = modifier) {
             GateContent(
                 state = state,

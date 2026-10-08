@@ -33,22 +33,23 @@ import com.schoolapp.core.ui.actionErrorMessage
 import com.schoolapp.feature.organisation.R
 import com.schoolapp.feature.organisation.classes.ReorderActions
 
-/** Reorder mode: up/down per class (the order report cards and promotions follow), saved in one call. */
+/** Reorder mode: up/down per class (the order report cards and promotions follow), saved in one call; Save/Cancel stay pinned below. */
 @Composable
 internal fun ClassReorderList(classes: List<ClassOverview>, saving: Boolean, error: ActionError?, actions: ReorderActions) {
     Column(Modifier.fillMaxSize()) {
-        Text(
-            stringResource(R.string.org_reorder_hint),
-            style = MaterialTheme.typography.bodyMedium,
-            color = AppColors.TextSecondary,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-        )
-        error?.let { InlineMessage(actionErrorMessage(it.error, it.details), StatusTone.Error, Modifier.padding(16.dp, 4.dp)) }
         LazyColumn(
             modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            item(key = "hint") {
+                Text(
+                    stringResource(R.string.org_reorder_hint),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = AppColors.TextSecondary,
+                )
+            }
+            error?.let { item(key = "error") { InlineMessage(actionErrorMessage(it.error, it.details), StatusTone.Error) } }
             itemsIndexed(classes, key = { _, item -> item.id }) { index, item ->
                 ReorderRow(index, item.name, index > 0, index < classes.lastIndex, actions)
             }

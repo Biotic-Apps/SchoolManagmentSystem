@@ -13,6 +13,7 @@ import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.PullableState
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.StatusTone
@@ -40,7 +41,7 @@ internal fun ProofsTab(state: ProofsUiState, actions: ProofsActions, modifier: M
     RefreshBox(state.isRefreshing, actions.onRefresh, modifier.fillMaxSize()) {
         when {
             state.isLoading -> LoadingState()
-            state.error != null && state.proofs.isEmpty() -> ErrorState(appErrorMessage(state.error), onRetry = actions.onRetry)
+            state.error != null && state.proofs.isEmpty() -> PullableState { ErrorState(appErrorMessage(state.error), onRetry = actions.onRetry) }
             else -> ScreenColumn(contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 88.dp)) {
                 state.lastDecision?.let { decision ->
                     item(key = "decided") {

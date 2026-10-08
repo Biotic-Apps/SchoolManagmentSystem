@@ -3,10 +3,6 @@ package com.schoolapp.feature.timetable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,21 +11,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.res.stringResource
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Edit
-import com.schoolapp.core.designsystem.component.AppTextButton
+import com.schoolapp.core.designsystem.component.CollapsingHeaderLayout
 import com.schoolapp.core.designsystem.component.ErrorState
-import com.schoolapp.core.designsystem.component.FilterChipRow
 import com.schoolapp.core.designsystem.component.LoadingState
 import com.schoolapp.core.designsystem.component.RefreshBox
-import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.designsystem.theme.SchoolTheme
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.timetable.components.LessonActions
 import com.schoolapp.feature.timetable.components.LessonSheet
 import com.schoolapp.feature.timetable.components.ScrollableState
-import com.schoolapp.feature.timetable.components.TeacherViewSwitch
+import com.schoolapp.feature.timetable.components.TimetableHeader
 import com.schoolapp.feature.timetable.components.TimetableStatusState
 import com.schoolapp.feature.timetable.components.WeekContent
 import java.time.LocalDate
@@ -53,48 +44,30 @@ fun TimetableScreen(
     onEditSection: ((sectionId: String, title: String) -> Unit)? = null,
 ) {
     var weekLayout by rememberSaveable { mutableStateOf(false) }
-    Column(modifier.fillMaxSize()) {
-        state.teacherView?.let {
-            TeacherViewSwitch(it, onTeacherViewSelected, Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+    val header: @Composable () -> Unit = { TimetableHeader(state, onTeacherViewSelected, onSectionSelected, onEditSection) }
+    when {
+        state.isLoading -> Column(modifier.fillMaxSize()) {
+            header()
+            LoadingState()
         }
-        if (state.showsSections && state.sections.isNotEmpty()) {
-            FilterChipRow(
-                options = state.sections,
-                selectedId = state.selectedSectionId,
-                onSelect = onSectionSelected,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-            )
+        state.error != null && !state.hasWeek -> Column(modifier.fillMaxSize()) {
+            header()
+            ErrorState(appErrorMessage(state.error), onRetry = onRetry)
         }
-        val editable = state.selectedSectionId?.takeIf { state.teacherView == TeacherView.SECTIONS && state.sectionEditable }
-        if (editable != null && onEditSection != null) {
-            val title = state.sections.firstOrNull { it.id == editable }?.label.orEmpty()
-            AppTextButton(
-                text = stringResource(R.string.tt_edit_draft),
-                onClick = { onEditSection(editable, title) },
-                leadingIcon = Icons.Outlined.Edit,
-                modifier = Modifier.padding(horizontal = 8.dp),
-            )
-        }
-        state.subtitle?.takeIf { !state.showsSections }?.let {
-            Text(it, style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary, modifier = Modifier.padding(16.dp, 4.dp))
-        }
-        when {
-            state.isLoading -> LoadingState()
-            state.error != null && !state.hasWeek -> ErrorState(appErrorMessage(state.error), onRetry = onRetry)
-            else -> RefreshBox(state.isRefreshing, onRefresh, Modifier.fillMaxWidth().weight(1f)) {
-                if (!state.hasWeek) {
-                    ScrollableState { TimetableStatusState(state) }
-                } else {
-                    BoxWithConstraints(Modifier.fillMaxSize()) {
-                        WeekContent(
-                            state = state,
-                            wide = maxWidth >= WideWidth,
-                            weekLayout = weekLayout,
-                            onWeekLayout = { weekLayout = it },
-                            onDaySelected = onDaySelected,
-                            onOpen = { onLessonSelected(it) },
-                        )
-                    }
+        else -> RefreshBox(state.isRefreshing, onRefresh, modifier.fillMaxSize()) {
+            if (!state.hasWeek) {
+                CollapsingHeaderLayout(header, Modifier.fillMaxSize()) { ScrollableState { TimetableStatusState(state) } }
+            } else {
+                BoxWithConstraints(Modifier.fillMaxSize()) {
+                    WeekContent(
+                        state = state,
+                        wide = maxWidth >= WideWidth,
+                        weekLayout = weekLayout,
+                        onWeekLayout = { weekLayout = it },
+                        onDaySelected = onDaySelected,
+                        onOpen = { onLessonSelected(it) },
+                        header = header,
+                    )
                 }
             }
         }

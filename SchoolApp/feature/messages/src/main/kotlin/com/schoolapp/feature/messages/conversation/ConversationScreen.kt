@@ -101,8 +101,12 @@ private fun ChatList(state: ConversationUiState, actions: ConversationActions, m
             info.totalItemsCount > 0 && last >= info.totalItemsCount - 2
         }.distinctUntilChanged().filter { it }.collect { loadOlder() }
     }
-    val newestKey = rows.first().key
-    LaunchedEffect(newestKey) { listState.animateScrollToItem(0) }
+    val newest = rows.first()
+    LaunchedEffect(newest.key) {
+        // Follow a new message only when it is our own send or the reader is already at the bottom;
+        // polling/refresh must never yank someone reading older messages back down.
+        if (newest is ChatRow.Outgoing || listState.firstVisibleItemIndex <= NEAR_BOTTOM_ROWS) listState.animateScrollToItem(0)
+    }
     LazyColumn(
         modifier = modifier,
         state = listState,
@@ -155,3 +159,6 @@ private fun ChatRowItem(row: ChatRow, state: ConversationUiState, actions: Conve
         )
     }
 }
+
+/** A new message plus its day separator can push the previous newest row this far from the bottom. */
+private const val NEAR_BOTTOM_ROWS = 2

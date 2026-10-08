@@ -14,21 +14,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppTabs
-import com.schoolapp.core.designsystem.component.DataList
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.ListItemRow
 import com.schoolapp.core.designsystem.component.LoadingState
 import com.schoolapp.core.designsystem.component.RefreshBox
+import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.StatusChip
+import com.schoolapp.core.designsystem.component.dataListItems
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.core.ui.humanizeKey
 import com.schoolapp.feature.organisation.R
 import com.schoolapp.feature.organisation.branches.components.BranchOverviewContent
-import com.schoolapp.feature.organisation.components.PullableState
 import com.schoolapp.feature.organisation.components.RefreshErrorBanner
 import com.schoolapp.feature.organisation.components.recordStatusTone
-import com.schoolapp.feature.organisation.scope.ScopedPane
 
 @Composable
 fun BranchesScreen(
@@ -42,29 +41,22 @@ fun BranchesScreen(
     when {
         state.isLoading -> LoadingState(modifier)
         state.overview != null -> SingleBranchContent(state, onRefresh, calendarContent, modifier)
-        else -> RefreshBox(state.isRefreshing, onRefresh, modifier.fillMaxSize()) {
-            if (state.error != null && !state.hasContent) {
-                PullableState { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
-            } else {
-                BranchList(state, onOpenBranch)
-            }
-        }
+        else -> RefreshBox(state.isRefreshing, onRefresh, modifier.fillMaxSize()) { BranchList(state, onRetry, onOpenBranch) }
     }
 }
 
 @Composable
-private fun BranchList(state: BranchesUiState, onOpenBranch: (String) -> Unit) {
-    ScopedPane {
-        RefreshErrorBanner(state.error, Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp))
-        DataList(
+private fun BranchList(state: BranchesUiState, onRetry: () -> Unit, onOpenBranch: (String) -> Unit) {
+    ScreenColumn(itemSpacing = 0.dp) {
+        if (state.error != null && !state.hasContent) {
+            item(key = "error") { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
+            return@ScreenColumn
+        }
+        if (state.error != null) item(key = "refresh-error") { RefreshErrorBanner(state.error, Modifier.padding(bottom = 16.dp)) }
+        dataListItems(
             items = state.branches,
             key = { it.id },
-            modifier = Modifier.padding(16.dp),
-            emptyContent = {
-                PullableState {
-                    EmptyState(title = stringResource(R.string.org_branches_empty), icon = Icons.Outlined.Apartment)
-                }
-            },
+            emptyContent = { EmptyState(title = stringResource(R.string.org_branches_empty), icon = Icons.Outlined.Apartment) },
         ) { branch ->
             ListItemRow(
                 title = branch.name,

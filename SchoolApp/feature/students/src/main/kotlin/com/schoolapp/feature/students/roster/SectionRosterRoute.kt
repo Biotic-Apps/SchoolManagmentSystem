@@ -14,13 +14,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.designsystem.component.AppScaffold
 import com.schoolapp.core.designsystem.component.AppTopBar
 import com.schoolapp.core.designsystem.component.BackButton
-import com.schoolapp.core.designsystem.component.DataList
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.ScreenColumn
+import com.schoolapp.core.designsystem.component.dataListItems
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.students.R
-import com.schoolapp.feature.students.components.CenteredColumn
 import com.schoolapp.feature.students.components.StudentRow
 
 @Composable
@@ -52,14 +52,13 @@ fun SectionRosterScreen(
             )
         },
     ) { padding ->
-        CenteredColumn(Modifier.padding(padding)) {
+        ScreenColumn(Modifier.padding(padding), itemSpacing = 0.dp) {
             when {
-                state.isLoading -> LoadingState()
-                state.error != null -> ErrorState(appErrorMessage(state.error), onRetry = onRetry)
-                else -> DataList(
+                state.isLoading -> item(key = "loading") { LoadingState() }
+                state.error != null -> item(key = "error") { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
+                else -> dataListItems(
                     items = state.students,
                     key = { it.id },
-                    modifier = Modifier.padding(16.dp),
                     emptyContent = { EmptyState(stringResource(R.string.students_roster_empty), icon = Icons.Outlined.Groups) },
                 ) { StudentRow(it, onClick = { onOpenStudent(it.id) }) }
             }
