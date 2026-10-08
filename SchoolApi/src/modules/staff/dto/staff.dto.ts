@@ -37,7 +37,14 @@ export class StaffSummaryDto {
   subjectCount!: number;
 }
 
+export class StaffLoginDto {
+  email!: string | null;
+  phone!: string | null;
+}
+
 export class StaffDetailDto extends StaffSummaryDto {
+  /** The sign-in identifiers; null when the staff member has no login. */
+  login!: StaffLoginDto | null;
   email!: string | null;
   phone!: string | null;
   /** Masked unless `people.sensitive.view`. */

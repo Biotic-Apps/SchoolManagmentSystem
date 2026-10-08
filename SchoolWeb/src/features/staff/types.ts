@@ -39,7 +39,14 @@ export interface StaffAssignment {
   isSubstitute: boolean;
 }
 
+export interface StaffLogin {
+  email: string | null;
+  phone: string | null;
+}
+
 export interface StaffDetail extends StaffSummary {
+  /** Sign-in identifiers; null when the staff member has no login. */
+  login?: StaffLogin | null;
   email: string | null;
   phone: string | null;
   /** Masked. */
@@ -69,6 +76,22 @@ export type StaffUpdate = Partial<Omit<StaffInput, "branchId" | "createAccount" 
 
 export interface CreatedStaff {
   staff: StaffDetail;
+  temporaryPassword?: string;
+}
+
+/** POST /staff/:id/account */
+export interface StaffAccountInput {
+  email?: string;
+  phone?: string;
+  roleKey: StaffRoleKey;
+  password?: string;
+}
+
+export interface StaffAccount {
+  userId: string;
+  email: string | null;
+  phone: string | null;
+  /** Only when generated; shown once. */
   temporaryPassword?: string;
 }
 

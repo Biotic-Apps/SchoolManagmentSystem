@@ -9,6 +9,7 @@ import { designationLabel } from "../options";
 import type { StaffDetail } from "../types";
 import { ProbationBadge } from "./ProbationBadge";
 import { RoleBadges } from "./RoleBadges";
+import { SignInStatus } from "./SignInStatus";
 
 interface StaffHeaderProps {
   staff: StaffDetail;
@@ -25,7 +26,7 @@ export function StaffHeader({ staff, actions }: StaffHeaderProps) {
         Teachers & Helpers
       </Link>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex min-w-0 flex-1 items-center gap-4">
           <PersonAvatar name={staff.name} photoUrl={staff.photoUrl} size="lg" />
           <div className="flex min-w-0 flex-col gap-1">
             <h1 className="text-page-title font-semibold tracking-tight text-fg">{staff.name}</h1>
@@ -35,9 +36,10 @@ export function StaffHeader({ staff, actions }: StaffHeaderProps) {
               {staff.requiresReview && <ProbationBadge reviewerName={staff.reviewer?.name} />}
               {staff.roles.length > 0 && <RoleBadges roles={staff.roles} />}
             </div>
+            <SignInStatus staff={staff} />
           </div>
         </div>
-        {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+        {actions && <div className="flex flex-wrap items-center gap-2 sm:max-w-[60%] sm:justify-end">{actions}</div>}
       </div>
     </header>
   );

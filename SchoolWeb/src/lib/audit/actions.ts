@@ -52,6 +52,8 @@ const TITLES: Record<string, string> = {
   "auth.session_timeout": "Session timed out",
   "staff.create": "Added staff member",
   "staff.update": "Updated staff details",
+  "staff.account.create": "Created sign-in account",
+  "staff.account.reset_password": "Reset sign-in password",
   "staff.status": "Changed staff status",
   "staff.probation": "Updated probation",
   "staff.assignment_add": "Added an assignment",

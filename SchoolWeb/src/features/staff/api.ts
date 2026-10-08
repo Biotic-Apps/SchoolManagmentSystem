@@ -8,6 +8,8 @@ import type {
   CreatedStaff,
   ProbationInput,
   SectionStaff,
+  StaffAccount,
+  StaffAccountInput,
   StaffAssignment,
   StaffDetail,
   StaffInput,
@@ -85,6 +87,23 @@ export function useSetProbation(id: string) {
     mutationFn: (input: ProbationInput) => http.put<StaffDetail>(`/staff/${id}/probation`, input),
     invalidate: [staffKeys.all],
     success: (_, vars) => (vars.requiresReview ? "Probation review turned on" : "Probation review turned off"),
+    toastError: false,
+  });
+}
+
+export function useCreateStaffAccount(id: string) {
+  return useApiMutation({
+    mutationFn: async (input: StaffAccountInput) => (await http.post<StaffAccount>(`/staff/${id}/account`, input)).data,
+    invalidate: [staffKeys.all, ["audit", "Staff", id]],
+    toastError: false,
+  });
+}
+
+export function useResetStaffPassword(id: string) {
+  return useApiMutation({
+    mutationFn: async () =>
+      (await http.post<{ temporaryPassword: string }>(`/staff/${id}/account/reset-password`)).data,
+    invalidate: [["audit", "Staff", id]],
     toastError: false,
   });
 }

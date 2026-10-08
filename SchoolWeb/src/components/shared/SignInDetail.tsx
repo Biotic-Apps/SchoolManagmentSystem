@@ -1,4 +1,4 @@
-import { CopyButton } from "@/components/shared/CopyButton";
+import { CopyButton } from "./CopyButton";
 
 export function SignInDetail({ label, value, secret }: { label: string; value: string; secret?: boolean }) {
   return (

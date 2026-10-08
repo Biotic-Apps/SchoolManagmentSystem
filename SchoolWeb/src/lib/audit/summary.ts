@@ -49,6 +49,10 @@ export function summariseAudit(action: string, before: unknown, after: unknown, 
   const listKey = verb || "items";
 
   if (action === "branch.principal_change") return principalChange(asRow(before), asRow(after), lookup);
+  // "staff.account.create" makes something inside the record, not the record itself.
+  if (parts.length > 2 && CREATE_VERBS.has(verb) && after) {
+    return { title: actionTitle(action), changes: recordFacts(after, listKey) };
+  }
   if (CREATE_VERBS.has(verb) && after) {
     return { title: recordSentence("Created", entity, asRow(after) ?? {}), changes: recordFacts(after, listKey) };
   }

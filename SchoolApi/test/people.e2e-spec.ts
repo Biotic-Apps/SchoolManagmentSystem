@@ -1,6 +1,14 @@
 import type { INestApplication } from '@nestjs/common';
+import request from 'supertest';
 import type { App } from 'supertest/types';
-import { as, createTestApp, errorCode, login } from './support/test-app';
+import {
+  API,
+  as,
+  createTestApp,
+  errorCode,
+  login,
+  unique,
+} from './support/test-app';
 
 interface StudentRow {
   id: string;
@@ -97,5 +105,75 @@ describe('People scope (e2e)', () => {
     )!;
     expect(fiveA.classTeacher?.name).toBe('Demo Teacher');
     expect(fiveA.studentCount).toBeGreaterThanOrEqual(10);
+  });
+
+  describe('sign-in for existing staff', () => {
+    const tryLogin = (identifier: string, password: string) =>
+      request(app.getHttpServer())
+        .post(`${API}/auth/login`)
+        .send({ identifier, password, platform: 'WEB', deviceName: 'e2e' });
+
+    it('creates a login later, forces a change, rejects twice, resets', async () => {
+      const someone = data<{ branchId: string }[]>(
+        await as(app, principal).get('/staff?pageSize=1').expect(200),
+      )[0];
+      const email = `${unique('signin').toLowerCase()}@e2e.local`;
+      const created = data<{ staff: { id: string; userId: string | null } }>(
+        await as(app, principal)
+          .post('/staff', {
+            name: 'Later Login',
+            email,
+            designation: 'HELPER',
+            joinDate: '2026-04-01',
+            branchId: someone.branchId,
+            createAccount: false,
+          })
+          .expect(201),
+      ).staff;
+      expect(created.userId).toBeNull();
+
+      const denied = await as(app, teacher)
+        .post(`/staff/${created.id}/account`, {})
+        .expect(403);
+      expect(errorCode(denied)).toBe('FORBIDDEN');
+
+      const account = data<{ userId: string; temporaryPassword: string }>(
+        await as(app, principal)
+          .post(`/staff/${created.id}/account`, {})
+          .expect(201),
+      );
+      expect(account.temporaryPassword).toBeTruthy();
+      const detail = data<{
+        userId: string;
+        roles: string[];
+        login: { email: string };
+      }>(await as(app, principal).get(`/staff/${created.id}`).expect(200));
+      expect(detail.userId).toBe(account.userId);
+      expect(detail.roles).toEqual(['HELPER']);
+      expect(detail.login.email).toBe(email);
+
+      const tokens = await login(app, email, account.temporaryPassword);
+      expect(tokens.mustChangePassword).toBe(true);
+      await as(app, tokens.accessToken)
+        .post('/auth/password/change', {
+          currentPassword: account.temporaryPassword,
+          newPassword: 'Changed1234x',
+        })
+        .expect(200);
+
+      const again = await as(app, principal)
+        .post(`/staff/${created.id}/account`, {})
+        .expect(409);
+      expect(errorCode(again)).toBe('CONFLICT');
+
+      const reset = data<{ temporaryPassword: string }>(
+        await as(app, principal)
+          .post(`/staff/${created.id}/account/reset-password`)
+          .expect(200),
+      );
+      await tryLogin(email, 'Changed1234x').expect(401);
+      const after = await login(app, email, reset.temporaryPassword);
+      expect(after.mustChangePassword).toBe(true);
+    });
   });
 });

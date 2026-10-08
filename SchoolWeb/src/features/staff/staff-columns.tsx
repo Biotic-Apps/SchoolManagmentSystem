@@ -1,6 +1,7 @@
 import type { DataTableColumn } from "@/components/shared/DataTable";
 import { PersonCell } from "@/components/shared/PersonCell";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { Badge } from "@/components/ui/Badge";
 import { formatNumber, textOrDash } from "@/lib/format";
 import { ProbationBadge } from "./components/ProbationBadge";
 import { RoleBadges } from "./components/RoleBadges";
@@ -23,6 +24,7 @@ export function staffColumns(): DataTableColumn<StaffSummary>[] {
         <span className="flex flex-wrap gap-1">
           <StatusBadge status={row.status} />
           {row.requiresReview && <ProbationBadge />}
+          {!row.userId && <Badge tone="warning">No login</Badge>}
         </span>
       ),
     },

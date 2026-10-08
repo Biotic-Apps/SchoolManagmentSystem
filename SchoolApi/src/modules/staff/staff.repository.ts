@@ -23,6 +23,8 @@ const staffInclude = () =>
     reviewer: { select: { id: true, name: true } },
     user: {
       select: {
+        email: true,
+        phone: true,
         roleAssignments: {
           where: activeAssignmentWhere(),
           select: { role: { select: { key: true } } },

@@ -11,11 +11,11 @@ import { FileRefService } from '../../core/files/file-ref.service';
 import { PrismaService } from '../../core/prisma/prisma.service';
 import type { Scope } from '../../core/rbac/scope/scope';
 import { DocumentsService } from '../documents/documents.service';
-import {
-  STAFF_ROLE_KEYS,
-  type CreateStaffDto,
-  type StaffQueryDto,
-  type UpdateStaffDto,
+import { staffRoleFor } from './account/staff-role';
+import type {
+  CreateStaffDto,
+  StaffQueryDto,
+  UpdateStaffDto,
 } from './dto/staff-input.dto';
 import type {
   CreatedStaffDto,
@@ -73,12 +73,7 @@ export class StaffService {
     scope.assertManageBranch(branch);
     if (dto.photoFileId)
       await this.assertPhoto(user, branch.schoolId, dto.photoFileId);
-    const roleKey =
-      dto.roleKey ??
-      (STAFF_ROLE_KEYS as readonly string[]).find(
-        (k) => k === dto.designation,
-      ) ??
-      'TEACHER';
+    const roleKey = staffRoleFor(dto.designation, dto.roleKey);
 
     const result = await this.prisma.$transaction(async (tx) => {
       const account = dto.createAccount

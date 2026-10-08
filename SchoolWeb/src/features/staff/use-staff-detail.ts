@@ -28,6 +28,8 @@ export function useStaffDetail(staffId: string) {
   const edit = useDialogState<true>();
   const status = useDialogState<true>();
   const probation = useDialogState<true>();
+  const createSignIn = useDialogState<true>();
+  const resetPassword = useDialogState<true>();
 
   const staff = query.data;
   const canEdit = can("staff.edit");
@@ -42,8 +44,12 @@ export function useStaffDetail(staffId: string) {
     canEdit,
     canEditAssignments: canEdit && isActiveRecord,
     canSetProbation: canEdit && PROBATION_ROLES.includes(session?.activeRole ?? ""),
+    canCreateSignIn: canEdit && can("users.add") && isActiveRecord && !staff?.userId,
+    canResetPassword: canEdit && can("users.edit") && !!staff?.userId,
     edit,
     status,
     probation,
+    createSignIn,
+    resetPassword,
   };
 }

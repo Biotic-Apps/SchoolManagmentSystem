@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { CircleCheck } from "lucide-react";
 import { FormPanel } from "@/components/shared/FormPanel";
-import { InlineNotice } from "@/components/shared/InlineNotice";
+import { SignInCredentials } from "@/components/shared/SignInCredentials";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import { countOf } from "../summary";
 import type { SchoolSetupResult } from "../types";
-import { SignInDetail } from "./SignInDetail";
 
 function createdLine({ session, counts }: SchoolSetupResult): string {
   if (!session) return "No academic year yet; the principal can set it up from Sessions & Calendar.";
@@ -21,7 +20,6 @@ function createdLine({ session, counts }: SchoolSetupResult): string {
 
 export function SetupSuccess({ result }: { result: SchoolSetupResult }) {
   const { principal } = result;
-  const temporary = principal.temporaryPassword;
 
   return (
     <div className="flex flex-col gap-6">
@@ -39,19 +37,12 @@ export function SetupSuccess({ result }: { result: SchoolSetupResult }) {
         title={`Principal sign-in for ${principal.name}`}
         description="A welcome message with sign-in steps was also sent to the principal (without the password)."
       >
-        <div className="grid gap-4 sm:grid-cols-2">
-          {principal.email && <SignInDetail label="Email" value={principal.email} />}
-          {principal.phone && <SignInDetail label="Phone" value={principal.phone} />}
-          {temporary && <SignInDetail label="Temporary password" value={temporary} secret />}
-        </div>
-        {temporary ? (
-          <InlineNotice tone="warning">
-            <strong>Shown only once.</strong> Copy it now and share it with {principal.name} privately. They choose a new
-            password the first time they sign in.
-          </InlineNotice>
-        ) : (
-          <p className="text-label text-fg-muted">They sign in with the password you set; no change is needed.</p>
-        )}
+        <SignInCredentials
+          name={principal.name}
+          email={principal.email}
+          phone={principal.phone}
+          temporaryPassword={principal.temporaryPassword}
+        />
       </FormPanel>
     </div>
   );

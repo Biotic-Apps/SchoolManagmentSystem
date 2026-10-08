@@ -65,6 +65,7 @@ export class StaffMapper {
   ): StaffDetailDto {
     return {
       ...this.toSummary(row),
+      login: row.user ? { email: row.user.email, phone: row.user.phone } : null,
       email: row.email,
       phone: row.phone,
       cnic: sensitive ? row.cnic : maskId(row.cnic),

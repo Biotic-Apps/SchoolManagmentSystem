@@ -7,9 +7,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { DocumentsPanel } from "@/features/documents/components/DocumentsPanel";
 import { useStaffDetail } from "../use-staff-detail";
 import { AssignmentsTab } from "./AssignmentsTab";
+import { CreateSignInDialog } from "./CreateSignInDialog";
 import { EditStaffDialog } from "./EditStaffDialog";
 import { ProbationDialog } from "./ProbationDialog";
 import { ProfileTab } from "./ProfileTab";
+import { ResetPasswordDialog } from "./ResetPasswordDialog";
 import { StaffActions } from "./StaffActions";
 import { StaffHeader } from "./StaffHeader";
 import { StaffStatusDialog } from "./StaffStatusDialog";
@@ -37,6 +39,8 @@ export function StaffDetailPage({ staffId }: { staffId: string }) {
             onEdit={page.canEdit ? () => page.edit.show(true) : undefined}
             onStatus={page.canEdit ? () => page.status.show(true) : undefined}
             onProbation={page.canSetProbation ? () => page.probation.show(true) : undefined}
+            onCreateSignIn={page.canCreateSignIn ? () => page.createSignIn.show(true) : undefined}
+            onResetPassword={page.canResetPassword ? () => page.resetPassword.show(true) : undefined}
           />
         }
       />
@@ -63,6 +67,8 @@ export function StaffDetailPage({ staffId }: { staffId: string }) {
       {page.edit.open && <EditStaffDialog staff={staff} onClose={page.edit.close} />}
       {page.status.open && <StaffStatusDialog staff={staff} onClose={page.status.close} />}
       {page.probation.open && <ProbationDialog staff={staff} branchId={page.branchId} onClose={page.probation.close} />}
+      {page.createSignIn.open && <CreateSignInDialog staff={staff} onClose={page.createSignIn.close} />}
+      {page.resetPassword.open && <ResetPasswordDialog staff={staff} onClose={page.resetPassword.close} />}
     </>
   );
 }

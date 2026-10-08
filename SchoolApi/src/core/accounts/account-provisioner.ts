@@ -15,6 +15,8 @@ export interface AccountInput {
   schoolId: string;
   branchId?: string | null;
   grantedById: string;
+  /** Chosen by the admin for a new login (no forced change); else generated. */
+  password?: string | null;
 }
 
 export interface ProvisionedAccount {
@@ -55,14 +57,16 @@ export class AccountProvisioner {
     if (existing) {
       userId = existing.id;
     } else {
-      temporaryPassword = generateTemporaryPassword();
+      temporaryPassword = input.password ? null : generateTemporaryPassword();
       const user = await tx.user.create({
         data: {
           name: input.name.trim(),
           email,
           phone,
-          passwordHash: await this.hasher.hash(temporaryPassword),
-          mustChangePassword: true,
+          passwordHash: await this.hasher.hash(
+            input.password ?? temporaryPassword!,
+          ),
+          mustChangePassword: !input.password,
           createdById: input.grantedById,
         },
       });
