@@ -13,7 +13,7 @@ export function roomColumns(onEdit?: (item: Room) => void): DataTableColumn<Room
       header: "",
       className: "w-12",
       cell: (row) => (
-        <RowActions actions={[{ id: "edit", label: "Edit", icon: Pencil, onSelect: () => onEdit?.(row), hidden: !onEdit }]} />
+        <RowActions actions={[{ id: "edit", label: "Rename", icon: Pencil, onSelect: () => onEdit?.(row), hidden: !onEdit }]} />
       ),
     },
   ];

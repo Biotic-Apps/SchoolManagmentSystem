@@ -8,26 +8,21 @@ import { toSectionDto } from '../../academics/sections/section.mapper';
 import { SectionsRepository } from '../../academics/sections/sections.repository';
 import { SubjectsRepository } from '../../academics/subjects/subjects.repository';
 import {
-  CLASS_PRESETS,
-  SUBJECT_PRESETS,
-  sectionNames,
-  type ClassesPreset,
-  type SubjectsPreset,
-} from '../presets';
+  generateBellSchedule,
+  type BellPlan,
+} from '../../timetable/periods/bell-generator';
 import type { SessionDates } from '../session-defaults';
+import type { CurriculumPlan, PlannedClass } from './curriculum-plan';
 import type { PlacedBranch, SetupContext } from './setup-context';
 
 export interface AcademicsPlan {
   session: SessionDates;
-  classesPreset: ClassesPreset;
-  sectionsPerClass: number;
-  subjectsPreset: SubjectsPreset;
-  /** Partial picks; when set they replace the presets. */
-  classNames?: readonly string[];
-  subjectNames?: readonly string[];
+  curriculum: CurriculumPlan;
+  bellSchedule: BellPlan;
+  workingDays: number[];
 }
 
-/** ACTIVE session, preset classes with their sections, preset subjects (contract §1 item 4). */
+/** ACTIVE session, classes with their sections and curriculum, subjects, bell schedule. */
 @Injectable()
 export class AcademicsStep {
   constructor(
@@ -50,83 +45,148 @@ export class AcademicsStep {
       },
       ctx.tx,
     );
-    this.record(
-      ctx,
-      branch,
-      'session.create',
-      'AcademicSession',
-      session.id,
-      toSessionDto(session),
-    );
+    this.record(ctx, branch, 'session.create', 'AcademicSession', session.id, {
+      after: toSessionDto(session),
+    });
 
-    let sectionCount = 0;
-    const names = pickClasses(plan);
-    for (const { name, levelOrder } of names) {
-      const schoolClass = await this.classes.create(
-        {
-          schoolId: branch.schoolId,
-          name,
-          levelOrder,
-          createdById: ctx.actorId,
-        },
-        ctx.tx,
-      );
-      this.record(
-        ctx,
-        branch,
-        'class.create',
-        'SchoolClass',
-        schoolClass.id,
-        toClassDto(schoolClass),
-      );
-      for (const sectionName of sectionNames(plan.sectionsPerClass)) {
-        const section = await this.sections.create(
-          {
-            schoolId: branch.schoolId,
-            branchId: branch.id,
-            sessionId: session.id,
-            classId: schoolClass.id,
-            name: sectionName,
-            createdById: ctx.actorId,
-          },
-          ctx.tx,
-        );
-        this.record(
-          ctx,
-          branch,
-          'section.create',
-          'Section',
-          section.id,
-          toSectionDto(section),
-        );
-        sectionCount++;
-      }
-    }
-
-    const presets = pickSubjects(plan);
-    for (const preset of presets) {
+    const subjectIds = new Map<string, string>();
+    for (const preset of plan.curriculum.subjects) {
       const subject = await this.subjects.create(
         { schoolId: branch.schoolId, ...preset, createdById: ctx.actorId },
         ctx.tx,
       );
-      this.record(
+      subjectIds.set(preset.code, subject.id);
+      this.record(ctx, branch, 'subject.create', 'Subject', subject.id, {
+        after: toSubjectDto(subject),
+      });
+    }
+
+    let sections = 0;
+    let classSubjects = 0;
+    for (const planned of plan.curriculum.classes) {
+      sections += await this.createClass(
         ctx,
         branch,
-        'subject.create',
-        'Subject',
-        subject.id,
-        toSubjectDto(subject),
+        session.id,
+        planned,
+        subjectIds,
       );
+      classSubjects += planned.subjects.length;
     }
+    const periods = await this.createBellSchedule(ctx, branch, plan);
 
     return {
       session,
       counts: {
-        classes: names.length,
-        sections: sectionCount,
-        subjects: presets.length,
+        classes: plan.curriculum.classes.length,
+        sections,
+        subjects: plan.curriculum.subjects.length,
+        classSubjects,
+        periods,
       },
     };
+  }
+
+  private async createClass(
+    ctx: SetupContext,
+    branch: PlacedBranch,
+    sessionId: string,
+    planned: PlannedClass,
+    subjectIds: Map<string, string>,
+  ): Promise<number> {
+    const schoolClass = await this.classes.create(
+      {
+        schoolId: branch.schoolId,
+        name: planned.name,
+        levelOrder: planned.levelOrder,
+        createdById: ctx.actorId,
+      },
+      ctx.tx,
+    );
+    this.record(ctx, branch, 'class.create', 'SchoolClass', schoolClass.id, {
+      after: toClassDto(schoolClass),
+    });
+    for (const s of planned.sections) {
+      const section = await this.sections.create(
+        {
+          schoolId: branch.schoolId,
+          branchId: branch.id,
+          sessionId,
+          classId: schoolClass.id,
+          name: s.name,
+          group: s.group,
+          createdById: ctx.actorId,
+        },
+        ctx.tx,
+      );
+      this.record(ctx, branch, 'section.create', 'Section', section.id, {
+        after: toSectionDto(section),
+      });
+    }
+    if (planned.subjects.length > 0) {
+      await ctx.tx.classSubject.createMany({
+        data: planned.subjects.map((s, sortOrder) => ({
+          schoolId: branch.schoolId,
+          classId: schoolClass.id,
+          subjectId: subjectIds.get(s.code)!,
+          periodsPerWeek: s.periodsPerWeek,
+          isOptional: s.isOptional,
+          group: s.group,
+          sortOrder,
+        })),
+      });
+      this.record(
+        ctx,
+        branch,
+        'class.subjects.update',
+        'SchoolClass',
+        schoolClass.id,
+        {
+          after: planned.subjects.map((s) => ({
+            subject: s.name,
+            periodsPerWeek: s.periodsPerWeek,
+            group: s.group,
+            isOptional: s.isOptional,
+          })),
+        },
+      );
+    }
+    return planned.sections.length;
+  }
+
+  private async createBellSchedule(
+    ctx: SetupContext,
+    branch: PlacedBranch,
+    plan: AcademicsPlan,
+  ): Promise<number> {
+    const schedule = generateBellSchedule(
+      plan.bellSchedule,
+      plan.workingDays,
+      'academics.bellSchedule',
+    );
+    const days: [number, typeof schedule.default][] = [
+      [0, schedule.default],
+      ...Object.entries(schedule.days).map(
+        ([day, rows]) => [Number(day), rows] as [number, typeof rows],
+      ),
+    ];
+    const data = days.flatMap(([day, rows]) =>
+      rows.map((r) => ({
+        schoolId: branch.schoolId,
+        branchId: branch.id,
+        day,
+        index: r.index,
+        startTime: r.startTime,
+        endTime: r.endTime,
+        isBreak: r.isBreak,
+        label: r.isBreak ? (r.label ?? 'Break') : null,
+      })),
+    );
+    await ctx.tx.branchPeriod.createMany({ data });
+    this.record(ctx, branch, 'bell-schedule.update', 'Branch', branch.id, {
+      after: Object.fromEntries(days),
+    });
+    return data.length;
   }
 
   private record(
@@ -135,7 +195,7 @@ export class AcademicsStep {
     action: string,
     entityType: string,
     entityId: string,
-    after: unknown,
+    change: { after: unknown },
   ): void {
     ctx.audit.push({
       action,
@@ -143,24 +203,7 @@ export class AcademicsStep {
       entityId,
       schoolId: branch.schoolId,
       branchId: branch.id,
-      after,
+      after: change.after,
     });
   }
-}
-
-/** Preset order is kept, so levelOrder stays Playgroup → Class 10 even with gaps. */
-function pickClasses(plan: AcademicsPlan) {
-  const all = plan.classNames
-    ? CLASS_PRESETS.STANDARD
-    : CLASS_PRESETS[plan.classesPreset];
-  return all
-    .map((name, i) => ({ name, levelOrder: i + 1 }))
-    .filter((c) => !plan.classNames || plan.classNames.includes(c.name));
-}
-
-function pickSubjects(plan: AcademicsPlan) {
-  if (!plan.subjectNames) return SUBJECT_PRESETS[plan.subjectsPreset];
-  return SUBJECT_PRESETS.STANDARD.filter((s) =>
-    plan.subjectNames!.includes(s.name),
-  );
 }

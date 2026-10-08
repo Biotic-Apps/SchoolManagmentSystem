@@ -242,6 +242,8 @@ model Section {
   capacity            Int?
   roomId              String?      @map("room_id") @db.Uuid
   classTeacherStaffId String?      @map("class_teacher_staff_id") @db.Uuid
+  /// Matric group such as "Science" / "Arts"; null = no group.
+  group               String?      @db.VarChar(30)
   status              RecordStatus @default(ACTIVE)
   createdById         String?      @map("created_by_id") @db.Uuid
   updatedById         String?      @map("updated_by_id") @db.Uuid
@@ -303,6 +305,9 @@ model ClassSubject {
   subjectId      String       @map("subject_id") @db.Uuid
   isOptional     Boolean      @default(false) @map("is_optional")
   periodsPerWeek Int?         @map("periods_per_week")
+  /// null = taught in every section; else only in sections of this group.
+  group          String?      @db.VarChar(30)
+  sortOrder      Int          @default(0) @map("sort_order")
   status         RecordStatus @default(ACTIVE)
   createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt      DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)

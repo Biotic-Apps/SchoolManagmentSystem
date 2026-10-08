@@ -14,7 +14,12 @@ import type { SchoolSetupDto } from './dto/school-setup.dto';
 import type { SchoolSetupResultDto } from './dto/school-setup-result.dto';
 import { SETUP_DEFAULTS } from './presets';
 import { resolveSession } from './session-defaults';
+import {
+  DEFAULT_BELL,
+  generateBellSchedule,
+} from '../timetable/periods/bell-generator';
 import { AcademicsStep, type AcademicsPlan } from './steps/academics.step';
+import { planFromClasses, planFromLegacy } from './steps/curriculum-plan';
 import { OrganisationStep } from './steps/organisation.step';
 import { PrincipalStep, type PrincipalAccount } from './steps/principal.step';
 import type { SetupContext } from './steps/setup-context';
@@ -88,7 +93,13 @@ export class SchoolSetupService {
         startDate: formatDate(academics.session.startDate),
         endDate: formatDate(academics.session.endDate),
       },
-      counts: academics?.counts ?? { classes: 0, sections: 0, subjects: 0 },
+      counts: academics?.counts ?? {
+        classes: 0,
+        sections: 0,
+        subjects: 0,
+        classSubjects: 0,
+        periods: 0,
+      },
     };
   }
 
@@ -109,15 +120,23 @@ export class SchoolSetupService {
       const message = 'academics.endDate must be after academics.startDate';
       throw invalid(message, [message]);
     }
-    return {
-      session,
-      classesPreset: input.classesPreset ?? SETUP_DEFAULTS.classesPreset,
-      sectionsPerClass:
-        input.sectionsPerClass ?? SETUP_DEFAULTS.sectionsPerClass,
-      subjectsPreset: input.subjectsPreset ?? SETUP_DEFAULTS.subjectsPreset,
-      classNames: input.classNames,
-      subjectNames: input.subjectNames,
-    };
+    const curriculum = input.classes
+      ? planFromClasses(input.classes)
+      : planFromLegacy({
+          classesPreset: input.classesPreset ?? SETUP_DEFAULTS.classesPreset,
+          sectionsPerClass:
+            input.sectionsPerClass ?? SETUP_DEFAULTS.sectionsPerClass,
+          subjectsPreset: input.subjectsPreset ?? SETUP_DEFAULTS.subjectsPreset,
+          classNames: input.classNames,
+          subjectNames: input.subjectNames,
+        });
+    const bellSchedule = input.bellSchedule ?? DEFAULT_BELL;
+    const workingDays = dto.branch?.workingDays ?? [
+      ...SETUP_DEFAULTS.workingDays,
+    ];
+    // Validate before the transaction opens (throws keyed VALIDATION_FAILED).
+    generateBellSchedule(bellSchedule, workingDays, 'academics.bellSchedule');
+    return { session, curriculum, bellSchedule, workingDays };
   }
 
   /** Hashing is slow: done before the transaction opens. */

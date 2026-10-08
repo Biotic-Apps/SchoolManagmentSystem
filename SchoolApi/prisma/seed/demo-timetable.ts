@@ -40,7 +40,9 @@ export async function seedPeriods(
 ): Promise<void> {
   for (const p of PERIODS) {
     await prisma.branchPeriod.upsert({
-      where: { branchId_index: { branchId: org.branchId, index: p.index } },
+      where: {
+        branchId_day_index: { branchId: org.branchId, day: 0, index: p.index },
+      },
       create: { schoolId: org.schoolId, branchId: org.branchId, ...p },
       update: {},
     });
@@ -92,7 +94,7 @@ export async function seedTimetables(
   }
   const clashes = findConflicts({
     slots: planB,
-    breakPeriods: new Set([5]),
+    periodsOn: () => new Map(PERIODS.map((p) => [p.index, p.isBreak])),
     workingDays: new Set(DAYS),
     others: planA.map((s) => ({ ...s, sectionId: '5-A' })),
     teaching: new Set(

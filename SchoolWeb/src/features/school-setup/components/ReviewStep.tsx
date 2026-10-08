@@ -2,7 +2,7 @@
 
 import { Sparkles } from "lucide-react";
 import { useFormContext } from "react-hook-form";
-import { academicRows, branchRows, creationSentence, principalRows, schoolRows } from "../summary";
+import { academicRows, bellRows, branchRows, classRows, creationSentence, principalRows, schoolRows } from "../summary";
 import type { SetupFormValues } from "../schemas";
 import { ReviewSection } from "./ReviewSection";
 
@@ -21,6 +21,12 @@ export function ReviewStep({ onEdit }: { onEdit: (step: number) => void }) {
       <ReviewSection title="Main branch" rows={branchRows(values)} onEdit={() => onEdit(1)} />
       <ReviewSection title="Principal" rows={principalRows(values)} onEdit={() => onEdit(2)} />
       <ReviewSection title="Academic year" rows={academicRows(values)} onEdit={() => onEdit(2)} />
+      {values.academics.createSession && (
+        <>
+          <ReviewSection title="Classes & subjects" rows={classRows(values)} onEdit={() => onEdit(3)} />
+          <ReviewSection title="Bell schedule" rows={bellRows(values)} onEdit={() => onEdit(4)} />
+        </>
+      )}
     </div>
   );
 }

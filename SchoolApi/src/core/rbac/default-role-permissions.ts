@@ -63,7 +63,9 @@ const PRINCIPAL: PermissionKey[] = [
 
 const SUPERVISOR: PermissionKey[] = [
   ...viewOnly('dashboard', 'sessions', 'classes', 'students', 'guardians'),
-  ...viewOnly('staff', 'timetable'),
+  ...viewOnly('staff'),
+  // academics-timetable-contract D9: build drafts, allocate teachers, add rooms; publishing stays with the principal.
+  ...grant('timetable', 'view', 'add', 'edit'),
   ...grant('attendance', 'view', 'add', 'edit', 'submit', 'approve'),
   ...grant('diary', 'view', 'add', 'edit', 'submit', 'approve', 'publish'),
   ...grant('syllabus', 'view', 'add', 'edit', 'submit', 'approve'),
@@ -84,7 +86,9 @@ const SUPERVISOR: PermissionKey[] = [
 
 const TEACHER: PermissionKey[] = [
   ...viewOnly('dashboard', 'sessions', 'classes', 'students', 'guardians'),
-  ...viewOnly('timetable', 'health'),
+  ...viewOnly('health'),
+  // User decision 2026-10-08: drafts of their class-teacher sections only (scope-checked); no publish.
+  ...grant('timetable', 'view', 'add', 'edit'),
   ...grant('progress', 'view', 'edit'),
   ...grant('attendance', 'view', 'add', 'edit', 'submit'),
   ...grant('diary', 'view', 'add', 'edit', 'submit', 'publish'),

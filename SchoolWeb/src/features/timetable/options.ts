@@ -19,7 +19,7 @@ export const SCHOOL_DAYS = [1, 2, 3, 4, 5];
 export const dayShort = (day: number) => DAY_SHORT[day] ?? `Day ${day}`;
 export const dayName = (day: number) => DAY_NAMES[day] ?? `Day ${day}`;
 
-export const CONFLICT_LABELS: Record<ConflictType, string> = {
+export const CONFLICT_LABELS: Partial<Record<ConflictType, string>> = {
   TEACHER_DOUBLE_BOOKED: "Teacher double-booked",
   ROOM_DOUBLE_BOOKED: "Room double-booked",
   TEACHER_NOT_ASSIGNED: "Teacher not assigned",

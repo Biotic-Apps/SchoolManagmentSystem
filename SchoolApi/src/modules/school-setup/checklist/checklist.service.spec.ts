@@ -32,10 +32,13 @@ function setup() {
       session: 1,
       classes: 13,
       subjects: 8,
+      bellSchedule: 9,
       teachers: 0,
+      allocation: 0,
       students: 0,
       timetable: 0,
       feePlan: 0,
+      sections: 0,
     }),
   };
   return {
@@ -58,7 +61,10 @@ describe('ChecklistService', () => {
       ['session', true],
       ['classes', true],
       ['subjects', true],
+      ['bellSchedule', true],
       ['teachers', false],
+      // Nothing to allocate without sections.
+      ['allocation', false],
       ['students', false],
       ['timetable', false],
       ['feePlan', false],
@@ -82,5 +88,24 @@ describe('ChecklistService', () => {
     await expect(
       service.checklist(user('TEACHER'), branchScope('b1'), {}),
     ).rejects.toMatchObject({ code: ErrorCode.FORBIDDEN });
+  });
+
+  it('marks allocation done when every section subject has a teacher', async () => {
+    const { service, repository } = setup();
+    repository.counts.mockResolvedValueOnce({
+      ...(await repository.counts()),
+      allocation: 0,
+      sections: 4,
+    });
+    const result = await service.checklist(
+      user('PRINCIPAL'),
+      branchScope('b1'),
+      {},
+    );
+    expect(result.items.find((i) => i.key === 'allocation')).toEqual({
+      key: 'allocation',
+      done: true,
+      count: 0,
+    });
   });
 });

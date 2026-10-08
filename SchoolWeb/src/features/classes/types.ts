@@ -49,6 +49,8 @@ export interface Section {
   room: { id: string; name: string } | null;
   studentCount: number;
   status: string;
+  /** Matric group, e.g. "Science"; null = no group. */
+  group?: string | null;
   /** Filled from Phase 2 staff assignments. */
   classTeacher?: { id: string; name: string } | null;
 }

@@ -32,7 +32,26 @@ export interface SchoolSetupInput {
     /** Only sent when the admin unticked some preset entries (see contract Deviations). */
     classNames?: string[];
     subjectNames?: string[];
+    /** Per-class sections and subjects (academics-timetable-contract §5.1); replaces the presets above. */
+    classes?: SetupClassInput[];
+    bellSchedule?: SetupBellInput;
   };
+}
+
+export interface SetupClassInput {
+  name: string;
+  level: "EARLY" | "PRIMARY" | "MIDDLE" | "MATRIC" | "CUSTOM";
+  sections: { name: string; group?: string }[];
+  subjects: { name: string; periodsPerWeek: number; group?: string }[];
+}
+
+export interface SetupBellInput {
+  startTime: string;
+  periodMinutes: number;
+  periodsPerDay: number;
+  breakAfter: number;
+  breakMinutes: number;
+  friday?: { periodMinutes: number; periodsPerDay: number; breakMinutes: number };
 }
 
 interface Ref {
@@ -53,10 +72,19 @@ export interface SchoolSetupResult {
     temporaryPassword?: string | null;
   };
   session: { id: string; name: string; startDate: string; endDate: string } | null;
-  counts: { classes: number; sections: number; subjects: number };
+  counts: { classes: number; sections: number; subjects: number; classSubjects?: number; periods?: number };
 }
 
-export type ChecklistKey = "session" | "classes" | "subjects" | "teachers" | "students" | "timetable" | "feePlan";
+export type ChecklistKey =
+  | "session"
+  | "classes"
+  | "subjects"
+  | "bellSchedule"
+  | "teachers"
+  | "allocation"
+  | "students"
+  | "timetable"
+  | "feePlan";
 
 export interface ChecklistItem {
   key: ChecklistKey | string;

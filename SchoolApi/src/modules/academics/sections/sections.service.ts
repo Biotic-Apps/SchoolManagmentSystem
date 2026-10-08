@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { AuditService } from '../../../core/audit/audit.service';
+import { ErrorCode } from '../../../core/common/errors/error-code.enum';
 import {
+  domainError,
   forbiddenScope,
   invalid,
   notFound,
 } from '../../../core/common/errors/errors';
+import { PrismaService } from '../../../core/prisma/prisma.service';
 import type { PageResult } from '../../../core/common/pagination/page-result';
 import { toPageResult } from '../../../core/common/pagination/paginate';
 import type { AuthUser } from '../../../core/common/types/auth-user';
@@ -14,6 +17,8 @@ import type { CreateSectionDto } from '../dto/create-section.dto';
 import type { SectionDto } from '../dto/section.dto';
 import type { SectionQueryDto } from '../dto/section-query.dto';
 import type { UpdateSectionDto } from '../dto/update-section.dto';
+import { AssignmentEnder } from '../../staff/assignments/assignment-ender';
+import { normalizeGroup } from '../curriculum/curriculum';
 import { onDuplicate } from '../unique-conflict';
 import { toSectionDto } from './section.mapper';
 import { SectionsRepository, type SectionRow } from './sections.repository';
@@ -21,7 +26,9 @@ import { SectionsRepository, type SectionRow } from './sections.repository';
 @Injectable()
 export class SectionsService {
   constructor(
+    private readonly prisma: PrismaService,
     private readonly repository: SectionsRepository,
+    private readonly ender: AssignmentEnder,
     private readonly audit: AuditService,
   ) {}
 
@@ -60,6 +67,7 @@ export class SectionsService {
         name: dto.name.trim(),
         capacity: dto.capacity,
         roomId: dto.roomId,
+        group: normalizeGroup(dto.group),
         createdById: user.id,
       })
       .catch(
@@ -83,6 +91,7 @@ export class SectionsService {
         name: dto.name?.trim(),
         capacity: dto.capacity,
         roomId: dto.roomId,
+        group: dto.group === undefined ? undefined : normalizeGroup(dto.group),
         updatedById: user.id,
       })
       .catch(
@@ -93,12 +102,32 @@ export class SectionsService {
     return this.audited('section.update', before, row);
   }
 
+  /** 409 SECTION_IN_USE with enrolled students; ends assignments and drops the draft. */
   async archive(user: AuthUser, scope: Scope, id: string): Promise<SectionDto> {
     const before = await this.managed(scope, id);
-    const row = await this.repository.update(id, {
-      status: 'ARCHIVED',
-      updatedById: user.id,
+    const students = before._count.enrollments;
+    if (students > 0)
+      throw domainError(
+        ErrorCode.SECTION_IN_USE,
+        'Move or withdraw the students before removing this section',
+        [`${students} student${students === 1 ? '' : 's'} enrolled`],
+      );
+    const assignments = await this.prisma.staffAssignment.findMany({
+      where: { sectionId: id, endedAt: null },
+      include: { staff: { select: { userId: true } } },
     });
+    const row = await this.prisma.$transaction(async (tx) => {
+      await this.ender.end(tx, assignments);
+      await tx.timetableSlot.deleteMany({
+        where: { published: false, timetable: { sectionId: id } },
+      });
+      return this.repository.update(
+        id,
+        { status: 'ARCHIVED', updatedById: user.id },
+        tx,
+      );
+    });
+    await this.ender.refresh(assignments.map((a) => a.staff.userId));
     return this.audited('section.archive', before, row);
   }
 

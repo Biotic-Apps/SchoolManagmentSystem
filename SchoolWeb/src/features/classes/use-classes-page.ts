@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useBranchPicker } from "@/features/branches/use-branch-picker";
+import { useAcademicScope } from "./use-academic-scope";
 
-export type ClassesTabId = "classes" | "sections" | "subjects" | "rooms";
+export type ClassesTabId = "classes" | "catalogue";
 
 export function useClassesPage() {
-  const picker = useBranchPicker();
+  const scope = useAcademicScope();
   const [tab, setTab] = useState<ClassesTabId>("classes");
-  return { picker, tab, setTab: (value: string) => setTab(value as ClassesTabId) };
+  return { scope, tab, setTab: (value: string) => setTab(value as ClassesTabId) };
 }

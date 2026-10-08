@@ -16,12 +16,12 @@ const CONFLICTS: Record<string, { field: Field; message: string }> = {
 // API paths that the form keeps under another name.
 const ALIASES: Record<string, string> = {
   "academics.classNames": "academics.classes",
-  "academics.subjectNames": "academics.subjects",
+  "academics.bellSchedule": "bell",
 };
 
 // The API names the timing fields under branch.timings.*; the form keeps them flat on branch.
 function formField(field: string): string {
-  const flat = field.replace(/^branch\.timings\./, "branch.");
+  const flat = field.replace(/^branch\.timings\./, "branch.").replace(/^academics\.bellSchedule\./, "bell.");
   return ALIASES[flat] ?? flat;
 }
 
@@ -50,6 +50,9 @@ export interface SetupErrorOutcome {
 /** Puts API errors on the wizard fields and says which step to show. */
 const UNREACHABLE = "Couldn't create the school: the server isn't reachable or is out of date. Nothing was saved; please try again.";
 
+const OUTDATED_API =
+  "The server hasn't been updated for classes, sections and the bell schedule yet. Nothing was saved; please try again in a few minutes.";
+
 export function applySetupErrors(error: unknown, setError: UseFormSetError<SetupFormValues>): SetupErrorOutcome {
   if (isRouteMissing(error) || (error instanceof ApiError && error.code === NETWORK_ERROR)) {
     return { step: null, message: UNREACHABLE };
@@ -59,9 +62,12 @@ export function applySetupErrors(error: unknown, setError: UseFormSetError<Setup
     setError(conflict.field, { type: "server", message: conflict.message });
     return { step: stepForField(conflict.field), message: null };
   }
+  const issues = validationIssues(error);
+  // "classes should not exist": the API doesn't know a field this web version sends yet.
+  if (issues.some((issue) => /should not exist/i.test(issue.message))) return { step: null, message: OUTDATED_API };
   const placed: number[] = [];
   const unplaced: string[] = [];
-  for (const raw of validationIssues(error)) {
+  for (const raw of issues) {
     const issue = normalise(raw);
     const field = issue.field ? formField(issue.field) : "";
     const step = field.includes(".") ? stepForField(field) : -1;

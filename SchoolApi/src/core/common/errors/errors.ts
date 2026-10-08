@@ -18,3 +18,10 @@ export const recordLocked = (message: string): AppError =>
 
 export const invalid = (message: string, details?: unknown): AppError =>
   new AppError(ErrorCode.VALIDATION_FAILED, message, details);
+
+/** Error with a specific domain code (status from ERROR_STATUS). */
+export const domainError = (
+  code: ErrorCode,
+  message: string,
+  details?: unknown,
+): AppError => new AppError(code, message, details);

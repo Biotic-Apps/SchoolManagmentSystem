@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import type { Subject } from '../../../generated/prisma/client';
 import { AuditService } from '../../../core/audit/audit.service';
-import { notFound } from '../../../core/common/errors/errors';
+import { invalid, notFound } from '../../../core/common/errors/errors';
+import { PrismaService } from '../../../core/prisma/prisma.service';
 import type { PageResult } from '../../../core/common/pagination/page-result';
 import { toPageResult } from '../../../core/common/pagination/paginate';
 import type { AuthUser } from '../../../core/common/types/auth-user';
@@ -11,13 +12,19 @@ import type { CreateSubjectDto } from '../dto/create-subject.dto';
 import type { SchoolQueryDto } from '../dto/school-query.dto';
 import type { SubjectDto } from '../dto/subject.dto';
 import type { UpdateSubjectDto } from '../dto/update-subject.dto';
+import { ClassCurriculumRepository } from '../classes/class-curriculum.repository';
+import { uniqueCode } from '../curriculum/subject-codes';
+import { SchoolDataAccess } from '../school-data-access';
 import { onDuplicate } from '../unique-conflict';
 import { SubjectsRepository } from './subjects.repository';
 
 @Injectable()
 export class SubjectsService {
   constructor(
+    private readonly prisma: PrismaService,
     private readonly repository: SubjectsRepository,
+    private readonly curriculum: ClassCurriculumRepository,
+    private readonly access: SchoolDataAccess,
     private readonly audit: AuditService,
   ) {}
 
@@ -34,11 +41,34 @@ export class SubjectsService {
     scope: Scope,
     dto: CreateSubjectDto,
   ): Promise<SubjectDto> {
-    scope.assertReadSchool(dto.schoolId);
-    const row = await this.repository
-      .create({ ...dto, name: dto.name.trim(), createdById: user.id })
-      .catch(onDuplicate(`Subject code ${dto.code} already exists`));
-    return this.audited('subject.create', undefined, row);
+    await this.access.assertManage(scope, dto.schoolId);
+    const classIds = dto.classIds ?? [];
+    if (classIds.length > 0) {
+      const found = await this.prisma.schoolClass.count({
+        where: { id: { in: classIds }, schoolId: dto.schoolId },
+      });
+      if (found !== classIds.length)
+        throw invalid('classIds must be classes of the same school');
+    }
+    const name = dto.name.trim();
+    const code = dto.code ?? (await this.autoCode(dto.schoolId, name));
+    const row = await this.prisma
+      .$transaction(async (tx) => {
+        const subject = await this.repository.create(
+          { schoolId: dto.schoolId, code, name, createdById: user.id },
+          tx,
+        );
+        await this.curriculum.link(
+          tx,
+          dto.schoolId,
+          classIds,
+          subject.id,
+          dto.periodsPerWeek ?? null,
+        );
+        return subject;
+      })
+      .catch(onDuplicate(`Subject code ${code} already exists`));
+    return this.audited('subject.create', undefined, row, classIds);
   }
 
   async update(
@@ -60,10 +90,19 @@ export class SubjectsService {
     return this.audited('subject.update', before, row);
   }
 
+  private async autoCode(schoolId: string, name: string): Promise<string> {
+    const taken = await this.prisma.subject.findMany({
+      where: { schoolId },
+      select: { code: true },
+    });
+    return uniqueCode(name, new Set(taken.map((s) => s.code)));
+  }
+
   private audited(
     action: string,
     before: Subject | undefined,
     after: Subject,
+    classIds: string[] = [],
   ): SubjectDto {
     const dto = toSubjectDto(after);
     this.audit.stage({
@@ -72,7 +111,7 @@ export class SubjectsService {
       entityId: after.id,
       schoolId: after.schoolId,
       before: before && toSubjectDto(before),
-      after: dto,
+      after: classIds.length > 0 ? { ...dto, classIds } : dto,
     });
     return dto;
   }

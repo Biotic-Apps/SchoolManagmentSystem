@@ -27,20 +27,33 @@ export type CellMap = Record<string, CellValue>;
 
 export const cellKey = (day: number, periodIndex: number) => `${day}-${periodIndex}`;
 
-export function periodRows(periods: Period[]): GridRow[] {
+/** Teaching periods are "Period N" (N counts teaching periods only); breaks keep their label. */
+export function numberedPeriods(periods: Period[]): Period[] {
+  let count = 0;
   return [...periods]
     .sort((a, b) => a.index - b.index)
-    .map((period) => ({
-      periodIndex: period.index,
-      title: period.label?.trim() || (period.isBreak ? "Break" : `Period ${period.index}`),
-      time: formatTimeRange(period.startTime, period.endTime),
-      isBreak: period.isBreak,
-    }));
+    .map((period) => {
+      if (period.isBreak) return { ...period, number: null };
+      count += 1;
+      return { ...period, number: period.number ?? count };
+    });
 }
 
-/** "P1 · 8:00 AM – 8:40 AM" for pickers. */
+export const periodTitle = (period: Period) =>
+  period.isBreak ? period.label?.trim() || "Break" : `Period ${period.number ?? period.index}`;
+
+export function periodRows(periods: Period[]): GridRow[] {
+  return numberedPeriods(periods).map((period) => ({
+    periodIndex: period.index,
+    title: periodTitle(period),
+    time: formatTimeRange(period.startTime, period.endTime),
+    isBreak: period.isBreak,
+  }));
+}
+
+/** "Period 1 · 8:00 AM – 8:40 AM" for pickers (number from the API when given). */
 export function periodOptionLabel(period: Period): string {
-  return `P${period.index} · ${formatTimeRange(period.startTime, period.endTime)}`;
+  return `${periodTitle(period)} · ${formatTimeRange(period.startTime, period.endTime)}`;
 }
 
 export function dayColumns(days: number[], weekOf?: string): GridDay[] {
@@ -92,7 +105,7 @@ export function teacherWeek(slots: TeacherSlot[], weekOf: string): TeacherWeek {
     if (!rowMap.has(slot.periodIndex)) {
       rowMap.set(slot.periodIndex, {
         periodIndex: slot.periodIndex,
-        title: `Period ${slot.periodIndex}`,
+        title: `Period ${slot.periodNumber ?? slot.periodIndex}`,
         time: formatTimeRange(slot.startTime, slot.endTime),
         isBreak: false,
       });

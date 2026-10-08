@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -9,7 +10,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../../core/common/decorators/current-user.decorator';
 import type { PageResult } from '../../../core/common/pagination/page-result';
 import {
@@ -23,16 +24,24 @@ import type { Scope } from '../../../core/rbac/scope/scope';
 import { CreateClassDto } from '../dto/create-class.dto';
 import { SchoolClassDto } from '../dto/school-class.dto';
 import { SchoolQueryDto } from '../dto/school-query.dto';
-import { SetClassSubjectsDto } from '../dto/set-class-subjects.dto';
+import { ClassSubjectDto } from '../dto/class-subject.dto';
+import {
+  ReorderClassesDto,
+  SetClassSubjectsDto,
+} from '../dto/set-class-subjects.dto';
 import { SubjectDto } from '../dto/subject.dto';
 import { UpdateClassDto } from '../dto/update-class.dto';
+import { ClassCurriculumService } from './class-curriculum.service';
 import { ClassesService } from './classes.service';
 
 @ApiTags('classes')
 @ApiBearerAuth()
 @Controller('classes')
 export class ClassesController {
-  constructor(private readonly classes: ClassesService) {}
+  constructor(
+    private readonly classes: ClassesService,
+    private readonly curriculum: ClassCurriculumService,
+  ) {}
 
   @Get()
   @RequirePermission('classes.view')
@@ -79,12 +88,29 @@ export class ClassesController {
 
   @Put(':id/subjects')
   @RequirePermission('classes.edit')
-  @ApiData(SubjectDto, { isArray: true })
+  @ApiOperation({
+    summary:
+      'Set the class curriculum (items order = sortOrder); 409 SUBJECT_IN_USE when a removed subject is still taught',
+  })
+  @ApiData(ClassSubjectDto, { isArray: true })
   setSubjects(
     @CurrentScope() scope: Scope,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: SetClassSubjectsDto,
-  ): Promise<SubjectDto[]> {
-    return this.classes.setSubjects(scope, id, body.subjectIds);
+  ): Promise<ClassSubjectDto[]> {
+    return this.curriculum.set(scope, id, body);
+  }
+
+  @Put('order')
+  @HttpCode(204)
+  @RequirePermission('classes.edit')
+  @ApiOperation({
+    summary: 'Reorder all classes of a school (levelOrder 1..n)',
+  })
+  async reorder(
+    @CurrentScope() scope: Scope,
+    @Body() body: ReorderClassesDto,
+  ): Promise<void> {
+    await this.curriculum.reorder(scope, body);
   }
 }

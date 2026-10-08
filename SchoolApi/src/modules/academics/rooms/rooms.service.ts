@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import type { Room } from '../../../generated/prisma/client';
 import { AuditService } from '../../../core/audit/audit.service';
-import { invalid, notFound } from '../../../core/common/errors/errors';
+import {
+  domainError,
+  invalid,
+  notFound,
+} from '../../../core/common/errors/errors';
 import type { PageResult } from '../../../core/common/pagination/page-result';
 import { toPageResult } from '../../../core/common/pagination/paginate';
 import type { AuthUser } from '../../../core/common/types/auth-user';
@@ -11,8 +15,18 @@ import type { BranchScopedQueryDto } from '../dto/branch-scoped-query.dto';
 import type { CreateRoomDto } from '../dto/create-room.dto';
 import type { RoomDto } from '../dto/room.dto';
 import type { UpdateRoomDto } from '../dto/update-room.dto';
-import { onDuplicate } from '../unique-conflict';
+import { ErrorCode } from '../../../core/common/errors/error-code.enum';
 import { RoomsRepository } from './rooms.repository';
+
+const roomNameTaken = (name: string) => (error: unknown) => {
+  if ((error as { code?: string }).code === 'P2002')
+    throw domainError(
+      ErrorCode.ROOM_NAME_TAKEN,
+      `Room ${name.trim()} already exists in this branch`,
+      { field: 'name' },
+    );
+  throw error;
+};
 
 @Injectable()
 export class RoomsService {
@@ -45,7 +59,7 @@ export class RoomsService {
         capacity: dto.capacity,
         createdById: user.id,
       })
-      .catch(onDuplicate(`Room ${dto.name} already exists`));
+      .catch(roomNameTaken(dto.name));
     return this.audited('room.create', undefined, row);
   }
 
@@ -67,7 +81,7 @@ export class RoomsService {
         capacity: dto.capacity,
         updatedById: user.id,
       })
-      .catch(onDuplicate(`Room ${dto.name} already exists`));
+      .catch(roomNameTaken(dto.name ?? before.name));
     return this.audited('room.update', before, row);
   }
 

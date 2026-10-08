@@ -8,6 +8,7 @@ import { UsersModule } from '../users/users.module';
 import { ChecklistController } from './checklist/checklist.controller';
 import { ChecklistRepository } from './checklist/checklist.repository';
 import { ChecklistService } from './checklist/checklist.service';
+import { PresetsController } from './presets.controller';
 import { SchoolSetupController } from './school-setup.controller';
 import { SchoolSetupService } from './school-setup.service';
 import { AcademicsStep } from './steps/academics.step';
@@ -25,7 +26,7 @@ import { WelcomeNotifier } from './welcome-notifier';
     AcademicsModule,
     SettingsModule,
   ],
-  controllers: [SchoolSetupController, ChecklistController],
+  controllers: [SchoolSetupController, ChecklistController, PresetsController],
   providers: [
     SchoolSetupService,
     OrganisationStep,

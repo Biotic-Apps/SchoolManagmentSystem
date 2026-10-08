@@ -21,6 +21,7 @@ export function useSectionScope() {
   return {
     scope,
     sectionOptions: options,
+    sections: sections.sections,
     section,
     sectionId: section?.id ?? null,
     setSectionId,

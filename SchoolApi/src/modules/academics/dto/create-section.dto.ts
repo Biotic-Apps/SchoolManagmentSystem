@@ -24,12 +24,19 @@ export class CreateSectionDto {
   @MaxLength(20)
   name!: string;
 
+  @IsOptional()
   @IsInt()
   @Min(1)
   @Max(200)
-  capacity!: number;
+  capacity?: number;
 
   @IsOptional()
   @IsUUID()
   roomId?: string;
+
+  /** Matric group, e.g. "Science" / "Arts"; null or blank = no group. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(30)
+  group?: string | null;
 }

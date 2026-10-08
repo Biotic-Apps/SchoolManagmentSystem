@@ -1974,6 +1974,68 @@
         "tags": [
           "schools"
         ]
+      },
+      "delete": {
+        "operationId": "SchoolDeletionController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteSchoolDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SchoolDeletionStatusDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchoolDeletionStatusDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "CONFIRM_CODE_MISMATCH"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Queues the deletion (202); follow it with GET :id/deletion-status.",
+        "tags": [
+          "schools"
+        ]
       }
     },
     "/api/v1/schools/{id}/archive": {
@@ -2039,6 +2101,86 @@
                   "properties": {
                     "data": {
                       "$ref": "#/components/schemas/SchoolDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "schools"
+        ]
+      }
+    },
+    "/api/v1/schools/{id}/deletion-preview": {
+      "get": {
+        "operationId": "SchoolDeletionController_preview",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SchoolDeletionPreviewDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "schools"
+        ]
+      }
+    },
+    "/api/v1/schools/{id}/deletion-status": {
+      "get": {
+        "operationId": "SchoolDeletionController_status",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SchoolDeletionStatusDto"
                     }
                   }
                 }
@@ -2148,6 +2290,38 @@
           }
         ],
         "summary": "Setup checklist of a branch (principal: own branch; Super Admin: branchId required)",
+        "tags": [
+          "school-setup"
+        ]
+      }
+    },
+    "/api/v1/setup/presets": {
+      "get": {
+        "operationId": "PresetsController_presets",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SetupPresetsDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Wizard starting points: classes and subjects per level, bell defaults",
         "tags": [
           "school-setup"
         ]
@@ -4855,6 +5029,123 @@
         ]
       }
     },
+    "/api/v1/classes/overview": {
+      "get": {
+        "operationId": "ClassSetupController_overview",
+        "parameters": [
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "description": "Required when the caller reaches more than one branch.",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "description": "Defaults to the branch's ACTIVE session.",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ClassOverviewDto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "One card per class: sections, subjects, issues (branch + session)",
+        "tags": [
+          "classes"
+        ]
+      }
+    },
+    "/api/v1/classes/{id}/setup": {
+      "get": {
+        "operationId": "ClassSetupController_classSetup",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "description": "Required when the caller reaches more than one branch.",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "description": "Defaults to the branch's ACTIVE session.",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ClassSetupDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Class setup screen: sections, curriculum, teacher allocation",
+        "tags": [
+          "classes"
+        ]
+      }
+    },
     "/api/v1/classes": {
       "get": {
         "operationId": "ClassesController_list",
@@ -5126,7 +5417,7 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/SubjectDto"
+                        "$ref": "#/components/schemas/ClassSubjectDto"
                       }
                     }
                   }
@@ -5140,6 +5431,37 @@
             "bearer": []
           }
         ],
+        "summary": "Set the class curriculum (items order = sortOrder); 409 SUBJECT_IN_USE when a removed subject is still taught",
+        "tags": [
+          "classes"
+        ]
+      }
+    },
+    "/api/v1/classes/order": {
+      "put": {
+        "operationId": "ClassesController_reorder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderClassesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reorder all classes of a school (levelOrder 1..n)",
         "tags": [
           "classes"
         ]
@@ -5786,6 +6108,786 @@
             "bearer": []
           }
         ],
+        "tags": [
+          "classes"
+        ]
+      }
+    },
+    "/api/v1/staff": {
+      "get": {
+        "operationId": "StaffController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 30,
+              "type": "string"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "designation",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "TEACHER",
+                "HELPER",
+                "COORDINATOR",
+                "HEAD_TEACHER",
+                "ACCOUNTANT",
+                "OFFICE_STAFF",
+                "OTHER"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/StaffSummaryDto"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer"
+                        },
+                        "pageSize": {
+                          "type": "integer"
+                        },
+                        "total": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      },
+      "post": {
+        "operationId": "StaffController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStaffDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CreatedStaffDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedStaffDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/v1/staff/{id}": {
+      "get": {
+        "operationId": "StaffController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/StaffDetailDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      },
+      "patch": {
+        "operationId": "StaffController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStaffDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/StaffDetailDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/v1/staff/{id}/status": {
+      "post": {
+        "operationId": "StaffController_setStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/StaffDetailDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/v1/staff/{id}/probation": {
+      "put": {
+        "operationId": "StaffController_setProbation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProbationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/StaffDetailDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/v1/staff/{id}/assignments": {
+      "get": {
+        "operationId": "StaffController_listAssignments",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/StaffAssignmentDto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      },
+      "post": {
+        "operationId": "StaffController_addAssignment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignmentInput2Dto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/StaffAssignmentDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffAssignmentDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/v1/staff/{id}/assignments/{assignmentId}": {
+      "delete": {
+        "operationId": "StaffController_endAssignment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "assignmentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/StaffAssignmentDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/v1/staff/{id}/workload": {
+      "get": {
+        "operationId": "StaffController_workload",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/WorkloadDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/v1/sections/{id}/staff": {
+      "get": {
+        "operationId": "SectionStaffController_staff",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SectionStaffDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "classes"
+        ]
+      }
+    },
+    "/api/v1/sections/{id}/subject-teachers/{subjectId}": {
+      "put": {
+        "operationId": "AllocationController_subjectTeacher",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "subjectId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetTeacherDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AllocationRowDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "SUBJECT_NOT_IN_CLASS | SUBJECT_NOT_IN_GROUP | UNKNOWN_STAFF"
+          },
+          "403": {
+            "description": "OWN_ASSIGNMENT"
+          },
+          "409": {
+            "description": "STAFF_LEFT"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Set (or remove with staffId null) the subject teacher of a section",
+        "tags": [
+          "classes"
+        ]
+      }
+    },
+    "/api/v1/sections/{id}/class-teacher": {
+      "put": {
+        "operationId": "AllocationController_classTeacher",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetTeacherDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ClassTeacherRowDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Set (or remove) the class teacher of a section",
+        "tags": [
+          "classes"
+        ]
+      }
+    },
+    "/api/v1/branches/{id}/teaching-staff": {
+      "get": {
+        "operationId": "AllocationController_teachingStaff",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "description": "Defaults to the branch's active session.",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "all",
+            "required": false,
+            "in": "query",
+            "description": "true = every active staff member (not only teaching staff).",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/TeachingStaffDto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Teaching staff of a branch (with or without login) and their load",
         "tags": [
           "classes"
         ]
@@ -6989,6 +8091,150 @@
         ]
       }
     },
+    "/api/v1/branches/{id}/bell-schedule": {
+      "get": {
+        "operationId": "BellScheduleController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BellScheduleDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Default bell schedule plus weekday variants (e.g. Friday)",
+        "tags": [
+          "timetable"
+        ]
+      },
+      "put": {
+        "operationId": "BellScheduleController_replace",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetBellScheduleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BellScheduleDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "PERIODS_IN_USE: details list the lessons on removed periods / new breaks (send dropLessons: true to delete them)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Replace the whole bell schedule; days missing from `days` fall back to the default",
+        "tags": [
+          "timetable"
+        ]
+      }
+    },
+    "/api/v1/branches/{id}/bell-schedule/generate": {
+      "post": {
+        "operationId": "BellScheduleController_generate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BellPlanInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BellScheduleDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Preview a generated schedule (not saved)",
+        "tags": [
+          "timetable"
+        ]
+      }
+    },
     "/api/v1/timetables": {
       "get": {
         "operationId": "TimetablesController_get",
@@ -7146,6 +8392,181 @@
         ]
       }
     },
+    "/api/v1/timetables/{sectionId}/builder": {
+      "get": {
+        "operationId": "TimetablesController_builder",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/TimetableBuilderDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Everything the timetable builder needs",
+        "tags": [
+          "timetable"
+        ]
+      }
+    },
+    "/api/v1/timetables/{sectionId}/slots/{day}/{periodIndex}": {
+      "put": {
+        "operationId": "TimetablesController_putCell",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "day",
+            "required": true,
+            "in": "path",
+            "description": "ISO weekday 1 = Monday … 7 = Sunday.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 7,
+              "type": "number"
+            }
+          },
+          {
+            "name": "periodIndex",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "maximum": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCellDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CellResultDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Autosave one lesson into the draft",
+        "tags": [
+          "timetable"
+        ]
+      },
+      "delete": {
+        "operationId": "TimetablesController_deleteCell",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "day",
+            "required": true,
+            "in": "path",
+            "description": "ISO weekday 1 = Monday … 7 = Sunday.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 7,
+              "type": "number"
+            }
+          },
+          {
+            "name": "periodIndex",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minimum": 1,
+              "maximum": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CellResultDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove one lesson from the draft (idempotent)",
+        "tags": [
+          "timetable"
+        ]
+      }
+    },
     "/api/v1/timetables/{sectionId}/slots": {
       "put": {
         "operationId": "TimetablesController_replace",
@@ -7191,6 +8612,7 @@
             "bearer": []
           }
         ],
+        "summary": "Replace the whole draft (auto-fill, copy)",
         "tags": [
           "timetable"
         ]
@@ -7264,6 +8686,52 @@
                 }
               }
             }
+          },
+          "409": {
+            "description": "NOTHING_TO_PUBLISH | TIMETABLE_CONFLICTS (details = error conflicts)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "timetable"
+        ]
+      }
+    },
+    "/api/v1/timetables/{sectionId}/discard": {
+      "post": {
+        "operationId": "TimetablesController_discard",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/TimetableDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "NOTHING_TO_DISCARD"
           }
         },
         "security": [
@@ -9025,604 +10493,6 @@
         ],
         "tags": [
           "admissions"
-        ]
-      }
-    },
-    "/api/v1/staff": {
-      "get": {
-        "operationId": "StaffController_list",
-        "parameters": [
-          {
-            "name": "page",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "minimum": 1,
-              "default": 1,
-              "type": "number"
-            }
-          },
-          {
-            "name": "pageSize",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "minimum": 1,
-              "maximum": 100,
-              "default": 20,
-              "type": "number"
-            }
-          },
-          {
-            "name": "search",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "maxLength": 100,
-              "type": "string"
-            }
-          },
-          {
-            "name": "status",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "maxLength": 30,
-              "type": "string"
-            }
-          },
-          {
-            "name": "branchId",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "format": "uuid",
-              "type": "string"
-            }
-          },
-          {
-            "name": "designation",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "TEACHER",
-                "HELPER",
-                "COORDINATOR",
-                "HEAD_TEACHER",
-                "ACCOUNTANT",
-                "OFFICE_STAFF",
-                "OTHER"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/StaffSummaryDto"
-                      }
-                    },
-                    "meta": {
-                      "type": "object",
-                      "properties": {
-                        "page": {
-                          "type": "integer"
-                        },
-                        "pageSize": {
-                          "type": "integer"
-                        },
-                        "total": {
-                          "type": "integer"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "staff"
-        ]
-      },
-      "post": {
-        "operationId": "StaffController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateStaffDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/CreatedStaffDto"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreatedStaffDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "staff"
-        ]
-      }
-    },
-    "/api/v1/staff/{id}": {
-      "get": {
-        "operationId": "StaffController_get",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/StaffDetailDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "staff"
-        ]
-      },
-      "patch": {
-        "operationId": "StaffController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateStaffDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/StaffDetailDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "staff"
-        ]
-      }
-    },
-    "/api/v1/staff/{id}/status": {
-      "post": {
-        "operationId": "StaffController_setStatus",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/StaffStatusDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/StaffDetailDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "staff"
-        ]
-      }
-    },
-    "/api/v1/staff/{id}/probation": {
-      "put": {
-        "operationId": "StaffController_setProbation",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProbationDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/StaffDetailDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "staff"
-        ]
-      }
-    },
-    "/api/v1/staff/{id}/assignments": {
-      "get": {
-        "operationId": "StaffController_listAssignments",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "sessionId",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "format": "uuid",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/StaffAssignmentDto"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "staff"
-        ]
-      },
-      "post": {
-        "operationId": "StaffController_addAssignment",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AssignmentInput2Dto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/StaffAssignmentDto"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StaffAssignmentDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "staff"
-        ]
-      }
-    },
-    "/api/v1/staff/{id}/assignments/{assignmentId}": {
-      "delete": {
-        "operationId": "StaffController_endAssignment",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "assignmentId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/StaffAssignmentDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "staff"
-        ]
-      }
-    },
-    "/api/v1/staff/{id}/workload": {
-      "get": {
-        "operationId": "StaffController_workload",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "sessionId",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "format": "uuid",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/WorkloadDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "staff"
-        ]
-      }
-    },
-    "/api/v1/sections/{id}/staff": {
-      "get": {
-        "operationId": "SectionStaffController_staff",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/SectionStaffDto"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "classes"
         ]
       }
     },
@@ -22983,6 +23853,140 @@
           }
         }
       },
+      "DeletionCountDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "enum": [
+              "branches",
+              "users",
+              "staff",
+              "students",
+              "guardians",
+              "sessions",
+              "classes",
+              "sections",
+              "subjects",
+              "timetables",
+              "attendance",
+              "exams",
+              "invoices",
+              "payments",
+              "files"
+            ],
+            "type": "string"
+          },
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "key",
+          "count"
+        ]
+      },
+      "SchoolDeletionPreviewDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "ACTIVE",
+              "ARCHIVED"
+            ],
+            "type": "string"
+          },
+          "summary": {
+            "description": "Headline counts in display order; zero counts are left out.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeletionCountDto"
+            }
+          },
+          "tables": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "description": "Rows per database table"
+          },
+          "schoolId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "lastActiveSchool": {
+            "type": "boolean",
+            "description": "No other ACTIVE school would remain (allowed; the UI warns)."
+          },
+          "removedUsers": {
+            "type": "number",
+            "description": "Accounts deleted because they only belong to this school."
+          },
+          "keptUsers": {
+            "type": "number",
+            "description": "Accounts kept (they belong elsewhere too); only lose this school's roles."
+          },
+          "totalRows": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "status",
+          "summary",
+          "tables",
+          "schoolId",
+          "code",
+          "name",
+          "lastActiveSchool",
+          "removedUsers",
+          "keptUsers",
+          "totalRows"
+        ]
+      },
+      "SchoolDeletionStatusDto": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "enum": [
+              "IDLE",
+              "RUNNING",
+              "FAILED",
+              "DELETED"
+            ],
+            "type": "string",
+            "description": "IDLE: no run yet (or still queued) · RUNNING · FAILED (school kept) · DELETED"
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          },
+          "schoolId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "state",
+          "error",
+          "schoolId"
+        ]
+      },
+      "DeleteSchoolDto": {
+        "type": "object",
+        "properties": {
+          "confirmCode": {
+            "type": "string",
+            "description": "Must equal the school's code (typed by the user to confirm).",
+            "maxLength": 32
+          }
+        },
+        "required": [
+          "confirmCode"
+        ]
+      },
       "SetupEntityDto": {
         "type": "object",
         "properties": {
@@ -23066,12 +24070,22 @@
           },
           "subjects": {
             "type": "number"
+          },
+          "classSubjects": {
+            "type": "number",
+            "description": "Class × subject curriculum links."
+          },
+          "periods": {
+            "type": "number",
+            "description": "Bell schedule rows (all days, breaks included)."
           }
         },
         "required": [
           "classes",
           "sections",
-          "subjects"
+          "subjects",
+          "classSubjects",
+          "periods"
         ]
       },
       "SchoolSetupResultDto": {
@@ -23193,6 +24207,148 @@
           "name"
         ]
       },
+      "SetupSectionInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10
+          },
+          "group": {
+            "type": "string",
+            "description": "e.g. \"Science\" / \"Arts\".",
+            "maxLength": 30
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "SetupSubjectInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "periodsPerWeek": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 20
+          },
+          "group": {
+            "type": "string",
+            "description": "Must match a section group of the class.",
+            "maxLength": 30
+          },
+          "isOptional": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "SetupClassInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "EARLY",
+              "PRIMARY",
+              "MIDDLE",
+              "MATRIC",
+              "CUSTOM"
+            ]
+          },
+          "sections": {
+            "minItems": 1,
+            "maxItems": 8,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SetupSectionInput"
+            }
+          },
+          "subjects": {
+            "maxItems": 40,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SetupSubjectInput"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "sections"
+        ]
+      },
+      "BellDayPlanInput": {
+        "type": "object",
+        "properties": {
+          "periodMinutes": {
+            "type": "number",
+            "minimum": 10,
+            "maximum": 120
+          },
+          "periodsPerDay": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "breakMinutes": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 120
+          }
+        }
+      },
+      "BellPlanInput": {
+        "type": "object",
+        "properties": {
+          "startTime": {
+            "type": "string",
+            "example": "08:00",
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+          },
+          "periodMinutes": {
+            "type": "number",
+            "minimum": 10,
+            "maximum": 120
+          },
+          "periodsPerDay": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "breakAfter": {
+            "type": "number",
+            "description": "Break after this period; 0 = no break.",
+            "minimum": 0,
+            "maximum": 11
+          },
+          "breakMinutes": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 120
+          },
+          "friday": {
+            "description": "Shorter Friday (applied only when Friday is a working day).",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BellDayPlanInput"
+              }
+            ]
+          }
+        }
+      },
       "SetupAcademicsInput": {
         "type": "object",
         "properties": {
@@ -23239,6 +24395,60 @@
               "STANDARD",
               "NONE"
             ]
+          },
+          "classNames": {
+            "type": "array",
+            "description": "Partial pick from the STANDARD classes; overrides classesPreset when sent.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "Playgroup",
+                "Nursery",
+                "Prep",
+                "Class 1",
+                "Class 2",
+                "Class 3",
+                "Class 4",
+                "Class 5",
+                "Class 6",
+                "Class 7",
+                "Class 8",
+                "Class 9",
+                "Class 10"
+              ]
+            }
+          },
+          "subjectNames": {
+            "type": "array",
+            "description": "Partial pick from the STANDARD subjects; overrides subjectsPreset when sent.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "English",
+                "Urdu",
+                "Mathematics",
+                "General Science",
+                "Islamiat",
+                "Social Studies",
+                "Computer Science",
+                "Nazra Quran"
+              ]
+            }
+          },
+          "classes": {
+            "description": "Per-class sections and curriculum (order = levelOrder, max 30). When sent,\nthe legacy preset fields above are ignored.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SetupClassInput"
+            }
+          },
+          "bellSchedule": {
+            "description": "Default: 08:00, 8 × 40 min, 30-min break after period 4, Friday 6 × 35 min.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BellPlanInput"
+              }
+            ]
           }
         }
       },
@@ -23271,7 +24481,9 @@
               "session",
               "classes",
               "subjects",
+              "bellSchedule",
               "teachers",
+              "allocation",
               "students",
               "timetable",
               "feePlan"
@@ -23280,10 +24492,11 @@
           },
           "done": {
             "type": "boolean",
-            "description": "count > 0"
+            "description": "count > 0 (allocation: count === 0 and the session has sections)."
           },
           "count": {
-            "type": "number"
+            "type": "number",
+            "description": "allocation: section × subject pairs still without a subject teacher."
           }
         },
         "required": [
@@ -23303,7 +24516,7 @@
             "description": "Every item done."
           },
           "items": {
-            "description": "Always in this order: session, classes, subjects, teachers, students, timetable, feePlan.",
+            "description": "Always in this order: session, classes, subjects, bellSchedule, teachers, allocation, students, timetable, feePlan.",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ChecklistItemDto"
@@ -23314,6 +24527,156 @@
           "branchId",
           "complete",
           "items"
+        ]
+      },
+      "PresetSectionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "group": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "name",
+          "group"
+        ]
+      },
+      "PresetSubjectDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "periodsPerWeek": {
+            "type": "number",
+            "nullable": true
+          },
+          "group": {
+            "type": "string",
+            "nullable": true
+          },
+          "isOptional": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "periodsPerWeek",
+          "group",
+          "isOptional"
+        ]
+      },
+      "LevelPresetDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "classNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sections": {
+            "description": "Default sections of each class (Matric: A Science, B Arts).",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PresetSectionDto"
+            }
+          },
+          "subjects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PresetSubjectDto"
+            }
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "classNames",
+          "sections",
+          "subjects"
+        ]
+      },
+      "BellFridayDto": {
+        "type": "object",
+        "properties": {
+          "periodMinutes": {
+            "type": "number"
+          },
+          "periodsPerDay": {
+            "type": "number"
+          },
+          "breakMinutes": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "periodMinutes",
+          "periodsPerDay",
+          "breakMinutes"
+        ]
+      },
+      "BellDefaultsDto": {
+        "type": "object",
+        "properties": {
+          "startTime": {
+            "type": "string"
+          },
+          "periodMinutes": {
+            "type": "number"
+          },
+          "periodsPerDay": {
+            "type": "number"
+          },
+          "breakAfter": {
+            "type": "number"
+          },
+          "breakMinutes": {
+            "type": "number"
+          },
+          "friday": {
+            "$ref": "#/components/schemas/BellFridayDto"
+          }
+        },
+        "required": [
+          "startTime",
+          "periodMinutes",
+          "periodsPerDay",
+          "breakAfter",
+          "breakMinutes",
+          "friday"
+        ]
+      },
+      "SetupPresetsDto": {
+        "type": "object",
+        "properties": {
+          "levels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LevelPresetDto"
+            }
+          },
+          "bellSchedule": {
+            "$ref": "#/components/schemas/BellDefaultsDto"
+          }
+        },
+        "required": [
+          "levels",
+          "bellSchedule"
         ]
       },
       "BranchTimingsDto": {
@@ -25114,6 +26477,323 @@
           "reason"
         ]
       },
+      "ClassSectionDto": {
+        "type": "object",
+        "properties": {
+          "timetable": {
+            "enum": [
+              "EMPTY",
+              "DRAFT",
+              "PUBLISHED",
+              "PUBLISHED_WITH_CHANGES"
+            ],
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "group": {
+            "type": "string",
+            "nullable": true
+          },
+          "studentCount": {
+            "type": "number"
+          },
+          "capacity": {
+            "type": "number",
+            "nullable": true
+          },
+          "room": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IdNameDto"
+              }
+            ]
+          },
+          "classTeacher": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IdNameDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "timetable",
+          "id",
+          "name",
+          "group",
+          "studentCount",
+          "capacity",
+          "room",
+          "classTeacher"
+        ]
+      },
+      "OverviewSubjectDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "periodsPerWeek": {
+            "type": "number",
+            "nullable": true
+          },
+          "group": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "periodsPerWeek",
+          "group"
+        ]
+      },
+      "ClassOverviewDto": {
+        "type": "object",
+        "properties": {
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "NO_SECTIONS",
+                "NO_SUBJECTS",
+                "NO_CLASS_TEACHER",
+                "SUBJECTS_WITHOUT_TEACHER",
+                "NO_TIMETABLE"
+              ]
+            }
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "levelOrder": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "ARCHIVED"
+            ]
+          },
+          "studentCount": {
+            "type": "number"
+          },
+          "capacity": {
+            "type": "number",
+            "nullable": true,
+            "description": "Sum of section capacities; null when none is set."
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClassSectionDto"
+            }
+          },
+          "subjects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OverviewSubjectDto"
+            }
+          },
+          "unallocated": {
+            "type": "number",
+            "description": "Section × subject pairs without a subject teacher."
+          }
+        },
+        "required": [
+          "issues",
+          "id",
+          "name",
+          "levelOrder",
+          "status",
+          "studentCount",
+          "capacity",
+          "sections",
+          "subjects",
+          "unallocated"
+        ]
+      },
+      "ClassRefDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "levelOrder": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "ARCHIVED"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "levelOrder",
+          "status"
+        ]
+      },
+      "ClassSubjectDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Same as subjectId (kept for clients that read `id`)."
+          },
+          "subjectId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "periodsPerWeek": {
+            "type": "number",
+            "nullable": true
+          },
+          "isOptional": {
+            "type": "boolean"
+          },
+          "group": {
+            "type": "string",
+            "nullable": true,
+            "description": "null = every section; else only sections of this group."
+          },
+          "sortOrder": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "subjectId",
+          "code",
+          "name",
+          "periodsPerWeek",
+          "isOptional",
+          "group",
+          "sortOrder"
+        ]
+      },
+      "AllocationCellDto": {
+        "type": "object",
+        "properties": {
+          "sectionId": {
+            "type": "string"
+          },
+          "subjectId": {
+            "type": "string"
+          },
+          "staff": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IdNameDto"
+              }
+            ]
+          },
+          "assignmentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "placed": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "sectionId",
+          "subjectId",
+          "staff",
+          "assignmentId",
+          "placed"
+        ]
+      },
+      "ClassSetupDto": {
+        "type": "object",
+        "properties": {
+          "class": {
+            "$ref": "#/components/schemas/ClassRefDto"
+          },
+          "branchId": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClassSectionDto"
+            }
+          },
+          "subjects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClassSubjectDto"
+            }
+          },
+          "allocation": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AllocationCellDto"
+            }
+          },
+          "groups": {
+            "description": "Distinct section groups of the class.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "canEditStructure": {
+            "type": "boolean",
+            "description": "classes.edit + manages the school or a branch of it."
+          },
+          "canAllocate": {
+            "type": "boolean",
+            "description": "timetable.edit or staff.edit + manages the branch."
+          }
+        },
+        "required": [
+          "class",
+          "branchId",
+          "sessionId",
+          "sections",
+          "subjects",
+          "allocation",
+          "groups",
+          "canEditStructure",
+          "canAllocate"
+        ]
+      },
       "SchoolClassDto": {
         "type": "object",
         "properties": {
@@ -25203,10 +26883,45 @@
           "name"
         ]
       },
+      "ClassSubjectItemInput": {
+        "type": "object",
+        "properties": {
+          "subjectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "periodsPerWeek": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 20
+          },
+          "isOptional": {
+            "type": "boolean"
+          },
+          "group": {
+            "type": "string",
+            "nullable": true,
+            "description": "null/blank = all sections.",
+            "maxLength": 30
+          }
+        },
+        "required": [
+          "subjectId"
+        ]
+      },
       "SetClassSubjectsDto": {
         "type": "object",
         "properties": {
+          "items": {
+            "maxItems": 50,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClassSubjectItemInput"
+            }
+          },
           "subjectIds": {
+            "description": "Legacy: keeps periods/group of subjects that stay.",
             "uniqueItems": true,
             "maxItems": 50,
             "type": "array",
@@ -25215,9 +26930,24 @@
               "format": "uuid"
             }
           }
+        }
+      },
+      "ReorderClassesDto": {
+        "type": "object",
+        "properties": {
+          "classIds": {
+            "description": "Every active class of the school, in the new order.",
+            "uniqueItems": true,
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         },
         "required": [
-          "subjectIds"
+          "classIds"
         ]
       },
       "CreateSubjectDto": {
@@ -25229,17 +26959,33 @@
           },
           "code": {
             "type": "string",
+            "description": "Optional: catalogue code for known names, else initials (suffixed 2, 3 … on clash).",
             "pattern": "^[A-Z0-9_-]{1,12}$"
           },
           "name": {
             "type": "string",
             "minLength": 2,
             "maxLength": 80
+          },
+          "classIds": {
+            "description": "Also add the subject to these classes' curriculum (appended last).",
+            "uniqueItems": true,
+            "maxItems": 50,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "periodsPerWeek": {
+            "type": "number",
+            "description": "periodsPerWeek of the new class links.",
+            "minimum": 0,
+            "maximum": 20
           }
         },
         "required": [
           "schoolId",
-          "code",
           "name"
         ]
       },
@@ -25340,6 +27086,11 @@
           "name": {
             "type": "string"
           },
+          "group": {
+            "type": "string",
+            "nullable": true,
+            "description": "Matric group (\"Science\", \"Arts\"); null = none."
+          },
           "capacity": {
             "type": "number",
             "nullable": true
@@ -25381,6 +27132,7 @@
           "classId",
           "className",
           "name",
+          "group",
           "capacity",
           "room",
           "classTeacher",
@@ -25416,14 +27168,19 @@
           "roomId": {
             "type": "string",
             "format": "uuid"
+          },
+          "group": {
+            "type": "string",
+            "nullable": true,
+            "description": "Matric group, e.g. \"Science\" / \"Arts\"; null or blank = no group.",
+            "maxLength": 30
           }
         },
         "required": [
           "branchId",
           "sessionId",
           "classId",
-          "name",
-          "capacity"
+          "name"
         ]
       },
       "UpdateSectionDto": {
@@ -25442,8 +27199,741 @@
           "roomId": {
             "type": "string",
             "format": "uuid"
+          },
+          "group": {
+            "type": "string",
+            "nullable": true,
+            "description": "Matric group, e.g. \"Science\" / \"Arts\"; null or blank = no group.",
+            "maxLength": 30
           }
         }
+      },
+      "StaffSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "photoUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "employeeNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "designation": {
+            "type": "string"
+          },
+          "branchId": {
+            "type": "string"
+          },
+          "branchName": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "ON_LEAVE",
+              "RESIGNED",
+              "TERMINATED"
+            ]
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "requiresReview": {
+            "type": "boolean"
+          },
+          "reviewer": {
+            "nullable": true,
+            "description": "`id` is the reviewer's user id.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IdNameDto"
+              }
+            ]
+          },
+          "sectionCount": {
+            "type": "number"
+          },
+          "subjectCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "name",
+          "photoUrl",
+          "employeeNo",
+          "designation",
+          "branchId",
+          "branchName",
+          "status",
+          "roles",
+          "requiresReview",
+          "reviewer",
+          "sectionCount",
+          "subjectCount"
+        ]
+      },
+      "StaffAssignmentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "CLASS_TEACHER",
+              "SUBJECT_TEACHER",
+              "HELPER",
+              "COORDINATOR",
+              "HEAD_TEACHER"
+            ],
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "sectionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sectionName": {
+            "type": "string",
+            "nullable": true
+          },
+          "className": {
+            "type": "string",
+            "nullable": true
+          },
+          "subjectId": {
+            "type": "string",
+            "nullable": true
+          },
+          "subjectName": {
+            "type": "string",
+            "nullable": true
+          },
+          "responsibleStaff": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IdNameDto"
+              }
+            ]
+          },
+          "validUntil": {
+            "type": "string",
+            "nullable": true
+          },
+          "isSubstitute": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "sessionId",
+          "sectionId",
+          "sectionName",
+          "className",
+          "subjectId",
+          "subjectName",
+          "responsibleStaff",
+          "validUntil",
+          "isSubstitute"
+        ]
+      },
+      "StaffDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "photoUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "employeeNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "designation": {
+            "type": "string"
+          },
+          "branchId": {
+            "type": "string"
+          },
+          "branchName": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "ACTIVE",
+              "ON_LEAVE",
+              "RESIGNED",
+              "TERMINATED"
+            ],
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "requiresReview": {
+            "type": "boolean"
+          },
+          "reviewer": {
+            "nullable": true,
+            "description": "`id` is the reviewer's user id.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IdNameDto"
+              }
+            ]
+          },
+          "sectionCount": {
+            "type": "number"
+          },
+          "subjectCount": {
+            "type": "number"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "cnic": {
+            "type": "string",
+            "nullable": true,
+            "description": "Masked unless `people.sensitive.view`."
+          },
+          "qualification": {
+            "type": "string",
+            "nullable": true
+          },
+          "joinDate": {
+            "type": "string"
+          },
+          "assignments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StaffAssignmentDto"
+            }
+          },
+          "documents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "name",
+          "photoUrl",
+          "employeeNo",
+          "designation",
+          "branchId",
+          "branchName",
+          "status",
+          "roles",
+          "requiresReview",
+          "reviewer",
+          "sectionCount",
+          "subjectCount",
+          "email",
+          "phone",
+          "cnic",
+          "qualification",
+          "joinDate",
+          "assignments",
+          "documents"
+        ]
+      },
+      "CreatedStaffDto": {
+        "type": "object",
+        "properties": {
+          "staff": {
+            "$ref": "#/components/schemas/StaffDetailDto"
+          },
+          "temporaryPassword": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "staff"
+        ]
+      },
+      "CreateStaffDto": {
+        "type": "object",
+        "properties": {
+          "joinDate": {
+            "type": "string",
+            "example": "2026-04-01",
+            "format": "date"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "employeeNo": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "designation": {
+            "type": "string",
+            "enum": [
+              "TEACHER",
+              "HELPER",
+              "COORDINATOR",
+              "HEAD_TEACHER",
+              "ACCOUNTANT",
+              "OFFICE_STAFF",
+              "OTHER"
+            ]
+          },
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cnic": {
+            "type": "string"
+          },
+          "qualification": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "photoFileId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createAccount": {
+            "type": "boolean"
+          },
+          "roleKey": {
+            "type": "string",
+            "description": "Role of the new login; defaults from the designation.",
+            "enum": [
+              "TEACHER",
+              "HELPER",
+              "COORDINATOR",
+              "HEAD_TEACHER",
+              "ACCOUNTANT"
+            ]
+          }
+        },
+        "required": [
+          "joinDate",
+          "name",
+          "designation",
+          "branchId",
+          "createAccount"
+        ]
+      },
+      "UpdateStaffDto": {
+        "type": "object",
+        "properties": {
+          "joinDate": {
+            "type": "string",
+            "example": "2026-04-01",
+            "format": "date"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "employeeNo": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "designation": {
+            "type": "string",
+            "enum": [
+              "TEACHER",
+              "HELPER",
+              "COORDINATOR",
+              "HEAD_TEACHER",
+              "ACCOUNTANT",
+              "OFFICE_STAFF",
+              "OTHER"
+            ]
+          },
+          "cnic": {
+            "type": "string"
+          },
+          "qualification": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "photoFileId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "StaffStatusDto": {
+        "type": "object",
+        "properties": {
+          "effectiveDate": {
+            "type": "string",
+            "example": "2026-04-01",
+            "format": "date"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "ON_LEAVE",
+              "RESIGNED",
+              "TERMINATED"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "effectiveDate",
+          "status",
+          "reason"
+        ]
+      },
+      "ProbationDto": {
+        "type": "object",
+        "properties": {
+          "requiresReview": {
+            "type": "boolean"
+          },
+          "reviewerUserId": {
+            "type": "string",
+            "description": "Defaults to the branch principal.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "requiresReview"
+        ]
+      },
+      "AssignmentInput2Dto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "CLASS_TEACHER",
+              "SUBJECT_TEACHER",
+              "HELPER",
+              "COORDINATOR",
+              "HEAD_TEACHER"
+            ]
+          },
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sectionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subjectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "responsibleStaffId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "validUntil": {
+            "type": "string",
+            "description": "ISO timestamp (substitutes)."
+          },
+          "isSubstitute": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "kind",
+          "sessionId",
+          "branchId"
+        ]
+      },
+      "WorkloadDto": {
+        "type": "object",
+        "properties": {
+          "periodsPerWeek": {
+            "type": "number"
+          },
+          "sections": {
+            "type": "number"
+          },
+          "subjects": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "periodsPerWeek",
+          "sections",
+          "subjects"
+        ]
+      },
+      "SectionStaffRefDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "userId"
+        ]
+      },
+      "SubjectTeacherDto": {
+        "type": "object",
+        "properties": {
+          "staff": {
+            "$ref": "#/components/schemas/SectionStaffRefDto"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/IdNameDto"
+          },
+          "isSubstitute": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "staff",
+          "subject",
+          "isSubstitute"
+        ]
+      },
+      "HelperDto": {
+        "type": "object",
+        "properties": {
+          "staff": {
+            "$ref": "#/components/schemas/SectionStaffRefDto"
+          },
+          "responsibleStaff": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IdNameDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "staff",
+          "responsibleStaff"
+        ]
+      },
+      "SectionStaffDto": {
+        "type": "object",
+        "properties": {
+          "classTeacher": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SectionStaffRefDto"
+              }
+            ]
+          },
+          "subjectTeachers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubjectTeacherDto"
+            }
+          },
+          "helpers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HelperDto"
+            }
+          }
+        },
+        "required": [
+          "classTeacher",
+          "subjectTeachers",
+          "helpers"
+        ]
+      },
+      "AllocationRowDto": {
+        "type": "object",
+        "properties": {
+          "sectionId": {
+            "type": "string"
+          },
+          "subjectId": {
+            "type": "string"
+          },
+          "staff": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IdNameDto"
+              }
+            ]
+          },
+          "assignmentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "placed": {
+            "type": "number",
+            "description": "Lessons of this subject placed in the section's working timetable."
+          }
+        },
+        "required": [
+          "sectionId",
+          "subjectId",
+          "staff",
+          "assignmentId",
+          "placed"
+        ]
+      },
+      "SetTeacherDto": {
+        "type": "object",
+        "properties": {
+          "staffId": {
+            "type": "string",
+            "nullable": true,
+            "description": "null removes the current teacher.",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "staffId"
+        ]
+      },
+      "ClassTeacherRowDto": {
+        "type": "object",
+        "properties": {
+          "sectionId": {
+            "type": "string"
+          },
+          "staff": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IdNameDto"
+              }
+            ]
+          },
+          "assignmentId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "sectionId",
+          "staff",
+          "assignmentId"
+        ]
+      },
+      "TeachingStaffDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "designation": {
+            "type": "string"
+          },
+          "hasLogin": {
+            "type": "boolean"
+          },
+          "allocatedPeriods": {
+            "type": "number",
+            "description": "Σ periodsPerWeek of their subject-teacher allocations in the session."
+          },
+          "placedPeriods": {
+            "type": "number",
+            "description": "Lessons placed in working timetables of the session (all sections)."
+          },
+          "sections": {
+            "type": "number",
+            "description": "Sections they teach (class or subject teacher)."
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "designation",
+          "hasLogin",
+          "allocatedPeriods",
+          "placedPeriods",
+          "sections"
+        ]
       },
       "SchoolSettingsDto": {
         "type": "object",
@@ -26050,6 +28540,11 @@
           "periodIndex": {
             "type": "number"
           },
+          "periodNumber": {
+            "type": "number",
+            "nullable": true,
+            "description": "\"Period N\" of that day's schedule (null if the period no longer exists)."
+          },
           "startTime": {
             "type": "string"
           },
@@ -26082,6 +28577,7 @@
           "date",
           "day",
           "periodIndex",
+          "periodNumber",
           "startTime",
           "endTime",
           "section",
@@ -27015,6 +29511,11 @@
           "index": {
             "type": "number"
           },
+          "number": {
+            "type": "number",
+            "nullable": true,
+            "description": "\"Period N\" ordinal among the day's teaching periods; null on breaks."
+          },
           "startTime": {
             "type": "string"
           },
@@ -27031,6 +29532,7 @@
         },
         "required": [
           "index",
+          "number",
           "startTime",
           "endTime",
           "isBreak",
@@ -27079,10 +29581,74 @@
             "items": {
               "$ref": "#/components/schemas/PeriodInputDto"
             }
+          },
+          "dropLessons": {
+            "type": "boolean",
+            "description": "Delete lessons on removed periods / new breaks instead of a 409 PERIODS_IN_USE."
           }
         },
         "required": [
           "periods"
+        ]
+      },
+      "BellScheduleDto": {
+        "type": "object",
+        "properties": {
+          "workingDays": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "default": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PeriodDto"
+            }
+          },
+          "days": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": true
+            },
+            "description": "Weekday-specific schedules keyed \"1\"..\"7\", e.g. \"5\" = Friday."
+          }
+        },
+        "required": [
+          "workingDays",
+          "default",
+          "days"
+        ]
+      },
+      "SetBellScheduleDto": {
+        "type": "object",
+        "properties": {
+          "days": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/PeriodInputDto"
+              }
+            },
+            "description": "Weekday-specific schedules keyed \"1\"..\"7\" (e.g. \"5\" = Friday); omitted days use the default."
+          },
+          "default": {
+            "description": "Default schedule for every working day.",
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PeriodInputDto"
+            }
+          },
+          "dropLessons": {
+            "type": "boolean",
+            "description": "Delete lessons on removed periods / new breaks instead of a 409 PERIODS_IN_USE."
+          }
+        },
+        "required": [
+          "default"
         ]
       },
       "SlotDto": {
@@ -27121,13 +29687,18 @@
       "TimetableDto": {
         "type": "object",
         "properties": {
-          "sectionId": {
-            "type": "string"
-          },
-          "sessionId": {
+          "state": {
+            "enum": [
+              "EMPTY",
+              "DRAFT",
+              "PUBLISHED",
+              "PUBLISHED_WITH_CHANGES"
+            ],
             "type": "string"
           },
           "status": {
+            "nullable": true,
+            "description": "null when no timetable exists yet.",
             "enum": [
               "DRAFT",
               "PUBLISHED",
@@ -27135,12 +29706,41 @@
             ],
             "type": "string"
           },
+          "sectionId": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string"
+          },
           "version": {
-            "type": "number"
+            "type": "number",
+            "description": "Number of publishes; show only when > 0."
           },
           "publishedAt": {
             "type": "string",
             "nullable": true
+          },
+          "draftUpdatedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "draftSlotCount": {
+            "type": "number"
+          },
+          "publishedSlotCount": {
+            "type": "number"
+          },
+          "canEdit": {
+            "type": "boolean",
+            "description": "Caller may edit this section's draft (class teacher, coordinator, head teacher, principal, super admin)."
+          },
+          "canPublish": {
+            "type": "boolean"
+          },
+          "publishBlockedReason": {
+            "type": "string",
+            "nullable": true,
+            "description": "Why Publish is disabled (null when it is enabled or the caller only views)."
           },
           "slots": {
             "type": "array",
@@ -27149,20 +29749,320 @@
             }
           },
           "periods": {
+            "description": "Default (day 0) bell rows.",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PeriodDto"
             }
+          },
+          "dayPeriods": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": true
+            },
+            "description": "Weekday-specific bell rows keyed \"1\"..\"7\" (only days with their own schedule)."
+          },
+          "workingDays": {
+            "description": "Branch working days (ISO 1 = Monday).",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
           }
         },
         "required": [
+          "state",
+          "status",
           "sectionId",
           "sessionId",
-          "status",
           "version",
           "publishedAt",
+          "draftUpdatedAt",
+          "draftSlotCount",
+          "publishedSlotCount",
+          "canEdit",
+          "canPublish",
+          "publishBlockedReason",
           "slots",
-          "periods"
+          "periods",
+          "dayPeriods",
+          "workingDays"
+        ]
+      },
+      "BuilderSectionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "group": {
+            "type": "string",
+            "nullable": true
+          },
+          "class": {
+            "$ref": "#/components/schemas/IdNameDto"
+          },
+          "branchId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "group",
+          "class",
+          "branchId"
+        ]
+      },
+      "BuilderLessonDto": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "$ref": "#/components/schemas/IdNameDto"
+          },
+          "periodsPerWeek": {
+            "type": "number",
+            "nullable": true
+          },
+          "placed": {
+            "type": "number"
+          },
+          "teacher": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IdNameDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "subject",
+          "periodsPerWeek",
+          "placed",
+          "teacher"
+        ]
+      },
+      "BusyDto": {
+        "type": "object",
+        "properties": {
+          "staffId": {
+            "type": "string"
+          },
+          "roomId": {
+            "type": "string"
+          },
+          "day": {
+            "type": "number"
+          },
+          "periodIndex": {
+            "type": "number"
+          },
+          "sectionId": {
+            "type": "string"
+          },
+          "sectionName": {
+            "type": "string"
+          },
+          "published": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "day",
+          "periodIndex",
+          "sectionId",
+          "sectionName",
+          "published"
+        ]
+      },
+      "ConflictDto": {
+        "type": "object",
+        "properties": {
+          "severity": {
+            "enum": [
+              "error",
+              "warning"
+            ],
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "day": {
+            "type": "number"
+          },
+          "periodIndex": {
+            "type": "number"
+          },
+          "message": {
+            "type": "string"
+          },
+          "otherSectionId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "severity",
+          "type",
+          "day",
+          "periodIndex",
+          "message"
+        ]
+      },
+      "TimetableBuilderDto": {
+        "type": "object",
+        "properties": {
+          "timetable": {
+            "$ref": "#/components/schemas/TimetableDto"
+          },
+          "section": {
+            "$ref": "#/components/schemas/BuilderSectionDto"
+          },
+          "lessons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuilderLessonDto"
+            }
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IdNameDto"
+            }
+          },
+          "busy": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusyDto"
+            }
+          },
+          "conflicts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConflictDto"
+            }
+          },
+          "maxPeriodsPerDay": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "timetable",
+          "section",
+          "lessons",
+          "rooms",
+          "busy",
+          "conflicts",
+          "maxPeriodsPerDay"
+        ]
+      },
+      "LessonCountDto": {
+        "type": "object",
+        "properties": {
+          "subjectId": {
+            "type": "string"
+          },
+          "placed": {
+            "type": "number"
+          },
+          "periodsPerWeek": {
+            "type": "number",
+            "nullable": true
+          }
+        },
+        "required": [
+          "subjectId",
+          "placed",
+          "periodsPerWeek"
+        ]
+      },
+      "CellResultDto": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "enum": [
+              "EMPTY",
+              "DRAFT",
+              "PUBLISHED",
+              "PUBLISHED_WITH_CHANGES"
+            ],
+            "type": "string"
+          },
+          "slot": {
+            "description": "The saved lesson (PUT only).",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SlotDto"
+              }
+            ]
+          },
+          "conflicts": {
+            "description": "Conflicts of this cell.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConflictDto"
+            }
+          },
+          "lesson": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LessonCountDto"
+              }
+            ]
+          },
+          "canPublish": {
+            "type": "boolean"
+          },
+          "publishBlockedReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "allocated": {
+            "type": "boolean",
+            "description": "A subject-teacher allocation was created because of `allocate: true`."
+          }
+        },
+        "required": [
+          "state",
+          "conflicts",
+          "lesson",
+          "canPublish",
+          "publishBlockedReason",
+          "allocated"
+        ]
+      },
+      "SetCellDto": {
+        "type": "object",
+        "properties": {
+          "subjectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "staffId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "roomId": {
+            "type": "string",
+            "nullable": true,
+            "format": "uuid"
+          },
+          "allocate": {
+            "type": "boolean",
+            "description": "Make the teacher this section's subject teacher when nobody is allocated yet."
+          }
+        },
+        "required": [
+          "subjectId",
+          "staffId"
         ]
       },
       "SlotInputDto": {
@@ -27216,32 +30116,6 @@
         "required": [
           "sessionId",
           "slots"
-        ]
-      },
-      "ConflictDto": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string"
-          },
-          "day": {
-            "type": "number"
-          },
-          "periodIndex": {
-            "type": "number"
-          },
-          "message": {
-            "type": "string"
-          },
-          "otherSectionId": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "type",
-          "day",
-          "periodIndex",
-          "message"
         ]
       },
       "ConflictsDto": {
@@ -28352,620 +31226,6 @@
         },
         "required": [
           "reason"
-        ]
-      },
-      "StaffSummaryDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "userId": {
-            "type": "string",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "photoUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "employeeNo": {
-            "type": "string",
-            "nullable": true
-          },
-          "designation": {
-            "type": "string"
-          },
-          "branchId": {
-            "type": "string"
-          },
-          "branchName": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "ACTIVE",
-              "ON_LEAVE",
-              "RESIGNED",
-              "TERMINATED"
-            ]
-          },
-          "roles": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "requiresReview": {
-            "type": "boolean"
-          },
-          "reviewer": {
-            "nullable": true,
-            "description": "`id` is the reviewer's user id.",
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/IdNameDto"
-              }
-            ]
-          },
-          "sectionCount": {
-            "type": "number"
-          },
-          "subjectCount": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "id",
-          "userId",
-          "name",
-          "photoUrl",
-          "employeeNo",
-          "designation",
-          "branchId",
-          "branchName",
-          "status",
-          "roles",
-          "requiresReview",
-          "reviewer",
-          "sectionCount",
-          "subjectCount"
-        ]
-      },
-      "StaffAssignmentDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "kind": {
-            "enum": [
-              "CLASS_TEACHER",
-              "SUBJECT_TEACHER",
-              "HELPER",
-              "COORDINATOR",
-              "HEAD_TEACHER"
-            ],
-            "type": "string"
-          },
-          "sessionId": {
-            "type": "string"
-          },
-          "sectionId": {
-            "type": "string",
-            "nullable": true
-          },
-          "sectionName": {
-            "type": "string",
-            "nullable": true
-          },
-          "className": {
-            "type": "string",
-            "nullable": true
-          },
-          "subjectId": {
-            "type": "string",
-            "nullable": true
-          },
-          "subjectName": {
-            "type": "string",
-            "nullable": true
-          },
-          "responsibleStaff": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/IdNameDto"
-              }
-            ]
-          },
-          "validUntil": {
-            "type": "string",
-            "nullable": true
-          },
-          "isSubstitute": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "id",
-          "kind",
-          "sessionId",
-          "sectionId",
-          "sectionName",
-          "className",
-          "subjectId",
-          "subjectName",
-          "responsibleStaff",
-          "validUntil",
-          "isSubstitute"
-        ]
-      },
-      "StaffDetailDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "userId": {
-            "type": "string",
-            "nullable": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "photoUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "employeeNo": {
-            "type": "string",
-            "nullable": true
-          },
-          "designation": {
-            "type": "string"
-          },
-          "branchId": {
-            "type": "string"
-          },
-          "branchName": {
-            "type": "string"
-          },
-          "status": {
-            "enum": [
-              "ACTIVE",
-              "ON_LEAVE",
-              "RESIGNED",
-              "TERMINATED"
-            ],
-            "type": "string"
-          },
-          "roles": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "requiresReview": {
-            "type": "boolean"
-          },
-          "reviewer": {
-            "nullable": true,
-            "description": "`id` is the reviewer's user id.",
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/IdNameDto"
-              }
-            ]
-          },
-          "sectionCount": {
-            "type": "number"
-          },
-          "subjectCount": {
-            "type": "number"
-          },
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "phone": {
-            "type": "string",
-            "nullable": true
-          },
-          "cnic": {
-            "type": "string",
-            "nullable": true,
-            "description": "Masked unless `people.sensitive.view`."
-          },
-          "qualification": {
-            "type": "string",
-            "nullable": true
-          },
-          "joinDate": {
-            "type": "string"
-          },
-          "assignments": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/StaffAssignmentDto"
-            }
-          },
-          "documents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DocumentDto"
-            }
-          }
-        },
-        "required": [
-          "id",
-          "userId",
-          "name",
-          "photoUrl",
-          "employeeNo",
-          "designation",
-          "branchId",
-          "branchName",
-          "status",
-          "roles",
-          "requiresReview",
-          "reviewer",
-          "sectionCount",
-          "subjectCount",
-          "email",
-          "phone",
-          "cnic",
-          "qualification",
-          "joinDate",
-          "assignments",
-          "documents"
-        ]
-      },
-      "CreatedStaffDto": {
-        "type": "object",
-        "properties": {
-          "staff": {
-            "$ref": "#/components/schemas/StaffDetailDto"
-          },
-          "temporaryPassword": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "staff"
-        ]
-      },
-      "CreateStaffDto": {
-        "type": "object",
-        "properties": {
-          "joinDate": {
-            "type": "string",
-            "example": "2026-04-01",
-            "format": "date"
-          },
-          "name": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 100
-          },
-          "email": {
-            "type": "string",
-            "maxLength": 254,
-            "format": "email"
-          },
-          "phone": {
-            "type": "string"
-          },
-          "employeeNo": {
-            "type": "string",
-            "maxLength": 30
-          },
-          "designation": {
-            "type": "string",
-            "enum": [
-              "TEACHER",
-              "HELPER",
-              "COORDINATOR",
-              "HEAD_TEACHER",
-              "ACCOUNTANT",
-              "OFFICE_STAFF",
-              "OTHER"
-            ]
-          },
-          "branchId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "cnic": {
-            "type": "string"
-          },
-          "qualification": {
-            "type": "string",
-            "maxLength": 200
-          },
-          "photoFileId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "createAccount": {
-            "type": "boolean"
-          },
-          "roleKey": {
-            "type": "string",
-            "description": "Role of the new login; defaults from the designation.",
-            "enum": [
-              "TEACHER",
-              "HELPER",
-              "COORDINATOR",
-              "HEAD_TEACHER",
-              "ACCOUNTANT"
-            ]
-          }
-        },
-        "required": [
-          "joinDate",
-          "name",
-          "designation",
-          "branchId",
-          "createAccount"
-        ]
-      },
-      "UpdateStaffDto": {
-        "type": "object",
-        "properties": {
-          "joinDate": {
-            "type": "string",
-            "example": "2026-04-01",
-            "format": "date"
-          },
-          "name": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 100
-          },
-          "email": {
-            "type": "string",
-            "maxLength": 254,
-            "format": "email"
-          },
-          "phone": {
-            "type": "string"
-          },
-          "employeeNo": {
-            "type": "string",
-            "maxLength": 30
-          },
-          "designation": {
-            "type": "string",
-            "enum": [
-              "TEACHER",
-              "HELPER",
-              "COORDINATOR",
-              "HEAD_TEACHER",
-              "ACCOUNTANT",
-              "OFFICE_STAFF",
-              "OTHER"
-            ]
-          },
-          "cnic": {
-            "type": "string"
-          },
-          "qualification": {
-            "type": "string",
-            "maxLength": 200
-          },
-          "photoFileId": {
-            "type": "string",
-            "format": "uuid"
-          }
-        }
-      },
-      "StaffStatusDto": {
-        "type": "object",
-        "properties": {
-          "effectiveDate": {
-            "type": "string",
-            "example": "2026-04-01",
-            "format": "date"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "ACTIVE",
-              "ON_LEAVE",
-              "RESIGNED",
-              "TERMINATED"
-            ]
-          },
-          "reason": {
-            "type": "string",
-            "minLength": 3,
-            "maxLength": 500
-          }
-        },
-        "required": [
-          "effectiveDate",
-          "status",
-          "reason"
-        ]
-      },
-      "ProbationDto": {
-        "type": "object",
-        "properties": {
-          "requiresReview": {
-            "type": "boolean"
-          },
-          "reviewerUserId": {
-            "type": "string",
-            "description": "Defaults to the branch principal.",
-            "format": "uuid"
-          }
-        },
-        "required": [
-          "requiresReview"
-        ]
-      },
-      "AssignmentInput2Dto": {
-        "type": "object",
-        "properties": {
-          "kind": {
-            "type": "string",
-            "enum": [
-              "CLASS_TEACHER",
-              "SUBJECT_TEACHER",
-              "HELPER",
-              "COORDINATOR",
-              "HEAD_TEACHER"
-            ]
-          },
-          "sessionId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "branchId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "sectionId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "subjectId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "responsibleStaffId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "validUntil": {
-            "type": "string",
-            "description": "ISO timestamp (substitutes)."
-          },
-          "isSubstitute": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "kind",
-          "sessionId",
-          "branchId"
-        ]
-      },
-      "WorkloadDto": {
-        "type": "object",
-        "properties": {
-          "periodsPerWeek": {
-            "type": "number"
-          },
-          "sections": {
-            "type": "number"
-          },
-          "subjects": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "periodsPerWeek",
-          "sections",
-          "subjects"
-        ]
-      },
-      "SectionStaffRefDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "userId": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "userId"
-        ]
-      },
-      "SubjectTeacherDto": {
-        "type": "object",
-        "properties": {
-          "staff": {
-            "$ref": "#/components/schemas/SectionStaffRefDto"
-          },
-          "subject": {
-            "$ref": "#/components/schemas/IdNameDto"
-          },
-          "isSubstitute": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "staff",
-          "subject",
-          "isSubstitute"
-        ]
-      },
-      "HelperDto": {
-        "type": "object",
-        "properties": {
-          "staff": {
-            "$ref": "#/components/schemas/SectionStaffRefDto"
-          },
-          "responsibleStaff": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/IdNameDto"
-              }
-            ]
-          }
-        },
-        "required": [
-          "staff",
-          "responsibleStaff"
-        ]
-      },
-      "SectionStaffDto": {
-        "type": "object",
-        "properties": {
-          "classTeacher": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/SectionStaffRefDto"
-              }
-            ]
-          },
-          "subjectTeachers": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SubjectTeacherDto"
-            }
-          },
-          "helpers": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/HelperDto"
-            }
-          }
-        },
-        "required": [
-          "classTeacher",
-          "subjectTeachers",
-          "helpers"
         ]
       },
       "BookItemDto": {

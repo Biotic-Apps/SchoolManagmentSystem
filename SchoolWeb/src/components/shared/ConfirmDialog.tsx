@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
+import { FormAlert } from "./FormAlert";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +19,8 @@ interface ConfirmDialogProps {
   confirmLabel?: string;
   tone?: "primary" | "danger";
   loading?: boolean;
+  /** Why the last attempt failed, shown above the buttons. */
+  error?: string | null;
   onConfirm: () => void;
 }
 
@@ -29,6 +32,7 @@ export function ConfirmDialog({
   confirmLabel = "Confirm",
   tone = "primary",
   loading,
+  error,
   onConfirm,
 }: ConfirmDialogProps) {
   return (
@@ -38,6 +42,7 @@ export function ConfirmDialog({
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
+        <FormAlert message={error} />
         <DialogFooter>
           <Button variant="secondary" onClick={() => onOpenChange(false)} disabled={loading}>
             Cancel

@@ -16,7 +16,10 @@ import { StaffAccessService } from '../staff-access.service';
 import { toAssignmentDto } from '../staff.mapper';
 import { ASSIGNMENT_INCLUDE, StaffRepository } from '../staff.repository';
 import { AssignmentEnder } from './assignment-ender';
-import { createRoleAssignment } from './assignment-role-sync';
+import { writeAssignment } from './assignment-writer';
+
+export const OWN_ASSIGNMENT_MESSAGE =
+  'Ask the principal to change your own assignments';
 
 const NEEDS_SECTION = new Set(['CLASS_TEACHER', 'SUBJECT_TEACHER', 'HELPER']);
 
@@ -48,8 +51,7 @@ export class StaffAssignmentsService {
     dto: AssignmentInput2Dto,
   ): Promise<StaffAssignmentDto> {
     const staff = await this.access.manage(scope, staffId);
-    if (staff.userId === user.id)
-      throw forbidden('You cannot change your own assignments');
+    if (staff.userId === user.id) throw forbidden(OWN_ASSIGNMENT_MESSAGE);
     if (staff.status === 'RESIGNED' || staff.status === 'TERMINATED')
       throw conflict('Staff member has left');
     await this.validate(staff.schoolId, dto);
@@ -57,56 +59,20 @@ export class StaffAssignmentsService {
     if (validUntil && validUntil <= new Date())
       throw invalid('validUntil must be in the future');
 
-    const row = await this.prisma.$transaction(async (tx) => {
-      const roleAssignmentId = staff.userId
-        ? await createRoleAssignment(tx, {
-            userId: staff.userId,
-            kind: dto.kind,
-            schoolId: staff.schoolId,
-            branchId: dto.branchId,
-            sectionId: dto.sectionId ?? null,
-            subjectId: dto.subjectId ?? null,
-            validUntil,
-            grantedById: user.id,
-          })
-        : null;
-      const created = await tx.staffAssignment
-        .create({
-          data: {
-            schoolId: staff.schoolId,
-            branchId: dto.branchId,
-            sessionId: dto.sessionId,
-            staffId,
-            kind: dto.kind,
-            sectionId: dto.sectionId,
-            subjectId:
-              dto.kind === 'SUBJECT_TEACHER' ? dto.subjectId : undefined,
-            responsibleStaffId:
-              dto.kind === 'HELPER' ? dto.responsibleStaffId : undefined,
-            isSubstitute: dto.isSubstitute ?? false,
-            validUntil,
-            roleAssignmentId,
-            createdById: user.id,
-          },
-          include: ASSIGNMENT_INCLUDE,
-        })
-        .catch((error: { code?: string }) => {
-          if (error.code === 'P2002')
-            throw conflict(
-              dto.kind === 'CLASS_TEACHER'
-                ? 'Section already has a class teacher'
-                : 'Subject already has a teacher in this section',
-            );
-          throw error;
-        });
-      if (dto.kind === 'CLASS_TEACHER') {
-        await tx.section.update({
-          where: { id: dto.sectionId },
-          data: { classTeacherStaffId: staffId },
-        });
-      }
-      return created;
-    });
+    const row = await this.prisma.$transaction((tx) =>
+      writeAssignment(tx, {
+        staff,
+        kind: dto.kind,
+        branchId: dto.branchId,
+        sessionId: dto.sessionId,
+        sectionId: dto.sectionId,
+        subjectId: dto.subjectId,
+        responsibleStaffId: dto.responsibleStaffId,
+        isSubstitute: dto.isSubstitute,
+        validUntil,
+        actorId: user.id,
+      }),
+    );
     await this.ender.refresh([staff.userId]);
     const dtoOut = toAssignmentDto(row);
     this.audit.stage({
@@ -127,8 +93,7 @@ export class StaffAssignmentsService {
     assignmentId: string,
   ): Promise<StaffAssignmentDto> {
     const staff = await this.access.manage(scope, staffId);
-    if (staff.userId === user.id)
-      throw forbidden('You cannot change your own assignments');
+    if (staff.userId === user.id) throw forbidden(OWN_ASSIGNMENT_MESSAGE);
     const row = await this.prisma.staffAssignment.findFirst({
       where: { id: assignmentId, staffId, endedAt: null },
       include: ASSIGNMENT_INCLUDE,

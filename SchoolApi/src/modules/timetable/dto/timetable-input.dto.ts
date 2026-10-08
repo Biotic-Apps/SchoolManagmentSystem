@@ -1,9 +1,11 @@
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsArray,
   IsBoolean,
   IsInt,
+  IsObject,
   IsOptional,
   IsString,
   IsUUID,
@@ -46,6 +48,56 @@ export class SetPeriodsDto {
   @ValidateNested({ each: true })
   @Type(() => PeriodInputDto)
   periods!: PeriodInputDto[];
+
+  /** Delete lessons on removed periods / new breaks instead of a 409 PERIODS_IN_USE. */
+  @IsOptional()
+  @IsBoolean()
+  dropLessons?: boolean;
+}
+
+export class SetBellScheduleDto {
+  /** Default schedule for every working day. */
+  @IsArray()
+  @ArrayMaxSize(20)
+  @ValidateNested({ each: true })
+  @Type(() => PeriodInputDto)
+  default!: PeriodInputDto[];
+
+  /** Weekday-specific schedules keyed "1".."7" (e.g. "5" = Friday); omitted days use the default. */
+  @IsOptional()
+  @IsObject()
+  @ApiProperty({
+    required: false,
+    type: Object,
+    additionalProperties: {
+      type: 'array',
+      items: { $ref: getSchemaPath(PeriodInputDto) },
+    },
+  })
+  days?: Record<string, PeriodInputDto[]>;
+
+  /** Delete lessons on removed periods / new breaks instead of a 409 PERIODS_IN_USE. */
+  @IsOptional()
+  @IsBoolean()
+  dropLessons?: boolean;
+}
+
+/** PUT /timetables/:sectionId/slots/:day/:periodIndex (autosave of one cell). */
+export class SetCellDto {
+  @IsUUID()
+  subjectId!: string;
+
+  @IsUUID()
+  staffId!: string;
+
+  @IsOptional()
+  @IsUUID()
+  roomId?: string | null;
+
+  /** Make the teacher this section's subject teacher when nobody is allocated yet. */
+  @IsOptional()
+  @IsBoolean()
+  allocate?: boolean;
 }
 
 export class SlotInputDto {

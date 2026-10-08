@@ -7,11 +7,11 @@ import { useClassOptions } from "./api";
  * Branch › session › class context for people & academics screens.
  * Branch defaults to the first in scope, session to the branch's active one; class is optional.
  */
-export function useAcademicScope() {
-  const picker = useBranchPicker();
+export function useAcademicScope(initial: { branchId?: string | null; sessionId?: string | null } = {}) {
+  const picker = useBranchPicker(initial.branchId ?? null);
   const sessions = useSessionOptions(picker.branchId);
   const classes = useClassOptions(picker.schoolId);
-  const [chosenSession, setSessionId] = useState<string | null>(null);
+  const [chosenSession, setSessionId] = useState<string | null>(initial.sessionId ?? null);
   const [classId, setClassId] = useState<string | undefined>(undefined);
 
   const sessionId =

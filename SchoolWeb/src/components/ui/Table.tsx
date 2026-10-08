@@ -1,9 +1,14 @@
 import type { HTMLAttributes, TdHTMLAttributes, ThHTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
 
-export function Table({ className, ...props }: HTMLAttributes<HTMLTableElement>) {
+interface TableProps extends HTMLAttributes<HTMLTableElement> {
+  /** Extra classes for the scroll box, e.g. a max height for a sticky header. */
+  wrapperClassName?: string;
+}
+
+export function Table({ className, wrapperClassName, ...props }: TableProps) {
   return (
-    <div className="w-full overflow-x-auto">
+    <div className={cn("w-full overflow-x-auto", wrapperClassName)}>
       <table className={cn("w-full caption-bottom border-collapse text-label", className)} {...props} />
     </div>
   );

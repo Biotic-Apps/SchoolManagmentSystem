@@ -18,6 +18,7 @@ import type {
   OverrideQueryDto,
 } from '../dto/timetable-input.dto';
 import type { OverrideDto } from '../dto/timetable.dto';
+import { PeriodsService } from '../periods/periods.service';
 
 const INCLUDE = {
   originalStaff: { select: { id: true, name: true } },
@@ -50,6 +51,7 @@ export class OverridesService {
     private readonly sections: SectionAccessService,
     private readonly notifications: NotificationService,
     private readonly audit: AuditService,
+    private readonly periods: PeriodsService,
   ) {}
 
   async list(scope: Scope, query: OverrideQueryDto): Promise<OverrideDto[]> {
@@ -86,6 +88,15 @@ export class OverridesService {
       schoolId: section.schoolId,
     });
     const date = parseDate(dto.date);
+    const dayRows = await this.periods.forDay(
+      section.branchId,
+      isoWeekday(date),
+    );
+    const period = dayRows.find((p) => p.index === dto.periodIndex);
+    if (!period || period.isBreak)
+      throw invalid(
+        `Period ${dto.periodIndex} is not a teaching period on ${dto.date}`,
+      );
     const slot = await this.prisma.timetableSlot.findFirst({
       where: {
         published: true,

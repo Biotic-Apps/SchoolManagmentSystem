@@ -1,14 +1,12 @@
-import type { SetupFormValues } from "./schemas";
-
-export type StepId = "school" | "branch" | "people" | "review";
+export type StepId = "school" | "branch" | "people" | "classes" | "bell" | "review";
 
 export interface WizardStep {
   id: StepId;
   label: string;
   title: string;
   helper: string;
-  /** Top-level form groups validated before leaving the step. */
-  groups: (keyof SetupFormValues)[];
+  /** Field paths (or their prefixes) validated before leaving the step. */
+  fields: string[];
 }
 
 export const SETUP_STEPS: WizardStep[] = [
@@ -17,34 +15,47 @@ export const SETUP_STEPS: WizardStep[] = [
     label: "School",
     title: "About the school",
     helper: "Only the name and code are needed now; everything else can be added later.",
-    groups: ["school"],
+    fields: ["school"],
   },
   {
     id: "branch",
     label: "Branch",
     title: "Main branch",
     helper: "We've filled in common defaults. Change anything that differs.",
-    groups: ["branch"],
+    fields: ["branch"],
   },
   {
     id: "people",
     label: "Principal",
     title: "Principal and academic year",
-    helper: "Who runs the branch, and the classes and subjects to start with.",
-    groups: ["principal", "academics"],
+    helper: "Who runs the branch, and the school year to start with.",
+    fields: ["principal", "academics.createSession", "academics.sessionName", "academics.startDate", "academics.endDate"],
+  },
+  {
+    id: "classes",
+    label: "Classes",
+    title: "Classes & subjects",
+    helper: "Pick the classes, their sections and what each class studies. You can change all of this later in Classes.",
+    fields: ["academics.classes", "academics.subjectNames"],
+  },
+  {
+    id: "bell",
+    label: "Bell",
+    title: "Bell schedule",
+    helper: "When periods start and end. Periods are time slots; subjects are chosen when you build the timetable.",
+    fields: ["bell"],
   },
   {
     id: "review",
     label: "Review",
     title: "Review and create",
     helper: "Check everything once. Nothing is saved until you press Create school.",
-    groups: [],
+    fields: [],
   },
 ];
 
-/** Step index that owns a field path such as "school.code" or "principal.email". */
+/** Step index that owns a field path such as "school.code" or "academics.classes.3.sections". */
 export function stepForField(field: string): number {
-  const group = field.split(".")[0];
-  const index = SETUP_STEPS.findIndex((step) => step.groups.includes(group as keyof SetupFormValues));
-  return index;
+  return SETUP_STEPS.findIndex((step) => step.fields.some((prefix) => field === prefix || field.startsWith(`${prefix}.`)));
 }
+

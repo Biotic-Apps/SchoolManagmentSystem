@@ -37,10 +37,13 @@ model BranchPeriod {
   id        String   @id @default(uuid(7)) @db.Uuid
   schoolId  String   @map("school_id") @db.Uuid
   branchId  String   @map("branch_id") @db.Uuid
+  /// 0 = default schedule for every working day; 1..7 = that weekday's own schedule.
+  day       Int      @default(0) @db.SmallInt
   index     Int      @map("period_index")
   startTime String   @map("start_time") @db.VarChar(5)
   endTime   String   @map("end_time") @db.VarChar(5)
   isBreak   Boolean  @default(false) @map("is_break")
+  /// Only meaningful on breaks; teaching periods are numbered ("Period N").
   label     String?
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
@@ -48,7 +51,7 @@ model BranchPeriod {
   school School @relation(fields: [schoolId], references: [id], onDelete: Restrict)
   branch Branch @relation(fields: [branchId], references: [id], onDelete: Restrict)
 
-  @@unique([branchId, index])
+  @@unique([branchId, day, index])
   @@index([schoolId])
   @@map("branch_periods")
 }

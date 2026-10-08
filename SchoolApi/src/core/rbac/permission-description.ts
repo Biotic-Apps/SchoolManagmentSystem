@@ -17,6 +17,9 @@ const SPECIAL: Record<string, string> = {
   'people.sensitive.view': 'View unmasked ID numbers',
   'audit.view': 'View audit log',
   'fees.concession.approve': 'Approve fee concessions',
+  'timetable.edit':
+    'Build timetable drafts, bell schedule, teacher allocation and rooms',
+  'timetable.publish': 'Publish or discard timetables',
 };
 
 export interface PermissionInfo {

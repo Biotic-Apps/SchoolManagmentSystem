@@ -26,6 +26,8 @@ interface DataTableProps<T> {
   emptyDescription?: string;
   emptyAction?: ReactNode;
   pagination?: TablePaginationProps;
+  /** Keeps the header row visible while the rows scroll (the table scrolls inside a viewport-high box). */
+  stickyHeader?: boolean;
 }
 
 export function DataTable<T>({
@@ -41,14 +43,15 @@ export function DataTable<T>({
   emptyDescription,
   emptyAction,
   pagination,
+  stickyHeader,
 }: DataTableProps<T>) {
   const failed = !loading && !!error;
   const isEmpty = !loading && !failed && (!rows || rows.length === 0);
 
   return (
     <div className="overflow-hidden rounded-card border border-border bg-surface">
-      <Table>
-        <TableHeader>
+      <Table wrapperClassName={cn(stickyHeader && "max-h-[calc(100dvh-16rem)] min-h-40 overflow-y-auto")}>
+        <TableHeader className={cn(stickyHeader && "sticky top-0 z-10 shadow-[inset_0_-1px_0_var(--border)]")}>
           <TableRow className="hover:bg-transparent">
             {columns.map((column) => (
               <TableHead key={column.id} className={column.className}>

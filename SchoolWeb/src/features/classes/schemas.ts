@@ -3,7 +3,6 @@ import { requiredText, wholeNumberText } from "@/lib/validation";
 import type {
   Room,
   RoomInput,
-  SchoolClass,
   SchoolClassInput,
   Section,
   SectionCreateInput,
@@ -15,19 +14,14 @@ import type {
 const numberOrNull = (value: string) => (value.trim() ? Number(value) : null);
 
 export const classSchema = z.object({
-  name: requiredText("the class name", 60),
-  levelOrder: wholeNumberText("the level order"),
+  name: requiredText("the class name", 40),
 });
 export type ClassFormValues = z.infer<typeof classSchema>;
 
-export const classFormDefaults = (item: SchoolClass | null): ClassFormValues => ({
-  name: item?.name ?? "",
-  levelOrder: item ? String(item.levelOrder) : "",
-});
-
-export const toClassInput = (values: ClassFormValues): SchoolClassInput => ({
+/** New classes go after the most senior one; reorder later from the Classes page. */
+export const toClassInput = (values: ClassFormValues, levelOrder: number): SchoolClassInput => ({
   name: values.name.trim(),
-  levelOrder: Number(values.levelOrder),
+  levelOrder,
 });
 
 export const subjectSchema = z.object({

@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsArray,
@@ -10,7 +11,11 @@ import {
   MaxLength,
   Min,
   MinLength,
+  ValidateNested,
 } from 'class-validator';
+import { BellPlanInput } from '../../timetable/dto/bell-plan.input';
+import { MAX_SETUP_CLASSES } from '../steps/curriculum-plan';
+import { SetupClassInput } from './setup-classes.input';
 import { IsOptionalDateOnly } from '../../../core/common/validation/is-date-only';
 import {
   MAX_SECTIONS_PER_CLASS,
@@ -70,4 +75,21 @@ export class SetupAcademicsInput {
   @ArrayMaxSize(PRESET_SUBJECT_NAMES.length)
   @IsIn(PRESET_SUBJECT_NAMES, { each: true })
   subjectNames?: string[];
+
+  /**
+   * Per-class sections and curriculum (order = levelOrder, max 30). When sent,
+   * the legacy preset fields above are ignored.
+   */
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(MAX_SETUP_CLASSES)
+  @ValidateNested({ each: true })
+  @Type(() => SetupClassInput)
+  classes?: SetupClassInput[];
+
+  /** Default: 08:00, 8 × 40 min, 30-min break after period 4, Friday 6 × 35 min. */
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => BellPlanInput)
+  bellSchedule?: BellPlanInput;
 }

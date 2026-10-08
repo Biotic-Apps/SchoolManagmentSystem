@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from "react";
+import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef, type ReactNode } from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
@@ -52,8 +52,11 @@ export const SelectContent = forwardRef<
 
 export const SelectItem = forwardRef<
   ComponentRef<typeof SelectPrimitive.Item>,
-  ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
->(function SelectItem({ className, children, ...props }, ref) {
+  ComponentPropsWithoutRef<typeof SelectPrimitive.Item> & {
+    /** Shown in the list only (not in the closed trigger), e.g. "24/30 periods". */
+    hint?: ReactNode;
+  }
+>(function SelectItem({ className, children, hint, ...props }, ref) {
   return (
     <SelectPrimitive.Item
       ref={ref}
@@ -65,9 +68,24 @@ export const SelectItem = forwardRef<
       {...props}
     >
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+      {hint && <span className="ml-2 truncate text-caption text-fg-muted">{hint}</span>}
       <SelectPrimitive.ItemIndicator className="absolute right-2">
         <Check className="size-4 text-primary" />
       </SelectPrimitive.ItemIndicator>
     </SelectPrimitive.Item>
   );
+});
+
+export const SelectLabel = forwardRef<
+  ComponentRef<typeof SelectPrimitive.Label>,
+  ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
+>(function SelectLabel({ className, ...props }, ref) {
+  return <SelectPrimitive.Label ref={ref} className={cn("px-3 pb-1 pt-2 text-caption font-semibold text-fg-muted", className)} {...props} />;
+});
+
+export const SelectSeparator = forwardRef<
+  ComponentRef<typeof SelectPrimitive.Separator>,
+  ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>
+>(function SelectSeparator({ className, ...props }, ref) {
+  return <SelectPrimitive.Separator ref={ref} className={cn("my-1 h-px bg-border", className)} {...props} />;
 });

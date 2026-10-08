@@ -8,6 +8,8 @@ export class SectionDto {
   classId!: string;
   className!: string;
   name!: string;
+  /** Matric group ("Science", "Arts"); null = none. */
+  group!: string | null;
   capacity!: number | null;
   room!: IdNameDto | null;
   classTeacher!: IdNameDto | null;

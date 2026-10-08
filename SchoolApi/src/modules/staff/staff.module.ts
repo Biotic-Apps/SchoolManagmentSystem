@@ -1,5 +1,9 @@
 import { Module } from '@nestjs/common';
 import { DocumentsModule } from '../documents/documents.module';
+import { AllocationTarget } from './allocation/allocation-target';
+import { AllocationController } from './allocation/allocation.controller';
+import { AllocationService } from './allocation/allocation.service';
+import { TeachingStaffService } from './allocation/teaching-staff.service';
 import { AssignmentEnder } from './assignments/assignment-ender';
 import { StaffAssignmentsService } from './assignments/staff-assignments.service';
 import { ExpireAssignmentsProcessor } from './jobs/expire-assignments.processor';
@@ -15,7 +19,7 @@ import { WorkloadService } from './workload.service';
 
 @Module({
   imports: [DocumentsModule],
-  controllers: [StaffController, SectionStaffController],
+  controllers: [StaffController, SectionStaffController, AllocationController],
   providers: [
     StaffRepository,
     StaffAccessService,
@@ -27,7 +31,10 @@ import { WorkloadService } from './workload.service';
     WorkloadService,
     ExpireAssignmentsProcessor,
     StaffDocumentOwner,
+    AllocationTarget,
+    AllocationService,
+    TeachingStaffService,
   ],
-  exports: [StaffRepository],
+  exports: [StaffRepository, AssignmentEnder, AllocationService],
 })
 export class StaffModule {}

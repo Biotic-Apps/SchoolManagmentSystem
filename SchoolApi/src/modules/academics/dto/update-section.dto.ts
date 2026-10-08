@@ -25,4 +25,10 @@ export class UpdateSectionDto {
   @IsOptional()
   @IsUUID()
   roomId?: string;
+
+  /** Matric group, e.g. "Science" / "Arts"; null or blank = no group. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(30)
+  group?: string | null;
 }

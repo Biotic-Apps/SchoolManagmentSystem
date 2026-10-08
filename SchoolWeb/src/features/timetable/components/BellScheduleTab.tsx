@@ -3,7 +3,7 @@
 import { ErrorState } from "@/components/shared/ErrorState";
 import { Card } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { useBellSchedule } from "../use-bell-schedule";
+import { useBellScheduleQuery } from "../bell-api";
 import { BellScheduleEditor } from "./BellScheduleEditor";
 import { BellScheduleList } from "./BellScheduleList";
 
@@ -13,7 +13,7 @@ interface BellScheduleTabProps {
 }
 
 export function BellScheduleTab({ branchId, canEdit }: BellScheduleTabProps) {
-  const { query, periods, rows, editorKey } = useBellSchedule(branchId);
+  const query = useBellScheduleQuery(branchId);
 
   if (query.isLoading) return <Skeleton className="h-64 w-full" />;
   if (query.error)
@@ -22,9 +22,11 @@ export function BellScheduleTab({ branchId, canEdit }: BellScheduleTabProps) {
         <ErrorState error={query.error} onRetry={() => query.refetch()} />
       </Card>
     );
+  const bell = query.data ?? null;
   return canEdit ? (
-    <BellScheduleEditor key={editorKey} branchId={branchId} periods={periods} />
+    // Remount on fresh data so the form starts from what was saved.
+    <BellScheduleEditor key={`${branchId}-${query.dataUpdatedAt}`} branchId={branchId} bell={bell} />
   ) : (
-    <BellScheduleList rows={rows} />
+    <BellScheduleList bell={bell} />
   );
 }

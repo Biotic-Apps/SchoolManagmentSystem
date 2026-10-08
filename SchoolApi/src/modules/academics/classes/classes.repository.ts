@@ -63,28 +63,12 @@ export class ClassesRepository {
     });
   }
 
-  subjectsOf(classId: string) {
-    return this.prisma.subject.findMany({
-      where: { classes: { some: { classId, status: 'ACTIVE' } } },
-      orderBy: { name: 'asc' },
+  async subjectsOf(classId: string) {
+    const links = await this.prisma.classSubject.findMany({
+      where: { classId, status: 'ACTIVE', subject: { status: 'ACTIVE' } },
+      include: { subject: true },
+      orderBy: [{ sortOrder: 'asc' }, { subject: { name: 'asc' } }],
     });
-  }
-
-  countSubjectsInSchool(schoolId: string, ids: string[]) {
-    return this.prisma.subject.count({
-      where: { schoolId, id: { in: ids }, status: 'ACTIVE' },
-    });
-  }
-
-  replaceSubjects(classId: string, schoolId: string, subjectIds: string[]) {
-    return this.prisma.$transaction([
-      this.prisma.classSubject.deleteMany({
-        where: { classId, subjectId: { notIn: subjectIds } },
-      }),
-      this.prisma.classSubject.createMany({
-        data: subjectIds.map((subjectId) => ({ classId, schoolId, subjectId })),
-        skipDuplicates: true,
-      }),
-    ]);
+    return links.map((l) => l.subject);
   }
 }

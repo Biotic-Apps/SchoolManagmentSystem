@@ -15,14 +15,14 @@ import { SubstitutionsTab } from "./SubstitutionsTab";
 import { TeacherWeekTab } from "./TeacherWeekTab";
 
 export function TimetableAdminPage() {
-  const { scope, tab, setTab, goToBell, canEdit, canPublish } = useTimetableAdmin();
+  const { scope, tab, setTab, goToBell, canEdit, canPublish, initialSectionId } = useTimetableAdmin();
   const { branchId, sessionId } = scope;
 
   return (
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Timetable"
-        description="Bell schedule per branch, weekly timetable per section, and substitute teachers."
+        description="Build each section's week lesson by lesson; every change is saved as a draft until you publish."
       />
       <AcademicScopeBar scope={scope} />
       {scope.isLoading && <Skeleton className="h-64 w-full" />}
@@ -49,6 +49,7 @@ export function TimetableAdminPage() {
               key={`${branchId}-${sessionId}`}
               branchId={branchId}
               sessionId={sessionId}
+              initialSectionId={initialSectionId}
               canEdit={canEdit}
               canPublish={canPublish}
               onOpenBell={goToBell}

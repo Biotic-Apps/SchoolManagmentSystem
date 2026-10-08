@@ -7,31 +7,29 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import { BranchPickerSelect } from "@/features/branches/components/BranchPickerSelect";
 import { useClassesPage } from "../use-classes-page";
-import { ClassesTab } from "./ClassesTab";
-import { RoomsTab } from "./RoomsTab";
-import { SectionsTab } from "./SectionsTab";
-import { SubjectsTab } from "./SubjectsTab";
+import { AcademicScopeBar } from "./AcademicScopeBar";
+import { CatalogueTab } from "./CatalogueTab";
+import { ClassesOverviewTab } from "./ClassesOverviewTab";
 
 export function ClassesPage() {
-  const { picker, tab, setTab } = useClassesPage();
-  const { branchId, schoolId } = picker;
+  const { scope, tab, setTab } = useClassesPage();
+  const { branchId, schoolId, sessionId } = scope;
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <PageHeader
-        title="Classes, Sections & Subjects"
-        description="Classes and subjects are shared across the school; sections and rooms belong to a branch."
-        actions={<BranchPickerSelect picker={picker} />}
+        title="Classes"
+        description="Each class with its sections, subjects and teachers. Open a class to set it up on one screen."
       />
-      {picker.isLoading && <Skeleton className="h-64 w-full" />}
-      {!picker.isLoading && !!picker.error && (
+      <AcademicScopeBar scope={scope} />
+      {scope.isLoading && <Skeleton className="h-64 w-full" />}
+      {!scope.isLoading && !!scope.error && (
         <Card>
-          <ErrorState error={picker.error} />
+          <ErrorState error={scope.error} />
         </Card>
       )}
-      {!picker.isLoading && !picker.error && (!branchId || !schoolId) && (
+      {!scope.isLoading && !scope.error && (!branchId || !schoolId) && (
         <Card>
           <EmptyState
             icon={Building2}
@@ -44,24 +42,16 @@ export function ClassesPage() {
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="max-w-full overflow-x-auto">
             <TabsTrigger value="classes">Classes</TabsTrigger>
-            <TabsTrigger value="sections">Sections</TabsTrigger>
-            <TabsTrigger value="subjects">Subjects</TabsTrigger>
-            <TabsTrigger value="rooms">Rooms</TabsTrigger>
+            <TabsTrigger value="catalogue">Subjects & rooms</TabsTrigger>
           </TabsList>
           <TabsContent value="classes">
-            <ClassesTab key={schoolId} schoolId={schoolId} />
+            <ClassesOverviewTab key={`${branchId}-${sessionId}`} branchId={branchId} schoolId={schoolId} sessionId={sessionId} />
           </TabsContent>
-          <TabsContent value="sections">
-            <SectionsTab key={branchId} branchId={branchId} schoolId={schoolId} />
-          </TabsContent>
-          <TabsContent value="subjects">
-            <SubjectsTab key={schoolId} schoolId={schoolId} />
-          </TabsContent>
-          <TabsContent value="rooms">
-            <RoomsTab key={branchId} branchId={branchId} />
+          <TabsContent value="catalogue">
+            <CatalogueTab key={branchId} branchId={branchId} schoolId={schoolId} sessionId={sessionId} />
           </TabsContent>
         </Tabs>
       )}
-    </>
+    </div>
   );
 }

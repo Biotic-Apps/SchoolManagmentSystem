@@ -12,6 +12,7 @@ import { PrismaService } from '../../core/prisma/prisma.service';
 import type { Scope } from '../../core/rbac/scope/scope';
 import { SectionAccessService } from '../students/section-access.service';
 import type { TeacherSlotDto } from './dto/timetable.dto';
+import { periodsForDay } from './periods/bell-schedule';
 
 const SLOT_INCLUDE = {
   subject: { select: { id: true, name: true } },
@@ -173,11 +174,14 @@ export class WeekViewService {
         ),
       ),
     ];
-    const periods = await this.prisma.branchPeriod.findMany({
+    const rows = await this.prisma.branchPeriod.findMany({
       where: { branchId: { in: branchIds } },
     });
-    const timeOf = (branchId: string, index: number) =>
-      periods.find((p) => p.branchId === branchId && p.index === index);
+    const timeOf = (branchId: string, day: number, index: number) =>
+      periodsForDay(
+        rows.filter((p) => p.branchId === branchId),
+        day,
+      ).find((p) => p.index === index);
     const overrideAt = new Map(
       overrides.map((o) => [
         `${o.sectionId}@${formatDate(o.date)}#${o.periodIndex}`,
@@ -192,11 +196,16 @@ export class WeekViewService {
       isSubstitute: boolean,
       staff: { id: string; name: string },
     ) => {
-      const period = timeOf(slot.timetable.branchId, slot.periodIndex);
+      const period = timeOf(
+        slot.timetable.branchId,
+        slot.day,
+        slot.periodIndex,
+      );
       out.push({
         date: formatDate(date),
         day: slot.day,
         periodIndex: slot.periodIndex,
+        periodNumber: period?.number ?? null,
         startTime: period?.startTime ?? '',
         endTime: period?.endTime ?? '',
         section: {

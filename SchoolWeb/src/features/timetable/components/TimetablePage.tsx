@@ -9,5 +9,6 @@ export function TimetablePage() {
   const view = useTimetableView();
   if (view === "child") return <ChildTimetableView />;
   if (view === "mine") return <MyWeekView />;
+  if (view === "teacher") return <MyWeekView withSections />;
   return <TimetableAdminPage />;
 }

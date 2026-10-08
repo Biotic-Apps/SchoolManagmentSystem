@@ -77,8 +77,12 @@ export class SectionsRepository {
     return db.section.create({ data, include: INCLUDE });
   }
 
-  update(id: string, data: Prisma.SectionUncheckedUpdateInput) {
-    return this.prisma.section.update({
+  update(
+    id: string,
+    data: Prisma.SectionUncheckedUpdateInput,
+    db: Prisma.TransactionClient = this.prisma,
+  ) {
+    return db.section.update({
       where: { id },
       data,
       include: INCLUDE,

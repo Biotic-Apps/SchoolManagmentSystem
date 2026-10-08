@@ -7,9 +7,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { CurrentUser } from '../../../core/common/decorators/current-user.decorator';
 import { ApiData } from '../../../core/common/swagger/api-data.decorator';
-import type { AuthUser } from '../../../core/common/types/auth-user';
 import { RequirePermission } from '../../../core/rbac/require-permission.decorator';
 import { CurrentScope } from '../../../core/rbac/scope/current-scope.decorator';
 import type { Scope } from '../../../core/rbac/scope/scope';
@@ -17,6 +15,7 @@ import { SetPeriodsDto } from '../dto/timetable-input.dto';
 import { PeriodDto } from '../dto/timetable.dto';
 import { PeriodsService } from './periods.service';
 
+/** Legacy default-schedule endpoints; prefer /branches/:id/bell-schedule. */
 @ApiTags('timetable')
 @ApiBearerAuth()
 @Controller('branches/:id/periods')
@@ -37,11 +36,10 @@ export class PeriodsController {
   @RequirePermission('timetable.edit')
   @ApiData(PeriodDto, { isArray: true })
   replace(
-    @CurrentUser() user: AuthUser,
     @CurrentScope() scope: Scope,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: SetPeriodsDto,
   ): Promise<PeriodDto[]> {
-    return this.periods.replace(user, scope, id, body.periods);
+    return this.periods.replace(scope, id, body.periods, body.dropLessons);
   }
 }

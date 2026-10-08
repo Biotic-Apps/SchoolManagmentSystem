@@ -17,6 +17,8 @@ export const BRANCH_SETTING_DEFAULTS: Readonly<Record<string, unknown>> = {
   'approval.limits.PURCHASE_ORDER': { PRINCIPAL: 10_000_000 },
   'exams.positionsEnabled': true,
   'promotion.minPassPercent': 33,
+  // academics-timetable-contract §4: teacher lessons per day before a TEACHER_DAY_LIMIT warning.
+  'timetable.maxPeriodsPerDay': 7,
 };
 
 /** Online gateways known to the registry ("NONE" disables online payment). */

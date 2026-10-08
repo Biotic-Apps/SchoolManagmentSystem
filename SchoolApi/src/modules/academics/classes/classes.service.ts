@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AuditService } from '../../../core/audit/audit.service';
-import { invalid, notFound } from '../../../core/common/errors/errors';
+import { notFound } from '../../../core/common/errors/errors';
 import type { PageResult } from '../../../core/common/pagination/page-result';
 import { toPageResult } from '../../../core/common/pagination/paginate';
 import type { AuthUser } from '../../../core/common/types/auth-user';
@@ -11,6 +11,7 @@ import type { SchoolClassDto } from '../dto/school-class.dto';
 import type { SchoolQueryDto } from '../dto/school-query.dto';
 import type { SubjectDto } from '../dto/subject.dto';
 import type { UpdateClassDto } from '../dto/update-class.dto';
+import { SchoolDataAccess } from '../school-data-access';
 import { onDuplicate } from '../unique-conflict';
 import { ClassesRepository, type ClassRow } from './classes.repository';
 
@@ -18,6 +19,7 @@ import { ClassesRepository, type ClassRow } from './classes.repository';
 export class ClassesService {
   constructor(
     private readonly repository: ClassesRepository,
+    private readonly access: SchoolDataAccess,
     private readonly audit: AuditService,
   ) {}
 
@@ -34,7 +36,7 @@ export class ClassesService {
     scope: Scope,
     dto: CreateClassDto,
   ): Promise<SchoolClassDto> {
-    scope.assertReadSchool(dto.schoolId);
+    await this.access.assertManage(scope, dto.schoolId);
     const row = await this.repository
       .create({ ...dto, name: dto.name.trim(), createdById: user.id })
       .catch(onDuplicate(`Class ${dto.name} already exists`));
@@ -48,6 +50,7 @@ export class ClassesService {
     dto: UpdateClassDto,
   ): Promise<SchoolClassDto> {
     const before = await this.find(scope, id);
+    await this.access.assertManage(scope, before.schoolId);
     const row = await this.repository
       .update(id, {
         name: dto.name?.trim(),
@@ -61,34 +64,6 @@ export class ClassesService {
   async subjects(scope: Scope, id: string): Promise<SubjectDto[]> {
     await this.find(scope, id);
     return (await this.repository.subjectsOf(id)).map(toSubjectDto);
-  }
-
-  async setSubjects(
-    scope: Scope,
-    id: string,
-    subjectIds: string[],
-  ): Promise<SubjectDto[]> {
-    const schoolClass = await this.find(scope, id);
-    const found = await this.repository.countSubjectsInSchool(
-      schoolClass.schoolId,
-      subjectIds,
-    );
-    if (found !== subjectIds.length)
-      throw invalid(
-        'Every subject must be an active subject of the same school',
-      );
-    const before = await this.subjects(scope, id);
-    await this.repository.replaceSubjects(id, schoolClass.schoolId, subjectIds);
-    const after = await this.subjects(scope, id);
-    this.audit.stage({
-      action: 'class.subjects_set',
-      entityType: 'SchoolClass',
-      entityId: id,
-      schoolId: schoolClass.schoolId,
-      before: before.map((s) => s.code),
-      after: after.map((s) => s.code),
-    });
-    return after;
   }
 
   private async find(scope: Scope, id: string): Promise<ClassRow> {

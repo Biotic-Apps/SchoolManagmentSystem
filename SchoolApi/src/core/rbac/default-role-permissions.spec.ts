@@ -208,4 +208,23 @@ describe('DEFAULT_ROLE_PERMISSIONS', () => {
       expect(held).toContain('self.payroll.view');
     }
   });
+
+  it('timetable: supervisors and teachers build, only principals publish', () => {
+    for (const role of [RoleKey.COORDINATOR, RoleKey.HEAD_TEACHER]) {
+      const held = permissionsOf(role);
+      expect(held.has('timetable.edit')).toBe(true);
+      expect(held.has('timetable.add')).toBe(true);
+      expect(held.has('timetable.publish')).toBe(false);
+    }
+    expect(permissionsOf(RoleKey.PRINCIPAL).has('timetable.publish')).toBe(
+      true,
+    );
+    // Teachers edit drafts of their class-teacher sections only (scope-checked), never publish.
+    const teacher = [...permissionsOf(RoleKey.TEACHER)];
+    expect(teacher.filter((p) => p.startsWith('timetable.')).sort()).toEqual([
+      'timetable.add',
+      'timetable.edit',
+      'timetable.view',
+    ]);
+  });
 });

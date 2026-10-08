@@ -22,7 +22,7 @@ export function useRoomsTab(branchId: string) {
     rows: query.data?.data,
     pagination: paginationFrom(query.data?.meta, list.setPage),
     columns,
-    canAdd: can("classes.add"),
+    canAdd: can("classes.add") || can("timetable.edit"),
     form,
   };
 }

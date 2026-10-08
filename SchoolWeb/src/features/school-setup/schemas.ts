@@ -65,15 +65,26 @@ const principalStep = z
     }
   });
 
+const sectionRow = z.object({ name: z.string(), group: z.string() });
+const subjectCell = z.object({ name: z.string(), periodsPerWeek: z.number().int().min(0).max(20), group: z.string() });
+const classRow = z.object({
+  include: z.boolean(),
+  name: z.string().trim(),
+  level: z.enum(["EARLY", "PRIMARY", "MIDDLE", "MATRIC", "CUSTOM"]),
+  custom: z.boolean(),
+  sections: z.array(sectionRow),
+  subjects: z.array(subjectCell),
+});
+
 const academicsStep = z
   .object({
     createSession: z.boolean(),
     sessionName: z.string().trim().max(30, "Use at most 30 characters"),
     startDate: z.string(),
     endDate: z.string(),
-    sectionsPerClass: z.enum(["1", "2", "3", "4"]),
-    classes: z.array(z.string()),
-    subjects: z.array(z.string()),
+    classes: z.array(classRow),
+    /** Columns of the class × subject matrix. */
+    subjectNames: z.array(z.string()),
   })
   .superRefine((v, ctx) => {
     if (!v.createSession) return;
@@ -83,13 +94,45 @@ const academicsStep = z
       ctx.addIssue({ code: "custom", path: ["endDate"], message: "The session must end after it starts" });
     }
     if (v.sessionName.length < 2) ctx.addIssue({ code: "custom", path: ["sessionName"], message: "Enter the session name, e.g. 2026-27" });
+    const included = v.classes.filter((row) => row.include);
+    if (included.length === 0) ctx.addIssue({ code: "custom", path: ["classes"], message: "Tick at least one class" });
+    const seen = new Set<string>();
+    v.classes.forEach((row, index) => {
+      if (!row.include) return;
+      const key = row.name.toLowerCase();
+      if (!row.name || row.name.length > 40) {
+        ctx.addIssue({ code: "custom", path: ["classes", index, "name"], message: "Use 1–40 characters" });
+      } else if (seen.has(key)) {
+        ctx.addIssue({ code: "custom", path: ["classes", index, "name"], message: "Another class has this name" });
+      }
+      seen.add(key);
+      if (row.sections.length === 0) {
+        ctx.addIssue({ code: "custom", path: ["classes", index, "sections"], message: "Pick at least one section" });
+      }
+    });
   });
+
+const minutes = (min: number, max: number) => z.number().int().min(min).max(max);
+
+const bellStep = z
+  .object({
+    startTime: timeOfDay,
+    periodMinutes: minutes(10, 120),
+    periodsPerDay: minutes(1, 12),
+    breakAfter: minutes(0, 11),
+    breakMinutes: minutes(0, 90),
+    shortFriday: z.boolean(),
+    friday: z.object({ periodMinutes: minutes(10, 120), periodsPerDay: minutes(1, 12), breakMinutes: minutes(0, 90) }),
+  })
+  .refine((v) => v.breakAfter < v.periodsPerDay, { path: ["breakAfter"], message: "Pick a period before the last one (0 = no break)" });
 
 export const setupSchema = z.object({
   school: schoolStep,
   branch: branchStep,
   principal: principalStep,
   academics: academicsStep,
+  bell: bellStep,
 });
 
 export type SetupFormValues = z.infer<typeof setupSchema>;
+export type BellStepValues = SetupFormValues["bell"];

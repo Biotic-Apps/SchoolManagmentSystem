@@ -1,44 +1,36 @@
 import { useMemo, useState } from "react";
 import { useBranch } from "@/features/branches/api";
-import { useSectionOptions } from "@/features/classes/sections-api";
-import { hasErrorCode } from "@/lib/api-error";
-import { usePeriods, useSectionTimetable } from "./api";
-import { dayColumns, periodRows } from "./grid";
-import { SCHOOL_DAYS } from "./options";
+import { useClassesOverview } from "@/features/classes/overview-api";
+import { useBellScheduleQuery } from "./bell-api";
+import { choicesFromOverview } from "./section-choices";
 
-/** Section picker (defaults to the first section) and the grid frame: working days × periods. */
-export function useSectionTimetableTab(branchId: string, sessionId: string | null) {
-  const sections = useSectionOptions(branchId, sessionId);
-  const [chosen, setSectionId] = useState<string | null>(null);
-  const sectionId = sections.options.find((option) => option.id === chosen)?.id ?? sections.options[0]?.id ?? null;
-  const section = sections.sections.find((item) => item.id === sectionId) ?? null;
+const DEFAULT_DAYS = [1, 2, 3, 4, 5, 6];
 
-  const timetable = useSectionTimetable(sectionId);
+/** Branch working days: from the bell schedule, else the branch, else Mon–Sat. */
+export function useWorkingDays(branchId: string | null): number[] {
+  const bell = useBellScheduleQuery(branchId);
   const branch = useBranch(branchId);
-  const bell = usePeriods(branchId);
+  return useMemo(() => {
+    const days = bell.data?.workingDays?.length ? bell.data.workingDays : branch.data?.workingDays;
+    return days?.length ? [...days].sort((a, b) => a - b) : DEFAULT_DAYS;
+  }, [bell.data, branch.data]);
+}
 
-  const rows = useMemo(() => {
-    const own = timetable.data?.periods;
-    return periodRows(own?.length ? own : (bell.data ?? []));
-  }, [timetable.data, bell.data]);
-  const days = useMemo(() => {
-    const working = branch.data?.workingDays;
-    return dayColumns(working?.length ? working : SCHOOL_DAYS);
-  }, [branch.data]);
+/** Section picker grouped by class (defaults to the linked section, else the first one). */
+export function useSectionTimetableTab(branchId: string, sessionId: string | null, initialSectionId: string | null) {
+  const overview = useClassesOverview(branchId, sessionId);
+  const choices = useMemo(() => choicesFromOverview(overview.data ?? []), [overview.data]);
+  const [chosen, setSectionId] = useState<string | null>(initialSectionId);
+  const section = choices.find((choice) => choice.id === chosen) ?? choices[0] ?? null;
+  const workingDays = useWorkingDays(branchId);
 
   return {
-    sections,
-    sectionId,
-    setSectionId,
+    choices,
     section,
-    timetable: timetable.data ?? null,
-    timetableQuery: timetable,
-    rows,
-    days,
-    loading: sections.isLoading || timetable.isLoading || bell.isLoading || branch.isLoading,
-    // A section without any timetable yet may answer 404; that is an empty grid, not an error.
-    error: (hasErrorCode(timetable.error, "NOT_FOUND") ? null : timetable.error) ?? bell.error,
-    hasSections: sections.options.length > 0,
-    hasPeriods: rows.some((row) => !row.isBreak),
+    setSectionId,
+    workingDays,
+    loading: overview.isLoading,
+    error: overview.error,
+    retry: () => overview.refetch(),
   };
 }

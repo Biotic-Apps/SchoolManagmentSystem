@@ -40,7 +40,8 @@ describe('Staff, timetable and syllabus (e2e)', () => {
         .get(`/users?pageSize=100&search=${encodeURIComponent(email)}`)
         .expect(200),
     );
-    return rows.find((s) => s.userId === users[0].id)!.id;
+    const user = users.find((u) => u.email === email)!;
+    return rows.find((s) => s.userId === user.id)!.id;
   };
 
   it('a second class teacher for a section is a 409', async () => {
@@ -86,11 +87,11 @@ describe('Staff, timetable and syllabus (e2e)', () => {
     const res = await as(app, principal)
       .post(`/timetables/${fourA.id}/publish`)
       .expect(409);
-    expect(errorCode(res)).toBe('CONFLICT');
-    const details = (
-      res.body as { error: { details: { conflicts: unknown[] } } }
-    ).error.details;
-    expect(details.conflicts.length).toBeGreaterThan(0);
+    expect(errorCode(res)).toBe('TIMETABLE_CONFLICTS');
+    const details = (res.body as { error: { details: { severity: string }[] } })
+      .error.details;
+    expect(details.length).toBeGreaterThan(0);
+    expect(details.every((c) => c.severity === 'error')).toBe(true);
   });
 
   it('teacher sees own week and the published 5-A timetable', async () => {

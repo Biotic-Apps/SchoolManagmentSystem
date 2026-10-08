@@ -25,6 +25,10 @@ export class SetupCountsDto {
   classes!: number;
   sections!: number;
   subjects!: number;
+  /** Class × subject curriculum links. */
+  classSubjects!: number;
+  /** Bell schedule rows (all days, breaks included). */
+  periods!: number;
 }
 
 export class SchoolSetupResultDto {

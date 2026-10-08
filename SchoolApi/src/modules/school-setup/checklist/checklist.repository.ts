@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../core/prisma/prisma.service';
 import { RoleKey } from '../../../core/rbac/role-key.enum';
 import { activeAssignmentWhere } from '../../users/active-assignment-where';
+import { ClassSetupService } from '../../academics/class-setup/class-setup.service';
 import type { ChecklistKey } from './checklist-keys';
 
 export interface ChecklistBranch {
@@ -11,10 +12,18 @@ export interface ChecklistBranch {
 
 const none = Promise.resolve(0);
 
+export type ChecklistCounts = Record<ChecklistKey, number> & {
+  /** Active sections of the session (allocation is done only when > 0). */
+  sections: number;
+};
+
 /** Cheap counts behind GET /setup/checklist (contract §2). */
 @Injectable()
 export class ChecklistRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly classSetup: ClassSetupService,
+  ) {}
 
   findBranch(id: string) {
     return this.prisma.branch.findUnique({
@@ -23,55 +32,68 @@ export class ChecklistRepository {
     });
   }
 
-  async counts(branch: ChecklistBranch): Promise<Record<ChecklistKey, number>> {
+  async counts(branch: ChecklistBranch): Promise<ChecklistCounts> {
     const session = await this.prisma.academicSession.findFirst({
       where: { branchId: branch.id, status: 'ACTIVE' },
       select: { id: true },
     });
     const sessionId = session?.id;
     const branchId = branch.id;
-    const [classes, subjects, teachers, students, timetable, feePlan] =
-      await Promise.all([
-        sessionId
-          ? this.prisma.schoolClass.count({
-              where: {
-                status: 'ACTIVE',
-                sections: { some: { sessionId, status: 'ACTIVE' } },
-              },
-            })
-          : none,
-        this.prisma.subject.count({
-          where: { schoolId: branch.schoolId, status: 'ACTIVE' },
-        }),
-        this.teachers(branchId),
-        sessionId
-          ? this.prisma.enrollment.count({
-              where: { branchId, sessionId, status: 'ACTIVE' },
-            })
-          : none,
-        sessionId
-          ? this.prisma.timetable.count({
-              where: {
-                branchId,
-                sessionId,
-                status: { in: ['PUBLISHED', 'DRAFT_REVISION'] },
-              },
-            })
-          : none,
-        sessionId
-          ? this.prisma.feePlan.count({
-              where: { branchId, sessionId, status: 'APPROVED' },
-            })
-          : none,
-      ]);
-    return {
-      session: sessionId ? 1 : 0,
+    const [
       classes,
       subjects,
       teachers,
       students,
       timetable,
       feePlan,
+      bellSchedule,
+      gaps,
+    ] = await Promise.all([
+      sessionId
+        ? this.prisma.schoolClass.count({
+            where: {
+              status: 'ACTIVE',
+              sections: { some: { sessionId, status: 'ACTIVE' } },
+            },
+          })
+        : none,
+      this.prisma.subject.count({
+        where: { schoolId: branch.schoolId, status: 'ACTIVE' },
+      }),
+      this.teachers(branchId),
+      sessionId
+        ? this.prisma.enrollment.count({
+            where: { branchId, sessionId, status: 'ACTIVE' },
+          })
+        : none,
+      sessionId
+        ? this.prisma.timetable.count({
+            where: {
+              branchId,
+              sessionId,
+              status: { in: ['PUBLISHED', 'DRAFT_REVISION'] },
+            },
+          })
+        : none,
+      sessionId
+        ? this.prisma.feePlan.count({
+            where: { branchId, sessionId, status: 'APPROVED' },
+          })
+        : none,
+      this.prisma.branchPeriod.count({ where: { branchId } }),
+      this.classSetup.allocationGaps(branch),
+    ]);
+    return {
+      session: sessionId ? 1 : 0,
+      classes,
+      subjects,
+      bellSchedule,
+      teachers,
+      allocation: gaps.unallocated,
+      students,
+      timetable,
+      feePlan,
+      sections: gaps.sections,
     };
   }
 

@@ -52,7 +52,13 @@ describe('School setup (e2e)', () => {
     const result = (res.body as { data: SetupResult }).data;
     expect(result.school.code).toBe(code);
     expect(result.branch).toMatchObject({ code: 'MAIN', name: 'Main Branch' });
-    expect(result.counts).toEqual({ classes: 13, sections: 26, subjects: 8 });
+    expect(result.counts).toEqual({
+      classes: 13,
+      sections: 26,
+      subjects: 8,
+      classSubjects: 104,
+      periods: 16,
+    });
     expect(result.session?.name).toMatch(/^\d{4}-\d{2}$/);
     const password = result.principal.temporaryPassword!;
     expect(password).toHaveLength(12);
@@ -90,7 +96,9 @@ describe('School setup (e2e)', () => {
       session: [true, 1],
       classes: [true, 13],
       subjects: [true, 8],
+      bellSchedule: [true, 16],
       teachers: [false, 0],
+      allocation: [false, 208],
       students: [false, 0],
       timetable: [false, 0],
       feePlan: [false, 0],

@@ -58,6 +58,8 @@ function setup() {
       create: jest.fn(),
     },
     branch: { update: jest.fn() },
+    classSubject: { createMany: jest.fn() },
+    branchPeriod: { createMany: jest.fn() },
   };
   const prisma = {
     $transaction: jest.fn((fn: (t: typeof tx) => Promise<unknown>) => fn(tx)),
@@ -202,7 +204,13 @@ describe('SchoolSetupService', () => {
     expect(result.session?.name).toMatch(/^\d{4}-\d{2}$/);
     expect(result.session?.startDate).toMatch(/-04-01$/);
     expect(result.session?.endDate).toMatch(/-03-31$/);
-    expect(result.counts).toEqual({ classes: 13, sections: 13, subjects: 8 });
+    expect(result.counts).toEqual({
+      classes: 13,
+      sections: 13,
+      subjects: 8,
+      classSubjects: 104,
+      periods: 9 + 7,
+    });
     expect(t.classes.create.mock.calls.map((c) => c[0].name)).toEqual([
       'Playgroup',
       'Nursery',
@@ -213,8 +221,23 @@ describe('SchoolSetupService', () => {
       'Nazra Quran',
     );
     expect(result.principal.email).toBe('ayesha@bright.pk');
-    // One audit row per created entity (+ principal link), staged after commit.
-    expect(t.audit.stage).toHaveBeenCalledTimes(1 + 1 + 2 + 1 + 13 + 13 + 8);
+    // Legacy path links every subject to every class and creates the default bell schedule.
+    const links = t.tx.classSubject.createMany.mock.calls as [
+      { data: { subjectId: string }[] },
+    ][];
+    expect(links).toHaveLength(13);
+    expect(links[0][0].data).toHaveLength(8);
+    const periods = (
+      t.tx.branchPeriod.createMany.mock.calls[0] as [
+        { data: { day: number; isBreak: boolean; endTime: string }[] },
+      ]
+    )[0].data;
+    expect(periods.filter((p) => p.day === 0).at(-1)?.endTime).toBe('13:50');
+    expect(periods.filter((p) => p.day === 5).at(-1)?.endTime).toBe('11:45');
+    // One audit row per created entity (+ principal link, curricula, bell schedule).
+    expect(t.audit.stage).toHaveBeenCalledTimes(
+      1 + 1 + 2 + 1 + 13 + 13 + 8 + 13 + 1,
+    );
     expect(t.welcome.send).toHaveBeenCalledWith(
       'user-1',
       'Bright School',
@@ -237,7 +260,12 @@ describe('SchoolSetupService', () => {
         },
       }),
     );
-    expect(result.counts).toEqual({ classes: 13, sections: 39, subjects: 0 });
+    expect(result.counts).toMatchObject({
+      classes: 13,
+      sections: 39,
+      subjects: 0,
+      classSubjects: 0,
+    });
     const names = t.sections.create.mock.calls
       .slice(0, 3)
       .map((c) => c[0].name);
@@ -261,7 +289,12 @@ describe('SchoolSetupService', () => {
         },
       }),
     );
-    expect(result.counts).toEqual({ classes: 2, sections: 2, subjects: 1 });
+    expect(result.counts).toMatchObject({
+      classes: 2,
+      sections: 2,
+      subjects: 1,
+      classSubjects: 2,
+    });
     const classes = t.classes.create.mock.calls.map((c) => [
       c[0].name,
       c[0].levelOrder,
@@ -283,7 +316,13 @@ describe('SchoolSetupService', () => {
       baseDto({ academics: { createSession: false } }),
     );
     expect(result.session).toBeNull();
-    expect(result.counts).toEqual({ classes: 0, sections: 0, subjects: 0 });
+    expect(result.counts).toEqual({
+      classes: 0,
+      sections: 0,
+      subjects: 0,
+      classSubjects: 0,
+      periods: 0,
+    });
     expect(t.sessions.create).not.toHaveBeenCalled();
   });
 
@@ -375,6 +414,92 @@ describe('SchoolSetupService', () => {
     await expect(
       t.service.setup({ ...SUPER, activeRole: 'PRINCIPAL' }, baseDto()),
     ).rejects.toMatchObject({ code: ErrorCode.FORBIDDEN });
+    expect(t.schools.create).not.toHaveBeenCalled();
+  });
+
+  it('creates per-class sections with groups and group-scoped curricula', async () => {
+    const t = setup();
+    const result = await t.service.setup(
+      SUPER,
+      baseDto({
+        academics: {
+          classes: [
+            {
+              name: 'Playgroup',
+              level: 'EARLY',
+              sections: [{ name: 'A' }, { name: 'B' }, { name: 'C' }],
+              subjects: [{ name: 'English', periodsPerWeek: 6 }],
+            },
+            {
+              name: 'Class 9',
+              level: 'MATRIC',
+              sections: [
+                { name: 'A', group: 'Science' },
+                { name: 'B', group: 'Arts' },
+              ],
+              subjects: [
+                { name: 'English', periodsPerWeek: 6 },
+                { name: 'Physics', periodsPerWeek: 6, group: 'Science' },
+                { name: 'Pak Studies', group: 'Arts' },
+              ],
+            },
+          ],
+          bellSchedule: { periodsPerDay: 6, breakAfter: 3 },
+        },
+      }),
+    );
+    expect(result.counts).toEqual({
+      classes: 2,
+      sections: 5,
+      subjects: 3,
+      classSubjects: 4,
+      periods: 7,
+    });
+    expect(t.subjects.create.mock.calls.map((c) => c[0].code)).toEqual([
+      'ENG',
+      'PHY',
+      'PS',
+    ]);
+    const nine = t.sections.create.mock.calls.slice(3).map((c) => c[0]);
+    expect(nine.map((x) => [x.name, x.group])).toEqual([
+      ['A', 'Science'],
+      ['B', 'Arts'],
+    ]);
+    const links = (
+      t.tx.classSubject.createMany.mock.calls[1] as [
+        { data: { group: string | null; sortOrder: number }[] },
+      ]
+    )[0].data;
+    expect(links.map((l) => [l.group, l.sortOrder])).toEqual([
+      [null, 0],
+      ['Science', 1],
+      ['Arts', 2],
+    ]);
+  });
+
+  it('rejects a subject group no section of the class has', async () => {
+    const t = setup();
+    await expect(
+      t.service.setup(
+        SUPER,
+        baseDto({
+          academics: {
+            classes: [
+              {
+                name: 'Class 9',
+                sections: [{ name: 'A' }],
+                subjects: [{ name: 'Physics', group: 'Science' }],
+              },
+            ],
+          },
+        }),
+      ),
+    ).rejects.toMatchObject({
+      code: ErrorCode.VALIDATION_FAILED,
+      details: [
+        expect.stringMatching(/^academics\.classes\.0\.subjects\.0\.group/),
+      ],
+    });
     expect(t.schools.create).not.toHaveBeenCalled();
   });
 });

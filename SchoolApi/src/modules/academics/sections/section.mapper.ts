@@ -9,6 +9,7 @@ export function toSectionDto(row: SectionRow): SectionDto {
     classId: row.classId,
     className: row.schoolClass.name,
     name: row.name,
+    group: row.group,
     capacity: row.capacity,
     room: row.room,
     classTeacher: row.classTeacher,

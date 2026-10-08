@@ -1,7 +1,8 @@
 import { weekdayLabels } from "@/components/shared/WeekdayPicker";
 import { formatDate } from "@/lib/format";
 import { formatTime, formatTimeRange } from "@/lib/time";
-import { sectionLabel } from "./presets";
+import { generateBell } from "@/features/timetable/bell-generator";
+import { sectionsText } from "./class-rows";
 import type { SetupFormValues } from "./schemas";
 
 /** "1 school, 1 branch, principal account for X, session 2026-27, 13 classes, 8 subjects". */
@@ -10,8 +11,11 @@ export function creationSentence(values: SetupFormValues): string {
   const parts = ["1 school", "1 branch", `principal account for ${principal.name.trim() || "the principal"}`];
   if (academics.createSession) {
     parts.push(`session ${academics.sessionName}`);
-    if (academics.classes.length) parts.push(countOf(academics.classes.length, "class", "classes"));
-    if (academics.subjects.length) parts.push(countOf(academics.subjects.length, "subject", "subjects"));
+    const included = academics.classes.filter((row) => row.include);
+    const subjects = new Set(included.flatMap((row) => row.subjects.map((subject) => subject.name)));
+    if (included.length) parts.push(countOf(included.length, "class", "classes"));
+    if (subjects.size) parts.push(countOf(subjects.size, "subject", "subjects"));
+    parts.push("a bell schedule");
   }
   return parts.join(", ");
 }
@@ -58,14 +62,39 @@ export function principalRows({ principal }: SetupFormValues): SummaryRow[] {
 
 export function academicRows({ academics }: SetupFormValues): SummaryRow[] {
   if (!academics.createSession) return [{ label: "Academic session", value: "Not now (the principal sets it up later)" }];
-  const sections = Number(academics.sectionsPerClass);
   return [
     {
       label: "Session",
       value: `${academics.sessionName} · ${formatDate(academics.startDate)} to ${formatDate(academics.endDate)}`,
     },
-    { label: "Classes", value: academics.classes.join(", ") || "None" },
-    { label: "Sections", value: `${countOf(sections, "section", "sections")} per class (${sectionLabel(sections)})` },
-    { label: "Subjects", value: academics.subjects.join(", ") || "None" },
   ];
+}
+
+/** "Class 9 · A (Science), B (Arts) · 11 subjects", one row per ticked class. */
+export function classRows({ academics }: SetupFormValues): SummaryRow[] {
+  const included = academics.classes.filter((row) => row.include);
+  if (included.length === 0) return [{ label: "Classes", value: "None" }];
+  return included.map((row) => ({
+    label: row.name,
+    value: `${sectionsText(row.sections)} · ${countOf(row.subjects.length, "subject", "subjects")}`,
+  }));
+}
+
+/** Periods per day and when the last bell rings (and on Friday, if it is shorter). */
+export function bellRows({ bell, branch }: SetupFormValues): SummaryRow[] {
+  const day = generateBell(bell);
+  const rows: SummaryRow[] = [
+    {
+      label: "Every day",
+      value: `${countOf(bell.periodsPerDay, "period", "periods")} of ${bell.periodMinutes} min, ${formatTime(day[0]?.startTime)} to ${formatTime(day.at(-1)?.endTime)}`,
+    },
+  ];
+  if (bell.shortFriday && branch.workingDays.includes(5)) {
+    const friday = generateBell({ ...bell, ...bell.friday });
+    rows.push({
+      label: "Friday",
+      value: `${countOf(bell.friday.periodsPerDay, "period", "periods")} of ${bell.friday.periodMinutes} min, ends ${formatTime(friday.at(-1)?.endTime)}`,
+    });
+  }
+  return rows;
 }

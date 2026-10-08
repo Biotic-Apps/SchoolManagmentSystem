@@ -11,9 +11,9 @@ function branchLabel(branch: Branch, multiSchool: boolean): string {
  * Branch context for branch-scoped screens (sessions, sections, rooms, calendar).
  * Defaults to the first branch in scope, so a principal with one branch never has to pick.
  */
-export function useBranchPicker() {
+export function useBranchPicker(initialBranchId: string | null = null) {
   const { branches, isLoading, error } = useActiveBranches();
-  const [chosenId, setBranchId] = useState<string | null>(null);
+  const [chosenId, setBranchId] = useState<string | null>(initialBranchId);
 
   const multiSchool = new Set(branches.map((branch) => branch.schoolId)).size > 1;
   const options: Option[] = useMemo(

@@ -30,7 +30,11 @@ export class ChecklistService {
     const counts = await this.repository.counts(branch);
     const items = CHECKLIST_KEYS.map((key) => ({
       key,
-      done: counts[key] > 0,
+      // allocation counts what is missing: done when nothing is left and sections exist.
+      done:
+        key === 'allocation'
+          ? counts.allocation === 0 && counts.sections > 0
+          : counts[key] > 0,
       count: counts[key],
     }));
     return {

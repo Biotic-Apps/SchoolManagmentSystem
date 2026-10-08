@@ -42,7 +42,7 @@ export class RoomsController {
   }
 
   @Post()
-  @RequirePermission('classes.add')
+  @RequirePermission('classes.add', 'timetable.edit')
   @ApiData(RoomDto)
   create(
     @CurrentUser() user: AuthUser,

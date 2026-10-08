@@ -1,34 +1,49 @@
 import { blankToUndefined } from "@/lib/validation";
-import { STANDARD_CLASSES, STANDARD_SUBJECTS } from "./presets";
 import type { SetupFormValues } from "./schemas";
-import type { Preset, SchoolSetupInput } from "./types";
+import type { SchoolSetupInput, SetupBellInput, SetupClassInput } from "./types";
 
-/** STANDARD when every preset entry is ticked, NONE when none are; otherwise the ticked names. */
-function presetChoice(selected: string[], all: string[]): { preset: Preset; names?: string[] } {
-  if (selected.length === 0) return { preset: "NONE" };
-  if (selected.length === all.length) return { preset: "STANDARD" };
-  return { preset: "STANDARD", names: all.filter((name) => selected.includes(name)) };
+type Academics = SetupFormValues["academics"];
+
+/** Included classes; a subject group that no section of the class has is dropped (the subject then goes to every section). */
+function classesInput(rows: Academics["classes"]): SetupClassInput[] {
+  return rows
+    .filter((row) => row.include)
+    .map((row) => {
+      const groups = new Set(row.sections.map((section) => section.group).filter(Boolean));
+      return {
+        name: row.name.trim(),
+        level: row.level,
+        sections: row.sections.map((section) => ({ name: section.name, ...(section.group ? { group: section.group } : {}) })),
+        subjects: row.subjects.map((subject) => ({
+          name: subject.name,
+          periodsPerWeek: subject.periodsPerWeek,
+          ...(subject.group && groups.has(subject.group) ? { group: subject.group } : {}),
+        })),
+      };
+    });
 }
 
-function academicsInput(values: SetupFormValues["academics"]): SchoolSetupInput["academics"] {
-  if (!values.createSession) return { createSession: false };
-  const classes = presetChoice(values.classes, STANDARD_CLASSES);
-  const subjects = presetChoice(values.subjects, STANDARD_SUBJECTS);
+function bellInput(bell: SetupFormValues["bell"], workingDays: number[]): SetupBellInput {
+  const { shortFriday, friday, ...rest } = bell;
+  // The Friday variant only matters when Friday is a working day.
+  return shortFriday && workingDays.includes(5) ? { ...rest, friday } : rest;
+}
+
+function academicsInput(values: SetupFormValues): SchoolSetupInput["academics"] {
+  const { academics } = values;
+  if (!academics.createSession) return { createSession: false };
   return {
     createSession: true,
-    sessionName: values.sessionName.trim(),
-    startDate: values.startDate,
-    endDate: values.endDate,
-    classesPreset: classes.preset,
-    sectionsPerClass: Number(values.sectionsPerClass),
-    subjectsPreset: subjects.preset,
-    ...(classes.names ? { classNames: classes.names } : {}),
-    ...(subjects.names ? { subjectNames: subjects.names } : {}),
+    sessionName: academics.sessionName.trim(),
+    startDate: academics.startDate,
+    endDate: academics.endDate,
+    classes: classesInput(academics.classes),
+    bellSchedule: bellInput(values.bell, values.branch.workingDays),
   };
 }
 
 export function toSetupInput(values: SetupFormValues): SchoolSetupInput {
-  const { school, branch, principal, academics } = values;
+  const { school, branch, principal } = values;
   return {
     school: {
       code: school.code,
@@ -53,6 +68,33 @@ export function toSetupInput(values: SetupFormValues): SchoolSetupInput {
       phone: blankToUndefined(principal.phone),
       password: principal.generatePassword ? undefined : principal.password,
     },
-    academics: academicsInput(academics),
+    academics: academicsInput(values),
+  };
+}
+
+/**
+ * Older APIs reject `academics.classes` / `bellSchedule` ("should not exist"). This keeps the same
+ * school creatable there: ticked class names, the most sections any class has (1–4), all subjects.
+ */
+export function toLegacySetupInput(values: SetupFormValues): SchoolSetupInput {
+  const input = toSetupInput(values);
+  const { academics } = values;
+  if (!academics.createSession) return input;
+  const included = academics.classes.filter((row) => row.include);
+  const sections = Math.min(4, Math.max(1, ...included.map((row) => row.sections.length)));
+  const subjects = [...new Set(included.flatMap((row) => row.subjects.map((subject) => subject.name)))];
+  const rest = { ...input.academics };
+  delete rest.classes;
+  delete rest.bellSchedule;
+  return {
+    ...input,
+    academics: {
+      ...rest,
+      classesPreset: included.length ? "STANDARD" : "NONE",
+      classNames: included.map((row) => row.name.trim()),
+      sectionsPerClass: sections,
+      subjectsPreset: subjects.length ? "STANDARD" : "NONE",
+      subjectNames: subjects,
+    },
   };
 }

@@ -1,4 +1,6 @@
-import { DEFAULT_TIMINGS, DEFAULT_WORKING_DAYS, STANDARD_CLASSES, STANDARD_SUBJECTS, defaultSessionDates, sessionNameFor } from "./presets";
+import { DEFAULT_BELL, DEFAULT_FRIDAY } from "@/features/timetable/bell-generator";
+import { defaultClassRows, defaultSubjectNames } from "./class-rows";
+import { DEFAULT_TIMINGS, DEFAULT_WORKING_DAYS, defaultSessionDates, sessionNameFor } from "./presets";
 import type { SetupFormValues } from "./schemas";
 
 export function setupFormDefaults(): SetupFormValues {
@@ -20,9 +22,9 @@ export function setupFormDefaults(): SetupFormValues {
       sessionName: sessionNameFor(startDate, endDate),
       startDate,
       endDate,
-      sectionsPerClass: "1",
-      classes: STANDARD_CLASSES,
-      subjects: STANDARD_SUBJECTS,
+      classes: defaultClassRows(),
+      subjectNames: defaultSubjectNames(),
     },
+    bell: { ...DEFAULT_BELL, shortFriday: true, friday: { ...DEFAULT_FRIDAY } },
   };
 }
