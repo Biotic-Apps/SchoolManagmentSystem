@@ -22,4 +22,4 @@ Thumbs.db
 
 # local database and uploaded files
 .pgdata/
-storage/
+/storage/
