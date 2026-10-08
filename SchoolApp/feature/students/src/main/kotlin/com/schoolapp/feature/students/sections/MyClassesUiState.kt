@@ -12,6 +12,8 @@ data class MyClassesUiState(
     val error: AppError? = null,
     /** Branch-wide student search; off for teachers/helpers, who browse only their own sections. */
     val canSearch: Boolean = false,
+    /** `students.add` (supervisors): shows "Add student". */
+    val canAdd: Boolean = false,
     val query: String = "",
     val isSearching: Boolean = false,
     val results: List<StudentSummary> = emptyList(),

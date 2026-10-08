@@ -1,0 +1,35 @@
+<resources>
+    <string name="ui_field_required">This is required</string>
+    <string name="ui_field_too_long">This is too long</string>
+    <string name="ui_field_too_short">This is too short</string>
+    <string name="ui_field_bad_date">Pick a date</string>
+    <string name="ui_field_future_date">This date can\'t be in the future</string>
+    <string name="ui_field_bad_id">Use 13 digits, e.g. 35202-1234567-1</string>
+    <string name="ui_field_bad_phone">Enter a valid phone number</string>
+    <string name="ui_field_bad_email">Enter a valid email</string>
+    <string name="ui_field_duplicate_phone">Each guardian needs a different phone number</string>
+    <string name="ui_first_name">First name</string>
+    <string name="ui_last_name">Last name</string>
+    <string name="ui_date_of_birth">Date of birth</string>
+    <string name="ui_bform">B-Form number</string>
+    <string name="ui_cnic">CNIC</string>
+    <string name="ui_id_hint">35202-1234567-1</string>
+    <string name="ui_optional">Optional</string>
+    <string name="ui_previous_school">Previous school</string>
+    <string name="ui_address">Address</string>
+    <string name="ui_gender">Gender</string>
+    <string name="ui_gender_male">Male</string>
+    <string name="ui_gender_female">Female</string>
+    <string name="ui_gender_other">Other</string>
+    <string name="ui_relation">Relation</string>
+    <string name="ui_relation_father">Father</string>
+    <string name="ui_relation_mother">Mother</string>
+    <string name="ui_relation_guardian">Guardian</string>
+    <string name="ui_relation_other">Other</string>
+    <string name="ui_guardian_name">Guardian\'s name</string>
+    <string name="ui_phone">Phone</string>
+    <string name="ui_email">Email</string>
+    <string name="ui_occupation">Occupation</string>
+    <string name="ui_primary_guardian">Primary</string>
+    <string name="ui_remove_guardian">Remove this guardian</string>
+</resources>

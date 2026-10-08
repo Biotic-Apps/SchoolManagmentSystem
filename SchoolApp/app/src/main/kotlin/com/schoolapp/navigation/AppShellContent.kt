@@ -50,6 +50,7 @@ import com.schoolapp.feature.staff.navigation.StaffDetailDestination
 import com.schoolapp.feature.staff.navigation.staffDestinations
 import com.schoolapp.feature.students.child.ChildProfileRoute
 import com.schoolapp.feature.students.guardians.GuardiansRoute
+import com.schoolapp.feature.students.navigation.AddStudentDestination
 import com.schoolapp.feature.students.navigation.ContactChangeDestination
 import com.schoolapp.feature.students.navigation.LinkChildDestination
 import com.schoolapp.feature.students.navigation.SectionRosterDestination
@@ -205,4 +206,5 @@ private fun ShellNavigator.approvalsLink(): (() -> Unit)? = { openMenu(MenuIds.A
 private fun MyClasses(shell: ShellNavigator) = MyClassesRoute(
     onOpenSection = { id, title -> shell.open(SectionRosterDestination(id, title)) },
     onOpenStudent = { shell.open(StudentDetailDestination(it)) },
+    onAddStudent = { shell.open(AddStudentDestination) },
 )

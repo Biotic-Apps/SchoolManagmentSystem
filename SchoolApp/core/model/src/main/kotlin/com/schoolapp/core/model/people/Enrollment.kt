@@ -11,4 +11,6 @@ data class Enrollment(
     val startDate: String?,
     val endDate: String?,
     val status: String?,
+    val branchId: String? = null,
+    val sessionId: String? = null,
 )

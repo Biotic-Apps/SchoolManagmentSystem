@@ -36,8 +36,10 @@ class MyClassesViewModel @Inject constructor(
     init {
         load()
         viewModelScope.launch {
-            val canSearch = authRepository.session.filterNotNull().first().canSearchStudents()
-            _uiState.update { it.copy(canSearch = canSearch) }
+            val session = authRepository.session.filterNotNull().first()
+            val canSearch = session.canSearchStudents()
+            // Same gate as the web's "Register student"; teachers and helpers only browse their sections.
+            _uiState.update { it.copy(canSearch = canSearch, canAdd = canSearch && session.has("students.add")) }
             if (!canSearch) return@launch
             _uiState.map { it.searchTerm() }
                 .distinctUntilChanged()

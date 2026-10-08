@@ -9,6 +9,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -43,8 +46,17 @@ class ApiCaller @Inject constructor(
         return when {
             code() == 401 -> AppError.Unauthorized
             code() == 403 -> AppError.Forbidden(apiError?.code, apiError?.message)
-            apiError?.code == ApiErrorCodes.VALIDATION_FAILED -> AppError.Validation(apiError.message)
+            apiError?.code == ApiErrorCodes.VALIDATION_FAILED -> {
+                val lines = (apiError.details as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.contentOrNull }.orEmpty()
+                // class-validator lines read "child.bForm must be 13 digits": the first word is the field path.
+                val fields = lines.associateBy({ it.substringBefore(' ') }, { it }).filterKeys { it.isNotBlank() }
+                AppError.Validation(lines.firstOrNull().takeIf { apiError.message == GENERIC_VALIDATION } ?: apiError.message, fields)
+            }
             else -> AppError.Server(code(), apiError?.code, apiError?.message, apiError?.details?.toString())
         }
+    }
+
+    private companion object {
+        const val GENERIC_VALIDATION = "Validation failed"
     }
 }

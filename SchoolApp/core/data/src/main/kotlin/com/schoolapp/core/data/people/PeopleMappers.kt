@@ -45,10 +45,12 @@ internal fun StudentDetailDto.toModel() = StudentDetail(
     enrollment = enrollment?.toModel(),
     guardians = guardians.sortedByDescending { it.isPrimary }.map { it.toModel() },
     documents = documents.map { it.toModel() },
+    firstName = firstName,
+    lastName = lastName,
 )
 
 internal fun EnrollmentDto.toModel() = Enrollment(
-    id, branchName, sessionName, sectionId, className, sectionName, rollNo, startDate, endDate, status,
+    id, branchName, sessionName, sectionId, className, sectionName, rollNo, startDate, endDate, status, branchId, sessionId,
 )
 
 internal fun GuardianDto.toModel() = Guardian(id, name, relation, phone, email, occupation, address, hasAccount)

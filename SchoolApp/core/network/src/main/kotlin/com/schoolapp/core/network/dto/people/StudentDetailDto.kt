@@ -24,4 +24,6 @@ data class StudentDetailDto(
     val enrollment: EnrollmentDto? = null,
     val guardians: List<GuardianLinkDto> = emptyList(),
     val documents: List<DocumentDto> = emptyList(),
+    val firstName: String? = null,
+    val lastName: String? = null,
 )

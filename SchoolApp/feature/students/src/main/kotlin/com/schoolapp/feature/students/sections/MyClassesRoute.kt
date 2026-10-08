@@ -13,6 +13,7 @@ fun MyClassesRoute(
     onOpenSection: (sectionId: String, title: String) -> Unit,
     onOpenStudent: (String) -> Unit,
     modifier: Modifier = Modifier,
+    onAddStudent: () -> Unit = {},
     viewModel: MyClassesViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -23,5 +24,6 @@ fun MyClassesRoute(
         onOpenStudent = onOpenStudent,
         onRetry = viewModel::load,
         modifier = modifier,
+        onAddStudent = onAddStudent,
     )
 }

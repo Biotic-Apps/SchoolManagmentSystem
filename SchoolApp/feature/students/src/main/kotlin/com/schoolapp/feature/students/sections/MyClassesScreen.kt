@@ -6,6 +6,8 @@ import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.PersonSearch
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.material.icons.outlined.PersonAdd
+import com.schoolapp.core.designsystem.component.PrimaryButton
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,8 +33,17 @@ fun MyClassesScreen(
     onOpenStudent: (String) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    onAddStudent: () -> Unit = {},
 ) {
     CenteredColumn(modifier) {
+        if (state.canAdd) {
+            PrimaryButton(
+                stringResource(R.string.students_add_title),
+                onClick = onAddStudent,
+                leadingIcon = Icons.Outlined.PersonAdd,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
+            )
+        }
         if (state.canSearch) {
             StudentSearchBar(query = state.query, onQueryChange = onQueryChange, modifier = Modifier.padding(16.dp))
         }

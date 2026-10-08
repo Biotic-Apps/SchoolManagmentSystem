@@ -9,4 +9,6 @@ data class StudentDetail(
     val enrollment: Enrollment?,
     val guardians: List<GuardianLink>,
     val documents: List<StudentDocument>,
+    val firstName: String? = null,
+    val lastName: String? = null,
 )

@@ -84,6 +84,8 @@ import com.schoolapp.core.data.academics.DefaultTeacherAllocationRepository
 import com.schoolapp.core.data.academics.TeacherAllocationRepository
 import com.schoolapp.core.data.timetable.DefaultTimetableBuilderRepository
 import com.schoolapp.core.data.timetable.TimetableBuilderRepository
+import com.schoolapp.core.data.people.DefaultStudentAdminRepository
+import com.schoolapp.core.data.people.StudentAdminRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -118,6 +120,9 @@ interface RepositoryModule {
 
     @Binds
     fun bindStudentsRepository(impl: DefaultStudentsRepository): StudentsRepository
+
+    @Binds
+    fun bindStudentAdminRepository(impl: DefaultStudentAdminRepository): StudentAdminRepository
 
     @Binds
     fun bindGuardiansRepository(impl: DefaultGuardiansRepository): GuardiansRepository

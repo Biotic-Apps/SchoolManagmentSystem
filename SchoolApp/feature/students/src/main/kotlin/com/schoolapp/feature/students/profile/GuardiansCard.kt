@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Message
 import androidx.compose.material.icons.outlined.Call
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.PersonAdd
+import com.schoolapp.core.designsystem.component.AppTextButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,21 +37,26 @@ internal fun GuardiansCard(
     onCall: (String) -> Unit,
     onSms: (String) -> Unit,
     modifier: Modifier = Modifier,
+    onEdit: ((guardianId: String) -> Unit)? = null,
+    onAdd: (() -> Unit)? = null,
 ) {
     AppCard(modifier.fillMaxWidth()) {
-        SectionHeader(title = stringResource(R.string.students_guardians))
+        SectionHeader(
+            title = stringResource(R.string.students_guardians),
+            action = onAdd?.let { add -> { AppTextButton(stringResource(R.string.students_add_guardian), onClick = add, leadingIcon = Icons.Outlined.PersonAdd) } },
+        )
         if (guardians.isEmpty()) {
             Text(stringResource(R.string.students_guardians_empty), style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
         }
         guardians.forEachIndexed { index, link ->
             if (index > 0) HorizontalDivider(color = AppColors.Border)
-            GuardianRow(link, onCall, onSms)
+            GuardianRow(link, onCall, onSms, onEdit)
         }
     }
 }
 
 @Composable
-private fun GuardianRow(link: GuardianLink, onCall: (String) -> Unit, onSms: (String) -> Unit) {
+private fun GuardianRow(link: GuardianLink, onCall: (String) -> Unit, onSms: (String) -> Unit, onEdit: ((String) -> Unit)?) {
     val guardian = link.guardian
     Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
@@ -66,6 +74,11 @@ private fun GuardianRow(link: GuardianLink, onCall: (String) -> Unit, onSms: (St
             }
             val supporting = listOfNotNull(link.relation?.let(::humanizeKey), guardian.phone, guardian.email)
             Text(supporting.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)
+        }
+        onEdit?.let { edit ->
+            IconButton(onClick = { edit(guardian.id) }) {
+                Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.students_edit_guardian_of, guardian.name), tint = AppColors.TextSecondary)
+            }
         }
         guardian.phone?.takeIf { it.isNotBlank() }?.let { phone ->
             IconButton(onClick = { onSms(phone) }) {
