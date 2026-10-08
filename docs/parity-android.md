@@ -1,208 +1,270 @@
-# Web / Android Parity (Phase 5 §H)
+# Web / Android Parity
 
-Per role: every menu entry from `docs/navigation.md` and its key actions, web panel vs Android app.
-Snapshot 2026-10-06, updated 2026-10-07 after the Phase 5 parity pass, taken from the code (`SchoolWeb/src/features/*`, `SchoolApp/feature/*`, `SchoolApp/app/.../navigation/AppShellContent.kt`).
+Snapshot **2026-10-08** (after `9fb30fe`). Static comparison of the web panel (`SchoolWeb/src/app/(portal)/**`, `SchoolWeb/src/features/**`, menu from `docs/navigation.md` + `SchoolWeb/src/config/navigation.ts`) with the Android app (`SchoolApp/feature/**`, `core/network/.../api/*Api.kt`, `core/navigation`, `app/.../navigation/AppShellContent.kt`), plus read-only GETs against the local API for every Retrofit `GET` with all 8 demo roles to confirm DTO shapes.
 
-**Status:** `Same` = same capability on both · `Android (subset)` = the mobile-relevant part only, with the rest on web · `Web-only (by design)` = a desk task, not built for the phone · `Gap` = missing on Android with no design reason; fix or accept.
+**Legend:** ✅ same · ⚠️ partial (what is missing is named) · ❌ missing · 🚧 placeholder screen (`feature/home/components/MenuPlaceholder.kt`, "Manage this on the web panel") · 🐞 suspected bug · ⏳ **in progress** (another agent is adding principal management right now: class setup, subjects/rooms, bell schedule, timetable builder, students add/edit, fee plan; not analysed again here).
 
-**How Android routes menus:** `NavigationCatalog.menuFor` applies the same rule as web (system role default list filtered by permissions; custom role = every `.view` it holds). A menu id with no screen in `AppShellContent` shows `MenuPlaceholder`. Ids in `WebOnlyModules` (`schools, users, roles, expenses, inventory, reports`) show "Manage this on the web panel". Every other unmapped id shows "Coming in Phase N" (`feature/home/components/MenuPlaceholder.kt`).
+**Contract checks (all pass unless listed as 🐞):**
+- All **176 Retrofit paths** (and the 7 offline-outbox paths in `core/data`: `attendance/registers`, `attendance/registers/submit`, `diary`, `diary/{id}/publish`, `mark-sheets/{id}`, `mark-sheets/{id}/submit`, `payments`) exist in the API controllers with the same HTTP method.
+- **Request bodies:** every app `@Body` DTO was compared field by field with the controller's `@Body` class. The API runs `ValidationPipe({ whitelist, forbidNonWhitelisted })`. No extra or missing required top-level fields were found.
+- **Responses:** `NetworkJson` is lenient (`ignoreUnknownKeys`, `coerceInputValues`). No response fails to decode. The 🐞 items are fields the app reads under a name the API never sends, so the UI shows blank or zero values.
 
-## Shared (all roles)
+**Android menu routing:** `AppShellContent.menuScreens` maps every catalogue id except `schools, users, roles, expenses, inventory, reports, settings`. Those ids show the web-only placeholder (`WebOnlyModules`).
 
-| Area | Key actions | Web | Android | Status | Note |
-|---|---|---|---|---|---|
-| Login | identifier + password, BFF/refresh | yes | `feature/auth` | Same | |
-| Branding on login + top bar | `/branding` logo/colour | `features/branding` | `core/data/branding`, `designsystem/brand` (Phase 5, in progress) | Same | |
-| Forgot / reset password | request, token + new password | `(auth)/forgot-password`, `reset-password` | Phase 5, in progress (`ForgotPasswordRequestDto`) | Same | |
-| 2FA verify on login | challenge → code | `TwoFactorLoginForm` | `TwoFactorUiState/Validator` (Phase 5, in progress) | Same | |
-| Phone + OTP sign-in (parents) | phone → texted 6-digit code → same post-login flow incl. 2FA; resend after 60 s | login page "Sign in with phone code" (Phase 6 §B) | `feature/auth/phone` (`PhoneSignInViewModel`, `PhoneSignInForm`) via `AuthRepository.requestOtp/verifyOtp`; a 2FA challenge continues on the shared `TwoFactorForm` (Phase 6) | Same | debug demo: `03001234567` + code `123456` signs in as the demo parent |
-| 2FA setup / disable / recovery codes | QR, enable, disable, codes | `profile/TwoFactorCard`, `TwoFactorSetupPanel`, `RecoveryCodesDialog` | – | Web-only (by design) | the QR must be scanned from a second screen; codes are shown once |
-| Role switch / child switcher | switch active role/child | yes | `RoleShellViewModel.onRoleSelected/onChildSelected` | Same | |
-| Notifications inbox | list, unread filter, mark all read | `NotificationBell` | `feature/notifications` | Same | |
-| Push notifications | FCM delivery | – | `DeviceRegistrar` (NoOp provider until Firebase is configured) | Android-only | |
-| Launcher icon + splash | branded | n/a | Phase 5, in progress (`ic_splash_mark`, adaptive icon) | Android-only | |
-| Pull-to-refresh | refresh lists | browser reload | `RefreshBox` across features, organisation screens being added | Android-only | |
+---
 
 ## SUPER_ADMIN
 
-| Menu entry | Key actions | Web | Android | Status | Note |
-|---|---|---|---|---|---|
-| dashboard | summary tiles, scope bar | yes | Supervisor summary, no Today queue (`DashboardMode`) | Same | |
-| schools | create/edit, logo, status | yes | placeholder (web-only message) | Web-only (by design) | rarely-used setup |
-| branches | create/edit, settings, status, change principal | yes | list + detail read-only (`organisation/branches`) | Android (subset) | configuration is a desk task |
-| users | create/edit, assignments, reset password, status, **unlock** | yes | placeholder (web-only message) | Web-only (by design) | bulk account admin |
-| roles | role CRUD, permission matrix | yes | placeholder (web-only message) | Web-only (by design) | needs a wide matrix |
-| sessions | sessions/terms/events CRUD, transitions | yes | read-only calendar (`SessionsCalendarRoute`) | Android (subset) | setup |
-| classes | classes/sections/subjects/rooms CRUD | yes | read-only tabs (`ClassesRoute`) | Android (subset) | setup |
-| students | search, register, edit, transfer, withdraw, change section, ID card, guardians | yes | browse by section → roster → read-only profile (`MyClassesRoute`) | Android (subset) | no global search; edits are desk work |
-| admissions | enquiries, applications, test schedule/result, waiting list, confirm admission, documents | yes | list + detail + Offer/Waitlist/Reject (`admissions/detail`) | Android (subset) | data entry and confirmation are office work |
-| guardians | list, edit, link/unlink, link requests | yes | list + link-request tab, approve via Approvals | Android (subset) | edit/unlink is web |
-| staff | add/edit, assignments, probation, status, workload | yes | list + read-only detail | Android (subset) | HR setup |
-| timetable | bell schedules, section editor, substitutions, overrides | yes | read-only week view per section | Android (subset) | needs a grid editor |
-| syllabus | plan editor, book lists, coverage, review | yes | coverage read-only, link to Approvals | Android (subset) | plan authoring is web |
-| diary | missing list, moderation/return | yes | `SupervisorDiaryRoute` (missing, return with comment) | Same | |
-| activities | create/edit, approve/reject, start/complete/cancel, participants, consent tracker | yes | list, propose, detail approve/reject, consent summary | Android (subset) | lifecycle (start/complete/cancel) and participant editing are web |
-| notices | compose, audience, pin, expiry, read receipts | yes | feed + compose (FAB when `notices.add`) | Android (subset) | read-receipt list and edit/archive are web-only by design (see rationale) |
-| attendance | branch summary, registers, corrections, staff attendance, leave review | yes | `SupervisorAttendanceRoute`: Classes (`BranchTodayRoute`) + Staff (`StaffMarkRoute`: date, branch picker for global roles, P/A/L/Lv/½, check-in/out, remark, mark all present) when `attendance.approve` | Same | Phase 5: staff attendance marking added |
-| exams | exams CRUD, schedule, grading schemes, completeness, accept/return sheets, results publish, report cards, promotions | yes | completeness board + sheet review accept/return (`exams/board`, `review`) | Android (subset) | exam setup, grading, promotions and publishing are web |
-| fees | finance overview, structure (heads/plans), invoices generate/issue/cancel, payments, receipts, reversals, refunds, concessions, proofs verify, dues, close day, ledger | yes | Today, Dues, Proofs (verify), Record payment (offline-queued), invoice detail/receipt | Android (subset) | fee structure setup, invoicing, concessions/refunds/reversals and close day are web |
-| payroll | structures, adjustments, create/calculate/review/approve/close run, payments, payslips | yes | runs list, run detail (FLAG_SECURE), "Send for approval" | Android (subset) | payroll setup and run processing are web |
-| expenses | expenses, categories, vendors, payments | yes | placeholder (web-only message) | Web-only (by design) | bookkeeping |
-| inventory | items, stock, movements, purchasing, sales, assets | yes | placeholder (web-only message) | Web-only (by design) | store-room/office work |
-| health | incidents, health profiles, allergy alerts, change requests | yes | incidents (close, attachments shown), student health card search, report incident with attachments; FLAG_SECURE on all health screens | Android (subset) | change-request review is web |
-| pickup | early leave, departures, authorised persons | yes | gate desk: approve/reject early leave, record departure | Android (subset) | authorised-person admin is web |
-| complaints | boxes, file, update, assign, escalate, close, reopen | yes | boxes, file (anonymous, attachments), update/comment with attachments, assign (`AssignSheet`, `complaints.edit`), escalate/close/reopen | Same | Phase 5: assign + update attachments added; assign has no branch-first picker (lists staff in scope) |
-| certificates | approve/reject, issue/reissue PDF | yes | review list approve/reject (`certificates/review`) | Android (subset) | issue/reissue (PDF generation) is web |
-| approvals | inbox, detail, approve/reject/return | yes | `feature/approvals` | Same | |
-| reports | catalogue, parameters, export jobs, recent exports | yes | placeholder (web-only message) | Web-only (by design) | XLSX/PDF exports |
-| settings | school/branding, notifications, policies, support (failed notifications, jobs, health), backups, data import | yes (`features/settings`) | web-only placeholder (`SETTINGS` in `WebOnlyModules`) | Web-only (by design) | |
-| profile | edit, password, device sessions, notification prefs, 2FA | yes | edit, password, sessions, push prefs, app lock (Android-only) | Android (subset) | 2FA setup is web (QR) |
+| Page (web) | Actions | Android | Status |
+|---|---|---|---|
+| dashboard | summary tiles, scope bar, setup checklist | `feature/dashboard` supervisor grid + `SetupChecklistCard` | ✅ |
+| dashboard › setup wizard | one-form school provisioning (`school-setup/SetupWizard`) | none | ❌ |
+| schools | add, edit, logo, status/archive, restore, permanent delete (`schools/*`) | placeholder | 🚧 |
+| branches | add, edit, settings, status, change principal | `organisation/branches` list + read-only detail | ⚠️ view only |
+| users | add, edit, assignments, reset password, status/unlock | placeholder | 🚧 |
+| roles | role add/edit/delete, permission matrix | placeholder | 🚧 |
+| sessions | sessions/terms/events add/edit/delete, transitions | `SessionsCalendarRoute` read-only | ⚠️ view only |
+| classes | overview, class setup, sections, subjects, rooms, allocation | `ClassesRoute` read-only overview | ⏳ |
+| students | search, register, edit, transfer/accept, withdraw, change section, ID card, guardians, documents upload, enrolments, history | section → roster → read-only profile (`students/*`) | ⚠️ ⏳ add/edit; ❌ search, transfer, withdraw, change section, ID card, doc upload |
+| admissions | enquiries, application add/edit, test schedule/result, waiting list, decide, confirm admission, documents | list + detail + decide (`admissions`) | ⚠️ decide only |
+| guardians | list, edit, link/unlink child, link requests | list + link-request tab (approve via Approvals) | ⚠️ no edit, link or unlink |
+| staff | add, edit, status, assign classes, sign-in create/reset, probation, assignments tab, workload | `feature/staff` add, edit, status, assign classes, sign-in, workload | ⚠️ no probation, no generic assignments tab |
+| timetable | builder, bell schedule, substitutions/overrides, teacher week | `TimetableRoute` read-only week/day | ⏳ builder and bell; ❌ substitutions |
+| syllabus | plan editor, book-list editor + history, coverage, review | `CoverageRoute` (review via Approvals) | ⚠️ no plan or book-list authoring |
+| diary | missing list, moderation, return | `SupervisorDiaryRoute` | ✅ |
+| activities | add/edit, approve/reject, start/complete/cancel, participants, consent tracker | list, propose, approve/reject, consent summary | ⚠️ no lifecycle, participants edit or edit |
+| notices | compose (audience), publish, pin, expiry, edit/archive, read receipts | feed + compose + publish | ⚠️ no edit, archive or read receipts |
+| attendance | branch summary, registers, corrections, staff attendance, leave review, student history | `SupervisorAttendanceRoute` (classes + staff mark), leave review | ✅ |
+| exams | exam add/edit, schedule, grading schemes, completeness, accept/return, results, publish, report cards, promotions | completeness + sheet review (`exams/board`, `review`) | ⚠️ no setup, results, publish or promotions |
+| fees | overview, structure (heads/plans), invoices generate/issue/cancel, payments, receipts, reversals, refunds, concessions, proofs verify, dues + reminders, close day, ledger | Today, Dues, Proofs verify, Record payment, invoice/receipt (`feature/fees`) | ⚠️ ⏳ fee plan; ❌ invoicing, concessions, refunds, reversal, close day, reminders, ledger; 🐞 dues aging/rows |
+| payroll | structures, adjustments, run create/calculate/review/approve/close, payments, payslips | runs list + run detail + approve (`feature/payroll`) | ⚠️ view and approve only; 🐞 run totals/approvalId |
+| expenses | expenses, categories, vendors, payments | placeholder | 🚧 |
+| inventory | items, stock, movements, purchasing, sales, assets | placeholder | 🚧 |
+| health | incidents, health profiles edit, allergy alerts, change-request review | incidents, close, report, health card search | ⚠️ no profile edit or change-request review |
+| pickup | early leave, departures, authorised persons (add/revoke) | gate desk: approve/reject early leave, record departure | ⚠️ no staff-side authorised persons |
+| complaints | boxes, file, update, assign, escalate, close, reopen | all | ✅ |
+| certificates | review approve/reject, issue/reissue PDF, download | review approve/reject | ⚠️ no issue/reissue/download; 🐞 serial/reason |
+| approvals | inbox, detail, decide | `feature/approvals` | ✅ |
+| reports | catalogue, parameters, export jobs | placeholder | 🚧 |
+| settings | branding, notifications, policies, support, backups, imports | placeholder | 🚧 |
+| profile | edit, password, sessions, notification prefs, 2FA setup | all except 2FA setup (app lock is Android-only) | ⚠️ no 2FA setup |
+| entity history | audit trail drawer (`audit/EntityHistory`) | none | ❌ |
+| navigation | – | 🐞 bottom bar = Dashboard, **Schools, Users** (both placeholders), Approvals | 🐞 |
 
 ## PRINCIPAL
+Same as SUPER_ADMIN for shared pages, scoped to the principal's branch. Rows that differ:
 
-Same as SUPER_ADMIN for the shared entries (branches labelled "Branch & Calendar", principal-scoped). Differences and extra entries:
-
-| Menu entry | Key actions | Web | Android | Status | Note |
-|---|---|---|---|---|---|
-| dashboard | summary + Today pending queue | yes | supervisor grid + Today queue | Same | |
-| branches ("Branch & Calendar") | view own branch, settings | yes | read-only branch detail; calendar under Sessions screen only | Android (subset) | settings are desk work |
-| classes, students, admissions, guardians, staff, timetable, syllabus | as SUPER_ADMIN | yes | as SUPER_ADMIN | Android (subset) | see above |
-| attendance | branch day, corrections, staff attendance, leave approvals | yes | Classes + Staff tabs (`StaffMarkRoute`); leave via Approvals | Same | Phase 5: staff attendance marking added |
-| diary | moderation/return | yes | yes | Same | |
-| activities, notices | as SUPER_ADMIN | yes | as SUPER_ADMIN | Android (subset) | |
-| exams | completeness, accept/return, proxy marks (`exams.submit`) | yes | completeness, review, marks entry when `canEdit` | Android (subset) | publish/promotions are web |
-| fees | as SUPER_ADMIN (approve within limit via Approvals) | yes | Today/Dues/Proofs/Record payment + Approvals link | Android (subset) | |
-| payroll | approve run (not own) | yes | runs + send for approval; decide in Approvals | Android (subset) | |
-| expenses, inventory, reports | as SUPER_ADMIN | yes | web-only placeholder | Web-only (by design) | |
-| health, pickup, complaints, certificates, approvals | as SUPER_ADMIN | yes | as SUPER_ADMIN | as above | |
-| messages | threads, new thread to guardians, attachments | yes | threads, conversation, new thread, attachments | Same | |
-| meetings | list, complete (notes, follow-ups), cancel, no-show, publish slots | yes | list, complete, cancel, no-show, follow-up done, "My slots" tab (week view, publish sheet, remove free slot) when `meetings.add` | Same | Phase 5: slot publishing added |
-| settings (read-only own school) | view settings, import templates | yes | not in principal menu | Web-only (by design) | imports/settings are desk tasks |
-| profile | as above | yes | as above | Android (subset) | 2FA setup web |
+| Page (web) | Actions | Android | Status |
+|---|---|---|---|
+| dashboard | summary + Today pending queue + setup checklist | supervisor grid + Today queue + checklist | ✅ |
+| branches ("Branch & Calendar") | view own branch, edit settings, calendar events | read-only detail; calendar only under Sessions | ⚠️ no settings edit or event add |
+| classes | class setup, sections, subjects/rooms, allocation | read-only overview; ⏳ setup screens | ⏳ |
+| students | as SUPER_ADMIN | as SUPER_ADMIN | ⚠️ ⏳ add/edit |
+| admissions | as SUPER_ADMIN | decide only | ⚠️ |
+| guardians | as SUPER_ADMIN | list + link requests | ⚠️ |
+| staff | add, edit, status, assign, sign-in, probation, workload | add, edit, status, assign, sign-in, workload | ⚠️ no probation |
+| timetable | builder, publish/discard, bell schedule, substitutions | read-only | ⏳ builder and bell; ❌ substitutions |
+| attendance | branch day, corrections, staff attendance, leave approvals | classes + staff tabs, leave review | ✅ |
+| diary | moderation/return | `SupervisorDiaryRoute` | ✅ |
+| syllabus | coverage, review, plan and book-list authoring | coverage | ⚠️ |
+| activities | add, approve/reject, lifecycle, participants | propose, approve/reject, consents | ⚠️ |
+| notices | compose, publish, edit/archive, read receipts | compose + publish | ⚠️ |
+| exams | completeness, accept/return, proxy marks, publish, promotions, report cards | completeness, review, marks entry when `canEdit` | ⚠️ |
+| fees | as SUPER_ADMIN + approve within limit | Today/Dues/Proofs/Record payment + Approvals link | ⚠️ ⏳ fee plan; 🐞 dues |
+| payroll | approve run (not own), close | runs + approve | ⚠️ no close, payments |
+| expenses, inventory, reports | as SUPER_ADMIN | placeholder | 🚧 |
+| settings ("Settings") | own-school settings, import templates | placeholder | 🚧 |
+| health, pickup, certificates | as SUPER_ADMIN | as SUPER_ADMIN | ⚠️ |
+| complaints, approvals | as SUPER_ADMIN | as SUPER_ADMIN | ✅ |
+| messages | threads (own / branch read-only scope), new thread, attachments | threads, conversation, new thread, attachments | ⚠️ no branch read-only scope (`messages/ScopeToggle`) |
+| meetings | list, complete, cancel, no-show, follow-ups, publish slots | all | ✅ |
+| profile | as SUPER_ADMIN | as SUPER_ADMIN | ⚠️ 2FA setup |
 
 ## COORDINATOR / HEAD_TEACHER
 
-| Menu entry | Key actions | Web | Android | Status | Note |
-|---|---|---|---|---|---|
-| dashboard | supervisor summary + Today queue | yes | yes | Same | |
-| classes | view | yes | read-only `ClassesRoute` | Same | view-only role |
-| students | view scope | yes | section → roster → profile | Same | |
-| staff | view | yes | list + detail | Same | |
-| timetable | view, substitutions | yes | read-only view | Android (subset) | substitutions editing is web |
-| attendance | branch day, proxy mark, review | yes | `BranchTodayRoute` | Android (subset) | proxy register opened from the branch day |
-| diary | missing, return | yes | yes | Same | |
-| syllabus | coverage, review | yes | coverage + Approvals link | Same | |
-| activities | propose, view | yes | list, propose, detail | Same | |
-| exams | completeness, accept/return | yes | yes | Same | |
-| progress | notes, homework ticks | yes | Notes + Homework tabs (`ProgressMenuScreen`) | Same | |
-| health | incidents, cards, report | yes | yes (FLAG_SECURE) | Same | |
-| pickup | gate | yes | gate desk | Same | |
-| messages | threads | yes | yes | Same | |
-| meetings | run meetings, publish slots | yes | run meetings + My slots | Same | |
-| complaints | routed box, update, assign, escalate | yes | yes (assign when `complaints.edit`) | Same | |
-| approvals | decide | yes | yes | Same | |
-| my_salary | payslips, own attendance, leave apply | yes | payslips (FLAG_SECURE), own attendance, leave | Same | |
-| profile | | yes | | Android (subset) | 2FA setup web |
+| Page (web) | Actions | Android | Status |
+|---|---|---|---|
+| dashboard | supervisor summary + pending queue | yes | ✅ |
+| classes | overview, view class setup | read-only `ClassesRoute` (branch from assignments) | ✅ |
+| students | view scope, profile | section → roster → profile | ✅ |
+| staff | view, workload | list + detail + workload | ✅ |
+| timetable | view; **draft branch-wide** (new builder role rule); substitutions | read-only | ⏳ drafting; ❌ substitutions |
+| attendance | branch day, proxy register, corrections, leave review | `BranchTodayRoute`, register, leave review | ✅ |
+| diary | missing, moderation, return | yes | ✅ |
+| syllabus | coverage, review | coverage + Approvals link | ✅ |
+| activities | propose, view | list, propose, detail | ✅ |
+| exams | completeness, accept/return, class results | completeness + review | ⚠️ no class results (`ExamsApi.results` is declared but never called) |
+| progress | notes, homework ticks | Notes + Homework tabs | ✅ |
+| health | incidents, cards, report, change requests | incidents, cards, report | ⚠️ no change-request review |
+| pickup | gate, authorised persons | gate desk | ⚠️ |
+| messages | threads, branch scope | threads | ⚠️ no branch scope |
+| meetings | run meetings, publish slots | yes | ✅ |
+| complaints | routed box, update, assign, escalate | yes | ✅ |
+| approvals | decide | yes | ✅ |
+| my_salary | payslips, own attendance, leave | yes (FLAG_SECURE) | ✅ |
+| profile | incl. 2FA setup | no 2FA setup | ⚠️ |
 
 ## TEACHER
 
-| Menu entry | Key actions | Web | Android | Status | Note |
-|---|---|---|---|---|---|
-| dashboard | today periods, registers, diaries | yes | `TeacherTodayContent` | Same | |
-| classes ("My Classes & Students") | sections, roster, student profile | yes | `MyClassesRoute` → roster → detail | Same | |
-| timetable | my week | yes | yes | Same | |
-| attendance | mark register, mark all present, draft, submit, correction request, health alerts, student leave review | yes | `MarkHomeRoute`, `RegisterRoute` (offline draft + outbox), `LeaveReviewRoute` | Same | Android-only: offline register |
-| diary | write topics/homework, attachments, draft, publish | yes | `TeacherDiaryRoute`, `DiaryEditorRoute` (offline drafts) | Same | Android-only: offline drafts |
-| syllabus | my plans, topic progress | yes | `MyPlansRoute`, `PlanDetail` topic sheet (offline queue) | Same | plan authoring (`PlanEditorDialog`) web-only by design |
-| activities | propose, view | yes | list, propose, detail | Same | |
-| exams | my mark sheets, enter marks, absent, draft, submit | yes | `MySheetsRoute`, `MarksEntryRoute` (offline queue) | Same | |
-| progress | notes (visible to parent), homework ticks | yes | Notes + Homework tabs | Same | |
-| messages | threads, new thread to guardians, attachments | yes | yes | Same | |
-| meetings | list, complete, cancel, no-show, follow-ups, publish slots | yes | all incl. My slots (`MySlotsContent`, `PublishSlotsSheet`) | Same | |
-| complaints | own + routed, file, update | yes | yes | Same | |
-| my_salary | payslips, own attendance, apply leave | yes | yes (FLAG_SECURE) | Same | |
-| profile | | yes | | Android (subset) | 2FA setup web |
+| Page (web) | Actions | Android | Status |
+|---|---|---|---|
+| dashboard | today periods, registers, pending diaries | `TeacherTodayContent` | ✅ |
+| classes ("My Classes & Students") | sections, roster, student profile | `MyClassesRoute` → roster → detail | ✅ |
+| timetable | my week, section view; **class teacher drafts own section** | week/day view (`TimetableRoute`) | ⏳ drafting (needs builder); view ✅ |
+| attendance | mark, mark all, draft, submit, correction request, health alerts, student leave review | `MarkHomeRoute`, `RegisterRoute` (offline), `LeaveReviewRoute` | ✅ 🐞 health-alert names blank |
+| diary | write, attachments, draft, publish | `TeacherDiaryRoute`, `DiaryEditorRoute` (offline) | ✅ |
+| syllabus | my plans, topic progress, plan authoring (`PlanEditorDialog`) | `MyPlansRoute`, topic sheet | ⚠️ no plan authoring |
+| activities | propose, view | yes | ✅ |
+| exams | my sheets, marks entry, absent, submit, class results | `MySheetsRoute`, `MarksEntryRoute` (offline) | ⚠️ no class results |
+| progress | notes, homework ticks | yes | ✅ |
+| messages | threads, new thread, attachments | yes | ✅ |
+| meetings | list, complete, cancel, no-show, follow-ups, slots | yes | ✅ |
+| complaints | own + routed, file, update | yes | ✅ |
+| my_salary | payslips, own attendance, leave apply/cancel | yes | ✅ |
+| profile | incl. 2FA setup | no 2FA setup | ⚠️ |
 
 ## HELPER
 
-| Menu entry | Key actions | Web | Android | Status | Note |
-|---|---|---|---|---|---|
-| dashboard | today | yes | teacher-mode dashboard | Same | |
-| classes | assigned sections, roster | yes | `MyClassesRoute` | Same | |
-| attendance | draft only | yes | register (`canEdit` limits to draft) | Same | |
-| diary | draft only | yes | editor draft | Same | |
-| activities | view | yes | yes | Same | |
-| complaints | own | yes | yes | Same | |
-| my_salary | own payslips, attendance, leave | yes | yes | Same | |
-| profile | | yes | | Android (subset) | 2FA setup web |
+| Page (web) | Actions | Android | Status |
+|---|---|---|---|
+| dashboard | today | teacher-mode dashboard | ✅ |
+| classes | assigned sections, roster | `MyClassesRoute` | ✅ |
+| attendance | draft register only | register (`canEdit` limits to draft) | ✅ 🐞 health-alert names |
+| diary | draft only | editor draft | ✅ |
+| activities | view | yes | ✅ |
+| complaints | own | yes | ✅ |
+| my_salary | payslips, attendance, leave | yes | ✅ |
+| profile | | as above | ⚠️ 2FA setup |
 
 ## ACCOUNTANT
 
-| Menu entry | Key actions | Web | Android | Status | Note |
-|---|---|---|---|---|---|
-| dashboard | finance overview | yes | Welcome + "Finance this month" card (`FinanceLoader`) | Same | |
-| students | branch list (finance fields), ledger | yes | section browse + read-only profile | Android (subset) | no global search or ledger view |
-| fees | full fee desk (see SUPER_ADMIN) | yes | Today, Dues, Proofs verify, Record payment (offline), invoice/receipt | Android (subset) | fee structures, invoice generation, concessions, refunds, reversals, close day and ledger are web |
-| payroll | prepare: structures, adjustments, calculate, review, payments | yes | runs + run detail (FLAG_SECURE) + send for approval | Android (subset) | payroll setup and processing are web |
-| expenses | | yes | web-only placeholder | Web-only (by design) | bookkeeping |
-| inventory | | yes | web-only placeholder | Web-only (by design) | store work |
-| complaints | own + routed | yes | yes | Same | |
-| reports | exports | yes | web-only placeholder | Web-only (by design) | XLSX/PDF |
-| my_salary | | yes | yes | Same | |
-| profile | | yes | | Android (subset) | 2FA setup web |
+| Page (web) | Actions | Android | Status |
+|---|---|---|---|
+| dashboard | finance overview | Welcome + "Finance this month" card | ✅ |
+| students | branch list with finance columns, search, ledger (`fees/.../StudentLedgerDialog`) | section browse + read-only profile | ⚠️ no search or ledger |
+| fees › overview | collection rate, billed/collected | `OverviewTiles` (Today tab) | ✅ |
+| fees › collections | daily totals, close day | daily collection card | ⚠️ no close day |
+| fees › payments | record, receipt, reverse, refund | record (offline) + receipt | ⚠️ no reverse or refund |
+| fees › invoices | add, generate bulk, issue, cancel, challan print | invoice detail (read) | ❌ |
+| fees › dues | list, aging, select + send reminders | Dues tab | ⚠️ no reminders; 🐞 aging always 0, class/adm no/days blank |
+| fees › proofs | verify, reject | verify, reject | ✅ |
+| fees › concessions | add, approve flow | none | ❌ |
+| fees › structure | heads, plans, late fee | none | ⏳ fee plan |
+| payroll | structures, adjustments, run create/calculate/review, payments, payslips | runs list + detail | ⚠️ view only; 🐞 run totals/approvalId |
+| expenses | | placeholder | 🚧 (and in the bottom bar 🐞) |
+| inventory | | placeholder | 🚧 |
+| complaints | own + routed | yes | ✅ |
+| reports | exports | placeholder | 🚧 |
+| my_salary | | yes | ✅ |
+| profile | | as above | ⚠️ 2FA setup |
 
 ## PARENT (child switcher)
 
-| Menu entry | Key actions | Web | Android | Status | Note |
+| Page (web) | Actions | Android | Status |
+|---|---|---|---|
+| dashboard ("Home") | child today, diary, notices, consents, next meeting | `ParentHomeContent` | ✅ |
+| students ("Child Profile") | profile, guardians, documents, contact change, link child (OTP) | `ChildProfileRoute`, `ContactChangeRoute`, `LinkChildRoute` | ✅ |
+| diary | child feed | `ParentDiaryRoute` | ✅ |
+| attendance | month calendar, leave request | `ChildAttendanceRoute` + `LeaveRequestSheet` | ✅ |
+| progress ("Progress & Results") | results, report card, feedback, homework | `ParentProgressScreen` | ✅ |
+| syllabus | plans, book lists | `ParentSyllabusRoute` | ✅ |
+| timetable ("Timetable, Calendar & Activities") | week, calendar, activities + consent | `ParentTimetableScreen` 3 tabs | ✅ |
+| fees ("Fees, Dues & Receipts") | summary, invoices, receipt, pay online, upload proof, proof status | `ParentFeesRoute`, invoice detail, `ProofUploadRoute` | ✅ 🐞 rejected-proof reason not shown |
+| certificates | request, status, download | `ParentCertificatesRoute` | ⚠️ 🐞 rejection reason and serial never shown |
+| messages | threads, new message, shortcuts (pickup, health card…) | threads + `ParentShortcuts` | ✅ |
+| – pickup | authorised persons, early leave | `ParentPickupRoute` | ✅ |
+| – health card | view, propose change | `HealthCardRoute` | ✅ |
+| meetings | book, list, cancel | `ParentMeetingsRoute`, `BookMeetingRoute` | ✅ |
+| complaints | file (anonymous), track | yes | ✅ |
+| profile | edit, password, sessions, prefs, 2FA | all but 2FA setup | ⚠️ |
+
+### Counts (rows per table)
+
+| Role | rows | ✅ | ⚠️ | ❌ | 🚧 | ⏳ | rows with 🐞 |
+|---|---|---|---|---|---|---|---|
+| SUPER_ADMIN | 33 | 5 | 16 | 2 | 7 | 2 | 4 (fees, payroll, certificates, bottom bar; bottom bar counted only as 🐞) |
+| PRINCIPAL | 23 | 5 | 14 | 0 | 2 | 2 | 1 (fees; payroll/certificates inherit) |
+| COORDINATOR / HEAD_TEACHER | 19 | 13 | 5 | 0 | 0 | 1 | 0 |
+| TEACHER | 14 | 10 | 3 | 0 | 0 | 1 | 1 (health alerts) |
+| HELPER | 8 | 7 | 1 | 0 | 0 | 0 | 1 (health alerts) |
+| ACCOUNTANT | 17 | 5 | 6 | 2 | 3 | 1 | 3 (dues, payroll, bottom bar) |
+| PARENT | 15 | 13 | 2 | 0 | 0 | 0 | 2 (proof reason, certificates) |
+
+---
+
+## Suspected bugs (🐞), confirmed against live JSON
+
+| # | Where (app) | API sends | App reads | Effect | Fix |
 |---|---|---|---|---|---|
-| dashboard ("Home") | child today, diary, notices, follow-ups, health link | yes | `ParentHomeContent` | Same | |
-| students ("Child Profile") | profile, guardians, documents, contact change request, link child (OTP) | yes (`ChildProfilePage`, profile `LinkChildCard`, `ContactChangeCard`) | `ChildProfileRoute`, `ContactChangeRoute`, `LinkChildRoute` | Same | |
-| diary | child feed | yes | `ParentDiaryRoute` | Same | |
-| attendance | month calendar, leave request | yes | `ChildAttendanceRoute` + `LeaveRequestSheet` | Same | |
-| progress ("Progress & Results") | results, report card, teacher feedback, homework status | yes (Results / Teacher feedback / Homework tabs) | `ParentProgressScreen` tabs: Results & feedback (`ParentResultsRoute`) / Homework (`ChildHomeworkRoute`, last 30 days, tally + per-item tick) | Same | Phase 5: homework tab added (`GET /students/:id/homework-completion`) |
-| syllabus | plans, book lists | yes | `ParentSyllabusRoute` | Same | |
-| timetable ("Timetable, Calendar & Activities") | week, upcoming school calendar, activities + consent | yes (`ChildTimetableView` + `ChildActivitiesSection`) | `ParentTimetableScreen` tabs: Timetable / Calendar (`SchoolCalendarRoute`, `GET /students/:id/calendar`, today..+90 days) / Activities (`ChildActivitiesSection`, consent via detail) | Same | Phase 5: calendar + inline activities added |
-| fees ("Fees, Dues & Receipts") | summary, invoices, receipt, pay online, upload proof | yes | `ParentFeesRoute`, invoice detail, `ProofUploadRoute` | Same | |
-| certificates | request, status | yes | `ParentCertificatesRoute` | Same | |
-| messages ("Messages, Notices & Requests") | threads, new message, shortcuts (notices, activities + consent, pickup, health card, certificates) | yes | threads + `ParentShortcuts` | Same | |
-| – pickup (via shortcut) | authorised persons, early leave | yes | `ParentPickupRoute` | Same | |
-| – health card (via shortcut) | view, propose change | yes | `HealthCardRoute` change request (FLAG_SECURE) | Same | |
-| meetings | book a slot, list | yes | `ParentMeetingsRoute`, `BookMeetingRoute` | Same | |
-| complaints | file (anonymous), track | yes | yes | Same | |
-| profile | edit, password, sessions, notification prefs | yes | yes | Android (subset) | 2FA setup web |
+| B1 | `core/network/.../dto/fees/CollectionDtos.kt:9-12` `AgingDto` | `aging.d0_30, d31_60, d61_90, d90plus` | `@SerialName("0-30")…"90+"` | Dues aging buckets always 0 | Change the four `@SerialName`s |
+| B2 | `CollectionDtos.kt:16-27` `DuesRowDto` | `student{id,name,admissionNo,className,sectionName}`, `oldestOverdueDays`, `overdueMinor`, `guardian` | flat `admissionNo/className/sectionName`, `oldestDueDays`/`days`; `student` typed `IdNameDto` | Dues cards: no class, adm. no or days overdue; no guardian phone | Give `student` its own DTO; read `oldestOverdueDays`; map `guardian` (`core/data/fees/FeeMappers.kt:97`) |
+| B3 | `dto/health/HealthDtos.kt:46-53` `HealthAlertDto` | `studentId, name, rollNo, allergies, instructions` | `student.name` / `studentName` | Register health-alert sheet shows no student names | Add `name` (+`rollNo`); map in `core/data/health/HealthMappers.kt:49` |
+| B4 | `dto/certificates/CertificateDtos.kt:15-30` `CertificateDto` | `serialNo, rejectionReason, isDuplicate, requestedAt, effectiveDate` | `serial, rejectReason/reason, duplicate, createdAt, issuedOn` | Serial, rejection reason, duplicate badge and request date never shown (staff + parent) | Rename or alias the fields; `core/data/certificates/CertificateMappers.kt:17-28` |
+| B5 | `dto/fees/PaymentDtos.kt:21` `PaymentProofDto.reason` | `rejectReason`, `note`, `fileId` | `reason`, `file` | Parent and accountant cannot see why a proof was rejected | Read `rejectReason`; `core/data/fees/FeeMappers.kt:79` |
+| B6 | `dto/payroll/PayrollDtos.kt:50-60` `PayrollRunDto` | `totals{netMinor,paidMinor,balanceMinor}`, `approval{…}` | flat `netMinor…`, `approvalId` | Totals fall back to summing lines (fine when lines are sent); `approvalId` is always null, so there is no link to the pending approval | Add `totals` and `approval` DTOs |
+| B7 | `core/navigation/.../PrimaryNavigation.kt:18` and `:24` | – | SUPER_ADMIN bottom bar = Schools, Users; ACCOUNTANT = Expenses | 2 of 4 super-admin tabs and 1 accountant tab open the web-only placeholder | Use mapped screens (e.g. SA: Branches, Staff; Accountant: Students) until those modules exist |
+| B8 | `dto/exams/ExamDtos.kt:7` `ExamDto.term/termName` | `termId` only | `term`, `termName` | Exam term label blank | Resolve the term name from `sessions` terms, or have the API embed `term{id,name}` |
 
-## Custom roles
-Both clients build the menu from every catalogue `.view` the role holds. On Android each screen picks its supervisor/staff variant by role (e.g. `else ->` branches in `*MenuScreen.kt`). Web-only ids show the web-only placeholder. **Same.**
+Non-bugs that were checked: every path in `app_eps` matches the API. `classes/{id}/setup`, `staff/{id}/account*`, `sections/{id}/class-teacher`, `sections/{id}/subject-teachers/{subjectId}`, `timetables`, `branches/{id}/bell-schedule` and `setup/checklist` match the post-rework API. `TimetableDto` is compatible (it ignores the new `canPublish, draftSlotCount, workingDays…`). Parent `results` carry `examName`. `notices` send `read`. Coordinator branch scope comes from assignments (`BranchOptionsLoader`), so the 403 on `/branches` is handled.
 
-## Android-only capabilities
-- Offline outbox (Room + WorkManager `core/sync`): attendance registers (`AttendanceRegisterEntity`), diary drafts, mark sheets (`MARKS_SAVE/SUBMIT`), cash payment recording (`PAYMENT_RECORD`), syllabus topic progress (`SYLLABUS_PROGRESS`).
-- Push notifications (FCM via `DeviceRegistrar`; NoOp provider until Firebase is configured).
-- `FLAG_SECURE` (`core/ui/SecureWindow.kt`) on payroll run, My Salary and all health screens (health menu/incidents, health card, report incident).
-- Release certificate pinning from Gradle properties (`core/network/security/CertificatePinning.kt`, Phase 5).
-- Branded adaptive launcher icon + SplashScreen (Phase 5).
-- Optional app lock (security.md §8, Phase 6 §E): Profile › App lock switch for every role (off by default, "Recommended" text for staff, explains when the phone has no screen lock). Uses `BiometricPrompt` with BIOMETRIC_STRONG or DEVICE_CREDENTIAL (BIOMETRIC_WEAK + credential on Android 9–10). Locks on cold start and after > 5 min in the background (`ProcessLifecycleOwner` → `AppLockController`); the lock screen always offers Sign out; the setting lives in DataStore and is cleared on sign-out (`core/data/applock`, `app/applock`).
+---
 
-## Gaps to fix (prioritised)
-All resolved in the Phase 5 parity pass (2026-10-07).
-1. **FLAG_SECURE missing on medical screens.** **Fixed** (already done): `SecureWindowEffect()` in `HealthMenuRoute` (incident list/detail), `HealthCardRoute` and `ReportIncidentRoute`.
-2. **Settings placeholder shows "Coming in Phase 5".** **Fixed** (already done): `MenuIds.SETTINGS` is in `WebOnlyModules`.
-3. **Staff attendance marking** (principal / super admin). **Fixed**: `feature/attendance/staffmark` (`StaffMarkRoute/ViewModel`), Staff tab in `SupervisorAttendanceRoute` gated by `attendance.approve`; `GET/PUT /staff-attendance` via `StaffAttendanceApi` + `StaffAttendanceRepository`.
-4. **Meeting slot publishing.** **Fixed**: "My slots" tab in staff meetings (`feature/meetings/staff/slots`), gated by `meetings.add`; `POST /meetings/slots` (batch), `DELETE /meetings/slots/:id`; `SlotValidator` mirrors server rules.
-5. **Parent homework-completion view.** **Fixed**: `ParentProgressScreen` (Results & feedback / Homework tabs), `ChildHomeworkRoute` using `GET /students/:id/homework-completion` (last 30 days, tally, tick per item).
-6. **Attachments on incident reports and complaint updates.** **Fixed**: shared `core/ui/attachments/AttachmentsField` + `AttachmentDraft`, used by file complaint, complaint update/comment (cap 3) and report incident (cap 5); `attachmentFileIds` sent; attachments shown on incident cards and the complaint timeline.
-7. **Complaint assign.** **Fixed**: `AssignSheet` in complaint detail (`complaints.edit`, open complaints), `POST /complaints/:id/assign`.
-8. **Parent activities inline on Timetable.** **Fixed**: `ParentTimetableScreen` tabs Timetable / Calendar / Activities (`ChildActivitiesSection`). Also added the **upcoming school calendar** (`SchoolCalendarRoute`, `GET /students/:studentId/calendar`, today..+90 days).
-   **Notice read receipts and edit/archive: Justified (web-only by design)**. The read-receipt list is a per-recipient table (hundreds of guardians per notice, read/unread filters) and edit/archive belongs to the notice management desk (`NoticesManagePage`, `NoticeReadsDialog`), not the feed. Android keeps the feed and compose (incl. audience), which covers the on-the-go use.
+## Prioritised gap list
 
-## Web-only by design (rationale)
-- **Org setup** (schools, users incl. unlock and reset password, roles & permissions matrix, sessions/terms, classes/sections/subjects/rooms, branch settings, timetable editor, staff HR, student registration/transfer/withdraw): low frequency, many fields, wide tables. Done at a desk by admins.
-- **Settings & Backups** (school branding, notification channels, policies, support: failed notifications, jobs, health; backups, restore verification, download): SUPER_ADMIN operations with audit weight. Not for the phone.
-- **Data import** (XLSX templates, validate, commit, revert): needs file handling and an error table.
-- **2FA setup** (QR, recovery codes): the QR is scanned with the phone's authenticator app, so the setup screen must be on another device. Verify-on-login is on Android.
-- **Reports & exports** (XLSX/PDF jobs) and **certificate issue/reissue** (PDF generation).
-- **Fee structure setup** (heads, plans, late fees), invoice generation/issue/cancel, concessions, refunds, payment reversals, close day, ledger: finance control work with approval limits. Android keeps collection, dues and proof verification.
-- **Payroll setup and processing** (structures, adjustments, calculate/review/close, payments). Android shows runs and sends them for approval; decisions go through Approvals.
-- **Expenses & vendors, inventory & purchasing**: office bookkeeping.
-- **Exam setup** (exams, schedule, grading schemes, results publish, promotions, report-card generation): Android keeps marks entry and sheet review.
-- **Notice management** (read-receipt tables, edit/archive): desk review of delivery across many recipients; the phone keeps feed + compose.
-- **Admissions data entry** (enquiries, tests, confirmation, documents), **syllabus plan/book-list authoring**, **activity lifecycle and participants editing**: long forms. Android keeps the decisions (offer/waitlist/reject, approve/reject, consent).
+**P1: daily-use broken or missing**
+
+| # | Gap | Web | App | Hint |
+|---|---|---|---|---|
+| 1 | Dues aging + row details blank (B1, B2) | `features/fees/components/dues/DuesTab` | `feature/fees` DuesTab, `core/network/dto/fees/CollectionDtos.kt` | Fix DTO names; no UI change needed |
+| 2 | Health-alert student names blank in the register (B3) | `attendance/HealthAlertsNotice` | `feature/attendance/HealthAlertSheet`, `HealthDtos.kt` | Add `name` to `HealthAlertDto` |
+| 3 | Rejected proof/certificate reasons hidden from parents (B4, B5) | `fees/ParentProofsSection`, `certificates/CertificateDetailDrawer` | `feature/fees` parent, `feature/certificates` | Alias `rejectReason` / `rejectionReason`, `serialNo` |
+| 4 | Bottom bar opens placeholders (B7) | `config/navigation.ts` | `core/navigation/PrimaryNavigation.kt` | Drop unmapped ids from `Preferred` (filter by `AppShellContent` keys) |
+| 5 | Fee reminders from Dues | `fees/components/dues/DuesSelectionBar` | `feature/fees` DuesTab | Multi-select rows + `POST dues/reminders` |
+| 6 | Payment reversal / refund | `fees/ReversePaymentDialog`, `RefundDialog` | `feature/fees` receipt / invoice detail | `POST payments/{id}/reverse` and `POST refunds`, each with a reason sheet |
+| 7 | Close day | `fees/CloseDayDialog`, `CollectionClosingCard` | `feature/fees` TodayTab `DailyCollectionCard` | "Close day" action on the Today card → `POST collections/daily/close` |
+| 8 | Timetable substitutions (absent-teacher cover) | `timetable/SubstitutionsTab`, `OverrideFormDialog` | `feature/timetable` | `GET/POST/DELETE timetable-overrides` list + add sheet; not in the in-progress builder scope |
+| 9 | Student search (principal, accountant) | `students/StudentSearchField`, `StudentsTab` | `feature/students/sections` | Search bar on `GET students?q=` above the section list |
+| 10 | Staff class results view | `exams/ResultsTab`, `StudentResultDrawer` | `feature/exams` | Wire the unused `ExamsApi.results(examId, sectionId)` into a results tab |
+| 11 | Payroll run approval link (B6) | `payroll/RunActionsBar` | `feature/payroll` PayrollRunRoute | Read `approval.id` and open Approval detail |
+
+**P2: management parity (desk tasks that principals now want on the phone)**
+
+| # | Gap | Web | App | Hint |
+|---|---|---|---|---|
+| 1 | ⏳ Class setup, subjects/rooms, bell schedule, timetable builder (incl. teacher/coordinator drafting), students add/edit, fee plan | `classes/*`, `timetable/*Bell*`, `TimetableBuilderView`, `students/RegisterStudentDialog`, `fees/FeePlanDialog` | other agent (`core/data/academics`, `timetable/*Builder*`) | In progress; extend builder role gating to class teacher (own section) and coordinator (branch) when it lands |
+| 2 | Invoices: add, generate, issue, cancel | `fees/GenerateInvoicesDialog`, `InvoiceFormDialog`, `InvoiceDialogs` | `feature/fees` | Invoices tab with generate sheet (class + month) |
+| 3 | Concessions | `fees/ConcessionsTab`, `ConcessionFormDialog` | `feature/fees` | Form → approval flow already in Approvals |
+| 4 | Student lifecycle: transfer, withdraw, change section, accept transfer | `students/TransferStudentDialog`, `WithdrawStudentDialog`, `ChangeSectionDialog` | `feature/students/detail` | Action sheet on student detail |
+| 5 | Admissions data entry: enquiries, application form, tests, confirm admission | `admissions/*` | `feature/admissions` | Add Enquiries tab + confirm dialog first (highest value) |
+| 6 | Guardians edit / link / unlink | `guardians/EditGuardianDialog`, `LinkChildDialog`, `UnlinkDialog` | `feature/students/guardians` | Detail screen with these three actions |
+| 7 | Sessions/terms/events CRUD; branch calendar event add | `sessions/*FormDialog` | `feature/organisation/sessions` | Event add first (most frequent) |
+| 8 | Branch settings edit / change principal | `branches/BranchSettingsDialog`, `ChangePrincipalDialog` | `feature/organisation/branches` | Edit sheet on `BranchSettingsCard` |
+| 9 | Exam setup, schedule, grading, publish results, promotions, report cards | `exams/ExamFormDialog`, `ScheduleTab`, `GradingTab`, `PromotionsTab`, `ExamStatusControls` | `feature/exams` | Publish + report-card generate first; setup later |
+| 10 | Payroll processing: create/calculate/review/close run, payments, adjustments, structures | `payroll/*` | `feature/payroll` | Run actions bar mirroring `RunActionsBar` |
+| 11 | Activities lifecycle (start/complete/cancel), edit, participants | `activities/ActivityDetailActions`, `ParticipantsEditor` | `feature/activities` detail | Add action row + participants sheet |
+| 12 | Notices edit/archive + read receipts | `notices/NoticesManagePage`, `NoticeReadsDialog` | `feature/notices` | Overflow menu on own notices; read counts list |
+| 13 | Syllabus plan + book-list authoring | `syllabus/PlanEditorDialog`, `BookListEditorDialog` | `feature/syllabus` | Chapter/topic editor list |
+| 14 | Health profile edit + change-request review | `health/HealthProfileDialog`, `ChangeRequestsTab` | `feature/health` | Review list reusing `ChangeRequestEditor` diff |
+| 15 | Staff-side authorised pickup persons (add/revoke) | `pickup/PickupPersonsTab`, `AddPickupPersonDialog` | `feature/pickup` | Reuse parent `AddPersonSheet` from student search |
+| 16 | Certificate issue/reissue + PDF download | `certificates/CertificateActions` | `feature/certificates/review` | Issue action → job → open `fileUrl` |
+| 17 | Staff probation, generic role assignments | `staff/ProbationDialog`, `AssignmentsTab` | `feature/staff/detail` | Add to `StaffActionsCard` |
+| 18 | Expenses (accountant daily bookkeeping) | `expenses/*` | none (placeholder) | Expense add + list first; vendors/categories later |
+| 19 | Setup wizard for a new school | `school-setup/SetupWizard` | `feature/dashboard/setup` | Checklist exists; link steps to the ⏳ screens |
+
+**P3: nice to have**
+
+| # | Gap | Web | App | Hint |
+|---|---|---|---|---|
+| 1 | Schools, users, roles admin | `schools/*`, `users/*`, `roles/*` | placeholder | Keep web-only; users reset password / unlock is the only mobile-worthy action |
+| 2 | Settings, backups, imports | `settings/*` | placeholder | Keep web-only |
+| 3 | Reports & exports | `reports/*` | placeholder | Read-only "recent exports" with download could be added |
+| 4 | Inventory | `inventory/*` | placeholder | Stock lookup only |
+| 5 | 2FA setup | `profile/TwoFactorSetupPanel` | `feature/profile` | Show the secret as text + copy for an authenticator on the same phone |
+| 6 | Messages branch read-only scope | `messages/ScopeToggle` | `feature/messages` | Toggle chip on the thread list |
+| 7 | Audit history | `audit/EntityHistory` | none | Bottom sheet on student/staff detail |
+| 8 | Student ID card, document upload | `students/IdCardPanel`, `documents/DocumentUploadDialog` | `feature/students/profile/DocumentsCard` | Upload via `FilesApi` + attach |
+| 9 | Student ledger (accountant) | `fees/StudentLedgerDialog` | `feature/students/detail` | Ledger list on the fee summary |
+| 10 | Exam term label (B8) | `exams/ExamHeader` | `feature/exams` | Resolve `termId` |
+
+## Android-only (unchanged)
+Offline outbox (registers, diary, mark sheets, cash payments, syllabus progress), push notifications (FCM via `DeviceRegistrar`), `FLAG_SECURE` on payroll, my salary and health screens, release certificate pinning, app lock (biometric/device credential), pull-to-refresh, branded splash/launcher icon.
