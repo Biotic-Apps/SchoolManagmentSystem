@@ -45,6 +45,7 @@ import com.schoolapp.feature.profile.navigation.ChangePasswordDestination
 import com.schoolapp.feature.profile.navigation.DeviceSessionsDestination
 import com.schoolapp.feature.profile.navigation.profileDestinations
 import com.schoolapp.feature.staff.list.StaffListRoute
+import com.schoolapp.feature.staff.navigation.AddStaffDestination
 import com.schoolapp.feature.staff.navigation.StaffDetailDestination
 import com.schoolapp.feature.staff.navigation.staffDestinations
 import com.schoolapp.feature.students.child.ChildProfileRoute
@@ -126,7 +127,7 @@ internal val AppShellContent = ShellContent(
             }
         },
         MenuIds.ADMISSIONS to { shell -> AdmissionsRoute(onOpenApplication = { shell.open(ApplicationDetailDestination(it)) }) },
-        MenuIds.STAFF to { shell -> StaffListRoute(onOpenStaff = { shell.open(StaffDetailDestination(it)) }) },
+        MenuIds.STAFF to { shell -> StaffListRoute(onOpenStaff = { shell.open(StaffDetailDestination(it)) }, onAddStaff = { shell.open(AddStaffDestination) }) },
         MenuIds.ATTENDANCE to { shell -> AttendanceMenuScreen(role = shell.activeRole, onOpen = shell::open) },
         MenuIds.MY_SALARY to { shell -> MySalaryScreen(attendanceContent = { MyAttendanceLeaveScreen(onOpen = shell::open) }) },
         MenuIds.DIARY to { shell ->

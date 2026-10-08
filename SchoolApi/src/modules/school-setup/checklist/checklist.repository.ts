@@ -3,6 +3,7 @@ import { PrismaService } from '../../../core/prisma/prisma.service';
 import { RoleKey } from '../../../core/rbac/role-key.enum';
 import { activeAssignmentWhere } from '../../users/active-assignment-where';
 import { ClassSetupService } from '../../academics/class-setup/class-setup.service';
+import { TEACHING_DESIGNATIONS } from '../../staff/allocation/teaching-staff.service';
 import type { ChecklistKey } from './checklist-keys';
 
 export interface ChecklistBranch {
@@ -98,22 +99,28 @@ export class ChecklistRepository {
   }
 
   /** Active staff of the branch whose login holds a TEACHER assignment there. */
+  /** Teaching staff with or without a login (same rule as the teaching-staff list). */
   private teachers(branchId: string): Promise<number> {
     return this.prisma.staff.count({
       where: {
         branchId,
         status: 'ACTIVE',
-        user: {
-          status: 'ACTIVE',
-          roleAssignments: {
-            some: {
-              AND: [
-                activeAssignmentWhere(),
-                { branchId, role: { key: RoleKey.TEACHER } },
-              ],
+        OR: [
+          { designation: { in: TEACHING_DESIGNATIONS } },
+          {
+            user: {
+              status: 'ACTIVE',
+              roleAssignments: {
+                some: {
+                  AND: [
+                    activeAssignmentWhere(),
+                    { branchId, role: { key: RoleKey.TEACHER } },
+                  ],
+                },
+              },
             },
           },
-        },
+        ],
       },
     });
   }

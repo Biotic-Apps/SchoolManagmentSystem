@@ -8,7 +8,7 @@ import { workingSlotWhere } from '../../academics/curriculum/working-slots';
 import { activeAssignmentWhere } from '../../users/active-assignment-where';
 import type { TeachingStaffDto } from './dto/allocation.dto';
 
-const TEACHING_DESIGNATIONS = ['TEACHER', 'HEAD_TEACHER', 'COORDINATOR'];
+export const TEACHING_DESIGNATIONS = ['TEACHER', 'HEAD_TEACHER', 'COORDINATOR'];
 const TEACHING_KINDS = ['CLASS_TEACHER', 'SUBJECT_TEACHER'] as const;
 
 /**

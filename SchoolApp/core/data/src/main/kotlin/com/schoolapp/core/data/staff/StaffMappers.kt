@@ -17,13 +17,14 @@ internal fun StaffSummaryDto.toModel() = StaffSummary(
 internal fun StaffDetailDto.toModel() = StaffDetail(
     summary = StaffSummary(
         id, name, photoUrl, employeeNo, designation, branchName, status, roles, requiresReview, reviewer?.name,
-        sectionCount, subjectCount, userId,
+        sectionCount, subjectCount, userId, branchId,
     ),
     email = email,
     phone = phone,
     qualification = qualification,
     joinDate = joinDate,
     assignments = assignments.map { it.toModel() },
+    cnic = cnic,
 )
 
 internal fun StaffAssignmentDto.toModel() = StaffAssignment(

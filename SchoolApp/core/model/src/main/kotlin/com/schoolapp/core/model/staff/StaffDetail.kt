@@ -7,4 +7,6 @@ data class StaffDetail(
     val qualification: String?,
     val joinDate: String?,
     val assignments: List<StaffAssignment>,
+    /** Masked by the server (e.g. `35202-*******-1`); null when none or hidden. */
+    val cnic: String? = null,
 )

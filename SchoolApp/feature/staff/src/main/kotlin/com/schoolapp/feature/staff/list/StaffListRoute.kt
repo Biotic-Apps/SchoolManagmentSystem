@@ -1,17 +1,21 @@
 package com.schoolapp.feature.staff.list
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Badge
+import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.schoolapp.core.designsystem.component.AppFloatingButton
 import com.schoolapp.core.designsystem.component.DataList
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
@@ -25,15 +29,27 @@ import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.core.ui.humanizeKey
 import com.schoolapp.core.ui.statusTone
 import com.schoolapp.feature.staff.R
+import com.schoolapp.feature.staff.form.designationLabel
 
 @Composable
 fun StaffListRoute(
     onOpenStaff: (String) -> Unit,
+    onAddStaff: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: StaffListViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    StaffListScreen(state, viewModel::onQueryChange, onOpenStaff, viewModel::retry, modifier)
+    Box(modifier.fillMaxSize()) {
+        StaffListScreen(state, viewModel::onQueryChange, onOpenStaff, viewModel::retry)
+        if (state.canAdd) {
+            AppFloatingButton(
+                text = stringResource(R.string.staff_add_fab),
+                icon = Icons.Outlined.PersonAdd,
+                onClick = onAddStaff,
+                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            )
+        }
+    }
 }
 
 @Composable
@@ -52,13 +68,13 @@ fun StaffListScreen(
             else -> DataList(
                 items = state.staff,
                 key = { it.id },
-                modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = if (state.canAdd) FAB_CLEARANCE else 16.dp),
                 emptyContent = { EmptyState(stringResource(R.string.staff_empty), icon = Icons.Outlined.Badge) },
             ) { member ->
                 ListItemRow(
                     title = member.name,
                     supporting = listOfNotNull(
-                        member.designation,
+                        member.designation?.let { designationLabel(it) },
                         stringResource(R.string.staff_counts, member.sectionCount, member.subjectCount),
                     ).joinToString(" · "),
                     leading = { PersonAvatar(member.name, member.photoUrl) },
@@ -75,3 +91,6 @@ fun StaffListScreen(
         }
     }
 }
+
+/** Keeps the last row clear of the "Add staff" button. */
+private val FAB_CLEARANCE = 88.dp

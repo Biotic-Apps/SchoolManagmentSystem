@@ -11,6 +11,7 @@ data class StaffSummaryDto(
     val photoUrl: String? = null,
     val employeeNo: String? = null,
     val designation: String? = null,
+    val branchId: String? = null,
     val branchName: String? = null,
     val status: String? = null,
     val roles: List<String> = emptyList(),

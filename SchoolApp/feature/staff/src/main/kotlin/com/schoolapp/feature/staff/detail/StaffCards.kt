@@ -29,6 +29,7 @@ import com.schoolapp.core.ui.formatDate
 import com.schoolapp.core.ui.humanizeKey
 import com.schoolapp.core.ui.statusTone
 import com.schoolapp.feature.staff.R
+import com.schoolapp.feature.staff.form.designationLabel
 
 @Composable
 internal fun StaffProfileCard(detail: StaffDetail, modifier: Modifier = Modifier) {
@@ -39,7 +40,7 @@ internal fun StaffProfileCard(detail: StaffDetail, modifier: Modifier = Modifier
             Spacer(Modifier.width(16.dp))
             Column(Modifier.weight(1f)) {
                 Text(s.name, style = MaterialTheme.typography.titleLarge, color = AppColors.TextPrimary)
-                s.designation?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary) }
+                s.designation?.let { Text(designationLabel(it), style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary) }
             }
             s.status?.let { StatusChip(humanizeKey(it), statusTone(it)) }
         }

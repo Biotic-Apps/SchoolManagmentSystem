@@ -13,6 +13,7 @@ import com.schoolapp.core.network.api.OrganisationApi
 import com.schoolapp.core.network.api.StudentsApi
 import com.schoolapp.core.network.api.GuardiansApi
 import com.schoolapp.core.network.api.StaffApi
+import com.schoolapp.core.network.api.AllocationApi
 import com.schoolapp.core.network.api.StaffAttendanceApi
 import com.schoolapp.core.network.api.TimetableApi
 import com.schoolapp.core.network.api.SyllabusApi
@@ -141,6 +142,10 @@ internal object NetworkModule {
     @Provides
     @Singleton
     fun provideStaffApi(retrofit: Retrofit): StaffApi = retrofit.create(StaffApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAllocationApi(retrofit: Retrofit): AllocationApi = retrofit.create(AllocationApi::class.java)
 
     @Provides
     @Singleton

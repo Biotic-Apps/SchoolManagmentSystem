@@ -26,6 +26,10 @@ import com.schoolapp.core.data.people.GuardiansRepository
 import com.schoolapp.core.data.people.DefaultGuardiansRepository
 import com.schoolapp.core.data.staff.StaffRepository
 import com.schoolapp.core.data.staff.DefaultStaffRepository
+import com.schoolapp.core.data.staff.AllocationRepository
+import com.schoolapp.core.data.staff.DefaultAllocationRepository
+import com.schoolapp.core.data.staff.DefaultStaffAdminRepository
+import com.schoolapp.core.data.staff.StaffAdminRepository
 import com.schoolapp.core.data.timetable.BellScheduleRepository
 import com.schoolapp.core.data.timetable.DefaultBellScheduleRepository
 import com.schoolapp.core.data.timetable.TimetableRepository
@@ -112,6 +116,12 @@ interface RepositoryModule {
 
     @Binds
     fun bindStaffRepository(impl: DefaultStaffRepository): StaffRepository
+
+    @Binds
+    fun bindStaffAdminRepository(impl: DefaultStaffAdminRepository): StaffAdminRepository
+
+    @Binds
+    fun bindAllocationRepository(impl: DefaultAllocationRepository): AllocationRepository
 
     @Binds
     fun bindTimetableRepository(impl: DefaultTimetableRepository): TimetableRepository
