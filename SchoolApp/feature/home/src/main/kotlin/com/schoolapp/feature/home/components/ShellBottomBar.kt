@@ -1,8 +1,6 @@
 package com.schoolapp.feature.home.components
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -10,27 +8,22 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.designsystem.theme.SchoolTheme
 import com.schoolapp.core.navigation.MenuItem
 import com.schoolapp.core.navigation.NavigationCatalog
-import com.schoolapp.feature.home.R
 
 /**
- * Phone navigation: at most four role destinations with one-word labels plus "More", which is shown
- * selected while one of the sheet's destinations is open.
+ * Phone navigation: the role's four most used destinations with one-word labels. Everything else is in
+ * the navigation drawer (menu icon in the top bar); no item is selected while a drawer-only screen is open.
  */
 @Composable
 internal fun ShellBottomBar(
     items: List<MenuItem>,
     selectedId: String?,
-    hasMore: Boolean,
-    moreSelected: Boolean,
     onSelect: (String) -> Unit,
-    onMore: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = NavigationBarItemDefaults.colors(
@@ -53,16 +46,6 @@ internal fun ShellBottomBar(
                     colors = colors,
                 )
             }
-            if (hasMore) {
-                NavigationBarItem(
-                    selected = moreSelected,
-                    onClick = onMore,
-                    icon = { NavIcon(Icons.Outlined.MoreHoriz) },
-                    label = { Text(stringResource(R.string.home_more), maxLines = 1, softWrap = false) },
-                    alwaysShowLabel = true,
-                    colors = colors,
-                )
-            }
         }
     }
 }
@@ -71,5 +54,5 @@ internal fun ShellBottomBar(
 @Composable
 private fun ShellBottomBarPreview() = SchoolTheme {
     val items = NavigationCatalog.entries.take(4)
-    ShellBottomBar(items, items.first().id, hasMore = true, moreSelected = false, onSelect = {}, onMore = {})
+    ShellBottomBar(items, items.first().id, onSelect = {})
 }

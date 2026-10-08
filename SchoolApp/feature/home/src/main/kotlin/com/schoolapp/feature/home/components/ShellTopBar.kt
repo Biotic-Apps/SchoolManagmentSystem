@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,6 +39,8 @@ internal fun ShellTopBar(
     onLogout: () -> Unit,
     modifier: Modifier = Modifier,
     compact: Boolean = false,
+    /** Phones: opens the navigation drawer from a menu icon in place of the brand mark. */
+    onOpenDrawer: (() -> Unit)? = null,
 ) {
     var confirmLogout by rememberSaveable { mutableStateOf(false) }
     val activeChildName = state.children.firstOrNull { it.id == state.activeChildId }?.fullName
@@ -46,7 +49,15 @@ internal fun ShellTopBar(
         title = title,
         subtitle = if (compact && state.showChildSwitcher) activeChildName ?: state.userName else state.userName,
         modifier = modifier,
-        navigationIcon = { ShellBrandMark(state.brand) },
+        navigationIcon = {
+            if (onOpenDrawer != null) {
+                IconButton(onClick = onOpenDrawer) {
+                    Icon(Icons.Outlined.Menu, contentDescription = stringResource(R.string.home_open_menu))
+                }
+            } else {
+                ShellBrandMark(state.brand)
+            }
+        },
         actions = {
             if (state.showChildSwitcher) {
                 ChildSwitcher(
@@ -73,8 +84,11 @@ internal fun ShellTopBar(
                 contentDescription = stringResource(R.string.home_notifications, state.unreadCount),
                 onClick = onOpenNotifications,
             )
-            IconButton(onClick = { confirmLogout = true }) {
-                Icon(Icons.AutoMirrored.Outlined.Logout, contentDescription = stringResource(R.string.home_logout))
+            // Phones sign out from the drawer.
+            if (onOpenDrawer == null) {
+                IconButton(onClick = { confirmLogout = true }) {
+                    Icon(Icons.AutoMirrored.Outlined.Logout, contentDescription = stringResource(R.string.home_logout))
+                }
             }
         },
     )

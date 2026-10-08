@@ -85,5 +85,6 @@ class RoleShellViewModel @Inject constructor(
         menu = NavigationCatalog.menuFor(this),
         children = children,
         activeChildId = activeChild?.id,
+        branchName = activeAssignments.firstNotNullOfOrNull { it.branchName ?: it.schoolName },
     )
 }

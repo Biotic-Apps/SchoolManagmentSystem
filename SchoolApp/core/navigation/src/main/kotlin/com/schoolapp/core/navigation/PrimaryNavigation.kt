@@ -3,11 +3,11 @@ package com.schoolapp.core.navigation
 import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.RoleRef
 
-/** Bottom-bar destinations and the rest, which the "More" sheet shows grouped. */
+/** Bottom-bar destinations and the rest (reachable from the navigation drawer, which lists everything). */
 data class NavigationSplit(val primary: List<MenuItem>, val overflow: List<MenuItem>)
 
 /**
- * The compact bottom bar shows at most [MAX_PRIMARY] destinations plus "More". Each system role puts its
+ * The compact bottom bar shows at most [MAX_PRIMARY] destinations (no "More"). Each system role puts its
  * most used screens there; anything the user lacks is topped up from the menu order. Wider layouts
  * (rail, drawer) show every item and need no split.
  */

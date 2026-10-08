@@ -22,6 +22,8 @@ sealed interface RoleShellUiState {
         val isSwitching: Boolean = false,
         val switchFailed: Boolean = false,
         val brand: ShellBrand = ShellBrand(),
+        /** Branch of the active role, shown in the drawer header. */
+        val branchName: String? = null,
     ) : RoleShellUiState {
         val showChildSwitcher: Boolean get() = activeRole == RoleKey.PARENT && children.isNotEmpty()
         val showRoleSwitcher: Boolean get() = roles.size > 1

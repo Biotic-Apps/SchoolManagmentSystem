@@ -1,10 +1,11 @@
 <resources>
     <string name="home_title">eSchool</string>
-    <string name="home_more">More</string>
-    <string name="home_group_daily">Daily work</string>
-    <string name="home_group_people">Classes &amp; people</string>
+    <string name="home_open_menu">Open menu</string>
+    <string name="home_group_teaching">Classes &amp; learning</string>
+    <string name="home_group_my_work">My work</string>
+    <string name="home_group_people">Students &amp; staff</string>
     <string name="home_group_communication">Communication</string>
-    <string name="home_group_finance">Money &amp; reports</string>
+    <string name="home_group_finance">Fees &amp; finance</string>
     <string name="home_group_school">School setup</string>
     <string name="home_group_account">Account</string>
     <string name="home_coming_in_phase">Coming in Phase %1$d</string>

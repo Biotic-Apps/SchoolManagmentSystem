@@ -5,7 +5,13 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.activity.compose.BackHandler
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -25,11 +31,10 @@ import com.schoolapp.core.designsystem.component.AppScaffold
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.model.RoleRef
 import com.schoolapp.core.navigation.MenuDestination
-import com.schoolapp.core.navigation.NavigationSplit
 import com.schoolapp.core.navigation.NotificationsDestination
 import com.schoolapp.core.navigation.PrimaryNavigation
 import com.schoolapp.feature.home.components.LogoutConfirmDialog
-import com.schoolapp.feature.home.components.MoreMenuSheet
+import com.schoolapp.feature.home.components.ShellModalDrawerSheet
 import com.schoolapp.feature.home.components.ShellBottomBar
 import com.schoolapp.feature.home.components.ShellDrawerSheet
 import com.schoolapp.feature.home.components.ShellNavHost
@@ -72,16 +77,15 @@ fun RoleShellScreen(
                 }
             }
         }
-        val split = remember(state.menu, state.activeRole, layout) {
-            if (layout == ShellNavigationLayout.BottomBar) PrimaryNavigation.split(state.menu, state.activeRole) else NavigationSplit(state.menu, emptyList())
-        }
-        val primary = split.primary
-        val overflow = split.overflow
-        var showMore by rememberSaveable { mutableStateOf(false) }
+        val primary = remember(state.menu, state.activeRole) { PrimaryNavigation.split(state.menu, state.activeRole).primary }
+        val compact = layout == ShellNavigationLayout.BottomBar
+        val drawerState = rememberDrawerState(DrawerValue.Closed)
+        val scope = rememberCoroutineScope()
+        BackHandler(enabled = drawerState.isOpen) { scope.launch { drawerState.close() } }
         var confirmLogout by rememberSaveable { mutableStateOf(false) }
         val title = state.menu.firstOrNull { it.id == currentId }?.label ?: state.brand.name ?: stringResource(R.string.home_title)
 
-        Row(modifier.fillMaxSize()) {
+        val shell: @Composable () -> Unit = { Row(modifier.fillMaxSize()) {
             when (layout) {
                 ShellNavigationLayout.Drawer -> ShellDrawerSheet(state.menu, currentId, onNavigate)
                 ShellNavigationLayout.Rail -> ShellNavigationRail(state.menu, currentId, onNavigate)
@@ -101,20 +105,14 @@ fun RoleShellScreen(
                                 navController.navigate(NotificationsDestination) { launchSingleTop = true }
                             },
                             onLogout = onLogout,
-                            compact = layout == ShellNavigationLayout.BottomBar,
+                            compact = compact,
+                            onOpenDrawer = if (compact) { { scope.launch { drawerState.open() } } } else null,
                         )
                     }
                 },
                 bottomBar = {
-                    if (onMenuScreen && layout == ShellNavigationLayout.BottomBar && state.menu.isNotEmpty()) {
-                        ShellBottomBar(
-                            items = primary,
-                            selectedId = currentId,
-                            hasMore = overflow.isNotEmpty(),
-                            moreSelected = overflow.any { it.id == currentId },
-                            onSelect = onNavigate,
-                            onMore = { showMore = true },
-                        )
+                    if (onMenuScreen && compact && state.menu.isNotEmpty()) {
+                        ShellBottomBar(items = primary, selectedId = currentId, onSelect = onNavigate)
                     }
                 },
             ) { padding ->
@@ -135,22 +133,32 @@ fun RoleShellScreen(
                     )
                 }
             }
-        }
+        } }
 
-        if (showMore) {
-            MoreMenuSheet(
-                items = overflow,
-                selectedId = currentId,
-                onSelect = {
-                    showMore = false
-                    onNavigate(it)
+        if (compact && state.menu.isNotEmpty()) {
+            // Edge swipe only on menu screens so it never fights detail screens' own gestures.
+            ModalNavigationDrawer(
+                drawerState = drawerState,
+                gesturesEnabled = onMenuScreen || drawerState.isOpen,
+                drawerContent = {
+                    ShellModalDrawerSheet(
+                        state = state,
+                        selectedId = currentId.takeIf { onMenuScreen },
+                        onSelect = { id ->
+                            scope.launch { drawerState.close() }
+                            onNavigate(id)
+                        },
+                        onRoleSelected = onRoleSelected,
+                        onLogout = {
+                            scope.launch { drawerState.close() }
+                            confirmLogout = true
+                        },
+                    )
                 },
-                onDismiss = { showMore = false },
-                onLogout = {
-                    showMore = false
-                    confirmLogout = true
-                },
+                content = shell,
             )
+        } else {
+            shell()
         }
         if (confirmLogout) {
             LogoutConfirmDialog(

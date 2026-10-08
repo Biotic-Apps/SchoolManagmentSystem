@@ -68,9 +68,15 @@ class PrimaryNavigationTest {
     }
 
     @Test
-    fun more_sheet_groups_keep_account_last() {
-        val groups = MenuGroups.group(PrimaryNavigation.split(fullMenu(RoleKey.TEACHER), RoleKey.TEACHER).overflow)
+    fun drawer_groups_put_salary_under_my_work_and_account_last() {
+        val groups = MenuGroups.group(fullMenu(RoleKey.TEACHER))
+        assertEquals(MenuGroup.HOME, groups.first().first)
         assertEquals(MenuGroup.ACCOUNT, groups.last().first)
         assertEquals(listOf(MenuIds.PROFILE), groups.last().second.map { it.id })
+        assertEquals(MenuGroup.MY_WORK, MenuGroups.groupOf(MenuIds.MY_SALARY))
+        val teaching = groups.first { it.first == MenuGroup.TEACHING }.second.map { it.id }
+        assertTrue(teaching.containsAll(listOf(MenuIds.CLASSES, MenuIds.TIMETABLE, MenuIds.ATTENDANCE, MenuIds.DIARY)))
+        // The drawer lists every destination, bottom-bar ones included.
+        assertEquals(fullMenu(RoleKey.TEACHER).size, groups.sumOf { it.second.size })
     }
 }
