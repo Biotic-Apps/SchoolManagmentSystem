@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
@@ -14,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,16 +19,13 @@ import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.designsystem.theme.SchoolTheme
 import com.schoolapp.core.navigation.MenuItem
 import com.schoolapp.core.navigation.NavigationCatalog
-import com.schoolapp.feature.home.R
 
+/** Tablet / landscape navigation: every destination of the role, selected one in the teal indicator. */
 @Composable
 internal fun ShellNavigationRail(
     items: List<MenuItem>,
     selectedId: String?,
-    hasMore: Boolean,
-    moreSelected: Boolean,
     onSelect: (String) -> Unit,
-    onMore: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = NavigationRailItemDefaults.colors(
@@ -43,7 +37,7 @@ internal fun ShellNavigationRail(
     )
     Row(modifier.fillMaxHeight()) {
         NavigationRail(containerColor = AppColors.Surface) {
-            // Scrollable so every item and More stay reachable on short (landscape) screens.
+            // Every destination, scrollable so all stay reachable on short (landscape) screens; no "More".
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 items.forEach { item ->
                     NavigationRailItem(
@@ -56,15 +50,6 @@ internal fun ShellNavigationRail(
                         colors = colors,
                     )
                 }
-                if (hasMore) {
-                    NavigationRailItem(
-                        selected = moreSelected,
-                        onClick = onMore,
-                        icon = { NavIcon(Icons.Outlined.MoreHoriz) },
-                        label = { Text(stringResource(R.string.home_more)) },
-                        colors = colors,
-                    )
-                }
             }
         }
         VerticalDivider(color = AppColors.Border)
@@ -74,6 +59,6 @@ internal fun ShellNavigationRail(
 @Preview(heightDp = 640)
 @Composable
 private fun ShellNavigationRailPreview() = SchoolTheme {
-    val items = NavigationCatalog.entries.take(5)
-    ShellNavigationRail(items, items.first().id, hasMore = true, moreSelected = false, onSelect = {}, onMore = {})
+    val items = NavigationCatalog.entries.take(12)
+    ShellNavigationRail(items, items.first().id, onSelect = {})
 }

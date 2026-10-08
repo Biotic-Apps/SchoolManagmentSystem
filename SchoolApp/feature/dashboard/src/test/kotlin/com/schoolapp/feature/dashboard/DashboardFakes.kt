@@ -52,7 +52,10 @@ class FakeTimetableRepository(private val week: List<TeacherSlot>) : TimetableRe
         return AppResult.Success(week)
     }
 
-    override suspend fun sectionTimetable(sectionId: String): AppResult<SectionTimetable> = error("not used")
+    var section: SectionTimetable? = null
+
+    override suspend fun sectionTimetable(sectionId: String): AppResult<SectionTimetable> =
+        section?.let { AppResult.Success(it) } ?: AppResult.Failure(AppError.Network)
 }
 
 /** Organisation stub that only answers what `ScopedSections` asks for. */

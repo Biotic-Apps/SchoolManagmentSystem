@@ -15,6 +15,7 @@ data class TeacherSlotDto(
     val staff: IdNameDto? = null,
     val room: IdNameDto? = null,
     val isSubstitute: Boolean = false,
+    val periodNumber: Int? = null,
 )
 
 @Serializable

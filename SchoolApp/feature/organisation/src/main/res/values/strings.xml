@@ -27,6 +27,27 @@
     <string name="org_classes_empty">No classes yet</string>
     <string name="org_subjects_empty">No subjects yet</string>
     <string name="org_section_capacity">Capacity %1$d</string>
+    <string name="org_class_sections_label">Sections</string>
+    <string name="org_class_no_sections">No sections yet</string>
+    <string name="org_class_no_teacher">no class teacher</string>
+    <string name="org_class_subjects_label">Subjects</string>
+    <string name="org_class_timetable_label">Timetable</string>
+    <string name="org_issue_no_sections">No sections</string>
+    <string name="org_issue_no_subjects">No subjects yet</string>
+    <string name="org_issue_no_class_teacher">No class teacher</string>
+    <string name="org_issue_no_timetable">No timetable</string>
+    <string name="org_tt_empty">%1$s not started</string>
+    <string name="org_tt_draft">%1$s draft</string>
+    <string name="org_tt_published">%1$s published</string>
+    <string name="org_tt_changes">%1$s unpublished changes</string>
+    <plurals name="org_issue_unallocated">
+        <item quantity="one">%1$d subject without a teacher</item>
+        <item quantity="other">%1$d subjects without a teacher</item>
+    </plurals>
+    <plurals name="org_class_section_count">
+        <item quantity="one">%1$d section</item>
+        <item quantity="other">%1$d sections</item>
+    </plurals>
     <plurals name="org_session_terms">
         <item quantity="one">%1$d term</item>
         <item quantity="other">%1$d terms</item>

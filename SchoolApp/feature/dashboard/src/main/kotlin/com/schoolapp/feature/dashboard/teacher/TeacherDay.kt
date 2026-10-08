@@ -8,15 +8,22 @@ import com.schoolapp.core.navigation.DiaryEditorDestination
 import com.schoolapp.feature.dashboard.TodayPeriod
 
 /** Teacher/helper "Today"; counters are null when `/dashboard/teacher-today` failed ([error] set). */
+/** Why a teacher's day may be empty: honest onboarding instead of "all done". */
+enum class TeacherSetup { READY, NOT_ASSIGNED, NOT_PUBLISHED }
+
 @Immutable
 data class TeacherDay(
     val periods: List<TodayPeriod>,
+    val setup: TeacherSetup = TeacherSetup.READY,
     val registers: List<RegisterRow> = emptyList(),
     val diariesPending: List<PendingDiaryRow> = emptyList(),
     val unreadMessages: Int? = null,
     val assignedComplaints: Int? = null,
     val error: AppError? = null,
-)
+) {
+    /** Diaries are due when the teacher has lessons today. */
+    val hasDiariesDue: Boolean get() = periods.isNotEmpty() || diariesPending.isNotEmpty()
+}
 
 /** One section's register today; [label] null = section name unknown. */
 @Immutable

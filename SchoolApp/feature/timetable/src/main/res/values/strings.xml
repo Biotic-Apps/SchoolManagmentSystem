@@ -1,11 +1,11 @@
 <resources>
-    <string name="timetable_empty_day">No periods on this day</string>
-    <string name="timetable_no_sections">No sections to show</string>
     <string name="timetable_now">Now</string>
+    <string name="timetable_next">Next</string>
     <string name="timetable_substitute">Substitute</string>
     <string name="timetable_break">Break</string>
+    <string name="timetable_free">Free</string>
     <string name="timetable_period">Period %1$d</string>
-    <string name="timetable_read_only">Timetables are edited and published on the web panel.</string>
+    <string name="timetable_read_only">Timetables are edited and published on the website.</string>
     <string name="timetable_tab_week">Timetable</string>
     <string name="timetable_tab_calendar">Calendar</string>
     <string name="timetable_tab_activities">Activities</string>
@@ -13,6 +13,51 @@
     <string name="timetable_calendar_title">Upcoming school calendar</string>
     <string name="timetable_calendar_window">Holidays, events and deadlines in the next %1$d days</string>
     <string name="timetable_calendar_empty">Nothing on the calendar in the next few months</string>
+
+    <string name="timetable_view_week">My week</string>
+    <string name="timetable_view_sections">My sections</string>
+    <string name="timetable_layout_day">Day</string>
+    <string name="timetable_layout_week">Week</string>
+    <string name="timetable_today">Today</string>
+    <plurals name="timetable_lessons_today">
+        <item quantity="one">%1$d lesson today</item>
+        <item quantity="other">%1$d lessons today</item>
+    </plurals>
+    <plurals name="timetable_lessons_on">
+        <item quantity="one">%1$d lesson on %2$s</item>
+        <item quantity="other">%1$d lessons on %2$s</item>
+    </plurals>
+
+    <string name="timetable_not_published">Timetable not published yet</string>
+    <string name="timetable_not_published_week">Your school hasn\'t published the timetable yet. Your lessons appear here as soon as it does.</string>
+    <string name="timetable_not_published_child">The school hasn\'t published this class\'s timetable yet. It appears here as soon as it does.</string>
+    <string name="timetable_not_published_section">This section\'s timetable hasn\'t been published yet.</string>
+    <string name="timetable_not_assigned">You aren\'t assigned to any class yet</string>
+    <string name="timetable_not_assigned_message">Ask your principal to assign your classes and subjects. Your lessons appear here once the timetable is published.</string>
+    <string name="timetable_not_created">No timetable yet</string>
+    <string name="timetable_not_created_message">Build this section\'s timetable on the website, then publish it.</string>
+    <string name="timetable_no_sections">No sections to show</string>
+    <string name="timetable_no_my_sections">You aren\'t assigned to any section yet</string>
+    <string name="timetable_holiday">Holiday</string>
+    <string name="timetable_no_school">No school on %1$s</string>
+    <string name="timetable_no_school_message">This isn\'t a working day for your school.</string>
+    <string name="timetable_free_day_today">No lessons today</string>
+    <string name="timetable_free_day">No lessons on %1$s</string>
+    <string name="timetable_free_day_message">Nothing is scheduled for you on this day.</string>
+    <string name="timetable_draft_note">Draft — edit it on the website; your principal publishes it.</string>
+
+    <string name="timetable_state_draft">Draft — not published</string>
+    <string name="timetable_state_published">Published</string>
+    <string name="timetable_state_published_version">Published · v%1$d</string>
+    <string name="timetable_state_changes">Published · unpublished changes</string>
+
+    <string name="timetable_lesson_time">Time</string>
+    <string name="timetable_lesson_class">Class</string>
+    <string name="timetable_lesson_teacher">Teacher</string>
+    <string name="timetable_lesson_room">Room</string>
+    <string name="timetable_mark_attendance">Mark attendance</string>
+    <string name="timetable_write_diary">Write diary</string>
+
     <string-array name="timetable_days_short">
         <item>Mon</item>
         <item>Tue</item>
@@ -21,5 +66,14 @@
         <item>Fri</item>
         <item>Sat</item>
         <item>Sun</item>
+    </string-array>
+    <string-array name="timetable_days_long">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
     </string-array>
 </resources>

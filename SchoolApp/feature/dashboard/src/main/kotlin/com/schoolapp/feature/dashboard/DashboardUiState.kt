@@ -74,4 +74,8 @@ data class TodayPeriod(
     val subtitle: String?,
     val isSubstitute: Boolean,
     val isCurrent: Boolean,
+    /** First period still to start after now (and after the running one). */
+    val isNext: Boolean = false,
+    /** Already over at load time; the card hides these. */
+    val isPast: Boolean = false,
 )

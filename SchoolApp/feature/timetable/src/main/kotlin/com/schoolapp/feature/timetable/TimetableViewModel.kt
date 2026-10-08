@@ -3,11 +3,8 @@ package com.schoolapp.feature.timetable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.schoolapp.core.common.result.AppResult
-import com.schoolapp.core.common.result.map
 import com.schoolapp.core.common.time.AppClock
 import com.schoolapp.core.data.auth.AuthRepository
-import com.schoolapp.core.data.organisation.ScopedSections
-import com.schoolapp.core.data.timetable.TimetableRepository
 import com.schoolapp.core.designsystem.component.SwitcherOption
 import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.SessionContext
@@ -27,10 +24,9 @@ import javax.inject.Inject
 
 /** Read-only timetable; the shown week depends on the active role (see [TimetableMode]). */
 @HiltViewModel
-class TimetableViewModel @Inject constructor(
+class TimetableViewModel @Inject internal constructor(
     private val authRepository: AuthRepository,
-    private val repository: TimetableRepository,
-    private val scopedSections: ScopedSections,
+    private val loader: TimetableLoader,
     private val clock: AppClock,
 ) : ViewModel() {
 
@@ -38,96 +34,139 @@ class TimetableViewModel @Inject constructor(
     val uiState: StateFlow<TimetableUiState> = _uiState.asStateFlow()
 
     private var loadJob: Job? = null
+    private var branchId: String? = null
 
     init {
         viewModelScope.launch {
             val session = authRepository.session.filterNotNull().first()
+            branchId = session.activeBranchId
             when (modeFor(session)) {
-                TimetableMode.MY_WEEK -> loadWeek(TimetableMode.MY_WEEK, studentId = null, subtitle = null)
+                TimetableMode.MY_WEEK -> {
+                    val teacherView = TeacherView.WEEK.takeIf { session.activeRole == RoleKey.TEACHER }
+                    _uiState.update { it.copy(mode = TimetableMode.MY_WEEK, teacherView = teacherView) }
+                    loadOwnWeek()
+                }
                 TimetableMode.CHILD -> authRepository.session.filterNotNull()
                     .map { it.activeChild }
                     .distinctUntilChanged()
                     .collectLatest { child ->
                         val label = child?.let { listOfNotNull(it.fullName, it.className, it.sectionName).joinToString(" · ") }
-                        loadWeek(TimetableMode.CHILD, child?.id, label)
+                        _uiState.update { it.copy(mode = TimetableMode.CHILD, subtitle = label, isLoading = true, error = null) }
+                        loadChild(child?.id)
                     }
-                TimetableMode.SECTION -> loadSections()
+                TimetableMode.SECTION -> {
+                    _uiState.update { it.copy(mode = TimetableMode.SECTION) }
+                    loadSections()
+                }
             }
         }
     }
 
     fun onDaySelected(day: Int) = _uiState.update { it.copy(selectedDay = day) }
 
-    fun retry() {
-        when (_uiState.value.mode) {
-            TimetableMode.SECTION -> _uiState.value.selectedSectionId?.let(::onSectionSelected) ?: loadInBackground { loadSections() }
-            else -> loadInBackground { loadWeek(_uiState.value.mode, currentChildId(), _uiState.value.subtitle) }
-        }
-    }
+    fun onLessonSelected(row: ScheduleRow?) = _uiState.update { it.copy(openLesson = row?.takeIf { r -> r.isLesson }) }
 
-    fun onSectionSelected(sectionId: String) {
-        _uiState.update { it.copy(selectedSectionId = sectionId, isLoading = true, error = null) }
-        loadInBackground {
-            apply(repository.sectionTimetable(sectionId).map { ScheduleBuilder.fromTimetable(it) })
-        }
-    }
-
-    private suspend fun loadWeek(mode: TimetableMode, studentId: String?, subtitle: String?) {
-        _uiState.update { it.copy(mode = mode, subtitle = subtitle, isLoading = true, error = null) }
-        if (mode == TimetableMode.CHILD && studentId == null) {
-            apply(AppResult.Success(emptyList()))
-            return
-        }
-        val showTeacher = mode == TimetableMode.CHILD
-        apply(repository.myWeek(studentId = studentId).map { ScheduleBuilder.fromSlots(it, showTeacher) })
-    }
-
-    private suspend fun loadSections() {
-        _uiState.update { it.copy(mode = TimetableMode.SECTION, isLoading = true, error = null) }
-        when (val result = scopedSections.load()) {
-            is AppResult.Failure -> _uiState.update { it.copy(isLoading = false, error = result.error) }
-            is AppResult.Success -> {
-                val options = result.data.sortedWith(compareBy({ it.className }, { it.name })).map {
-                    SwitcherOption(it.id, listOfNotNull(it.className, it.name).joinToString(" - "))
-                }
-                _uiState.update { it.copy(sections = options) }
-                val first = options.firstOrNull()?.id
-                if (first == null) {
-                    _uiState.update { it.copy(isLoading = false) }
-                } else {
-                    _uiState.update { it.copy(selectedSectionId = first) }
-                    apply(repository.sectionTimetable(first).map { ScheduleBuilder.fromTimetable(it) })
-                }
+    /** Teachers only: switch between the own week and the sections they teach. */
+    fun onTeacherViewSelected(view: TeacherView) {
+        val state = _uiState.value
+        if (state.teacherView == null || state.teacherView == view) return
+        _uiState.update { it.copy(teacherView = view, days = emptyList(), sectionState = null, draftNote = false, error = null) }
+        when (view) {
+            TeacherView.WEEK -> launchLoad { loadOwnWeek() }
+            TeacherView.SECTIONS -> {
+                val selected = state.selectedSectionId
+                if (state.sections.isNotEmpty() && selected != null) onSectionSelected(selected) else launchLoad { loadSections() }
             }
         }
     }
 
-    private fun apply(result: AppResult<List<ScheduleRow>>) {
-        val now = clock.now()
-        val today = now.dayOfWeek.value
-        when (result) {
-            is AppResult.Failure -> _uiState.update { it.copy(isLoading = false, error = result.error) }
+    fun onSectionSelected(sectionId: String) {
+        _uiState.update { it.copy(selectedSectionId = sectionId) }
+        launchLoad { loadSection(sectionId) }
+    }
+
+    fun retry() = launchLoad { reload() }
+
+    /** Pull-to-refresh: the current week stays visible while it reloads. */
+    fun refresh() {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
+            _uiState.update { it.copy(isRefreshing = true) }
+            reload()
+        }
+    }
+
+    private suspend fun reload() {
+        val state = _uiState.value
+        when {
+            state.showsSections -> state.selectedSectionId?.let { loadSection(it) } ?: loadSections()
+            state.mode == TimetableMode.CHILD -> loadChild(authRepository.session.first()?.activeChild?.id)
+            else -> loadOwnWeek()
+        }
+    }
+
+    private suspend fun loadOwnWeek() = show(loader.ownWeek(branchId, week()))
+
+    private suspend fun loadChild(childId: String?) {
+        if (childId == null) {
+            show(AppResult.Success(TimetableWeek(TimetableStatus.NOT_PUBLISHED)))
+            return
+        }
+        show(loader.childWeek(childId, week()))
+    }
+
+    private suspend fun loadSections() {
+        when (val result = loader.sections()) {
+            is AppResult.Failure -> _uiState.update { it.copy(isLoading = false, isRefreshing = false, error = result.error) }
             is AppResult.Success -> {
-                val rows = result.data
-                val days = rows.map { it.day }.distinct().sorted().ifEmpty { DEFAULT_DAYS }
-                val current = ScheduleBuilder.currentPeriodIndex(rows.filter { it.day == today }, now.toLocalTime())
-                _uiState.update {
-                    it.copy(
+                val options = result.data.sortedWith(compareBy({ it.className }, { it.name })).map {
+                    SwitcherOption(it.id, listOfNotNull(it.className, it.name).joinToString(" · "))
+                }
+                val first = options.firstOrNull()?.id
+                _uiState.update { it.copy(sections = options, selectedSectionId = first) }
+                if (first == null) show(AppResult.Success(TimetableWeek(TimetableStatus.NO_SECTIONS))) else loadSection(first)
+            }
+        }
+    }
+
+    private suspend fun loadSection(sectionId: String) {
+        val editor = _uiState.value.mode == TimetableMode.SECTION
+        show(loader.section(sectionId, branchId, editor, week()))
+    }
+
+    private fun show(result: AppResult<TimetableWeek>) {
+        val now = clock.now()
+        val week = WeekDates.forToday(now.toLocalDate())
+        val today = week.dayOf(now.toLocalDate())
+        when (result) {
+            is AppResult.Failure -> _uiState.update { it.copy(isLoading = false, isRefreshing = false, error = result.error) }
+            is AppResult.Success -> {
+                val data = result.data
+                val days = data.days.map { it.day }
+                _uiState.update { state ->
+                    val keep = state.selectedDay.takeIf { state.isRefreshing && it in days }
+                    state.copy(
                         isLoading = false,
-                        rows = rows,
-                        days = days,
+                        isRefreshing = false,
+                        error = null,
+                        status = data.status,
+                        days = data.days,
                         today = today,
-                        selectedDay = if (today in days) today else days.first(),
-                        currentPeriodIndex = current,
+                        selectedDay = keep ?: today?.takeIf { it in days } ?: days.firstOrNull() ?: 1,
+                        markers = data.days.firstOrNull { it.day == today }?.let { DayPlanner.markers(it.rows, now.toLocalTime()) }.orEmpty(),
+                        sectionState = data.sectionState,
+                        sectionVersion = data.sectionVersion,
+                        draftNote = data.draftNote,
+                        openLesson = null,
                     )
                 }
             }
         }
     }
 
-    private suspend fun currentChildId(): String? = authRepository.session.first()?.activeChild?.id
+    private fun week(): WeekDates = WeekDates.forToday(clock.now().toLocalDate())
 
-    private fun loadInBackground(block: suspend () -> Unit) {
+    private fun launchLoad(block: suspend () -> Unit) {
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
@@ -139,9 +178,5 @@ class TimetableViewModel @Inject constructor(
         RoleKey.TEACHER, RoleKey.HELPER -> TimetableMode.MY_WEEK
         RoleKey.PARENT -> TimetableMode.CHILD
         else -> TimetableMode.SECTION
-    }
-
-    private companion object {
-        val DEFAULT_DAYS = (1..6).toList()
     }
 }

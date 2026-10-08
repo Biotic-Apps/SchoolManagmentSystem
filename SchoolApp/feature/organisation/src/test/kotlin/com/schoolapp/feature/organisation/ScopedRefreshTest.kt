@@ -24,6 +24,7 @@ class ScopedRefreshTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private val repository = FakeOrganisationRepository()
+    private val overview = FakeClassesOverviewRepository(repository)
     private val loader = BranchOptionsLoader(
         FakeAuthRepository(TestSessions.session(RoleKey.PRINCIPAL, "branches.view")),
         repository,
@@ -31,7 +32,7 @@ class ScopedRefreshTest {
 
     @Test
     fun classes_refresh_reloads_selected_branch() {
-        val vm = ClassesViewModel(loader, repository, SavedStateHandle())
+        val vm = ClassesViewModel(loader, repository, overview, SavedStateHandle())
         repository.subjects = listOf(Subject("m", "MTH", "Maths"), Subject("e", "ENG", "English"))
         vm.refresh()
         val state = vm.uiState.value
@@ -43,12 +44,12 @@ class ScopedRefreshTest {
 
     @Test
     fun classes_failed_refresh_keeps_lists() {
-        val vm = ClassesViewModel(loader, repository, SavedStateHandle())
+        val vm = ClassesViewModel(loader, repository, overview, SavedStateHandle())
         repository.failure = AppError.Network
         vm.refresh()
         val state = vm.uiState.value
-        assertEquals(listOf("s1"), state.sections.map { it.id })
         assertEquals(listOf("c5"), state.classes.map { it.id })
+        assertEquals(listOf("s1"), state.classes.single().sections.map { it.id })
         assertEquals(AppError.Network, state.error)
         assertFalse(state.isRefreshing)
         assertFalse(state.isLoading)
@@ -57,12 +58,12 @@ class ScopedRefreshTest {
     @Test
     fun classes_branch_switch_failure_does_not_show_previous_branch() {
         repository.branches = listOf(branch("b1"), branch("b2"))
-        val vm = ClassesViewModel(loader, repository, SavedStateHandle())
+        val vm = ClassesViewModel(loader, repository, overview, SavedStateHandle())
         repository.failure = AppError.Network
         vm.onBranchSelected("b2")
         val state = vm.uiState.value
         assertEquals("b2", state.selectedBranchId)
-        assertTrue(state.sections.isEmpty())
+        assertTrue(state.classes.isEmpty())
         assertFalse(state.hasContent)
         assertEquals(AppError.Network, state.error)
     }

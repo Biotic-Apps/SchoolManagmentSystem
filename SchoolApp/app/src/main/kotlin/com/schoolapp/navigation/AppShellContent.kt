@@ -110,7 +110,7 @@ internal val AppShellContent = ShellContent(
             if (shell.activeRole == RoleKey.PARENT) {
                 ParentTimetableScreen(activitiesContent = { ChildActivitiesSection(onOpen = shell::open, modifier = it) })
             } else {
-                TimetableRoute()
+                TimetableRoute(onOpenMenu = shell::openMenu, canOpenMenu = shell::canOpenMenu)
             }
         },
         MenuIds.SYLLABUS to { shell ->

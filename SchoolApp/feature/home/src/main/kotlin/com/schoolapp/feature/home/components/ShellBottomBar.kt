@@ -19,6 +19,10 @@ import com.schoolapp.core.navigation.MenuItem
 import com.schoolapp.core.navigation.NavigationCatalog
 import com.schoolapp.feature.home.R
 
+/**
+ * Phone navigation: at most four role destinations with one-word labels plus "More", which is shown
+ * selected while one of the sheet's destinations is open.
+ */
 @Composable
 internal fun ShellBottomBar(
     items: List<MenuItem>,
@@ -44,7 +48,8 @@ internal fun ShellBottomBar(
                     selected = item.id == selectedId,
                     onClick = { onSelect(item.id) },
                     icon = { NavIcon(item.icon) },
-                    label = { Text(item.shortLabel, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    label = { Text(item.shortLabel, maxLines = 1, softWrap = false, overflow = TextOverflow.Clip) },
+                    alwaysShowLabel = true,
                     colors = colors,
                 )
             }
@@ -53,7 +58,8 @@ internal fun ShellBottomBar(
                     selected = moreSelected,
                     onClick = onMore,
                     icon = { NavIcon(Icons.Outlined.MoreHoriz) },
-                    label = { Text(stringResource(R.string.home_more)) },
+                    label = { Text(stringResource(R.string.home_more), maxLines = 1, softWrap = false) },
+                    alwaysShowLabel = true,
                     colors = colors,
                 )
             }

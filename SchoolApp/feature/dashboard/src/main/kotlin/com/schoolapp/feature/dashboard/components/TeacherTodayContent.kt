@@ -19,8 +19,14 @@ import com.schoolapp.core.navigation.MenuIds
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.dashboard.DashboardUiState
 import com.schoolapp.feature.dashboard.R
+import com.schoolapp.feature.dashboard.greetingName
+import com.schoolapp.feature.dashboard.teacher.TeacherDay
+import com.schoolapp.feature.dashboard.teacher.TeacherSetup
 
-/** Teacher/helper "Today": periods, registers, diaries to write and the inbox counters. */
+/**
+ * Teacher/helper "Today": periods (Now/Next), registers, diaries and non-zero inbox counters. A teacher
+ * without any class gets one onboarding card instead of empty "all done" cards.
+ */
 @Composable
 internal fun TeacherTodayContent(
     state: DashboardUiState.Teacher,
@@ -30,43 +36,54 @@ internal fun TeacherTodayContent(
     modifier: Modifier = Modifier,
 ) {
     val day = state.day
+    val openTimetable = MenuIds.TIMETABLE.takeIf(canOpenMenu)?.let { id -> { onOpenMenu(id) } }
     ScreenColumn(modifier) {
         item(key = "header") {
-            SectionHeader(
-                title = stringResource(R.string.dashboard_greeting, state.userName.substringBefore(' ')),
-                subtitle = state.branchName,
-            )
+            SectionHeader(title = stringResource(R.string.dashboard_greeting, greetingName(state.userName)), subtitle = state.branchName)
         }
         day.error?.let { error -> item(key = "error") { InlineMessage(appErrorMessage(error), StatusTone.Error) } }
-        item(key = "periods") {
-            TodayPeriodsCard(
-                periods = day.periods,
-                onOpenTimetable = MenuIds.TIMETABLE.takeIf(canOpenMenu)?.let { id -> { onOpenMenu(id) } },
+        if (day.setup == TeacherSetup.NOT_ASSIGNED) {
+            item(key = "onboarding") { NotAssignedCard() }
+        } else {
+            item(key = "periods") {
+                TodayPeriodsCard(day.periods, openTimetable, notPublished = day.setup == TeacherSetup.NOT_PUBLISHED)
+            }
+            if (day.error == null) {
+                item(key = "registers") { RegistersCard(day.registers, onOpen) }
+                item(key = "diaries") { DiariesPendingCard(day.diariesPending, onOpen, hasDiariesDue = day.hasDiariesDue) }
+            }
+        }
+        if (day.error == null && day.hasInbox) {
+            item(key = "counters") { InboxCounters(day, onOpenMenu, canOpenMenu) }
+        }
+    }
+}
+
+private val TeacherDay.hasInbox: Boolean get() = (unreadMessages ?: 0) > 0 || (assignedComplaints ?: 0) > 0
+
+/** Only counters with something waiting are shown. */
+@Composable
+private fun InboxCounters(day: TeacherDay, onOpenMenu: (String) -> Unit, canOpenMenu: (String) -> Boolean) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        day.unreadMessages?.takeIf { it > 0 }?.let { count ->
+            StatCard(
+                label = stringResource(R.string.dashboard_unread_messages),
+                value = count.toString(),
+                icon = Icons.AutoMirrored.Outlined.Chat,
+                tone = StatusTone.Info,
+                onClick = MenuIds.MESSAGES.takeIf(canOpenMenu)?.let { id -> { onOpenMenu(id) } },
+                modifier = Modifier.weight(1f),
             )
         }
-        if (day.error == null) {
-            item(key = "registers") { RegistersCard(day.registers, onOpen) }
-            item(key = "diaries") { DiariesPendingCard(day.diariesPending, onOpen) }
-            item(key = "counters") {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    StatCard(
-                        label = stringResource(R.string.dashboard_unread_messages),
-                        value = (day.unreadMessages ?: 0).toString(),
-                        icon = Icons.AutoMirrored.Outlined.Chat,
-                        tone = if ((day.unreadMessages ?: 0) > 0) StatusTone.Info else StatusTone.Neutral,
-                        onClick = MenuIds.MESSAGES.takeIf(canOpenMenu)?.let { id -> { onOpenMenu(id) } },
-                        modifier = Modifier.weight(1f),
-                    )
-                    StatCard(
-                        label = stringResource(R.string.dashboard_assigned_complaints),
-                        value = (day.assignedComplaints ?: 0).toString(),
-                        icon = Icons.Outlined.ReportProblem,
-                        tone = if ((day.assignedComplaints ?: 0) > 0) StatusTone.Warning else StatusTone.Neutral,
-                        onClick = MenuIds.COMPLAINTS.takeIf(canOpenMenu)?.let { id -> { onOpenMenu(id) } },
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-            }
+        day.assignedComplaints?.takeIf { it > 0 }?.let { count ->
+            StatCard(
+                label = stringResource(R.string.dashboard_assigned_complaints),
+                value = count.toString(),
+                icon = Icons.Outlined.ReportProblem,
+                tone = StatusTone.Warning,
+                onClick = MenuIds.COMPLAINTS.takeIf(canOpenMenu)?.let { id -> { onOpenMenu(id) } },
+                modifier = Modifier.weight(1f),
+            )
         }
     }
 }

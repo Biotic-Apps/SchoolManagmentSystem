@@ -4,11 +4,8 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.window.core.layout.WindowSizeClass
 
-enum class ShellNavigationLayout(val primaryCount: Int) {
-    BottomBar(primaryCount = 4),
-    Rail(primaryCount = 5),
-    Drawer(primaryCount = Int.MAX_VALUE),
-}
+/** Phones: 4 destinations + "More" sheet. Tablets/landscape: a scrollable rail or a drawer with every item. */
+enum class ShellNavigationLayout { BottomBar, Rail, Drawer }
 
 @Composable
 internal fun rememberShellNavigationLayout(): ShellNavigationLayout {
@@ -19,7 +16,3 @@ internal fun rememberShellNavigationLayout(): ShellNavigationLayout {
         else -> ShellNavigationLayout.BottomBar
     }
 }
-
-/** Items shown directly in the bar/rail; the rest go to the "More" sheet. */
-internal fun <T> List<T>.splitForLayout(layout: ShellNavigationLayout): Pair<List<T>, List<T>> =
-    if (size <= layout.primaryCount + 1) this to emptyList() else take(layout.primaryCount) to drop(layout.primaryCount)

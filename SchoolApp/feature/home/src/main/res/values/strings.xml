@@ -1,7 +1,12 @@
 <resources>
     <string name="home_title">eSchool</string>
     <string name="home_more">More</string>
-    <string name="home_more_title">All sections</string>
+    <string name="home_group_daily">Daily work</string>
+    <string name="home_group_people">Classes &amp; people</string>
+    <string name="home_group_communication">Communication</string>
+    <string name="home_group_finance">Money &amp; reports</string>
+    <string name="home_group_school">School setup</string>
+    <string name="home_group_account">Account</string>
     <string name="home_coming_in_phase">Coming in Phase %1$d</string>
     <string name="home_coming_soon">Coming soon</string>
     <string name="home_no_menu_title">Nothing to show yet</string>

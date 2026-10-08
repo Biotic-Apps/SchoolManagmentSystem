@@ -44,6 +44,12 @@
     <string name="dashboard_diaries_pending_title">Diaries pending</string>
     <string name="dashboard_diaries_all_done">All of today\'s diaries are written</string>
     <string name="dashboard_diary_general">General</string>
+    <string name="dashboard_diaries_none_due">No diaries due today</string>
+    <string name="dashboard_next">Next</string>
+    <string name="dashboard_periods_over">All of today\'s periods are over</string>
+    <string name="dashboard_timetable_not_published">Your school hasn\'t published the timetable yet</string>
+    <string name="dashboard_not_assigned_title">You\'re not assigned to any class yet</string>
+    <string name="dashboard_not_assigned_message">Your principal assigns classes and subjects. Once that\'s done, your periods, attendance registers and diaries appear here.</string>
     <string name="dashboard_unread_messages">Unread messages</string>
     <string name="dashboard_assigned_complaints">Assigned complaints</string>
     <string name="dashboard_no_child_title">No child linked yet</string>

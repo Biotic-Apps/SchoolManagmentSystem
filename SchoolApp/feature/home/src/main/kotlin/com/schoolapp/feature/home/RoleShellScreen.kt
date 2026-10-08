@@ -25,7 +25,10 @@ import com.schoolapp.core.designsystem.component.AppScaffold
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.model.RoleRef
 import com.schoolapp.core.navigation.MenuDestination
+import com.schoolapp.core.navigation.NavigationSplit
 import com.schoolapp.core.navigation.NotificationsDestination
+import com.schoolapp.core.navigation.PrimaryNavigation
+import com.schoolapp.feature.home.components.LogoutConfirmDialog
 import com.schoolapp.feature.home.components.MoreMenuSheet
 import com.schoolapp.feature.home.components.ShellBottomBar
 import com.schoolapp.feature.home.components.ShellDrawerSheet
@@ -69,21 +72,19 @@ fun RoleShellScreen(
                 }
             }
         }
-        val (primary, overflow) = state.menu.splitForLayout(layout)
+        val split = remember(state.menu, state.activeRole, layout) {
+            if (layout == ShellNavigationLayout.BottomBar) PrimaryNavigation.split(state.menu, state.activeRole) else NavigationSplit(state.menu, emptyList())
+        }
+        val primary = split.primary
+        val overflow = split.overflow
         var showMore by rememberSaveable { mutableStateOf(false) }
+        var confirmLogout by rememberSaveable { mutableStateOf(false) }
         val title = state.menu.firstOrNull { it.id == currentId }?.label ?: state.brand.name ?: stringResource(R.string.home_title)
 
         Row(modifier.fillMaxSize()) {
             when (layout) {
                 ShellNavigationLayout.Drawer -> ShellDrawerSheet(state.menu, currentId, onNavigate)
-                ShellNavigationLayout.Rail -> ShellNavigationRail(
-                    items = primary,
-                    selectedId = currentId,
-                    hasMore = overflow.isNotEmpty(),
-                    moreSelected = overflow.any { it.id == currentId },
-                    onSelect = onNavigate,
-                    onMore = { showMore = true },
-                )
+                ShellNavigationLayout.Rail -> ShellNavigationRail(state.menu, currentId, onNavigate)
                 ShellNavigationLayout.BottomBar -> Unit
             }
             AppScaffold(
@@ -145,6 +146,19 @@ fun RoleShellScreen(
                     onNavigate(it)
                 },
                 onDismiss = { showMore = false },
+                onLogout = {
+                    showMore = false
+                    confirmLogout = true
+                },
+            )
+        }
+        if (confirmLogout) {
+            LogoutConfirmDialog(
+                onConfirm = {
+                    confirmLogout = false
+                    onLogout()
+                },
+                onDismiss = { confirmLogout = false },
             )
         }
     }

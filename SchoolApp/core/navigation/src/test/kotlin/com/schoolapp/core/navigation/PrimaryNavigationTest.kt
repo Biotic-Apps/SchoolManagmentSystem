@@ -1,0 +1,76 @@
+package com.schoolapp.core.navigation
+
+import com.schoolapp.core.model.CustomRole
+import com.schoolapp.core.model.RoleAssignment
+import com.schoolapp.core.model.RoleKey
+import com.schoolapp.core.model.ScopeType
+import com.schoolapp.core.model.SessionContext
+import com.schoolapp.core.model.User
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
+class PrimaryNavigationTest {
+
+    private fun fullMenu(role: RoleKey): List<MenuItem> {
+        val permissions = NavigationCatalog.defaultOrder(role).map { NavigationCatalog.find(it)!!.permission }.toSet()
+        return NavigationCatalog.menuFor(
+            SessionContext(User("u1", "Test"), listOf(RoleAssignment("a1", role, ScopeType.BRANCH)), role, permissions),
+        )
+    }
+
+    private fun primaryIds(role: RoleKey) = PrimaryNavigation.split(fullMenu(role), role).primary.map { it.id }
+
+    @Test
+    fun each_role_gets_its_most_used_four() {
+        assertEquals(listOf(MenuIds.DASHBOARD, MenuIds.CLASSES, MenuIds.ATTENDANCE, MenuIds.DIARY), primaryIds(RoleKey.TEACHER))
+        assertEquals(listOf(MenuIds.DASHBOARD, MenuIds.STUDENTS, MenuIds.DIARY, MenuIds.ATTENDANCE), primaryIds(RoleKey.PARENT))
+        assertEquals(listOf(MenuIds.DASHBOARD, MenuIds.CLASSES, MenuIds.STUDENTS, MenuIds.APPROVALS), primaryIds(RoleKey.PRINCIPAL))
+        assertEquals(listOf(MenuIds.DASHBOARD, MenuIds.FEES, MenuIds.PAYROLL, MenuIds.EXPENSES), primaryIds(RoleKey.ACCOUNTANT))
+    }
+
+    @Test
+    fun every_role_has_at_most_four_and_nothing_is_lost() {
+        RoleKey.entries.forEach { role ->
+            val menu = fullMenu(role)
+            val split = PrimaryNavigation.split(menu, role)
+            assertTrue("$role primary", split.primary.size <= PrimaryNavigation.MAX_PRIMARY)
+            assertEquals("$role", menu.map { it.id }.toSet(), (split.primary + split.overflow).map { it.id }.toSet())
+            assertEquals(MenuIds.DASHBOARD, split.primary.first().id)
+        }
+    }
+
+    @Test
+    fun primary_labels_never_truncate() {
+        RoleKey.entries.forEach { role ->
+            PrimaryNavigation.split(fullMenu(role), role).primary.forEach {
+                assertTrue("$role ${it.id} '${it.shortLabel}'", it.shortLabel.length <= 10)
+            }
+        }
+        assertEquals("Classes", fullMenu(RoleKey.TEACHER).first { it.id == MenuIds.CLASSES }.shortLabel)
+    }
+
+    @Test
+    fun missing_preferred_items_are_topped_up_in_menu_order() {
+        val menu = fullMenu(RoleKey.TEACHER).filterNot { it.id == MenuIds.DIARY }
+        val split = PrimaryNavigation.split(menu, RoleKey.TEACHER)
+        assertEquals(listOf(MenuIds.DASHBOARD, MenuIds.CLASSES, MenuIds.TIMETABLE, MenuIds.ATTENDANCE), split.primary.map { it.id })
+    }
+
+    @Test
+    fun short_menus_have_no_more_and_custom_roles_take_the_first_four() {
+        val small = fullMenu(RoleKey.TEACHER).take(4)
+        assertTrue(PrimaryNavigation.split(small, RoleKey.TEACHER).overflow.isEmpty())
+        val custom = NavigationCatalog.entries.take(7)
+        val split = PrimaryNavigation.split(custom, CustomRole("librarian"))
+        assertEquals(custom.take(4), split.primary)
+        assertEquals(custom.drop(4), split.overflow)
+    }
+
+    @Test
+    fun more_sheet_groups_keep_account_last() {
+        val groups = MenuGroups.group(PrimaryNavigation.split(fullMenu(RoleKey.TEACHER), RoleKey.TEACHER).overflow)
+        assertEquals(MenuGroup.ACCOUNT, groups.last().first)
+        assertEquals(listOf(MenuIds.PROFILE), groups.last().second.map { it.id })
+    }
+}

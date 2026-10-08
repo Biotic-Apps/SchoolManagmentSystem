@@ -3,6 +3,7 @@ package com.schoolapp.core.network.api
 import com.schoolapp.core.network.dto.organisation.AcademicSessionDto
 import com.schoolapp.core.network.dto.organisation.BranchDto
 import com.schoolapp.core.network.dto.organisation.CalendarEventDto
+import com.schoolapp.core.network.dto.organisation.ClassOverviewDto
 import com.schoolapp.core.network.dto.organisation.SchoolClassDto
 import com.schoolapp.core.network.dto.organisation.SectionDto
 import com.schoolapp.core.network.dto.organisation.SubjectDto
@@ -53,6 +54,13 @@ interface OrganisationApi {
         @Query("schoolId") schoolId: String?,
         @Query("pageSize") pageSize: Int = Paging.MAX_PAGE_SIZE,
     ): ApiEnvelope<List<SchoolClassDto>>
+
+    /** One card per class with sections, class teachers, subjects and issues; session defaults to the active one. */
+    @GET("classes/overview")
+    suspend fun classesOverview(
+        @Query("branchId") branchId: String,
+        @Query("sessionId") sessionId: String? = null,
+    ): ApiEnvelope<List<ClassOverviewDto>>
 
     @GET("sections")
     suspend fun sections(

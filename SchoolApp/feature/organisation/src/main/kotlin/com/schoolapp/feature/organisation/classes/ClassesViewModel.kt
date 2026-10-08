@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.schoolapp.core.common.result.AppResult
+import com.schoolapp.core.data.organisation.ClassesOverviewRepository
 import com.schoolapp.core.data.organisation.OrganisationRepository
 import com.schoolapp.feature.organisation.scope.BranchOptionsLoader
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,11 +21,12 @@ import javax.inject.Inject
 class ClassesViewModel @Inject constructor(
     private val optionsLoader: BranchOptionsLoader,
     private val repository: OrganisationRepository,
+    private val overviewRepository: ClassesOverviewRepository,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
-        ClassesUiState(tab = savedStateHandle.get<String>(KEY_TAB)?.let(ClassesTab::valueOf) ?: ClassesTab.SECTIONS),
+        ClassesUiState(tab = ClassesTab.entries.firstOrNull { it.name == savedStateHandle.get<String>(KEY_TAB) } ?: ClassesTab.CLASSES),
     )
     val uiState: StateFlow<ClassesUiState> = _uiState.asStateFlow()
 
@@ -82,18 +84,16 @@ class ClassesViewModel @Inject constructor(
             } else {
                 it.copy(
                     selectedBranchId = branchId, isLoading = true, error = null,
-                    sessionName = null, sections = emptyList(), classes = emptyList(), subjects = emptyList(),
+                    sessionName = null, classes = emptyList(), subjects = emptyList(),
                 )
             }
         }
         branchJob?.cancel()
         branchJob = viewModelScope.launch {
-            val classes = async { repository.classes(schoolId) }
             val subjects = async { repository.subjects(schoolId) }
             val active = (repository.sessions(branchId) as? AppResult.Success)?.data?.firstOrNull { it.isActive }
-            val sections = repository.sections(branchId, active?.id)
-            val results = listOf(sections, classes.await(), subjects.await())
-            val error = results.firstNotNullOfOrNull { (it as? AppResult.Failure)?.error }
+            val classes = overviewRepository.overview(branchId, schoolId, active?.id)
+            val error = listOf(classes, subjects.await()).firstNotNullOfOrNull { (it as? AppResult.Failure)?.error }
             _uiState.update { state ->
                 if (error != null) {
                     state.copy(isLoading = false, isRefreshing = false, error = error)
@@ -103,8 +103,7 @@ class ClassesViewModel @Inject constructor(
                         isRefreshing = false,
                         error = null,
                         sessionName = active?.name,
-                        sections = sections.dataOrEmpty(),
-                        classes = classes.await().dataOrEmpty(),
+                        classes = classes.dataOrEmpty(),
                         subjects = subjects.await().dataOrEmpty(),
                     )
                 }

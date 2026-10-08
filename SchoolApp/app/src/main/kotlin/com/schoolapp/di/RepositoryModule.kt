@@ -14,6 +14,8 @@ import com.schoolapp.core.data.setup.DefaultSetupRepository
 import com.schoolapp.core.data.setup.SetupRepository
 import com.schoolapp.core.data.notifications.DefaultNotificationsRepository
 import com.schoolapp.core.data.notifications.NotificationsRepository
+import com.schoolapp.core.data.organisation.ClassesOverviewRepository
+import com.schoolapp.core.data.organisation.DefaultClassesOverviewRepository
 import com.schoolapp.core.data.organisation.DefaultOrganisationRepository
 import com.schoolapp.core.data.organisation.OrganisationRepository
 import com.schoolapp.core.data.profile.DefaultProfileRepository
@@ -24,6 +26,8 @@ import com.schoolapp.core.data.people.GuardiansRepository
 import com.schoolapp.core.data.people.DefaultGuardiansRepository
 import com.schoolapp.core.data.staff.StaffRepository
 import com.schoolapp.core.data.staff.DefaultStaffRepository
+import com.schoolapp.core.data.timetable.BellScheduleRepository
+import com.schoolapp.core.data.timetable.DefaultBellScheduleRepository
 import com.schoolapp.core.data.timetable.TimetableRepository
 import com.schoolapp.core.data.timetable.DefaultTimetableRepository
 import com.schoolapp.core.data.syllabus.SyllabusRepository
@@ -98,6 +102,9 @@ interface RepositoryModule {
     fun bindOrganisationRepository(impl: DefaultOrganisationRepository): OrganisationRepository
 
     @Binds
+    fun bindClassesOverviewRepository(impl: DefaultClassesOverviewRepository): ClassesOverviewRepository
+
+    @Binds
     fun bindStudentsRepository(impl: DefaultStudentsRepository): StudentsRepository
 
     @Binds
@@ -108,6 +115,9 @@ interface RepositoryModule {
 
     @Binds
     fun bindTimetableRepository(impl: DefaultTimetableRepository): TimetableRepository
+
+    @Binds
+    fun bindBellScheduleRepository(impl: DefaultBellScheduleRepository): BellScheduleRepository
 
     @Binds
     fun bindStudentCalendarRepository(impl: DefaultStudentCalendarRepository): StudentCalendarRepository

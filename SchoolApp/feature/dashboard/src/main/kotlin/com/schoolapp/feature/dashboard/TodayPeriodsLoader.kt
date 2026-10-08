@@ -18,12 +18,16 @@ class TodayPeriodsLoader @Inject constructor(
         val now = clock.now()
         return repository.myWeek().map { slots -> todayPeriods(slots.filter { it.day == now.dayOfWeek.value }, now) }
     }
+
+    /** Whether [sectionId]'s timetable is published; null when unknown (request failed). */
+    suspend fun isPublished(sectionId: String): Boolean? =
+        (repository.sectionTimetable(sectionId) as? AppResult.Success)?.data?.state?.isPublished
 }
 
 /** Maps slots already limited to today, sorted by period. */
 internal fun todayPeriods(slots: List<TeacherSlot>, now: LocalDateTime): List<TodayPeriod> {
     val time = now.toLocalTime()
-    return slots.sortedBy { it.periodIndex }.map { slot ->
+    val mapped = slots.sortedBy { it.periodIndex }.map { slot ->
         val start = slot.startTime?.let(TimeFormat::parseTime)
         val end = slot.endTime?.let(TimeFormat::parseTime)
         TodayPeriod(
@@ -34,6 +38,9 @@ internal fun todayPeriods(slots: List<TeacherSlot>, now: LocalDateTime): List<To
                 ?.let { section -> listOfNotNull(section, slot.roomName).joinToString(" · ") },
             isSubstitute = slot.isSubstitute,
             isCurrent = start != null && end != null && !time.isBefore(start) && time.isBefore(end),
+            isPast = end != null && !time.isBefore(end),
         )
     }
+    val next = mapped.indexOfFirst { !it.isCurrent && !it.isPast }
+    return mapped.mapIndexed { index, period -> if (index == next) period.copy(isNext = true) else period }
 }

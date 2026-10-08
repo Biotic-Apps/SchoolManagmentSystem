@@ -4,7 +4,6 @@ import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.common.time.AppClock
 import com.schoolapp.core.data.dashboard.DashboardRepository
 import com.schoolapp.core.data.organisation.ScopedSections
-import com.schoolapp.core.model.dashboard.TeacherToday
 import com.schoolapp.core.navigation.AttendanceRegisterDestination
 import com.schoolapp.core.navigation.DiaryEditorDestination
 import com.schoolapp.feature.dashboard.TodayPeriodsLoader
@@ -26,9 +25,18 @@ class TeacherDayLoader @Inject constructor(
             is AppResult.Success -> result.data
         }
         val periods = if (data.periods.isNotEmpty()) todayPeriods(data.periods, now) else fallbackPeriods()
-        val labels = if (data.needsLabels()) sectionLabels() else emptyMap()
+        val sections = (scopedSections.load() as? AppResult.Success)?.data
+        val labels = sections.orEmpty().associate { section -> section.id to listOfNotNull(section.className, section.name).joinToString(" - ") }
+        val setup = when {
+            periods.isNotEmpty() || data.registers.isNotEmpty() || data.diariesPending.isNotEmpty() -> TeacherSetup.READY
+            sections?.isEmpty() == true -> TeacherSetup.NOT_ASSIGNED
+            sections == null -> TeacherSetup.READY
+            periodsLoader.isPublished(sections.first().id) == false -> TeacherSetup.NOT_PUBLISHED
+            else -> TeacherSetup.READY
+        }
         return TeacherDay(
             periods = periods,
+            setup = setup,
             registers = data.registers.map { register ->
                 val label = register.sectionLabel ?: labels[register.sectionId]
                 RegisterRow(
@@ -58,11 +66,4 @@ class TeacherDayLoader @Inject constructor(
 
     private suspend fun fallbackPeriods() = (periodsLoader.load() as? AppResult.Success)?.data.orEmpty()
 
-    private suspend fun sectionLabels(): Map<String, String> =
-        (scopedSections.load() as? AppResult.Success)?.data.orEmpty().associate { section ->
-            section.id to listOfNotNull(section.className, section.name).joinToString(" - ")
-        }
-
-    private fun TeacherToday.needsLabels() =
-        registers.any { it.sectionLabel == null } || diariesPending.any { it.sectionLabel == null }
 }

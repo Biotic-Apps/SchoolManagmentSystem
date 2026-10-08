@@ -16,8 +16,7 @@ internal val RoleLabelOverrides: Map<RoleKey, Map<String, String>> = mapOf(
     ),
 )
 
-/** Compact (bottom bar / rail) label overrides per role. */
+/** Compact (bottom bar / rail) label overrides per role; at most 10 characters so they never truncate. */
 internal val RoleShortLabelOverrides: Map<RoleKey, Map<String, String>> = mapOf(
-    RoleKey.TEACHER to mapOf(MenuIds.CLASSES to "My Classes"),
     RoleKey.PARENT to mapOf(MenuIds.STUDENTS to "Child", MenuIds.PROGRESS to "Results"),
 )

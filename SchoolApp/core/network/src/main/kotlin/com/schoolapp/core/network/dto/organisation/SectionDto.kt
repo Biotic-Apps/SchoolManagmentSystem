@@ -13,6 +13,7 @@ data class SectionDto(
     val name: String,
     val capacity: Int? = null,
     val room: IdNameDto? = null,
+    val classTeacher: IdNameDto? = null,
     val studentCount: Int = 0,
     val status: String? = null,
 )

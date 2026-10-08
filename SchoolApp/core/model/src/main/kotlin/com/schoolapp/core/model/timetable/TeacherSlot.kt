@@ -1,6 +1,9 @@
 package com.schoolapp.core.model.timetable
 
-/** One period from `/timetables/me`; times are API `HH:mm`, [day] is ISO 1 (Mon) to 7 (Sun). */
+/**
+ * One period from `/timetables/me`; times are API `HH:mm` from that day's schedule, [day] is ISO 1 (Mon)
+ * to 7 (Sun), [periodNumber] is "Period N" among the day's teaching periods (null on older servers).
+ */
 data class TeacherSlot(
     val date: String?,
     val day: Int,
@@ -13,4 +16,5 @@ data class TeacherSlot(
     val staffName: String?,
     val roomName: String?,
     val isSubstitute: Boolean,
+    val periodNumber: Int? = null,
 )
