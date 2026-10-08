@@ -1,4 +1,4 @@
-import { Archive, ArchiveRestore, Eye, Pencil } from "lucide-react";
+import { Archive, ArchiveRestore, Eye, Pencil, Trash2 } from "lucide-react";
 import type { DataTableColumn } from "@/components/shared/DataTable";
 import { RowActions } from "@/components/shared/RowActions";
 import { StatusBadge } from "@/components/shared/StatusBadge";
@@ -10,6 +10,8 @@ export interface SchoolRowHandlers {
   onView: (school: School) => void;
   onEdit?: (school: School) => void;
   onToggleStatus?: (school: School) => void;
+  /** Super admin only: permanent delete. */
+  onDelete?: (school: School) => void;
   canArchive: boolean;
   canActivate: boolean;
 }
@@ -35,11 +37,19 @@ export function schoolColumns(handlers: SchoolRowHandlers): DataTableColumn<Scho
               { id: "edit", label: "Edit", icon: Pencil, onSelect: () => handlers.onEdit?.(row), hidden: !handlers.onEdit },
               {
                 id: "status",
-                label: archiving ? "Archive" : "Activate",
+                label: archiving ? "Archive" : "Restore",
                 icon: archiving ? Archive : ArchiveRestore,
                 danger: archiving,
                 onSelect: () => handlers.onToggleStatus?.(row),
                 hidden: archiving ? !handlers.canArchive : !handlers.canActivate,
+              },
+              {
+                id: "delete",
+                label: "Delete permanently",
+                icon: Trash2,
+                danger: true,
+                onSelect: () => handlers.onDelete?.(row),
+                hidden: !handlers.onDelete,
               },
             ]}
           />

@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { DetailDrawer } from "@/components/shared/DetailDrawer";
 import { DetailList } from "@/components/shared/DetailList";
 import { ErrorState } from "@/components/shared/ErrorState";
@@ -17,9 +17,11 @@ interface SchoolDetailDrawerProps {
   school: School | null;
   onClose: () => void;
   onEdit?: (school: School) => void;
+  /** Super admin only: opens the permanent delete dialog. */
+  onDelete?: (school: School) => void;
 }
 
-export function SchoolDetailDrawer({ school, onClose, onEdit }: SchoolDetailDrawerProps) {
+export function SchoolDetailDrawer({ school, onClose, onEdit, onDelete }: SchoolDetailDrawerProps) {
   const query = useSchool(school?.id ?? null);
   const data = query.data ?? school;
 
@@ -31,11 +33,21 @@ export function SchoolDetailDrawer({ school, onClose, onEdit }: SchoolDetailDraw
       description={data && <StatusBadge status={data.status} />}
       actions={
         data &&
-        onEdit && (
-          <Button variant="secondary" size="sm" onClick={() => onEdit(data)}>
-            <Pencil />
-            Edit
-          </Button>
+        (onEdit || onDelete) && (
+          <>
+            {onEdit && (
+              <Button variant="secondary" size="sm" onClick={() => onEdit(data)}>
+                <Pencil />
+                Edit
+              </Button>
+            )}
+            {onDelete && (
+              <Button variant="danger" size="sm" onClick={() => onDelete(data)}>
+                <Trash2 />
+                Delete permanently
+              </Button>
+            )}
+          </>
         )
       }
     >

@@ -22,13 +22,13 @@ export function SchoolStatusDialog({ school, onClose }: SchoolStatusDialogProps)
     <ConfirmDialog
       open={!!school}
       onOpenChange={(open) => !open && onClose()}
-      title={archiving ? `Archive ${school?.name}?` : `Activate ${school?.name}?`}
+      title={archiving ? `Archive ${school?.name}?` : `Restore ${school?.name}?`}
       description={
         archiving
-          ? "Archived schools are hidden from day-to-day lists. History is kept and you can activate it again."
-          : "The school becomes available again in all lists."
+          ? "Everyone in this school (principal, staff, parents) will no longer be able to sign in, and it is hidden from day-to-day lists. All records are kept and you can restore it any time."
+          : "The school becomes active again and its users can sign in as before."
       }
-      confirmLabel={archiving ? "Archive" : "Activate"}
+      confirmLabel={archiving ? "Archive" : "Restore"}
       tone={archiving ? "danger" : "primary"}
       loading={mutation.isPending}
       onConfirm={confirm}

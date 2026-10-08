@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { RECORD_STATUS_OPTIONS } from "@/config/options";
 import { SchoolSetupDialog } from "@/features/school-setup/components/SchoolSetupDialog";
+import { DeleteSchoolDialog } from "../deletion/DeleteSchoolDialog";
 import { useSchoolsPage } from "../use-schools-page";
 import { SchoolDetailDrawer } from "./SchoolDetailDrawer";
 import { SchoolFormDialog } from "./SchoolFormDialog";
@@ -61,7 +62,15 @@ export function SchoolsPage() {
         school={page.detail.item}
         onClose={page.detail.close}
         onEdit={page.canEdit ? page.form.show : undefined}
+        onDelete={page.canDelete ? page.deleteTarget.show : undefined}
       />
+      {page.deleteTarget.item && (
+        <DeleteSchoolDialog
+          school={page.deleteTarget.item}
+          onClose={page.deleteTarget.close}
+          onDeleted={page.onDeleted}
+        />
+      )}
     </>
   );
 }

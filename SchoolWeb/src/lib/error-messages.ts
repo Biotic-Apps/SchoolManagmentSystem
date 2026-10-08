@@ -19,10 +19,33 @@ const FRIENDLY: Record<string, string> = {
   GATEWAY_DISABLED: "Online payment is not available for this school yet.",
   DAY_CLOSED: "This day's collection is closed; back-dated cash payments are blocked.",
   NEGATIVE_STOCK: "Not enough stock for this movement.",
+  CONFIRM_CODE_MISMATCH: "The code you typed doesn't match the school code.",
 };
 
 // For these codes the server message is more specific than the generic text.
-const SERVER_MESSAGE_CODES = new Set(["CONFLICT", "RECORD_LOCKED", "CLEARANCE_REQUIRED", "NEGATIVE_STOCK"]);
+const SERVER_MESSAGE_CODES = new Set([
+  "CONFLICT",
+  "RECORD_LOCKED",
+  "CLEARANCE_REQUIRED",
+  "NEGATIVE_STOCK",
+  // Academics & timetable (docs/api/academics-timetable-contract.md)
+  "SECTION_IN_USE",
+  "SUBJECT_IN_USE",
+  "SUBJECT_NOT_IN_CLASS",
+  "SUBJECT_NOT_IN_GROUP",
+  "STAFF_LEFT",
+  "OWN_ASSIGNMENT",
+  "UNKNOWN_STAFF",
+  "UNKNOWN_ROOM",
+  "ROOM_NAME_TAKEN",
+  "PERIOD_NOT_ON_DAY",
+  "BREAK_PERIOD",
+  "NON_WORKING_DAY",
+  "PERIODS_IN_USE",
+  "NOTHING_TO_PUBLISH",
+  "NOTHING_TO_DISCARD",
+  "TIMETABLE_CONFLICTS",
+]);
 
 const FALLBACK = "Something went wrong. Please try again.";
 
@@ -41,4 +64,16 @@ export function errorMessage(error: unknown): string {
   if (isRouteMissing(error)) return OUT_OF_DATE;
   if (SERVER_MESSAGE_CODES.has(error.code) && error.message) return error.message;
   return FRIENDLY[error.code] ?? FALLBACK;
+}
+
+/** Server lists like `details: ["English: 2 teacher assignments, 11 lessons"]`, if any. */
+export function errorDetails(error: unknown): string[] {
+  if (!(error instanceof ApiError) || !Array.isArray(error.details)) return [];
+  return error.details.filter((item): item is string => typeof item === "string");
+}
+
+/** errorMessage plus the server's detail lines: "This subject is in use (English: 11 lessons)". */
+export function errorWithDetails(error: unknown): string {
+  const details = errorDetails(error);
+  return details.length ? `${errorMessage(error)} (${details.join("; ")})` : errorMessage(error);
 }

@@ -51,6 +51,6 @@ export function useSchoolStatus() {
   return useApiMutation({
     mutationFn: ({ id, action }: { id: string; action: StatusAction }) => http.post(`/schools/${id}/${action}`),
     invalidate: [schoolKeys.all],
-    success: (_, vars) => (vars.action === "archive" ? "School archived" : "School activated"),
+    success: (_, vars) => (vars.action === "archive" ? "School archived" : "School restored"),
   });
 }
