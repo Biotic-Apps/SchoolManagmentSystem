@@ -1,21 +1,21 @@
-package com.schoolapp.feature.auth.phone
+package com.schoolapp.feature.auth.emailcode
 
 import androidx.compose.runtime.Immutable
 import com.schoolapp.feature.auth.LoginFailure
 
-/** Parent phone sign-in: enter the number, then the texted code. A 2FA step, if any, is the shared one. */
-enum class PhoneStep { PHONE, CODE }
+/** Parent email-code sign-in: enter the email, then the emailed code. A 2FA step, if any, is the shared one. */
+enum class EmailStep { EMAIL, CODE }
 
-enum class PhoneFieldError { REQUIRED, INVALID_PHONE, INVALID_CODE }
+enum class EmailFieldError { REQUIRED, INVALID_EMAIL, INVALID_CODE }
 
 @Immutable
-data class PhoneSignInUiState(
+data class EmailSignInUiState(
     val active: Boolean = false,
-    val step: PhoneStep = PhoneStep.PHONE,
-    val phone: String = "",
+    val step: EmailStep = EmailStep.EMAIL,
+    val email: String = "",
     val code: String = "",
-    val phoneError: PhoneFieldError? = null,
-    val codeError: PhoneFieldError? = null,
+    val emailError: EmailFieldError? = null,
+    val codeError: EmailFieldError? = null,
     val isSubmitting: Boolean = false,
     val failure: LoginFailure? = null,
     /** Seconds until another code may be requested; 0 = resend allowed. */

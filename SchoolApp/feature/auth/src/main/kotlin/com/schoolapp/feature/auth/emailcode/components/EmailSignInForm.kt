@@ -1,4 +1,4 @@
-package com.schoolapp.feature.auth.phone.components
+package com.schoolapp.feature.auth.emailcode.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,26 +20,26 @@ import com.schoolapp.feature.auth.LoginFailure
 import com.schoolapp.feature.auth.R
 import com.schoolapp.feature.auth.components.messageRes
 import com.schoolapp.feature.auth.components.tone
-import com.schoolapp.feature.auth.phone.PhoneSignInActions
-import com.schoolapp.feature.auth.phone.PhoneSignInUiState
-import com.schoolapp.feature.auth.phone.PhoneStep
+import com.schoolapp.feature.auth.emailcode.EmailSignInActions
+import com.schoolapp.feature.auth.emailcode.EmailSignInUiState
+import com.schoolapp.feature.auth.emailcode.EmailStep
 
-/** Parent sign-in by texted code: the number first, then the code. */
+/** Parent sign-in by emailed code: the address first, then the code. */
 @Composable
-internal fun PhoneSignInForm(state: PhoneSignInUiState, actions: PhoneSignInActions, modifier: Modifier = Modifier) {
+internal fun EmailSignInForm(state: EmailSignInUiState, actions: EmailSignInActions, modifier: Modifier = Modifier) {
     AppCard(modifier.fillMaxWidth(), contentPadding = 24.dp) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
-                    text = stringResource(R.string.auth_phone_title),
+                    text = stringResource(R.string.auth_email_code_title),
                     style = MaterialTheme.typography.titleLarge,
                     color = AppColors.TextPrimary,
                     modifier = Modifier.semantics { heading() },
                 )
                 Text(
                     text = when (state.step) {
-                        PhoneStep.PHONE -> stringResource(R.string.auth_phone_message)
-                        PhoneStep.CODE -> stringResource(R.string.auth_phone_code_message, state.phone.trim())
+                        EmailStep.EMAIL -> stringResource(R.string.auth_email_code_message)
+                        EmailStep.CODE -> stringResource(R.string.auth_email_code_code_message, state.email.trim())
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = AppColors.TextSecondary,
@@ -47,8 +47,8 @@ internal fun PhoneSignInForm(state: PhoneSignInUiState, actions: PhoneSignInActi
             }
             state.failure?.let { InlineMessage(text = stringResource(it.messageRes()), tone = it.tone()) }
             when (state.step) {
-                PhoneStep.PHONE -> PhoneNumberStep(state, actions)
-                PhoneStep.CODE -> PhoneCodeStep(state, actions)
+                EmailStep.EMAIL -> EmailAddressStep(state, actions)
+                EmailStep.CODE -> EmailCodeStep(state, actions)
             }
         }
     }
@@ -56,21 +56,21 @@ internal fun PhoneSignInForm(state: PhoneSignInUiState, actions: PhoneSignInActi
 
 @Preview
 @Composable
-private fun PhoneSignInFormPreview() = SchoolTheme {
-    PhoneSignInForm(PhoneSignInUiState(active = true, phone = "0300 1234567"), PhoneSignInActions())
+private fun EmailSignInFormPreview() = SchoolTheme {
+    EmailSignInForm(EmailSignInUiState(active = true, email = "parent@example.com"), EmailSignInActions())
 }
 
 @Preview
 @Composable
-private fun PhoneSignInFormCodePreview() = SchoolTheme {
-    PhoneSignInForm(
-        PhoneSignInUiState(
+private fun EmailSignInFormCodePreview() = SchoolTheme {
+    EmailSignInForm(
+        EmailSignInUiState(
             active = true,
-            step = PhoneStep.CODE,
-            phone = "0300 1234567",
+            step = EmailStep.CODE,
+            email = "parent@example.com",
             resendInSeconds = 42,
             failure = LoginFailure.OTP_INVALID,
         ),
-        PhoneSignInActions(),
+        EmailSignInActions(),
     )
 }

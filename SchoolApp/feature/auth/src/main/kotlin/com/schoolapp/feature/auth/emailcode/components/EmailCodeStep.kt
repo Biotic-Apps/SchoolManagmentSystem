@@ -1,4 +1,4 @@
-package com.schoolapp.feature.auth.phone.components
+package com.schoolapp.feature.auth.emailcode.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,18 +15,18 @@ import com.schoolapp.core.designsystem.component.FieldKind
 import com.schoolapp.core.designsystem.component.PrimaryButton
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.feature.auth.R
-import com.schoolapp.feature.auth.phone.PhoneSignInActions
-import com.schoolapp.feature.auth.phone.PhoneSignInUiState
+import com.schoolapp.feature.auth.emailcode.EmailSignInActions
+import com.schoolapp.feature.auth.emailcode.EmailSignInUiState
 
 private const val SECONDS_PER_MINUTE = 60
 
 @Composable
-internal fun PhoneCodeStep(state: PhoneSignInUiState, actions: PhoneSignInActions, modifier: Modifier = Modifier) {
+internal fun EmailCodeStep(state: EmailSignInUiState, actions: EmailSignInActions, modifier: Modifier = Modifier) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         AppTextField(
             value = state.code,
             onValueChange = actions.onCodeChange,
-            label = stringResource(R.string.auth_phone_code_label),
+            label = stringResource(R.string.auth_email_code_code_label),
             errorText = state.codeError?.let { stringResource(it.messageRes()) },
             enabled = !state.isSubmitting,
             kind = FieldKind.OneTimeCode,
@@ -34,7 +34,7 @@ internal fun PhoneCodeStep(state: PhoneSignInUiState, actions: PhoneSignInAction
             onImeAction = actions.onVerify,
         )
         PrimaryButton(
-            text = stringResource(R.string.auth_phone_verify),
+            text = stringResource(R.string.auth_email_code_verify),
             onClick = actions.onVerify,
             loading = state.isSubmitting,
             modifier = Modifier.fillMaxWidth(),
@@ -44,19 +44,19 @@ internal fun PhoneCodeStep(state: PhoneSignInUiState, actions: PhoneSignInAction
             AppTextButton(
                 text = if (waiting) {
                     stringResource(
-                        R.string.auth_phone_resend_in,
+                        R.string.auth_email_code_resend_in,
                         state.resendInSeconds / SECONDS_PER_MINUTE,
                         state.resendInSeconds % SECONDS_PER_MINUTE,
                     )
                 } else {
-                    stringResource(R.string.auth_phone_resend)
+                    stringResource(R.string.auth_email_code_resend)
                 },
                 onClick = actions.onResend,
                 enabled = !waiting && !state.isSubmitting,
             )
             AppTextButton(
-                text = stringResource(R.string.auth_phone_change_number),
-                onClick = actions.onChangeNumber,
+                text = stringResource(R.string.auth_email_code_change_email),
+                onClick = actions.onChangeEmail,
                 enabled = !state.isSubmitting,
                 contentColor = AppColors.TextSecondary,
             )

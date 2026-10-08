@@ -13,5 +13,5 @@ data class LoginActions(
     val onToggleCodeMode: () -> Unit = {},
     val onVerify: () -> Unit = {},
     val onBackToSignIn: () -> Unit = {},
-    val onUsePhoneCode: () -> Unit = {},
+    val onUseEmailCode: () -> Unit = {},
 )

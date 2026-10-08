@@ -1,4 +1,4 @@
-package com.schoolapp.feature.auth.phone
+package com.schoolapp.feature.auth.emailcode
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -19,17 +19,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * Parent phone + OTP sign-in (contract phase 6 §B). Success follows the session flow like password
+ * Parent email + OTP sign-in (contract phase 6 §B). Success follows the session flow like password
  * sign-in; a 2FA challenge is handed to the login screen's shared verification step.
  */
 @HiltViewModel
-class PhoneSignInViewModel @Inject constructor(
+class EmailSignInViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(restoredState())
-    val uiState: StateFlow<PhoneSignInUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<EmailSignInUiState> = _uiState.asStateFlow()
 
     private var countdown: Job? = null
 
@@ -38,52 +38,52 @@ class PhoneSignInViewModel @Inject constructor(
     fun onUsePassword() {
         if (_uiState.value.isSubmitting) return
         setActive(false)
-        toPhoneStep()
+        toEmailStep()
     }
 
-    /** System back: from the code step to the number, from the number back to password sign-in. */
-    fun onBack() = if (_uiState.value.step == PhoneStep.CODE) onChangeNumber() else onUsePassword()
+    /** System back: from the code step to the email, from the email back to password sign-in. */
+    fun onBack() = if (_uiState.value.step == EmailStep.CODE) onChangeEmail() else onUsePassword()
 
-    fun onPhoneChange(value: String) {
-        savedStateHandle[KEY_PHONE] = value
-        _uiState.update { it.copy(phone = value, phoneError = null, failure = null) }
+    fun onEmailChange(value: String) {
+        savedStateHandle[KEY_EMAIL] = value
+        _uiState.update { it.copy(email = value, emailError = null, failure = null) }
     }
 
     fun onCodeChange(value: String) = _uiState.update { it.copy(code = value, codeError = null, failure = null) }
 
     fun onSendCode() {
         val current = _uiState.value
-        if (current.isSubmitting || current.step != PhoneStep.PHONE) return
-        PhoneSignInValidator.phone(current.phone)?.let { error ->
-            _uiState.update { it.copy(phoneError = error) }
+        if (current.isSubmitting || current.step != EmailStep.EMAIL) return
+        EmailSignInValidator.email(current.email)?.let { error ->
+            _uiState.update { it.copy(emailError = error) }
             return
         }
-        requestCode(PhoneSignInValidator.normalizePhone(current.phone))
+        requestCode(EmailSignInValidator.normalizeEmail(current.email))
     }
 
     fun onResend() {
         val current = _uiState.value
-        if (current.isSubmitting || current.step != PhoneStep.CODE || current.resendInSeconds > 0) return
-        requestCode(PhoneSignInValidator.normalizePhone(current.phone))
+        if (current.isSubmitting || current.step != EmailStep.CODE || current.resendInSeconds > 0) return
+        requestCode(EmailSignInValidator.normalizeEmail(current.email))
     }
 
-    fun onChangeNumber() {
+    fun onChangeEmail() {
         if (_uiState.value.isSubmitting) return
-        toPhoneStep()
+        toEmailStep()
     }
 
     fun onVerify() {
         val current = _uiState.value
-        if (current.isSubmitting || current.step != PhoneStep.CODE) return
-        PhoneSignInValidator.code(current.code)?.let { error ->
+        if (current.isSubmitting || current.step != EmailStep.CODE) return
+        EmailSignInValidator.code(current.code)?.let { error ->
             _uiState.update { it.copy(codeError = error) }
             return
         }
         _uiState.update { it.copy(isSubmitting = true, failure = null) }
         viewModelScope.launch {
-            val phone = PhoneSignInValidator.normalizePhone(current.phone)
-            val code = PhoneSignInValidator.normalizeCode(current.code)
-            when (val result = authRepository.verifyOtp(phone, code)) {
+            val email = EmailSignInValidator.normalizeEmail(current.email)
+            val code = EmailSignInValidator.normalizeCode(current.code)
+            when (val result = authRepository.verifyOtp(email, code)) {
                 is AppResult.Success -> when (val outcome = result.data) {
                     LoginOutcome.SignedIn -> _uiState.update { it.copy(isSubmitting = false, code = "") }
                     is LoginOutcome.TwoFactorRequired -> handOffTwoFactor(outcome.challengeId)
@@ -97,13 +97,13 @@ class PhoneSignInViewModel @Inject constructor(
 
     fun onChallengeHandled() = _uiState.update { it.copy(pendingChallengeId = null) }
 
-    private fun requestCode(phone: String) {
+    private fun requestCode(email: String) {
         _uiState.update { it.copy(isSubmitting = true, failure = null) }
         viewModelScope.launch {
-            when (val result = authRepository.requestOtp(phone)) {
+            when (val result = authRepository.requestOtp(email)) {
                 is AppResult.Success -> {
-                    savedStateHandle[KEY_STEP] = PhoneStep.CODE.name
-                    _uiState.update { it.copy(isSubmitting = false, step = PhoneStep.CODE, code = "", codeError = null) }
+                    savedStateHandle[KEY_STEP] = EmailStep.CODE.name
+                    _uiState.update { it.copy(isSubmitting = false, step = EmailStep.CODE, code = "", codeError = null) }
                     startCountdown(result.data)
                 }
                 is AppResult.Failure -> _uiState.update {
@@ -129,36 +129,36 @@ class PhoneSignInViewModel @Inject constructor(
         savedStateHandle.remove<Boolean>(KEY_ACTIVE)
         savedStateHandle.remove<String>(KEY_STEP)
         _uiState.update {
-            PhoneSignInUiState(phone = it.phone, pendingChallengeId = challengeId)
+            EmailSignInUiState(email = it.email, pendingChallengeId = challengeId)
         }
     }
 
     private fun setActive(active: Boolean) {
         savedStateHandle[KEY_ACTIVE] = active
-        _uiState.update { it.copy(active = active, failure = null, phoneError = null, codeError = null) }
+        _uiState.update { it.copy(active = active, failure = null, emailError = null, codeError = null) }
     }
 
-    private fun toPhoneStep() {
+    private fun toEmailStep() {
         countdown?.cancel()
         savedStateHandle.remove<String>(KEY_STEP)
         _uiState.update {
-            it.copy(step = PhoneStep.PHONE, code = "", codeError = null, failure = null, resendInSeconds = 0)
+            it.copy(step = EmailStep.EMAIL, code = "", codeError = null, failure = null, resendInSeconds = 0)
         }
     }
 
-    private fun restoredState(): PhoneSignInUiState {
-        val step = PhoneStep.entries.firstOrNull { it.name == savedStateHandle.get<String>(KEY_STEP) } ?: PhoneStep.PHONE
-        return PhoneSignInUiState(
+    private fun restoredState(): EmailSignInUiState {
+        val step = EmailStep.entries.firstOrNull { it.name == savedStateHandle.get<String>(KEY_STEP) } ?: EmailStep.EMAIL
+        return EmailSignInUiState(
             active = savedStateHandle.get<Boolean>(KEY_ACTIVE) == true,
             step = step,
-            phone = savedStateHandle.get<String>(KEY_PHONE).orEmpty(),
+            email = savedStateHandle.get<String>(KEY_EMAIL).orEmpty(),
         )
     }
 
     private companion object {
-        const val KEY_ACTIVE = "phoneSignInActive"
-        const val KEY_PHONE = "phoneSignInPhone"
-        const val KEY_STEP = "phoneSignInStep"
+        const val KEY_ACTIVE = "emailSignInActive"
+        const val KEY_EMAIL = "emailSignInEmail"
+        const val KEY_STEP = "emailSignInStep"
         const val TICK_MILLIS = 1_000L
     }
 }

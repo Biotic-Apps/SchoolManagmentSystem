@@ -5,16 +5,16 @@ import { errorMessage } from "@/lib/error-messages";
 import { useOtpLoginMutation } from "./api";
 import { otpCodeSchema, type OtpCodeValues } from "./schemas";
 
-const WRONG_CODE = "The code is wrong or has expired. Check the SMS or request a new code.";
+const WRONG_CODE = "The code is wrong or has expired. Check the email or request a new code.";
 
-/** Phone sign-in step 2: the SMS code → tokens, or a 2FA challenge handed to `onChallenge`. */
-export function useOtpCodeForm(phone: string, onChallenge: (challengeId: string) => void) {
+/** Email-code sign-in step 2: the emailed code → tokens, or a 2FA challenge handed to `onChallenge`. */
+export function useOtpCodeForm(email: string, onChallenge: (challengeId: string) => void) {
   const mutation = useOtpLoginMutation();
   const form = useForm<OtpCodeValues>({ resolver: zodResolver(otpCodeSchema), defaultValues: { code: "" } });
 
   const submit = form.handleSubmit(({ code }) =>
     mutation.mutate(
-      { phone, code: code.replace(/\s/g, "") },
+      { email, code: code.replace(/\s/g, "") },
       { onSuccess: (challenge) => challenge && onChallenge(challenge.challengeId) },
     ),
   );

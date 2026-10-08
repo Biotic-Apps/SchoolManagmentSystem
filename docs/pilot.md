@@ -59,7 +59,7 @@ Short, hands-on sessions on the real school data, in the school. Each person sig
 | Teacher | 1 h (+ 30 min on the Android app) | Mark attendance, diary and homework, syllabus progress, marks entry, messages, meetings, own salary/leave |
 | Helper | 30 min | Draft attendance/diary, activities, own leave |
 | Accountant | 2 h | Invoices, recording payments, verifying payment proofs, receipts, reversals with reason, expenses, payroll, inventory, reports |
-| Parents | 10-min demo at a parent meeting + one-page handout | Install app / open the web link, sign in with phone code, child switcher, diary, attendance, fees and receipts, messages |
+| Parents | 10-min demo at a parent meeting + one-page handout | Install app / open the web link, sign in with email code, child switcher, diary, attendance, fees and receipts, messages |
 
 Hand-outs: one page per role with the sign-in link, the 3–5 daily tasks, and who to call for help.
 
@@ -110,7 +110,7 @@ app. Anything that fails goes into the feedback log (section 8) with a screensho
 - [ ] Export a fee report (XLSX/PDF).
 
 **Parent** — menu: Home, Child Profile, Diary, Attendance, Progress & Results, Syllabus, Timetable/Calendar/Activities, Fees/Dues/Receipts, Certificates, Messages/Notices/Requests, Meetings, Complaints, Profile
-- [ ] Sign in with phone code (W + A); wrong code is refused; email/password sign-in still works.
+- [ ] Sign in with email code (W + A); wrong code is refused; email/password sign-in still works.
 - [ ] Child switcher shows only own children; each screen follows the selected child.
 - [ ] See today's attendance and diary, fee dues, download a receipt, upload a payment proof.
 - [ ] Message the class teacher; book a meeting slot; file a complaint and see its status.

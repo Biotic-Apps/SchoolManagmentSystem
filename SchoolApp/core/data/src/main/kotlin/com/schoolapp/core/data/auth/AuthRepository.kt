@@ -14,13 +14,13 @@ interface AuthRepository {
     suspend fun login(identifier: String, password: String): AppResult<LoginOutcome>
 
     /**
-     * Asks the server to text a sign-in code to [phone] (parents only). Always answers neutrally;
+     * Asks the server to email a sign-in code to [email] (parents only). Always answers neutrally;
      * returns how many seconds to wait before another code may be requested.
      */
-    suspend fun requestOtp(phone: String): AppResult<Int>
+    suspend fun requestOtp(email: String): AppResult<Int>
 
-    /** Signs in with the texted [code]; same outcomes as [login]. */
-    suspend fun verifyOtp(phone: String, code: String): AppResult<LoginOutcome>
+    /** Signs in with the emailed [code]; same outcomes as [login]. */
+    suspend fun verifyOtp(email: String, code: String): AppResult<LoginOutcome>
 
     /** Completes a [LoginOutcome.TwoFactorRequired] sign-in with a TOTP or recovery [code]. */
     suspend fun verifyTwoFactor(challengeId: String, code: String): AppResult<Unit>

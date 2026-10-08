@@ -49,7 +49,7 @@ export async function seedDemo(prisma: SeedClient, roles: SystemRoleIds): Promis
 
   const parent = await ensureUser(prisma, { email: 'parent@eschool.local', name: 'Demo Parent', password: PASSWORD, resetPassword: true });
   await ensureAssignment(prisma, { userId: parent.id, roleId: roles.PARENT, scopeType: 'GUARDIAN', schoolId: org.school.id });
-  // Phase 6: phone + OTP sign-in (same number as the guardian record).
+  // Phase 6: phone number on the parent account (same number as the guardian record).
   await prisma.user.update({ where: { id: parent.id }, data: { phone: PARENT_PHONE } });
 
   const both = await ensureUser(prisma, { email: 'teacherparent@eschool.local', name: 'Demo Teacher Parent', password: PASSWORD, resetPassword: true });

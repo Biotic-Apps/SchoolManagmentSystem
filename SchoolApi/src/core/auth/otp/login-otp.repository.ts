@@ -5,7 +5,7 @@ import { OTP_MAX_ATTEMPTS } from './otp-code';
 export interface NewLoginOtp {
   id: string;
   userId: string;
-  phone: string;
+  email: string;
   codeHash: string;
   expiresAt: Date;
 }
@@ -14,39 +14,42 @@ export interface NewLoginOtp {
 export class LoginOtpRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** ACTIVE accounts whose stored phone is one of the given forms. */
-  activeUsersByPhone(phones: string[]) {
+  /** ACTIVE accounts with this email (case-insensitive). */
+  activeUsersByEmail(email: string) {
     return this.prisma.user.findMany({
-      where: { phone: { in: phones }, status: 'ACTIVE' },
+      where: {
+        email: { equals: email, mode: 'insensitive' },
+        status: 'ACTIVE',
+      },
       take: 2,
     });
   }
 
-  async lastIssuedAt(phone: string): Promise<Date | null> {
+  async lastIssuedAt(email: string): Promise<Date | null> {
     const row = await this.prisma.loginOtp.findFirst({
-      where: { phone },
+      where: { email },
       orderBy: { createdAt: 'desc' },
       select: { createdAt: true },
     });
     return row?.createdAt ?? null;
   }
 
-  /** Older unused codes of the phone stop working when a new one is issued. */
+  /** Older unused codes of the email stop working when a new one is issued. */
   async replace(otp: NewLoginOtp): Promise<void> {
     await this.prisma.$transaction([
       this.prisma.loginOtp.updateMany({
-        where: { phone: otp.phone, usedAt: null },
+        where: { email: otp.email, usedAt: null },
         data: { usedAt: new Date() },
       }),
       this.prisma.loginOtp.create({ data: otp }),
     ]);
   }
 
-  /** Newest code of the phone that can still be tried. */
-  findUsable(phone: string) {
+  /** Newest code of the email that can still be tried. */
+  findUsable(email: string) {
     return this.prisma.loginOtp.findFirst({
       where: {
-        phone,
+        email,
         usedAt: null,
         expiresAt: { gt: new Date() },
         attempts: { lt: OTP_MAX_ATTEMPTS },

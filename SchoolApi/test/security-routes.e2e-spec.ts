@@ -62,7 +62,7 @@ const PUBLIC: Record<string, string> = {
   'POST /auth/2fa/verify': 'second factor of login, @AuthThrottle',
   'POST /auth/login': '@AuthThrottle + per-account lockout',
   'POST /auth/otp/request':
-    '@AuthThrottle, no enumeration, 60 s per-phone cooldown, parents only',
+    '@AuthThrottle, no enumeration, 60 s per-email cooldown, parents only',
   'POST /auth/otp/verify':
     '@AuthThrottle, 5 attempts/code, 5 min expiry, shared account lockout',
   'POST /auth/password/forgot': '@AuthThrottle, no user enumeration',

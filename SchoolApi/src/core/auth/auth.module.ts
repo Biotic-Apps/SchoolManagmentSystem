@@ -12,7 +12,8 @@ import { LoginOtpRepository } from './otp/login-otp.repository';
 import { OtpLoginController } from './otp/otp-login.controller';
 import { OtpRequestService } from './otp/otp-request.service';
 import { OtpVerifyService } from './otp/otp-verify.service';
-import { ParentPhoneService } from './otp/parent-phone.service';
+import { LoginCodeMailer } from './otp/login-code-mailer';
+import { ParentEmailService } from './otp/parent-email.service';
 import { PasswordPolicyService } from './password/password-policy.service';
 import { UserAuthPolicyService } from './policy/user-auth-policy.service';
 import { SessionIssuer } from './sessions/session-issuer';
@@ -59,7 +60,8 @@ import { UserAccountRepository } from './user-account.repository';
     AuthService,
     PasswordService,
     LoginOtpRepository,
-    ParentPhoneService,
+    ParentEmailService,
+    LoginCodeMailer,
     OtpRequestService,
     OtpVerifyService,
     // Order matters: authenticate, then check permissions.

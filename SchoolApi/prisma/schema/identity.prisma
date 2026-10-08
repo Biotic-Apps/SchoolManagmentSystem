@@ -148,12 +148,12 @@ model OtpCode {
   @@map("otp_codes")
 }
 
-/// Parent phone sign-in codes (phase6-contract §B): HMAC-SHA256 hash only.
+/// Parent email sign-in codes (phase6-contract §B): HMAC-SHA256 hash only.
 model LoginOtp {
   id        String    @id @default(uuid(7)) @db.Uuid
   userId    String    @map("user_id") @db.Uuid
-  /// E.164 number the code was sent to.
-  phone     String
+  /// Lower-cased email the code was requested for.
+  email     String
   codeHash  String    @map("code_hash")
   expiresAt DateTime  @map("expires_at") @db.Timestamptz(3)
   attempts  Int       @default(0)
@@ -162,7 +162,7 @@ model LoginOtp {
 
   user User @relation(fields: [userId], references: [id], onDelete: Restrict)
 
-  @@index([phone, createdAt])
+  @@index([email, createdAt])
   @@index([userId])
   @@index([expiresAt])
   @@map("login_otps")

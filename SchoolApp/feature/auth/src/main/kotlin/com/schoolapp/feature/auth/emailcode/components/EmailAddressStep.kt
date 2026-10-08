@@ -1,4 +1,4 @@
-package com.schoolapp.feature.auth.phone.components
+package com.schoolapp.feature.auth.emailcode.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,31 +15,31 @@ import com.schoolapp.core.designsystem.component.FieldKind
 import com.schoolapp.core.designsystem.component.PrimaryButton
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.feature.auth.R
-import com.schoolapp.feature.auth.phone.PhoneSignInActions
-import com.schoolapp.feature.auth.phone.PhoneSignInUiState
+import com.schoolapp.feature.auth.emailcode.EmailSignInActions
+import com.schoolapp.feature.auth.emailcode.EmailSignInUiState
 
 @Composable
-internal fun PhoneNumberStep(state: PhoneSignInUiState, actions: PhoneSignInActions, modifier: Modifier = Modifier) {
+internal fun EmailAddressStep(state: EmailSignInUiState, actions: EmailSignInActions, modifier: Modifier = Modifier) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         AppTextField(
-            value = state.phone,
-            onValueChange = actions.onPhoneChange,
-            label = stringResource(R.string.auth_phone_label),
-            errorText = state.phoneError?.let { stringResource(it.messageRes()) },
-            supportingText = stringResource(R.string.auth_phone_hint),
+            value = state.email,
+            onValueChange = actions.onEmailChange,
+            label = stringResource(R.string.auth_email_code_address_label),
+            errorText = state.emailError?.let { stringResource(it.messageRes()) },
+            supportingText = stringResource(R.string.auth_email_code_address_hint),
             enabled = !state.isSubmitting,
-            kind = FieldKind.Phone,
+            kind = FieldKind.Username,
             imeAction = ImeAction.Done,
             onImeAction = actions.onSendCode,
         )
         PrimaryButton(
-            text = stringResource(R.string.auth_phone_send),
+            text = stringResource(R.string.auth_email_code_send),
             onClick = actions.onSendCode,
             loading = state.isSubmitting,
             modifier = Modifier.fillMaxWidth(),
         )
         AppTextButton(
-            text = stringResource(R.string.auth_phone_use_password),
+            text = stringResource(R.string.auth_email_code_use_password),
             onClick = actions.onUsePassword,
             enabled = !state.isSubmitting,
             contentColor = AppColors.TextSecondary,

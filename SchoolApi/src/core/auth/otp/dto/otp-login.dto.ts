@@ -8,20 +8,20 @@ import {
 import { ClientPlatform } from '../../../../generated/prisma/client';
 
 export class RequestOtpDto {
-  /** Parent's mobile number, any common format (`0300-1112233`, `+92…`). */
+  /** Parent's email address (case-insensitive). */
   @IsString()
-  @MinLength(6)
-  @MaxLength(20)
-  phone!: string;
+  @MinLength(3)
+  @MaxLength(254)
+  email!: string;
 }
 
 export class VerifyOtpDto {
   @IsString()
-  @MinLength(6)
-  @MaxLength(20)
-  phone!: string;
+  @MinLength(3)
+  @MaxLength(254)
+  email!: string;
 
-  /** The 6-digit code from the SMS (spaces ignored). */
+  /** The 6-digit code from the email (spaces ignored). */
   @IsString()
   @MinLength(1)
   @MaxLength(12)
@@ -38,6 +38,6 @@ export class VerifyOtpDto {
 
 export class OtpRequestResultDto {
   ok!: true;
-  /** Seconds before another code can be requested for this phone. */
+  /** Seconds before another code can be requested for this email. */
   resendAfterSeconds!: number;
 }

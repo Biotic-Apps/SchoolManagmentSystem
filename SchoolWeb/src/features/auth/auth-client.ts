@@ -30,9 +30,9 @@ export function loginRequest(input: LoginInput): Promise<LoginResult> {
   return bffPost<LoginResult>("login", input);
 }
 
-/** Parent phone + SMS code; answers like loginRequest (tokens or a 2FA challenge). */
-export function verifyOtpRequest(phone: string, code: string): Promise<LoginResult> {
-  return bffPost<LoginResult>("otp/verify", { phone, code });
+/** Parent email + emailed code; answers like loginRequest (tokens or a 2FA challenge). */
+export function verifyOtpRequest(email: string, code: string): Promise<LoginResult> {
+  return bffPost<LoginResult>("otp/verify", { email, code });
 }
 
 export function verifyTwoFactorRequest(challengeId: string, code: string): Promise<WebTokens> {

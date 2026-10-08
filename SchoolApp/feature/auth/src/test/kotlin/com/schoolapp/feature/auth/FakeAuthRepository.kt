@@ -29,14 +29,14 @@ class FakeAuthRepository : AuthRepository {
     val otpVerifyCalls = mutableListOf<Pair<String, String>>()
     var resendAfterSeconds = 60
 
-    override suspend fun requestOtp(phone: String): AppResult<Int> {
-        otpRequests += phone
+    override suspend fun requestOtp(email: String): AppResult<Int> {
+        otpRequests += email
         gate?.await()
         return nextError?.let { AppResult.Failure(it) } ?: AppResult.Success(resendAfterSeconds)
     }
 
-    override suspend fun verifyOtp(phone: String, code: String): AppResult<LoginOutcome> {
-        otpVerifyCalls += phone to code
+    override suspend fun verifyOtp(email: String, code: String): AppResult<LoginOutcome> {
+        otpVerifyCalls += email to code
         gate?.await()
         nextError?.let { return AppResult.Failure(it) }
         challengeId?.let { return AppResult.Success(LoginOutcome.TwoFactorRequired(it)) }

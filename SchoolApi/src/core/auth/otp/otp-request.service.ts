@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto';
 import { Injectable, Logger } from '@nestjs/common';
 import { AppConfigService } from '../../../config/app-config.service';
-import { NotificationService } from '../../notifications/notification.service';
 import { UserAuthPolicyService } from '../policy/user-auth-policy.service';
 import { TokenService } from '../token.service';
 import { TwoFactorLoginService } from '../two-factor/two-factor-login.service';
+import { LoginCodeMailer } from './login-code-mailer';
 import { LoginOtpRepository } from './login-otp.repository';
 import {
   generateOtpCode,
@@ -12,7 +12,7 @@ import {
   OTP_TTL_MS,
   otpHashInput,
 } from './otp-code';
-import { ParentPhoneService } from './parent-phone.service';
+import { ParentEmailService } from './parent-email.service';
 
 export interface OtpRequestResult {
   ok: true;
@@ -26,52 +26,47 @@ const RESULT: OtpRequestResult = {
 
 /**
  * `POST /auth/otp/request`: always the same answer (no enumeration). A code
- * is only sent to a parent account, at most once per 60 s per phone.
+ * is only emailed to a parent account, at most once per 60 s per address.
  */
 @Injectable()
 export class OtpRequestService {
   private readonly logger = new Logger(OtpRequestService.name);
 
   constructor(
-    private readonly phones: ParentPhoneService,
+    private readonly emails: ParentEmailService,
     private readonly repository: LoginOtpRepository,
     private readonly tokens: TokenService,
-    private readonly notifications: NotificationService,
+    private readonly mailer: LoginCodeMailer,
     private readonly policies: UserAuthPolicyService,
     private readonly twoFactor: TwoFactorLoginService,
     private readonly config: AppConfigService,
   ) {}
 
-  async request(rawPhone: string): Promise<OtpRequestResult> {
-    const phone = this.phones.normalize(rawPhone);
-    if (!phone || (await this.inCooldown(phone))) return RESULT;
-    const user = await this.phones.findParent(phone);
-    if (!user || !(await this.twoFactorReady(user.id))) return RESULT;
+  async request(rawEmail: string): Promise<OtpRequestResult> {
+    const email = this.emails.normalize(rawEmail);
+    if (!email || (await this.inCooldown(email))) return RESULT;
+    const user = await this.emails.findParent(email);
+    if (!user?.email || !(await this.twoFactorReady(user.id))) return RESULT;
 
     const id = randomUUID();
     const code = generateOtpCode();
     await this.repository.replace({
       id,
       userId: user.id,
-      phone,
+      email,
       codeHash: this.tokens.hash(otpHashInput(id, code)),
       expiresAt: new Date(Date.now() + OTP_TTL_MS),
     });
     if (!this.config.isProduction) {
       this.logger.log(`[dev] sign-in code for ${user.id}: ${code}`);
     }
-    await this.notifications.sendDirect({
-      userId: user.id,
-      to: { phone },
-      channel: 'SMS',
-      title: 'eSchool',
-      body: `Your sign-in code is ${code}. It expires in 5 minutes. Never share it.`,
-    });
+    // The stored address (not the typed one) receives the code.
+    this.mailer.send(user.id, user.email, code);
     return RESULT;
   }
 
-  private async inCooldown(phone: string): Promise<boolean> {
-    const last = await this.repository.lastIssuedAt(phone);
+  private async inCooldown(email: string): Promise<boolean> {
+    const last = await this.repository.lastIssuedAt(email);
     return !!last && Date.now() - last.getTime() < OTP_RESEND_SECONDS * 1000;
   }
 

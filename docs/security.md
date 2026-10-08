@@ -6,7 +6,7 @@ Children's data, medical details and money live in this system. Default is deny:
 
 | Item | Design |
 |---|---|
-| Login identifier | Email or phone + password. Parents may also use phone + OTP. |
+| Login identifier | Email or phone + password. Parents may also use email + one-time code. |
 | Password storage | Argon2id (memory 64 MB, t=3). Minimum 8 chars, breached/common-password check. |
 | Access token | JWT, 15 min, signed HS256 (secret from env, rotated), claims: `sub`, `sid` (session id), `ver` (user token version). No permissions inside the token. |
 | Refresh token | Opaque random 256-bit, stored **hashed** in `refresh_sessions`, 30 days, **rotated on every use**. Reuse of an old token revokes the whole session family (theft detection). |

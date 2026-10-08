@@ -58,21 +58,22 @@ export const resetPasswordSchema = z
 
 export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 
-export const otpPhoneSchema = z.object({
-  phone: z
+export const otpEmailSchema = z.object({
+  email: z
     .string()
     .trim()
-    .min(1, "Enter your mobile number")
-    .regex(/^\+?[\d\s()-]{7,20}$/, "Enter a mobile number like 0300 1234567"),
+    .min(1, "Enter your email address")
+    .max(254, "That email address is too long")
+    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Enter an email address like name@example.com"),
 });
 
-export type OtpPhoneValues = z.infer<typeof otpPhoneSchema>;
+export type OtpEmailValues = z.infer<typeof otpEmailSchema>;
 
 export const otpCodeSchema = z.object({
   code: z
     .string()
     .trim()
-    .refine((value) => /^\d{6}$/.test(value.replace(/\s/g, "")), "Enter the 6-digit code from the SMS"),
+    .refine((value) => /^\d{6}$/.test(value.replace(/\s/g, "")), "Enter the 6-digit code from the email"),
 });
 
 export type OtpCodeValues = z.infer<typeof otpCodeSchema>;

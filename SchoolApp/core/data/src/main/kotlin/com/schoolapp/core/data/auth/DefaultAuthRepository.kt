@@ -81,18 +81,18 @@ class DefaultAuthRepository @Inject constructor(
         }
     }
 
-    override suspend fun requestOtp(phone: String): AppResult<Int> =
-        apiCaller.call { authApi.requestOtp(OtpRequestDto(phone.trim())).data }.map { it.resendAfterSeconds }
+    override suspend fun requestOtp(email: String): AppResult<Int> =
+        apiCaller.call { authApi.requestOtp(OtpRequestDto(email.trim().lowercase())).data }.map { it.resendAfterSeconds }
 
-    override suspend fun verifyOtp(phone: String, code: String): AppResult<LoginOutcome> {
-        val request = OtpVerifyRequestDto(phone.trim(), code.trim(), LoginRequestDto.PLATFORM_ANDROID, deviceName)
+    override suspend fun verifyOtp(email: String, code: String): AppResult<LoginOutcome> {
+        val request = OtpVerifyRequestDto(email.trim().lowercase(), code.trim(), LoginRequestDto.PLATFORM_ANDROID, deviceName)
         return when (val result = apiCaller.call { authApi.verifyOtp(request).data }) {
             is AppResult.Failure -> result
             is AppResult.Success -> completeSignIn(result.data)
         }
     }
 
-    /** Shared by password and phone-code sign-in: same `LoginResult` body (tokens or a 2FA challenge). */
+    /** Shared by password and email-code sign-in: same `LoginResult` body (tokens or a 2FA challenge). */
     private suspend fun completeSignIn(response: LoginResponseDto): AppResult<LoginOutcome> {
         if (response.twoFactorRequired) {
             val challengeId = response.challengeId?.takeIf { it.isNotBlank() }

@@ -66,8 +66,8 @@ internal fun LoginForm(state: LoginUiState, actions: LoginActions, modifier: Mod
                 modifier = Modifier.fillMaxWidth().bringIntoViewRequester(signInButton),
             )
             AppTextButton(
-                text = stringResource(R.string.auth_use_phone_code),
-                onClick = actions.onUsePhoneCode,
+                text = stringResource(R.string.auth_use_email_code),
+                onClick = actions.onUseEmailCode,
                 enabled = !state.isSubmitting,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             )

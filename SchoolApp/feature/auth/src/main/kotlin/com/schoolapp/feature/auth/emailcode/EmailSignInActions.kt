@@ -1,15 +1,15 @@
-package com.schoolapp.feature.auth.phone
+package com.schoolapp.feature.auth.emailcode
 
 import androidx.compose.runtime.Immutable
 
-/** Events the phone sign-in card emits. */
+/** Events the email sign-in card emits. */
 @Immutable
-data class PhoneSignInActions(
-    val onPhoneChange: (String) -> Unit = {},
+data class EmailSignInActions(
+    val onEmailChange: (String) -> Unit = {},
     val onSendCode: () -> Unit = {},
     val onCodeChange: (String) -> Unit = {},
     val onVerify: () -> Unit = {},
     val onResend: () -> Unit = {},
-    val onChangeNumber: () -> Unit = {},
+    val onChangeEmail: () -> Unit = {},
     val onUsePassword: () -> Unit = {},
 )

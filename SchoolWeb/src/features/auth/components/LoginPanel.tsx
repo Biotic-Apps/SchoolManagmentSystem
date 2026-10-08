@@ -1,19 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Smartphone } from "lucide-react";
+import { Mail } from "lucide-react";
 import { OrDivider } from "@/components/shared/OrDivider";
 import { Button } from "@/components/ui/Button";
 import { useLoginForm } from "../use-login-form";
 import { AuthFooterLink } from "./AuthFooterLink";
 import { AuthLayout } from "./AuthLayout";
+import { EmailCodeLoginForm } from "./EmailCodeLoginForm";
 import { LoginForm } from "./LoginForm";
-import { PhoneLoginForm } from "./PhoneLoginForm";
 import { TwoFactorLoginForm } from "./TwoFactorLoginForm";
 
 export function LoginPanel() {
   const login = useLoginForm();
-  const [withPhone, setWithPhone] = useState(false);
+  const [withCode, setWithCode] = useState(false);
   const [otpChallengeId, setOtpChallengeId] = useState<string | null>(null);
   const challengeId = login.challengeId ?? otpChallengeId;
 
@@ -28,15 +28,15 @@ export function LoginPanel() {
       </AuthLayout>
     );
   }
-  if (withPhone) {
+  if (withCode) {
     return (
       <AuthLayout
-        title="Sign in with phone code"
-        description="For parents: we send a one-time code by SMS to your mobile number."
+        title="Sign in with email code"
+        description="For parents: we email a one-time code to the address the school has on record."
       >
-        <PhoneLoginForm onChallenge={setOtpChallengeId} />
+        <EmailCodeLoginForm onChallenge={setOtpChallengeId} />
         <OrDivider />
-        <Button variant="secondary" size="lg" className="w-full" onClick={() => setWithPhone(false)}>
+        <Button variant="secondary" size="lg" className="w-full" onClick={() => setWithCode(false)}>
           Sign in with password
         </Button>
       </AuthLayout>
@@ -50,9 +50,9 @@ export function LoginPanel() {
     >
       <LoginForm login={login} />
       <OrDivider />
-      <Button variant="secondary" size="lg" className="w-full" onClick={() => setWithPhone(true)}>
-        <Smartphone />
-        Sign in with phone code
+      <Button variant="secondary" size="lg" className="w-full" onClick={() => setWithCode(true)}>
+        <Mail />
+        Sign in with email code
       </Button>
     </AuthLayout>
   );

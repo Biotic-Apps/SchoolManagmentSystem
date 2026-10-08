@@ -15,7 +15,7 @@ import {
 import { OtpRequestService } from './otp-request.service';
 import { OtpVerifyService } from './otp-verify.service';
 
-/** Parent phone + one-time code sign-in (phase6-contract §B). */
+/** Parent email + one-time code sign-in (phase6-contract §B). */
 @ApiTags('auth')
 @Public()
 @AuthThrottle()
@@ -30,7 +30,7 @@ export class OtpLoginController {
   @HttpCode(200)
   @ApiData(OtpRequestResultDto)
   request(@Body() body: RequestOtpDto): Promise<OtpRequestResultDto> {
-    return this.requests.request(body.phone);
+    return this.requests.request(body.email);
   }
 
   @Post('verify')
@@ -40,7 +40,7 @@ export class OtpLoginController {
     @Body() body: VerifyOtpDto,
     @Req() req: Request,
   ): Promise<LoginResultDto> {
-    return this.verifier.verify(body.phone, body.code, {
+    return this.verifier.verify(body.email, body.code, {
       platform: body.platform,
       deviceName: body.deviceName,
       ip: clientIp(req),

@@ -156,11 +156,11 @@ class TwoFactorStepTest {
     }
 
     @Test
-    fun phone_sign_in_challenge_opens_the_shared_code_step() {
-        viewModel.onTwoFactorChallenge("ch-phone")
+    fun email_code_sign_in_challenge_opens_the_shared_code_step() {
+        viewModel.onTwoFactorChallenge("ch-email")
         assertEquals(LoginStep.TWO_FACTOR, viewModel.uiState.value.step)
         verify("123456")
-        assertEquals(listOf("ch-phone" to "123456"), repository.verifyCalls)
+        assertEquals(listOf("ch-email" to "123456"), repository.verifyCalls)
         assertTrue(repository.loginCalls.isEmpty())
     }
 

@@ -77,7 +77,7 @@ Definition of Done per module: schema + migration · API with permission/scope g
 
 ## Phase 6 — Pilot & rollout
 - [x] Real delivery: SMTP email, SMS driver (log | twilio | http), FCM push check
-- [x] Parent phone + OTP sign-in (API, web, Android)
+- [x] Parent email + one-time code sign-in (API, web, Android); replaced the phone/SMS code flow on 2026-10-08 (migration email_login_otp)
 - [x] Production deploy kit: Dockerfiles, docker-compose.prod.yml, Caddy TLS, prod env template
 - [x] CI (GitHub Actions): API build/lint/unit/e2e, web tsc/lint/build, Android build + unit tests
 - [x] Production bootstrap (first super admin, no demo data) + docs/deployment.md (backups off-site, restore drill, updates/rollback, monitoring)

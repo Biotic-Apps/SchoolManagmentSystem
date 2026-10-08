@@ -54,13 +54,15 @@ enum class FieldKind(
         imeAction = imeAction,
     )
 
-    /** Autofill hint for the system password manager / SMS code autofill, or null when none applies. */
+    /**
+     * Autofill hint for the system password manager / SMS code autofill, or null when none applies.
+     * Name, Email and Phone mostly hold someone else's details (a student, guardian or staff member),
+     * so they get no hint: autofill would paste the signed-in user's own saved details into them.
+     * Sign-in fields use [Username].
+     */
     val contentType: ContentType?
         get() = when (this) {
-            Email -> ContentType.EmailAddress
-            Phone -> ContentType.PhoneNumber
             Username -> ContentType.Username
-            Name -> ContentType.PersonFullName
             OneTimeCode -> ContentType.SmsOtpCode
             Password -> ContentType.Password
             NewPassword -> ContentType.NewPassword

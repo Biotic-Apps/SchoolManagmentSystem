@@ -32,12 +32,12 @@ interface AuthApi {
     @POST("auth/2fa/verify")
     suspend fun verifyTwoFactor(@Body body: TwoFactorVerifyRequestDto): ApiEnvelope<AuthTokensDto>
 
-    /** Parent phone sign-in, step 1 (contract phase 6 §B). */
+    /** Parent email-code sign-in, step 1 (contract phase 6 §B). */
     @Headers("${AuthHeaders.SKIP_AUTH}: true")
     @POST("auth/otp/request")
     suspend fun requestOtp(@Body body: OtpRequestDto): ApiEnvelope<OtpRequestResponseDto>
 
-    /** Parent phone sign-in, step 2: same result as [login] (tokens or a 2FA challenge). */
+    /** Parent email-code sign-in, step 2: same result as [login] (tokens or a 2FA challenge). */
     @Headers("${AuthHeaders.SKIP_AUTH}: true")
     @POST("auth/otp/verify")
     suspend fun verifyOtp(@Body body: OtpVerifyRequestDto): ApiEnvelope<LoginResponseDto>

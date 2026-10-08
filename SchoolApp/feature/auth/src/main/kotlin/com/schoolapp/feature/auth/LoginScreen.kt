@@ -28,9 +28,9 @@ import com.schoolapp.feature.auth.components.LoginBrandPanel
 import com.schoolapp.feature.auth.components.LoginForm
 import com.schoolapp.feature.auth.components.LoginHeader
 import com.schoolapp.feature.auth.components.TwoFactorForm
-import com.schoolapp.feature.auth.phone.PhoneSignInActions
-import com.schoolapp.feature.auth.phone.PhoneSignInUiState
-import com.schoolapp.feature.auth.phone.components.PhoneSignInForm
+import com.schoolapp.feature.auth.emailcode.EmailSignInActions
+import com.schoolapp.feature.auth.emailcode.EmailSignInUiState
+import com.schoolapp.feature.auth.emailcode.components.EmailSignInForm
 
 private val TwoPaneMinWidth = 840.dp
 
@@ -40,8 +40,8 @@ fun LoginScreen(
     brand: LoginBrandUiState,
     actions: LoginActions,
     modifier: Modifier = Modifier,
-    phone: PhoneSignInUiState = PhoneSignInUiState(),
-    phoneActions: PhoneSignInActions = PhoneSignInActions(),
+    emailCode: EmailSignInUiState = EmailSignInUiState(),
+    emailCodeActions: EmailSignInActions = EmailSignInActions(),
 ) {
     AppScaffold(modifier = modifier, contentWindowInsets = WindowInsets(0)) { padding ->
         BoxWithConstraints(
@@ -61,7 +61,7 @@ fun LoginScreen(
                         if (!twoPane) LoginHeader(brand)
                         when {
                             state.step == LoginStep.TWO_FACTOR -> TwoFactorForm(state, actions)
-                            phone.active -> PhoneSignInForm(phone, phoneActions)
+                            emailCode.active -> EmailSignInForm(emailCode, emailCodeActions)
                             else -> LoginForm(state, actions)
                         }
                     }
@@ -97,12 +97,12 @@ private fun LoginScreenTwoFactorPreview() = SchoolTheme {
 
 @Preview(showBackground = true)
 @Composable
-private fun LoginScreenPhonePreview() = SchoolTheme {
+private fun LoginScreenEmailCodePreview() = SchoolTheme {
     LoginScreen(
         LoginUiState(),
         LoginBrandUiState(),
         LoginActions(),
-        phone = PhoneSignInUiState(active = true, phone = "0300 1234567"),
+        emailCode = EmailSignInUiState(active = true, email = "parent@example.com"),
     )
 }
 

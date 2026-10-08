@@ -2,9 +2,9 @@ package com.schoolapp.feature.auth
 
 import androidx.lifecycle.SavedStateHandle
 import com.schoolapp.core.common.result.AppError
-import com.schoolapp.feature.auth.phone.PhoneFieldError
-import com.schoolapp.feature.auth.phone.PhoneSignInViewModel
-import com.schoolapp.feature.auth.phone.PhoneStep
+import com.schoolapp.feature.auth.emailcode.EmailFieldError
+import com.schoolapp.feature.auth.emailcode.EmailSignInViewModel
+import com.schoolapp.feature.auth.emailcode.EmailStep
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals
@@ -16,22 +16,22 @@ import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class PhoneSignInViewModelTest {
+class EmailSignInViewModelTest {
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
     private val repository = FakeAuthRepository()
     private val handle = SavedStateHandle()
-    private val viewModel = PhoneSignInViewModel(repository, handle)
+    private val viewModel = EmailSignInViewModel(repository, handle)
 
     private val state get() = viewModel.uiState.value
 
-    private fun reachCodeStep(phone: String = "0300 1234567") {
+    private fun reachCodeStep(email: String = "parent@example.com") {
         viewModel.onStart()
-        viewModel.onPhoneChange(phone)
+        viewModel.onEmailChange(email)
         viewModel.onSendCode()
-        assertEquals(PhoneStep.CODE, state.step)
+        assertEquals(EmailStep.CODE, state.step)
     }
 
     private fun advanceSeconds(seconds: Int) {
@@ -49,22 +49,22 @@ class PhoneSignInViewModelTest {
     }
 
     @Test
-    fun phone_is_validated_before_any_request() {
+    fun email_is_validated_before_any_request() {
         viewModel.onStart()
         viewModel.onSendCode()
-        assertEquals(PhoneFieldError.REQUIRED, state.phoneError)
-        listOf("12345", "0300-12ab567", "++923001234567", "1234567890123456").forEach { phone ->
-            viewModel.onPhoneChange(phone)
+        assertEquals(EmailFieldError.REQUIRED, state.emailError)
+        listOf("parent", "parent@", "parent@example", "a b@example.com", "@example.com").forEach { email ->
+            viewModel.onEmailChange(email)
             viewModel.onSendCode()
-            assertEquals(phone, PhoneFieldError.INVALID_PHONE, state.phoneError)
+            assertEquals(email, EmailFieldError.INVALID_EMAIL, state.emailError)
         }
         assertTrue(repository.otpRequests.isEmpty())
     }
 
     @Test
-    fun phone_is_normalised_and_code_step_shown() {
-        reachCodeStep("+92 300-123 4567")
-        assertEquals(listOf("+923001234567"), repository.otpRequests)
+    fun email_is_normalised_and_code_step_shown() {
+        reachCodeStep("  Parent@Example.COM ")
+        assertEquals(listOf("parent@example.com"), repository.otpRequests)
         assertEquals(60, state.resendInSeconds)
         assertFalse(state.isSubmitting)
     }
@@ -88,21 +88,21 @@ class PhoneSignInViewModelTest {
     fun code_must_be_six_digits() {
         reachCodeStep()
         viewModel.onVerify()
-        assertEquals(PhoneFieldError.REQUIRED, state.codeError)
+        assertEquals(EmailFieldError.REQUIRED, state.codeError)
         listOf("12345", "1234567", "12a456").forEach { code ->
             viewModel.onCodeChange(code)
             viewModel.onVerify()
-            assertEquals(code, PhoneFieldError.INVALID_CODE, state.codeError)
+            assertEquals(code, EmailFieldError.INVALID_CODE, state.codeError)
         }
         assertTrue(repository.otpVerifyCalls.isEmpty())
     }
 
     @Test
     fun valid_code_signs_in_with_normalised_values() {
-        reachCodeStep("0300 1234567")
+        reachCodeStep("Parent@Example.com")
         viewModel.onCodeChange(" 123 456 ")
         viewModel.onVerify()
-        assertEquals(listOf("03001234567" to "123456"), repository.otpVerifyCalls)
+        assertEquals(listOf("parent@example.com" to "123456"), repository.otpVerifyCalls)
         assertNotNull(repository.sessionState.value)
         assertNull(state.failure)
         assertEquals("", state.code)
@@ -115,7 +115,7 @@ class PhoneSignInViewModelTest {
         viewModel.onCodeChange("000000")
         viewModel.onVerify()
         assertEquals(LoginFailure.OTP_INVALID, state.failure)
-        assertEquals(PhoneStep.CODE, state.step)
+        assertEquals(EmailStep.CODE, state.step)
     }
 
     @Test
@@ -128,12 +128,12 @@ class PhoneSignInViewModelTest {
     }
 
     @Test
-    fun request_failure_keeps_the_phone_step() {
+    fun request_failure_keeps_the_email_step() {
         repository.nextError = AppError.Network
         viewModel.onStart()
-        viewModel.onPhoneChange("03001234567")
+        viewModel.onEmailChange("parent@example.com")
         viewModel.onSendCode()
-        assertEquals(PhoneStep.PHONE, state.step)
+        assertEquals(EmailStep.EMAIL, state.step)
         assertEquals(LoginFailure.NETWORK, state.failure)
     }
 
@@ -154,7 +154,7 @@ class PhoneSignInViewModelTest {
         val gate = CompletableDeferred<Unit>()
         repository.gate = gate
         viewModel.onStart()
-        viewModel.onPhoneChange("03001234567")
+        viewModel.onEmailChange("parent@example.com")
         viewModel.onSendCode()
         viewModel.onSendCode()
         assertTrue(state.isSubmitting)
@@ -163,10 +163,10 @@ class PhoneSignInViewModelTest {
     }
 
     @Test
-    fun back_goes_from_code_to_number_then_to_password() {
+    fun back_goes_from_code_to_email_then_to_password() {
         reachCodeStep()
         viewModel.onBack()
-        assertEquals(PhoneStep.PHONE, state.step)
+        assertEquals(EmailStep.EMAIL, state.step)
         assertEquals(0, state.resendInSeconds)
         assertTrue(state.active)
         viewModel.onBack()
@@ -174,11 +174,11 @@ class PhoneSignInViewModelTest {
     }
 
     @Test
-    fun step_and_phone_survive_process_death() {
-        reachCodeStep("03001234567")
-        val restored = PhoneSignInViewModel(repository, handle).uiState.value
+    fun step_and_email_survive_process_death() {
+        reachCodeStep("parent@example.com")
+        val restored = EmailSignInViewModel(repository, handle).uiState.value
         assertTrue(restored.active)
-        assertEquals(PhoneStep.CODE, restored.step)
-        assertEquals("03001234567", restored.phone)
+        assertEquals(EmailStep.CODE, restored.step)
+        assertEquals("parent@example.com", restored.email)
     }
 }

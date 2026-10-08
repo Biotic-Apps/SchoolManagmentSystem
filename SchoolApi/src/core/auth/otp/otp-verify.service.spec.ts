@@ -8,7 +8,7 @@ import type { UserAccountRepository } from '../user-account.repository';
 import type { LoginOtpRepository } from './login-otp.repository';
 import { otpHashInput } from './otp-code';
 import { OtpVerifyService } from './otp-verify.service';
-import type { ParentPhoneService } from './parent-phone.service';
+import type { ParentEmailService } from './parent-email.service';
 
 const hash = (v: string) => `h(${v})`;
 const OTP = {
@@ -19,7 +19,7 @@ const OTP = {
 const CLIENT = { platform: 'ANDROID' as const };
 
 interface Options {
-  phone?: string;
+  email?: string;
   otp?: typeof OTP | null;
   attempt?: boolean;
   twoFactor?: boolean;
@@ -50,9 +50,9 @@ function setup(options: Options = {}) {
   };
   const service = new OtpVerifyService(
     {
-      normalize: (raw: string) => (raw === 'bad' ? null : '+923001112233'),
+      normalize: (raw: string) => (raw === 'bad' ? null : 'parent@example.com'),
       isParent: jest.fn().mockResolvedValue(options.parent ?? true),
-    } as unknown as ParentPhoneService,
+    } as unknown as ParentEmailService,
     repository as unknown as LoginOtpRepository,
     { hash } as unknown as TokenService,
     users as unknown as UserAccountRepository,
@@ -67,7 +67,9 @@ function setup(options: Options = {}) {
 describe('OtpVerifyService', () => {
   it('issues tokens for the right code and audits method otp', async () => {
     const { service, issuer, audit, users, repository } = setup();
-    await expect(service.verify('0300', ' 123456 ', CLIENT)).resolves.toEqual({
+    await expect(
+      service.verify('parent@example.com', ' 123456 ', CLIENT),
+    ).resolves.toEqual({
       accessToken: 'a',
     });
     expect(repository.consume).toHaveBeenCalledWith('otp1');
@@ -83,7 +85,9 @@ describe('OtpVerifyService', () => {
 
   it('returns a 2FA challenge when the parent has 2FA on', async () => {
     const { service, issuer, twoFactor } = setup({ twoFactor: true });
-    await expect(service.verify('0300', '123456', CLIENT)).resolves.toEqual({
+    await expect(
+      service.verify('parent@example.com', '123456', CLIENT),
+    ).resolves.toEqual({
       twoFactorRequired: true,
     });
     expect(twoFactor.challenge).toHaveBeenCalled();
@@ -92,9 +96,9 @@ describe('OtpVerifyService', () => {
 
   it('counts a wrong code toward the account lockout', async () => {
     const { service, lockout, repository } = setup();
-    await expect(service.verify('0300', '654321', CLIENT)).rejects.toThrow(
-      'wrong code',
-    );
+    await expect(
+      service.verify('parent@example.com', '654321', CLIENT),
+    ).rejects.toThrow('wrong code');
     expect(lockout.registerFailure).toHaveBeenCalledWith(
       'u1',
       'Invalid or expired code',
@@ -103,7 +107,7 @@ describe('OtpVerifyService', () => {
   });
 
   const rejected: [string, Options][] = [
-    ['an invalid phone', { phone: 'bad' }],
+    ['an invalid email', { email: 'bad' }],
     ['no usable code', { otp: null }],
     ['no attempts left', { attempt: false }],
     ['a user who is no longer a parent', { parent: false }],
@@ -112,7 +116,7 @@ describe('OtpVerifyService', () => {
   it.each(rejected)('rejects %s with INVALID_CREDENTIALS', async (_, opts) => {
     const { service, lockout } = setup(opts);
     await expect(
-      service.verify(opts.phone ?? '0300', '123456', CLIENT),
+      service.verify(opts.email ?? 'parent@example.com', '123456', CLIENT),
     ).rejects.toMatchObject({ code: ErrorCode.INVALID_CREDENTIALS });
     expect(lockout.registerFailure).not.toHaveBeenCalled();
   });
@@ -122,9 +126,9 @@ describe('OtpVerifyService', () => {
     lockout.assertNotLocked.mockImplementation(() => {
       throw new Error('locked');
     });
-    await expect(service.verify('0300', '123456', CLIENT)).rejects.toThrow(
-      'locked',
-    );
+    await expect(
+      service.verify('parent@example.com', '123456', CLIENT),
+    ).rejects.toThrow('locked');
     expect(repository.takeAttempt).not.toHaveBeenCalled();
   });
 });
