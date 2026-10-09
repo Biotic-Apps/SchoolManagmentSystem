@@ -38,7 +38,7 @@ Children's data, medical details and money live in this system. Default is deny:
 | Diary | Full | Moderate | Proxy + review | Assigned, publish | Draft | – | View |
 | Marks / results | Full | Approve, publish | Proxy, review | Enter assigned | – | – | View published |
 | Fees | Full | Monitor, approve within limit | – | – | **No** | Prepare, record, verify | View own, upload proof |
-| Payroll | Full | Approve where authorized (not own) | – | Own payslip only | Own only | Prepare | – |
+| Payroll | Full | Manage branch: salaries, overtime, adjustments, runs, approve, pay; school pay rules (never own pay) | Coordinator: manage branch payroll like the principal, except pay rules (never own pay). Head teacher: own payslip only | Own payslip only | Own only | Prepare | – |
 | Health | Full | Branch | Scope | Assigned (allergies/instructions) | Assigned (allergies) | – | Own children, propose change |
 | Complaints | All | Branch | Routed | Own + routed | Own | Own + routed | Own |
 | Audit | Full | Branch | – | – | – | – | – |
@@ -48,6 +48,7 @@ Hard rules (enforced in services, not just UI):
 - Helpers cannot approve results, edit fees, confirm payments or change salaries.
 - Parents cannot edit attendance, marks or fees.
 - Nobody approves their own request (requester ≠ approver); principal's own salary/leave → higher admin.
+- Nobody sets, adjusts or approves their own pay; the preparer of a payroll run cannot approve it. When a principal or coordinator approves a run, their own line and the principal's line go to super admin.
 - Amount limits on concessions/refunds/expenses per approver; above limit escalates.
 - Complaints about a person are never routed to or visible to that person.
 

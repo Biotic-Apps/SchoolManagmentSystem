@@ -93,7 +93,7 @@ const DEFAULT_MENUS: Record<RoleKey, string[]> = {
     'settings',
     'profile',
   ],
-  [RoleKey.COORDINATOR]: SUPERVISOR_MENU,
+  [RoleKey.COORDINATOR]: [...SUPERVISOR_MENU, 'payroll'],
   [RoleKey.HEAD_TEACHER]: SUPERVISOR_MENU,
   [RoleKey.TEACHER]: [
     'dashboard',
@@ -202,6 +202,29 @@ describe('DEFAULT_ROLE_PERMISSIONS', () => {
       expect(held.filter((p) => p.startsWith('payroll.'))).toEqual([]);
       expect(held).toContain('self.payroll.view');
     }
+  });
+
+  it('payroll: principal and coordinator manage, head teacher only own salary', () => {
+    const manage = ['view', 'add', 'edit', 'submit', 'approve', 'export'].map(
+      (a) => `payroll.${a}`,
+    );
+    for (const role of [RoleKey.PRINCIPAL, RoleKey.COORDINATOR]) {
+      const held = [...permissionsOf(role)];
+      expect(held.filter((p) => p.startsWith('payroll.')).sort()).toEqual(
+        [...manage].sort(),
+      );
+    }
+    const head = [...permissionsOf(RoleKey.HEAD_TEACHER)];
+    expect(head.filter((p) => p.startsWith('payroll.'))).toEqual([]);
+    expect(head).toContain('self.payroll.view');
+    // Coordinator gains payroll only; every other module matches the head teacher.
+    const coordinatorOther = [...permissionsOf(RoleKey.COORDINATOR)].filter(
+      (p) => !p.startsWith('payroll.'),
+    );
+    expect(coordinatorOther.sort()).toEqual([...head].sort());
+    expect(permissionsOf(RoleKey.ACCOUNTANT).has('payroll.approve')).toBe(
+      false,
+    );
   });
 
   it('timetable: supervisors and teachers build, only principals publish', () => {

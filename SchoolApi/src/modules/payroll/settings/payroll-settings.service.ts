@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { AuditService } from '../../../core/audit/audit.service';
+import { forbidden } from '../../../core/common/errors/errors';
 import type { AuthUser } from '../../../core/common/types/auth-user';
 import { PrismaService } from '../../../core/prisma/prisma.service';
+import { RoleKey } from '../../../core/rbac/role-key.enum';
 import type { Scope } from '../../../core/rbac/scope/scope';
 import { dailyHoursFromTimings } from '../calculation/overtime-pay';
 import { PayrollAccess } from '../payroll-access.service';
@@ -38,6 +40,10 @@ export class PayrollSettingsService {
     branchId: string,
     dto: PayrollSettingsDto,
   ): Promise<PayrollSettingsViewDto> {
+    // Rules are school-wide; coordinators manage branch payroll but not the rules.
+    if (user.activeRole === String(RoleKey.COORDINATOR)) {
+      throw forbidden('Only the principal or an admin can change pay rules');
+    }
     const branch = await this.access.branch(scope, branchId);
     const before = await this.rules(branch.schoolId);
     const data = {

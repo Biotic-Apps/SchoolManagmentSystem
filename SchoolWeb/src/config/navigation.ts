@@ -121,7 +121,8 @@ export const ROLE_MENUS: Record<RoleKey, readonly NavId[]> = {
     "expenses", "inventory", "health", "pickup", "messages", "meetings", "complaints",
     "certificates", "approvals", "reports", "settings", "profile",
   ],
-  COORDINATOR: SUPERVISOR_MENU,
+  // Owner decision 2026-10-09: coordinators manage branch payroll too.
+  COORDINATOR: [...SUPERVISOR_MENU.slice(0, -2), "payroll", "my_salary", "profile"],
   HEAD_TEACHER: SUPERVISOR_MENU,
   TEACHER: [
     "dashboard", "classes", "timetable", "attendance", "diary", "activities", "exams",

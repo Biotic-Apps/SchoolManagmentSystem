@@ -44,7 +44,7 @@ export function StructureDrawer({ staff, onClose }: { staff: PayrollStaffRow | n
           description={
             detail.canEdit
               ? "Press Set salary above to add basic salary, allowances and deductions. Staff without a salary are left out of payroll."
-              : "Staff without a salary are left out of payroll. Salaries are set by the accountant or the super admin; ask them to set it."
+              : "Staff without a salary are left out of payroll. Salaries are set by the principal, coordinator, accountant or super admin; ask them to set it."
           }
         />
       )}

@@ -1,4 +1,5 @@
 import { useCan } from "@/features/auth/use-can";
+import { useSession } from "@/features/auth/session-context";
 import { useServerForm } from "@/lib/use-server-form";
 import { settingsSchema, toSettingsInput, type SettingsValues } from "./schemas";
 import { useSavePayrollSettings } from "./settings-api";
@@ -21,14 +22,15 @@ function defaults(view: PayrollSettingsView): SettingsValues {
   };
 }
 
-/** School pay rules form; only approvers (principal, admin) may change them. */
+/** School pay rules form; approvers may change them, except coordinators (branch-level). */
 export function usePayRules(branchId: string, view: PayrollSettingsView) {
   const can = useCan();
+  const coordinator = useSession().session?.activeRole === "COORDINATOR";
   const save = useSavePayrollSettings(branchId);
   const server = useServerForm({
     schema: settingsSchema,
     defaultValues: defaults(view),
     onSubmit: (values) => save.mutateAsync(toSettingsInput(values)),
   });
-  return { ...server, canEdit: can("payroll.approve") };
+  return { ...server, canEdit: can("payroll.approve") && !coordinator };
 }

@@ -48,6 +48,12 @@ class NavigationCatalogTest {
     }
 
     @Test
+    fun coordinator_gets_payroll_head_teacher_does_not() {
+        assertTrue(MenuIds.PAYROLL in NavigationCatalog.defaultOrder(RoleKey.COORDINATOR))
+        assertTrue(MenuIds.PAYROLL !in NavigationCatalog.defaultOrder(RoleKey.HEAD_TEACHER))
+    }
+
+    @Test
     fun menuFor_hides_items_without_permission() {
         val menu = NavigationCatalog.menuFor(session(RoleKey.TEACHER, "dashboard.view", "attendance.view"))
         assertEquals(listOf(MenuIds.DASHBOARD, MenuIds.ATTENDANCE), menu.map { it.id })
@@ -91,6 +97,8 @@ class NavigationCatalogTest {
     fun menu_sizes_match_navigation_doc() {
         assertEquals(29, NavigationCatalog.defaultOrder(RoleKey.SUPER_ADMIN).size)
         assertEquals(27, NavigationCatalog.defaultOrder(RoleKey.PRINCIPAL).size)
+        assertEquals(19, NavigationCatalog.defaultOrder(RoleKey.COORDINATOR).size)
+        assertEquals(18, NavigationCatalog.defaultOrder(RoleKey.HEAD_TEACHER).size)
         assertEquals(13, NavigationCatalog.defaultOrder(RoleKey.TEACHER).size)
         assertEquals(12, NavigationCatalog.defaultOrder(RoleKey.PARENT).size)
     }

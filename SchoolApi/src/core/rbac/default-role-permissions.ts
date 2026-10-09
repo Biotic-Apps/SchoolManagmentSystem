@@ -38,7 +38,8 @@ const PRINCIPAL: PermissionKey[] = [
     'export',
   ),
   ...grant('fees', 'view', 'approve', 'export'),
-  ...grant('payroll', 'view', 'approve'),
+  // Owner decision 2026-10-09: principal and coordinator manage payroll for their branch.
+  ...grant('payroll', 'view', 'add', 'edit', 'submit', 'approve', 'export'),
   ...grant('expenses', 'view', 'approve'),
   ...grant('inventory', 'view', 'approve'),
   ...grant('health', 'view', 'add', 'edit'),
@@ -80,6 +81,13 @@ const SUPERVISOR: PermissionKey[] = [
   ...OWN_PROFILE,
   'self.payroll.view',
   'teacherwork.proxy',
+];
+
+// Coordinator = supervisor + branch payroll management (owner decision 2026-10-09).
+// School pay rules stay with the principal/admin (payroll-settings.service.ts).
+const COORDINATOR: PermissionKey[] = [
+  ...SUPERVISOR,
+  ...grant('payroll', 'view', 'add', 'edit', 'submit', 'approve', 'export'),
 ];
 
 const TEACHER: PermissionKey[] = [
@@ -151,7 +159,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Readonly<
 > = {
   [RoleKey.SUPER_ADMIN]: PERMISSION_CATALOGUE,
   [RoleKey.PRINCIPAL]: PRINCIPAL,
-  [RoleKey.COORDINATOR]: SUPERVISOR,
+  [RoleKey.COORDINATOR]: COORDINATOR,
   [RoleKey.HEAD_TEACHER]: SUPERVISOR,
   [RoleKey.TEACHER]: TEACHER,
   [RoleKey.HELPER]: HELPER,

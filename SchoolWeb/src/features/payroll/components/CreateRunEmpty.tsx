@@ -19,7 +19,7 @@ export function CreateRunEmpty({ month, canCreate, creating, onCreate }: CreateR
         description={
           canCreate
             ? "Create the run, then calculate. Every staff member with a salary is included; absences, lates, approved overtime and adjustments are applied."
-            : "The accountant creates the payroll run for each month."
+            : "The principal, coordinator or accountant creates the payroll run for each month."
         }
         action={
           canCreate && (

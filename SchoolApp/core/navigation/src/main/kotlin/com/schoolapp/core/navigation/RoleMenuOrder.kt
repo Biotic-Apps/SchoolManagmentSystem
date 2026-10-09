@@ -52,7 +52,8 @@ internal val RoleMenuOrder: Map<RoleKey, List<String>> = mapOf(
         ACTIVITIES, NOTICES, EXAMS, FEES, PAYROLL, EXPENSES, INVENTORY, HEALTH, PICKUP,
         MESSAGES, MEETINGS, COMPLAINTS, CERTIFICATES, APPROVALS, REPORTS, SETTINGS, PROFILE,
     ),
-    RoleKey.COORDINATOR to SupervisorOrder,
+    // Owner decision 2026-10-09: coordinators manage branch payroll too.
+    RoleKey.COORDINATOR to SupervisorOrder.dropLast(2) + listOf(PAYROLL, MY_SALARY, PROFILE),
     RoleKey.HEAD_TEACHER to SupervisorOrder,
     RoleKey.TEACHER to listOf(
         DASHBOARD, CLASSES, TIMETABLE, ATTENDANCE, DIARY, ACTIVITIES, EXAMS, PROGRESS,
