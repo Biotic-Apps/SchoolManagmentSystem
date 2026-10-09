@@ -70,7 +70,7 @@ export function LoginPanel() {
         options={LOGIN_ROLE_OPTIONS}
         value={role}
         onChange={(value) => setRole(value as LoginRole)}
-        className="mb-1 w-full"
+        className="mb-6 w-full"
       />
       <LoginForm login={login} role={role} />
       <OrDivider />
