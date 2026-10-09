@@ -24,6 +24,7 @@ import {
 import { RegisterStudentDto } from './dto/register-student.dto';
 import {
   EnrollmentDto,
+  RegisteredStudentDetailDto,
   StudentDetailDto,
   StudentSummaryDto,
 } from './dto/student.dto';
@@ -53,12 +54,12 @@ export class StudentsController {
 
   @Post()
   @RequirePermission('students.add')
-  @ApiData(StudentDetailDto)
+  @ApiData(RegisteredStudentDetailDto)
   register(
     @CurrentUser() user: AuthUser,
     @CurrentScope() scope: Scope,
     @Body() body: RegisterStudentDto,
-  ): Promise<StudentDetailDto> {
+  ): Promise<RegisteredStudentDetailDto> {
     return this.students.register(user, scope, body);
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { Clock, Plus } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
@@ -12,21 +12,27 @@ import { BranchesList } from "./BranchesList";
 export function BranchesPage() {
   const page = useBranchesPage();
   const view = useBranchesView();
+  const { ownBranch } = page;
+  const actions = (ownBranch || page.perms.canAdd) && (
+    <>
+      {ownBranch && (
+        <Button onClick={() => page.timings.show(ownBranch)}>
+          <Clock />
+          Edit timings
+        </Button>
+      )}
+      {page.perms.canAdd && (
+        <Button onClick={() => page.form.show()}>
+          <Plus />
+          Add branch
+        </Button>
+      )}
+    </>
+  );
 
   return (
     <>
-      <PageHeader
-        title={view.title}
-        description={view.description}
-        actions={
-          page.perms.canAdd && (
-            <Button onClick={() => page.form.show()}>
-              <Plus />
-              Add branch
-            </Button>
-          )
-        }
-      />
+      <PageHeader title={view.title} description={view.description} actions={actions} />
       {view.showCalendarTab ? (
         <Tabs defaultValue="branch">
           <TabsList>

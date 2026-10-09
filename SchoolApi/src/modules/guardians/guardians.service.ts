@@ -12,10 +12,10 @@ import {
 import { containsInsensitive } from '../../core/common/search';
 import type { AuthUser } from '../../core/common/types/auth-user';
 import { PrismaService } from '../../core/prisma/prisma.service';
-import { RoleKey } from '../../core/rbac/role-key.enum';
 import type { Scope } from '../../core/rbac/scope/scope';
 import type { GuardianDto } from '../students/dto/student.dto';
 import { toGuardianDto } from '../students/guardian.mapper';
+import { ParentLoginWriter } from '../students/registration/parent-login.writer';
 import { fullName } from '../students/student.mapper';
 import {
   currentEnrollment,
@@ -37,6 +37,7 @@ export class GuardiansService {
     private readonly prisma: PrismaService,
     private readonly access: GuardianAccessService,
     private readonly accounts: AccountProvisioner,
+    private readonly logins: ParentLoginWriter,
     private readonly audit: AuditService,
   ) {}
 
@@ -141,25 +142,13 @@ export class GuardiansService {
     const guardian = await this.access.manage(scope, id);
     if (guardian.userId) throw conflict('Guardian already has an account');
     const result = await this.prisma.$transaction(async (tx) => {
-      const account = await this.accounts.provision(tx, {
-        name: guardian.name,
-        email: guardian.email,
-        phone: guardian.phone,
-        roleKey: RoleKey.PARENT,
-        scopeType: 'GUARDIAN',
-        schoolId: guardian.schoolId,
-        grantedById: user.id,
-      });
-      const taken = await tx.guardian.count({
-        where: { userId: account.userId },
-      });
-      if (taken > 0)
-        throw conflict('That login already belongs to another guardian');
-      await tx.guardian.update({
+      const login = await this.logins.ensure(tx, guardian, user.id);
+      if (login.status === 'SKIPPED') throw conflict(login.reason!);
+      const row = await tx.guardian.findUniqueOrThrow({
         where: { id },
-        data: { userId: account.userId },
+        select: { userId: true },
       });
-      return account;
+      return { login, userId: row.userId! };
     });
     await this.accounts.refresh(result.userId);
     this.audit.stage({
@@ -167,22 +156,37 @@ export class GuardiansService {
       entityType: 'Guardian',
       entityId: id,
       schoolId: guardian.schoolId,
-      after: { userId: result.userId, created: result.created },
+      after: {
+        userId: result.userId,
+        created: result.login.status === 'CREATED',
+      },
     });
     return {
       userId: result.userId,
-      temporaryPassword: result.temporaryPassword,
+      email: result.login.email,
+      phone: result.login.phone,
+      temporaryPassword: result.login.temporaryPassword,
     };
   }
 
   private detail(user: AuthUser, row: GuardianAccessRow): GuardianDetailDto {
     return {
       ...toGuardianDto(row, user.permissions.has('people.sensitive.view')),
+      login: row.user
+        ? {
+            email: row.user.email,
+            phone: row.user.phone,
+            status: row.user.status,
+            mustChangePassword: row.user.mustChangePassword,
+            lastLoginAt: row.user.lastLoginAt?.toISOString() ?? null,
+          }
+        : null,
       children: row.studentLinks.map((link) => {
         const e = currentEnrollment(link.student.enrollments);
         return {
           linkId: link.id,
           studentId: link.studentId,
+          admissionNo: link.student.admissionNo,
           name: fullName(link.student),
           className: e?.section.schoolClass.name ?? null,
           sectionName: e?.section.name ?? null,

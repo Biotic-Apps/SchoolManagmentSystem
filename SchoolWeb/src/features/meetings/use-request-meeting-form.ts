@@ -26,7 +26,8 @@ export function useRequestMeetingForm(onDone: () => void) {
   const primaryId = (links.find((link) => link.isPrimary) ?? links[0])?.guardian.id ?? "";
 
   const { setValue } = form;
-  useEffect(() => setValue("guardianId", primaryId), [primaryId, setValue]);
+  // Validate so a stale "Choose a guardian" error clears once one is filled in.
+  useEffect(() => setValue("guardianId", primaryId, { shouldValidate: !!primaryId }), [primaryId, setValue]);
 
   return {
     form,

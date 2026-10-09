@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import type { Prisma } from '../../generated/prisma/client';
 import { AuditService } from '../../core/audit/audit.service';
 import { parseDate } from '../../core/common/dates';
 import { OK, type OkDto } from '../../core/common/dto/ok.dto';
@@ -25,6 +24,7 @@ import type {
   UpdateNoticeDto,
 } from './dto/notice-input.dto';
 import type { NoticeDto, NoticeReadsDto } from './dto/notice.dto';
+import { noticeListWhere } from './notice-reach';
 import { NoticeTargetService } from './notice-target.service';
 import { noticeInclude, toNoticeDto, type NoticeRow } from './notice.mapper';
 
@@ -43,16 +43,17 @@ export class NoticesService {
     scope: Scope,
     query: NoticeQueryDto,
   ): Promise<PageResult<NoticeDto>> {
-    const reach: Prisma.NoticeWhereInput[] = [
-      { status: 'PUBLISHED', recipients: { some: { userId: user.id } } },
-      { authorId: user.id },
-    ];
-    if (scope.global) reach.push({});
-    else if (!scope.guardian && (scope.schoolIds.size || scope.branchIds.size))
-      reach.push(scope.managedBranchFilter());
-    const where: Prisma.NoticeWhereInput = {
-      AND: [{ OR: reach }, { branchId: query.branchId, status: query.status }],
-    };
+    const branch = query.branchId
+      ? await this.prisma.branch.findUnique({
+          where: { id: query.branchId },
+          select: { schoolId: true },
+        })
+      : null;
+    const where = noticeListWhere(user.id, scope, {
+      branchId: query.branchId,
+      schoolId: branch?.schoolId,
+      status: query.status,
+    });
     const [rows, total] = await Promise.all([
       this.prisma.notice.findMany({
         where,

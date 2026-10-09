@@ -5,6 +5,7 @@ import type {
   Application,
   ApplicationInput,
   ConfirmInput,
+  ConfirmedAdmission,
   Decision,
   Enquiry,
   EnquiryInput,
@@ -99,8 +100,7 @@ export const useWithdrawApplication = () => useApplicationAction<{ reason: strin
 export function useConfirmApplication() {
   return useApiMutation({
     mutationFn: async ({ id, body }: { id: string; body: ConfirmInput }) =>
-      (await http.post<{ application: Application; studentId: string }>(`/admissions/applications/${id}/confirm`, body))
-        .data,
+      (await http.post<ConfirmedAdmission>(`/admissions/applications/${id}/confirm`, body)).data,
     invalidate: [...INVALIDATE, ["students"], ["sections"]],
     success: "Admission confirmed — student enrolled",
     toastError: false,

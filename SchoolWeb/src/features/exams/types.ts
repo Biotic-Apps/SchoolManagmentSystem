@@ -1,4 +1,5 @@
 import type { PersonRef } from "@/features/people/types";
+import type { StudentSkill } from "./skill-types";
 
 // phase4-contract §A.
 
@@ -42,6 +43,8 @@ export interface ExamPaper {
   className?: string;
   subjectId: string;
   subjectName?: string;
+  /** The API sends the subject as { id, name }. */
+  subject?: PersonRef;
   date: string;
   startTime: string;
   endTime: string;
@@ -145,10 +148,17 @@ export interface StudentResult {
   maxTotal: number;
   percent: number;
   grade: string | null;
+  /** Rank in the section; null when the branch turns positions off. */
   position: number | null;
+  sectionSize?: number;
+  /** Rank across all sections of the class. */
+  classPosition?: number | null;
+  classSize?: number;
   passed: boolean;
   remarks: string | null;
   teacherRemark: string | null;
+  /** Published results only: rated behaviour & skills. */
+  skills?: StudentSkill[];
 }
 
 export interface ExamStatusInput {

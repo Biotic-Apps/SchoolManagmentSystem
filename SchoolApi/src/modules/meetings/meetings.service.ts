@@ -19,7 +19,8 @@ import {
   type MeetingRow,
 } from './meeting.mapper';
 
-const isLeader = (user: AuthUser) => isPrincipal(user) || isSuperAdmin(user);
+export const isLeader = (user: AuthUser) =>
+  isPrincipal(user) || isSuperAdmin(user);
 
 /** Meeting lists and detail for participants (principals: their branches). */
 @Injectable()
@@ -45,9 +46,18 @@ export class MeetingsService {
       AND: [
         { OR: visible },
         { studentId: query.studentId },
+        // Open requests stay upcoming until answered, even past their preferred day.
         upcoming
-          ? { status: 'SCHEDULED', date: { gte: now } }
-          : { OR: [{ date: { lt: now } }, { status: { not: 'SCHEDULED' } }] },
+          ? {
+              OR: [
+                { status: 'SCHEDULED', date: { gte: now } },
+                { status: 'REQUESTED' },
+              ],
+            }
+          : {
+              status: { not: 'REQUESTED' },
+              OR: [{ date: { lt: now } }, { status: { not: 'SCHEDULED' } }],
+            },
       ],
     };
     const order = upcoming ? 'asc' : 'desc';

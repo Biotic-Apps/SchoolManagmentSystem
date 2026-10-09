@@ -19,6 +19,7 @@ import type { AuthUser } from '../../../core/common/types/auth-user';
 import { RequirePermission } from '../../../core/rbac/require-permission.decorator';
 import { CurrentScope } from '../../../core/rbac/scope/current-scope.decorator';
 import type { Scope } from '../../../core/rbac/scope/scope';
+import { ReceiptQueryDto } from '../receipts/dto/receipt-query.dto';
 import { ReceiptsService } from '../receipts/receipts.service';
 import { ReversePaymentDto } from '../reversal/dto/reverse-payment.dto';
 import { PaymentReversalService } from '../reversal/payment-reversal.service';
@@ -76,8 +77,9 @@ export class PaymentsController {
     @CurrentUser() user: AuthUser,
     @CurrentScope() scope: Scope,
     @Param('id', ParseUUIDPipe) id: string,
+    @Query() query: ReceiptQueryDto,
   ): Promise<ReceiptJobDto> {
-    return this.receipts.receipt(user, scope, id);
+    return this.receipts.receipt(user, scope, id, query.format);
   }
 
   @Post(':id/reverse')

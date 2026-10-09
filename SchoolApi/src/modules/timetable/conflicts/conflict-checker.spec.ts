@@ -195,7 +195,7 @@ describe('findConflicts', () => {
         type: 'WEEKLY_PERIODS_SHORT',
         day: 0,
         periodIndex: 0,
-        message: 'Maths: 1 of 6 periods a week placed',
+        message: 'Maths: 1 of 6 weekly periods placed, add 5 more',
       }),
     ]);
   });

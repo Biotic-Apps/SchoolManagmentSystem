@@ -11,11 +11,15 @@ import { AccessCache } from '../../../core/rbac/access/access-cache';
 import type { Scope } from '../../../core/rbac/scope/scope';
 import type { GuardianLinkDto } from '../../students/dto/student.dto';
 import { toGuardianLinkDto } from '../../students/guardian.mapper';
+import type { ParentLoginDto } from '../../students/dto/parent-login.dto';
 import { GuardianWriter } from '../../students/registration/guardian-writer';
+import { ParentLoginWriter } from '../../students/registration/parent-login.writer';
+import { auditedLogins } from '../../students/registration/parent-login-audit';
 import { StudentAccessService } from '../../students/student-access.service';
 import { currentEnrollment } from '../../students/student-scope';
 import { GUARDIAN_LINK_INCLUDE } from '../../students/students.repository';
 import type { AddGuardianLinkDto } from '../dto/guardian-input.dto';
+import type { AddedGuardianLinkDto } from '../dto/guardian.dto';
 
 @Injectable()
 export class StudentGuardiansService {
@@ -23,20 +27,22 @@ export class StudentGuardiansService {
     private readonly prisma: PrismaService,
     private readonly students: StudentAccessService,
     private readonly writer: GuardianWriter,
+    private readonly logins: ParentLoginWriter,
     private readonly accessCache: AccessCache,
     private readonly audit: AuditService,
   ) {}
 
-  /** Staff-created links are VERIFIED immediately. */
+  /** Staff-created links are VERIFIED immediately; the guardian gets a parent login. */
   async add(
     user: AuthUser,
     scope: Scope,
     studentId: string,
     dto: AddGuardianLinkDto,
-  ): Promise<GuardianLinkDto> {
+  ): Promise<AddedGuardianLinkDto> {
     const student = await this.students.manage(scope, studentId);
     if (!dto.guardianId === !dto.guardian)
       throw invalid('Give either guardianId or guardian');
+    let parentLogin: ParentLoginDto | null = null;
     const link = await this.prisma.$transaction(async (tx) => {
       const guardian = dto.guardianId
         ? await tx.guardian.findFirst({
@@ -64,6 +70,7 @@ export class StudentGuardiansService {
           data: { status: 'REJECTED' },
         });
       }
+      parentLogin = await this.logins.ensure(tx, guardian, user.id);
       if (dto.isPrimary) {
         await tx.studentGuardian.updateMany({
           where: { studentId, isPrimary: true },
@@ -97,12 +104,13 @@ export class StudentGuardiansService {
         linkId: link.id,
         guardianId: link.guardianId,
         isPrimary: link.isPrimary,
+        parentLogin: parentLogin && auditedLogins([parentLogin])[0],
       },
     });
-    return toGuardianLinkDto(
-      link,
-      user.permissions.has('people.sensitive.view'),
-    );
+    return {
+      ...toGuardianLinkDto(link, user.permissions.has('people.sensitive.view')),
+      parentLogin,
+    };
   }
 
   /** Custody change: takes effect immediately. */

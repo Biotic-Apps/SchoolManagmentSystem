@@ -8,7 +8,7 @@ import { DialogFooter } from "@/components/ui/Dialog";
 import { formatDate } from "@/lib/format";
 import { paymentMethodLabel } from "../../payment-options";
 import type { Payment } from "../../types";
-import { FileLinkButton } from "./FileLinkButton";
+import { ReceiptDownload } from "./ReceiptDownload";
 
 /** Confirmation after recording: receipt number and the receipt download. */
 export function PaymentRecordedView({ payment, onClose }: { payment: Payment; onClose: () => void }) {
@@ -31,7 +31,7 @@ export function PaymentRecordedView({ payment, onClose }: { payment: Payment; on
         ]}
       />
       <DialogFooter>
-        <FileLinkButton path={`/payments/${payment.id}/receipt`} label="Download receipt" />
+        <ReceiptDownload paymentId={payment.id} />
         <Button onClick={onClose}>Done</Button>
       </DialogFooter>
     </div>

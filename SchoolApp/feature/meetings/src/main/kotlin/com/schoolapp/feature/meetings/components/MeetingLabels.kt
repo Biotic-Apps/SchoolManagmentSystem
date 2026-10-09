@@ -27,6 +27,7 @@ internal fun MeetingMode.icon(): ImageVector = when (this) {
 
 @StringRes
 internal fun MeetingStatus.labelRes(): Int = when (this) {
+    MeetingStatus.REQUESTED -> R.string.meetings_status_requested
     MeetingStatus.SCHEDULED -> R.string.meetings_status_scheduled
     MeetingStatus.COMPLETED -> R.string.meetings_status_completed
     MeetingStatus.CANCELLED -> R.string.meetings_status_cancelled
@@ -34,6 +35,7 @@ internal fun MeetingStatus.labelRes(): Int = when (this) {
 }
 
 internal fun MeetingStatus.tone(): StatusTone = when (this) {
+    MeetingStatus.REQUESTED -> StatusTone.Warning
     MeetingStatus.SCHEDULED -> StatusTone.Info
     MeetingStatus.COMPLETED -> StatusTone.Success
     MeetingStatus.CANCELLED -> StatusTone.Neutral

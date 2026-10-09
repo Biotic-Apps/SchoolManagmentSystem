@@ -6,7 +6,9 @@ import type { useExamDetail } from "../../use-exam-detail";
 import { CompletenessTab } from "../completeness/CompletenessTab";
 import { MarkSheetsTab } from "../marks/MarkSheetsTab";
 import { ResultsTab } from "../results/ResultsTab";
+import { PrintTab } from "../print/PrintTab";
 import { ScheduleTab } from "../schedule/ScheduleTab";
+import { SkillsTab } from "../skills/SkillsTab";
 import { ExamOverviewTab } from "./ExamOverviewTab";
 
 interface ExamDetailTabsProps {
@@ -22,7 +24,9 @@ export function ExamDetailTabs({ exam, detail }: ExamDetailTabsProps) {
         <TabsTrigger value="schedule">Schedule</TabsTrigger>
         {detail.showMarkSheets && <TabsTrigger value="mark-sheets">Mark sheets</TabsTrigger>}
         {detail.showCompleteness && <TabsTrigger value="completeness">Completeness</TabsTrigger>}
+        {detail.showSkills && <TabsTrigger value="skills">Behaviour & skills</TabsTrigger>}
         {detail.showResults && <TabsTrigger value="results">Results</TabsTrigger>}
+        <TabsTrigger value="print">Print</TabsTrigger>
       </TabsList>
       <TabsContent value="overview">
         <ExamOverviewTab exam={exam} />
@@ -40,11 +44,19 @@ export function ExamDetailTabs({ exam, detail }: ExamDetailTabsProps) {
           <CompletenessTab exam={exam} />
         </TabsContent>
       )}
+      {detail.showSkills && (
+        <TabsContent value="skills">
+          <SkillsTab exam={exam} />
+        </TabsContent>
+      )}
       {detail.showResults && (
         <TabsContent value="results">
           <ResultsTab exam={exam} />
         </TabsContent>
       )}
+      <TabsContent value="print">
+        <PrintTab exam={exam} />
+      </TabsContent>
     </Tabs>
   );
 }

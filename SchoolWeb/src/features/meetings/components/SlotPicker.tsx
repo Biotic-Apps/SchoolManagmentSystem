@@ -3,13 +3,14 @@
 import { useFormContext } from "react-hook-form";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { fieldError } from "@/components/shared/form/field-error";
+import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/cn";
 import { formatTime } from "@/lib/time";
 import { modeLabel, weekdayLabel } from "../options";
 import type { ParentBooking } from "../use-parent-booking";
 
-/** Open slots grouped by day as selectable 12-hour time chips. */
+/** The teacher's open slots grouped by day as selectable 12-hour time chips. */
 export function SlotPicker({ booking }: { booking: ParentBooking }) {
   const { formState } = useFormContext();
   const error = fieldError(formState.errors, "slotId");
@@ -23,9 +24,6 @@ export function SlotPicker({ booking }: { booking: ParentBooking }) {
       {booking.needsTeacher && <p className="text-label text-fg-muted">Choose a teacher to see their open times.</p>}
       {!booking.needsTeacher && slots.isLoading && <Skeleton className="h-24 w-full" />}
       {!!slots.error && <ErrorState error={slots.error} onRetry={() => slots.refetch()} className="py-6" />}
-      {!booking.needsTeacher && !slots.isLoading && !slots.error && booking.days.length === 0 && (
-        <p className="text-label text-fg-muted">No open times in the next two weeks. Try another teacher or check back later.</p>
-      )}
       {booking.days.map((day) => (
         <div key={day.date} className="flex flex-col gap-2">
           <span className="text-caption font-medium text-fg-muted">{weekdayLabel(day.date)}</span>
@@ -51,6 +49,13 @@ export function SlotPicker({ booking }: { booking: ParentBooking }) {
           </div>
         </div>
       ))}
+      {booking.hasOpenTimes && (
+        <div>
+          <Button type="button" variant="ghost" size="sm" onClick={booking.askOtherTime}>
+            None of these work? Suggest another time
+          </Button>
+        </div>
+      )}
       {error?.message && (
         <p role="alert" className="text-caption text-error">
           {error.message}

@@ -11,13 +11,14 @@ import { useParentMeetings } from "../use-parent-meetings";
 import { ParentMeetingCard } from "./ParentMeetingCard";
 
 const EMPTY: Record<MeetingBox, string> = {
-  upcoming: "Meetings you book or the school schedules appear here.",
+  upcoming: "Meetings you book, requests you send, and meetings the school schedules appear here.",
   past: "Finished meetings, with any summary the teacher shared, appear here.",
 };
 
 export function ParentMeetingList({ box }: { box: MeetingBox }) {
   const list = useParentMeetings(box);
   const { query, cancelDialog } = list;
+  const withdrawing = cancelDialog.item?.status === "REQUESTED";
 
   if (query.isLoading) return <Skeleton className="h-40 w-full" />;
   if (query.error) {
@@ -41,16 +42,24 @@ export function ParentMeetingList({ box }: { box: MeetingBox }) {
         <ParentMeetingCard
           key={meeting.id}
           meeting={meeting}
-          onCancel={box === "upcoming" && meeting.status === "SCHEDULED" ? () => cancelDialog.show(meeting) : undefined}
+          onCancel={
+            box === "upcoming" && (meeting.status === "SCHEDULED" || meeting.status === "REQUESTED")
+              ? () => cancelDialog.show(meeting)
+              : undefined
+          }
         />
       ))}
       <ReasonDialog
         open={cancelDialog.open}
         onOpenChange={cancelDialog.onOpenChange}
-        title="Cancel meeting"
-        description="The teacher is notified and the time becomes free again."
+        title={withdrawing ? "Withdraw request" : "Cancel meeting"}
+        description={
+          withdrawing
+            ? "The teacher is notified that you no longer need this meeting."
+            : "The teacher is notified and the time becomes free again."
+        }
         label="Reason"
-        submitLabel="Cancel meeting"
+        submitLabel={withdrawing ? "Withdraw request" : "Cancel meeting"}
         submitting={list.cancelling}
         error={list.cancelError}
         onSubmit={list.confirmCancel}

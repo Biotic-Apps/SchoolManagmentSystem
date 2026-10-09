@@ -12,6 +12,7 @@ Error codes: `VALIDATION_FAILED`(400) `UNAUTHENTICATED`(401) `FORBIDDEN`(403) `F
 | Method | Path | Body | Returns |
 |---|---|---|---|
 | POST | `/auth/login` | `{ identifier, password, platform: "WEB"\|"ANDROID", deviceName? }` | `AuthTokens` |
+| | | `identifier`: email (has `@`), a child's admission number (has a letter, e.g. `SMS-2026-0002`; signs in a parent whose VERIFIED guardian link is to that child — if both parents have logins, the one whose password matches; if either is locked the number is locked too), or phone. Unknown identifiers all answer `INVALID_CREDENTIALS`. | |
 | POST | `/auth/refresh` | `{ refreshToken }` | `AuthTokens` (rotated; reuse of an old token revokes the session family → 401 `SESSION_REVOKED`) |
 | POST | `/auth/logout` (auth) | `{ refreshToken? }` | `{ ok: true }` — revokes current session |
 | POST | `/auth/logout-all` (auth) | – | `{ ok: true }` — bumps tokenVersion, revokes all |

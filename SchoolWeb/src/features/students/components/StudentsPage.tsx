@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, CalendarRange, Plus } from "lucide-react";
+import { Building2, CalendarRange, IdCard, Plus } from "lucide-react";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { AcademicScopeBar } from "@/features/classes/components/AcademicScopeBar";
 import { useStudentsPage } from "../use-students-page";
+import { PrintIdCardsDialog } from "./PrintIdCardsDialog";
 import { RegisterStudentDialog } from "./RegisterStudentDialog";
 import { StudentsTab } from "./StudentsTab";
 import { TransfersTab } from "./TransfersTab";
@@ -25,12 +26,20 @@ export function StudentsPage() {
         title={page.title}
         description="Enrolled students per branch session, and transfers between branches."
         actions={
-          page.canAdd && (
-            <Button onClick={() => page.register.show(true)}>
-              <Plus />
-              Register student
-            </Button>
-          )
+          <>
+            {page.canPrintCards && (
+              <Button variant="secondary" onClick={() => page.printCards.show(true)}>
+                <IdCard />
+                Print ID cards
+              </Button>
+            )}
+            {page.canAdd && (
+              <Button onClick={() => page.register.show(true)}>
+                <Plus />
+                Register student
+              </Button>
+            )}
+          </>
         }
       />
       <AcademicScopeBar scope={scope} withClass />
@@ -72,6 +81,15 @@ export function StudentsPage() {
             <TransfersTab key={branchId} branchId={branchId} sessionId={sessionId} />
           </TabsContent>
         </Tabs>
+      )}
+      {page.printCards.open && branchId && sessionId && (
+        <PrintIdCardsDialog
+          branchId={branchId}
+          sessionId={sessionId}
+          classes={scope.classes.options}
+          classId={scope.classId}
+          onClose={page.printCards.close}
+        />
       )}
       {page.register.open && branchId && sessionId && (
         <RegisterStudentDialog

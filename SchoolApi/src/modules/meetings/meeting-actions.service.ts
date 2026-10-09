@@ -19,7 +19,7 @@ import {
 import { MeetingNotifier } from './meeting-notifier';
 import { MeetingsService } from './meetings.service';
 
-/** Cancel (either party), complete and no-show (staff participant). */
+/** Cancel or withdraw a request (either party), complete and no-show (staff participant). */
 @Injectable()
 export class MeetingActionsService {
   constructor(
@@ -40,9 +40,14 @@ export class MeetingActionsService {
       throw forbidden('Only participants can cancel a meeting');
     }
     const updated = await this.prisma.$transaction(async (tx) => {
-      const result = await this.finish(tx, row, 'CANCELLED', {
-        reason: dto.reason?.trim() || null,
-      });
+      // Either party may also withdraw a request that wasn't answered yet.
+      const result = await this.finish(
+        tx,
+        row,
+        'CANCELLED',
+        { reason: dto.reason?.trim() || null },
+        ['SCHEDULED', 'REQUESTED'],
+      );
       if (row.slotId) {
         await tx.meetingSlot.updateMany({
           where: { id: row.slotId, status: 'BOOKED' },
@@ -145,9 +150,10 @@ export class MeetingActionsService {
     row: MeetingRow,
     status: MeetingStatus,
     data: Prisma.MeetingUpdateManyMutationInput,
+    from: MeetingStatus[] = ['SCHEDULED'],
   ): Promise<MeetingRow> {
     const claimed = await tx.meeting.updateMany({
-      where: { id: row.id, status: 'SCHEDULED' },
+      where: { id: row.id, status: { in: from } },
       data: { ...data, status },
     });
     if (claimed.count === 0) {

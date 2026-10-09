@@ -16,12 +16,14 @@ import { DocumentsService } from '../documents/documents.service';
 import type { RegisterStudentDto } from './dto/register-student.dto';
 import type {
   EnrollmentDto,
+  RegisteredStudentDetailDto,
   StudentDetailDto,
   StudentSummaryDto,
 } from './dto/student.dto';
 import type { StudentQueryDto } from './dto/student-query.dto';
 import type { UpdateStudentDto } from './dto/update-student.dto';
 import { assertOnePrimary } from './registration/guardian-writer';
+import { auditedLogins } from './registration/parent-login-audit';
 import { StudentRegistrationService } from './registration/student-registration.service';
 import { StudentAccessService } from './student-access.service';
 import { StudentMapper, toEnrollmentDto } from './student.mapper';
@@ -66,7 +68,7 @@ export class StudentsService {
     user: AuthUser,
     scope: Scope,
     dto: RegisterStudentDto,
-  ): Promise<StudentDetailDto> {
+  ): Promise<RegisteredStudentDetailDto> {
     const section = await this.repository.findSection(dto.sectionId);
     if (!section) throw invalid('Section not found');
     scope.assertManageBranch({
@@ -108,9 +110,11 @@ export class StudentsService {
         admissionNo: result.admissionNo,
         sectionId: section.id,
         admissionDate: dto.admissionDate,
+        parentLogins: auditedLogins(result.parentLogins),
       },
     });
-    return this.get(user, scope, result.studentId);
+    const student = await this.get(user, scope, result.studentId);
+    return { ...student, parentLogins: result.parentLogins };
   }
 
   async update(

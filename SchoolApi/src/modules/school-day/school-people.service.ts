@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import type { AuthUser } from '../../core/common/types/auth-user';
 import { PrismaService } from '../../core/prisma/prisma.service';
+import { isPrincipal } from '../../core/rbac/actor';
 import { RoleKey } from '../../core/rbac/role-key.enum';
 
 /** Who to notify or route to: guardians, class teachers, branch leaders. */
@@ -96,6 +98,22 @@ export class SchoolPeopleService {
 
   async staffOfUser(userId: string) {
     return this.prisma.staff.findUnique({ where: { userId } });
+  }
+
+  /**
+   * School + branch a staff user works at: their staff record, or for a
+   * principal without one (made by school setup) their branch assignment.
+   */
+  async workplaceOf(
+    user: AuthUser,
+  ): Promise<{ schoolId: string; branchId: string } | null> {
+    const staff = await this.staffOfUser(user.id);
+    if (staff) return { schoolId: staff.schoolId, branchId: staff.branchId };
+    if (!isPrincipal(user)) return null;
+    const a = user.assignments.find(
+      (x) => x.roleKey === user.activeRole && x.schoolId && x.branchId,
+    );
+    return a ? { schoolId: a.schoolId!, branchId: a.branchId! } : null;
   }
 
   async names(userIds: string[]): Promise<Map<string, string>> {

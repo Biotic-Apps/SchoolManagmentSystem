@@ -39,6 +39,8 @@ enum MeetingSlotStatus {
 }
 
 enum MeetingStatus {
+  /// Parent asked for a time without a slot; staff accept (SCHEDULED) or decline (CANCELLED).
+  REQUESTED
   SCHEDULED
   COMPLETED
   CANCELLED

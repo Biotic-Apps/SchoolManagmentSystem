@@ -133,6 +133,7 @@ model Exam {
   papers        ExamPaper[]
   markSheets    MarkSheet[]
   results       ExamResult[]
+  skillRatings  SkillRating[]
 
   @@unique([branchId, sessionId, name])
   @@index([branchId, sessionId, status])

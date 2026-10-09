@@ -13,11 +13,40 @@ export interface UserAuthState {
 export class UserAccountRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  findByIdentifier(identifier: Identifier) {
+  /** One user; an admission number shared by several parents matches none. */
+  async findByIdentifier(identifier: Identifier) {
+    if (identifier.admissionNo) {
+      const parents = await this.findParentsByAdmissionNo(
+        identifier.admissionNo,
+      );
+      return parents.length === 1 ? parents[0] : null;
+    }
+    if (!identifier.email && !identifier.phone) return null;
     return this.prisma.user.findFirst({
       where: identifier.email
         ? { email: identifier.email }
         : { phone: identifier.phone },
+    });
+  }
+
+  /** Logins of the guardians verified for a child with this admission number. */
+  findParentsByAdmissionNo(admissionNo: string) {
+    return this.prisma.user.findMany({
+      where: {
+        guardianProfile: {
+          status: 'ACTIVE',
+          studentLinks: {
+            some: {
+              status: 'VERIFIED',
+              student: {
+                admissionNo: { equals: admissionNo, mode: 'insensitive' },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: 'asc' },
+      take: 10,
     });
   }
 

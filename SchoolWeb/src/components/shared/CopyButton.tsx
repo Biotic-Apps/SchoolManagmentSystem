@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { Button, type ButtonProps } from "@/components/ui/Button";
 import { toast } from "@/lib/toast";
+import { copyText } from "@/lib/clipboard";
 
 interface CopyButtonProps extends Omit<ButtonProps, "onClick" | "children"> {
   text: string;
@@ -23,7 +24,7 @@ export function CopyButton({ text, label, variant = "ghost", size = "sm", ...pro
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(text);
+      await copyText(text);
       setCopied(true);
     } catch {
       toast.error("Couldn't copy. Select the text and copy it by hand.");

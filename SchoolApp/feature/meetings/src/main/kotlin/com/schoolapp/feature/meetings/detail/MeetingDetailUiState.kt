@@ -6,7 +6,7 @@ import com.schoolapp.core.model.meeting.Meeting
 import com.schoolapp.feature.meetings.domain.CompleteErrors
 import com.schoolapp.feature.meetings.domain.CompleteMeetingForm
 
-enum class MeetingAction { COMPLETE, NO_SHOW, CANCEL }
+enum class MeetingAction { COMPLETE, NO_SHOW, CANCEL, ACCEPT, DECLINE }
 
 @Immutable
 data class MeetingDetailUiState(
@@ -18,6 +18,10 @@ data class MeetingDetailUiState(
     val today: String = "",
     /** Staff on a SCHEDULED meeting: complete, no-show, cancel. */
     val canAct: Boolean = false,
+    /** Staff on a parent's REQUESTED meeting: accept or decline. */
+    val canAnswer: Boolean = false,
+    /** The cancel sheet declines a request instead of cancelling a meeting. */
+    val declining: Boolean = false,
     /** Non-null while the complete sheet is open. */
     val completeForm: CompleteMeetingForm? = null,
     val completeErrors: CompleteErrors = CompleteErrors(),

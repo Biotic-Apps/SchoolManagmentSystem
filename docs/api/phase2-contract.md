@@ -84,13 +84,17 @@ Document = { id, ownerType, ownerId, docType: "BIRTH_CERTIFICATE"|"B_FORM"|"CNIC
 Files upload via Phase 1 `POST /files` with `purpose: DOCUMENT` (or `STUDENT_PHOTO` / `STAFF_PHOTO`, images only).
 
 ## 4. Guardians and child links
+
+**Parent logins are automatic.** Registering a student (`POST /students`) and confirming an admission (`POST /admissions/applications/:id/confirm`) give every guardian without a login a PARENT login with a generated temporary password (must change at first sign-in). Both responses add `parentLogins: ParentLogin[]`; confirm also adds `admissionNo`. `ParentLogin = { guardianId, guardianName, status: "CREATED"|"EXISTING"|"SKIPPED", email, phone, temporaryPassword (CREATED only, shown once), reason (SKIPPED only, e.g. the phone already signs in for another guardian) }`. A clash never blocks the admission. Audits record status only, never the password.
 | Method | Path | Permission |
 |---|---|---|
 | GET | `/guardians?branchId=&search=` | `guardians.view` |
-| GET | `/guardians/:id` | view → `Guardian & { children: {studentId,name,className,sectionName,relation,status}[] }` |
+| GET | `/guardians/:id` | view → `Guardian & { login: {email,phone,status,mustChangePassword,lastLoginAt} \| null, children: {studentId,admissionNo,name,className,sectionName,relation,status}[] }` |
 | PATCH | `/guardians/:id` | `guardians.edit` |
-| POST | `/guardians/:id/account` | `guardians.edit` → creates/attaches PARENT user (login = guardian phone/email), returns `{ userId, temporaryPassword }` once |
-| POST | `/students/:id/guardians` | `students.edit` `{ guardianId? , guardian?: GuardianInput, relation, isPrimary }` → link VERIFIED (staff-created) |
+| POST | `/guardians/:id/account` | `guardians.edit` → creates/attaches PARENT user (login = guardian phone/email, or any linked child's admission number), returns `{ userId, email, phone, temporaryPassword }` once |
+| POST | `/guardians/:id/account/reset-password` | `guardians.edit` + `users.edit` → `{ userId, temporaryPassword }` once; must change at next sign-in, all sessions revoked. Refused (403) for a login that also holds a staff role (reset it from Users). Audited `guardian.account_reset_password` |
+| POST | `/guardians/:id/account/send-sign-in` | `guardians.edit` → emails/SMSes sign-in steps (never a password) to the parent login; `{ channels: ("EMAIL"\|"SMS")[] }`. Audited |
+| POST | `/students/:id/guardians` | `students.edit` `{ guardianId? , guardian?: GuardianInput, relation, isPrimary }` → link VERIFIED (staff-created); returns `GuardianLink & { parentLogin: ParentLogin \| null }` — the guardian gets a parent login if they had none |
 | DELETE | `/students/:id/guardians/:linkId` | `guardians.edit` `{ reason }` → REVOKED (immediate) |
 | POST | `/child-links/request` | PARENT (self) `{ admissionNo, dob, relation }` → sends OTP to the phone on the student's primary guardian record; returns `{ requestId, maskedPhone }` |
 | POST | `/child-links/:requestId/otp` | PARENT `{ code }` → link REQUESTED + approval `CHILD_LINK` to principal/office |

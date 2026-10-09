@@ -6,11 +6,21 @@ import type { Scope } from '../../core/rbac/scope/scope';
 import { canReadStudent, currentEnrollment } from '../students/student-scope';
 
 export const GUARDIAN_ACCESS_INCLUDE = {
+  user: {
+    select: {
+      email: true,
+      phone: true,
+      status: true,
+      mustChangePassword: true,
+      lastLoginAt: true,
+    },
+  },
   studentLinks: {
     include: {
       student: {
         select: {
           id: true,
+          admissionNo: true,
           firstName: true,
           lastName: true,
           enrollments: {

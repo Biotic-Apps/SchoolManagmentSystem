@@ -2,7 +2,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type { GuardianInput } from "@/features/people/types";
-import type { Guardian, GuardianDetail, LinkGuardianInput } from "./types";
+import type { AddedGuardianLink, Guardian, GuardianDetail, LinkGuardianInput } from "./types";
 
 export const guardianKeys = {
   all: ["guardians"] as const,
@@ -41,15 +41,40 @@ export function useUpdateGuardian(id: string) {
 export function useCreateParentAccount() {
   return useApiMutation({
     mutationFn: async (guardianId: string) =>
-      (await http.post<{ userId: string; temporaryPassword: string }>(`/guardians/${guardianId}/account`)).data,
+      (
+        await http.post<{ userId: string; email: string | null; phone: string | null; temporaryPassword: string | null }>(
+          `/guardians/${guardianId}/account`,
+        )
+      ).data,
     invalidate: INVALIDATE,
     success: "Parent account created",
   });
 }
 
+export function useResetParentPassword() {
+  return useApiMutation({
+    mutationFn: async (guardianId: string) =>
+      (
+        await http.post<{ userId: string; temporaryPassword: string }>(
+          `/guardians/${guardianId}/account/reset-password`,
+        )
+      ).data,
+    invalidate: INVALIDATE,
+    success: "New temporary password created",
+  });
+}
+
+export function useSendParentSignIn() {
+  return useApiMutation({
+    mutationFn: async (guardianId: string) =>
+      (await http.post<{ channels: ("EMAIL" | "SMS")[] }>(`/guardians/${guardianId}/account/send-sign-in`)).data,
+  });
+}
+
 export function useLinkGuardian(studentId: string) {
   return useApiMutation({
-    mutationFn: (input: LinkGuardianInput) => http.post(`/students/${studentId}/guardians`, input),
+    mutationFn: async (input: LinkGuardianInput) =>
+      (await http.post<AddedGuardianLink>(`/students/${studentId}/guardians`, input)).data,
     invalidate: INVALIDATE,
     success: "Guardian linked",
     toastError: false,

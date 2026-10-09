@@ -53,6 +53,16 @@ export function useSaveBranch() {
   });
 }
 
+/** Timings + working days only (what a principal may change on their own branch). */
+export function useSaveBranchTimings(id: string) {
+  return useApiMutation({
+    mutationFn: (input: Pick<BranchInput, "timings" | "workingDays">) => http.patch<Branch>(`/branches/${id}`, input),
+    invalidate: [branchKeys.all],
+    success: "Timings updated",
+    toastError: false,
+  });
+}
+
 export function useBranchStatus() {
   return useApiMutation({
     mutationFn: ({ id, action }: { id: string; action: StatusAction }) => http.post(`/branches/${id}/${action}`),

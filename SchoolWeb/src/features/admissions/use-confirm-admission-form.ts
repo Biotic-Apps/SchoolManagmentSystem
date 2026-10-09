@@ -5,7 +5,7 @@ import { ApiError, hasErrorCode } from "@/lib/api-error";
 import { useServerForm } from "@/lib/use-server-form";
 import { useConfirmApplication } from "./api";
 import { confirmFormDefaults, confirmSchema, toConfirmInput, type ConfirmFormValues } from "./schemas";
-import type { Application } from "./types";
+import type { Application, ConfirmedAdmission } from "./types";
 
 const SECTION_FULL = "Section is full";
 
@@ -15,9 +15,10 @@ const sectionFull = () => new ApiError(409, { code: "CONFLICT", message: SECTION
 export function useConfirmAdmissionForm(app: Application) {
   const confirm = useConfirmApplication();
   const sections = useSectionOptions(app.branchId, app.sessionId, app.classId);
-  const [studentId, setStudentId] = useState<string | null>(null);
+  const [confirmed, setConfirmed] = useState<ConfirmedAdmission | null>(null);
+  const [loginsSeen, setLoginsSeen] = useState(false);
 
-  const server = useServerForm<ConfirmFormValues, { studentId: string }>({
+  const server = useServerForm<ConfirmFormValues, ConfirmedAdmission>({
     schema: confirmSchema,
     defaultValues: confirmFormDefaults(),
     onSubmit: async (values) => {
@@ -29,7 +30,7 @@ export function useConfirmAdmissionForm(app: Application) {
         throw hasErrorCode(error, "CONFLICT") ? sectionFull() : error;
       }
     },
-    onSuccess: (result) => setStudentId(result.studentId),
+    onSuccess: setConfirmed,
     conflictField: "sectionId",
   });
 
@@ -45,6 +46,9 @@ export function useConfirmAdmissionForm(app: Application) {
     sectionsLoading: sections.isLoading,
     noSections: !sections.isLoading && sections.options.length === 0,
     allFull: sections.options.length > 0 && sections.options.every((option) => sections.isFull(option.id)),
-    studentId,
+    studentId: confirmed?.studentId ?? null,
+    /** Parent sign-in details to show before the enrolled step. */
+    pendingLogins: confirmed && !loginsSeen && confirmed.parentLogins.length > 0 ? confirmed : null,
+    loginsSeen: () => setLoginsSeen(true),
   };
 }

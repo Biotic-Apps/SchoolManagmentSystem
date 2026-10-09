@@ -12,7 +12,9 @@ import type {
   StudentResultDto,
   StudentResultsDto,
 } from './dto/result.dto';
+import { SkillCardReader } from '../skills/skill-card.reader';
 import { toStudentResultDto } from './result.mapper';
+import { StandingsReader } from './standings.reader';
 
 /** Result reads: parents own children + PUBLISHED only; teachers their sections. */
 @Injectable()
@@ -22,6 +24,8 @@ export class ResultsQueryService {
     private readonly exams: ExamAccessService,
     private readonly students: StudentAccessService,
     private readonly roster: RosterService,
+    private readonly standings: StandingsReader,
+    private readonly skills: SkillCardReader,
   ) {}
 
   async list(scope: Scope, query: ResultQueryDto): Promise<StudentResultDto[]> {
@@ -34,9 +38,18 @@ export class ResultsQueryService {
     else if (!this.exams.canManage(scope, exam))
       where.AND = [{ sectionId: { in: [...scope.sectionIds] } }];
     const rows = await this.prisma.examResult.findMany({ where });
-    const people = await this.roster.people(rows.map((r) => r.studentId));
+    const [people, standings] = await Promise.all([
+      this.roster.people(rows.map((r) => r.studentId)),
+      this.standings.of(rows),
+    ]);
     return rows
-      .map((r) => toStudentResultDto(r, people.get(r.studentId)))
+      .map((r) =>
+        toStudentResultDto(
+          r,
+          people.get(r.studentId),
+          standings.get(`${r.examId}:${r.studentId}`),
+        ),
+      )
       .sort(
         (a, b) =>
           a.sectionId.localeCompare(b.sectionId) ||
@@ -68,6 +81,10 @@ export class ResultsQueryService {
       },
     });
     const person = { name: student.name, rollNo: student.rollNo };
+    const [standings, skills] = await Promise.all([
+      this.standings.of(rows),
+      this.skills.many(rows),
+    ]);
     const dated = rows
       .map((row) => ({
         row,
@@ -78,7 +95,12 @@ export class ResultsQueryService {
       studentId,
       name: student.name,
       results: dated.map(({ row }) => ({
-        ...toStudentResultDto(row, person),
+        ...toStudentResultDto(
+          row,
+          person,
+          standings.get(`${row.examId}:${studentId}`),
+        ),
+        skills: skills.get(`${row.examId}:${studentId}`) ?? [],
         examName: row.exam.name,
         examType: row.exam.type,
         publishedAt: row.exam.publishedAt?.toISOString() ?? null,

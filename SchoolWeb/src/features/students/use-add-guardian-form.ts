@@ -2,19 +2,27 @@ import { useState } from "react";
 import { useWatch } from "react-hook-form";
 import type { SearchPickerItem } from "@/components/shared/SearchPicker";
 import { useGuardians, useLinkGuardian } from "@/features/guardians/api";
+import type { AddedGuardianLink, ParentLogin } from "@/features/guardians/types";
 import { ADD_GUARDIAN_DEFAULTS, addGuardianSchema, toLinkGuardianInput, type AddGuardianValues } from "@/features/guardians/schemas";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { useServerForm } from "@/lib/use-server-form";
 import type { StudentDetail } from "./types";
 
-/** Links an existing guardian of the branch, or creates a new one, to this student. */
+/** A new password or a login that could not be made is worth showing; an existing login is not. */
+const worthShowing = (login: ParentLogin | null) => !!login && (!!login.temporaryPassword || login.status === "SKIPPED");
+
+/**
+ * Links an existing guardian of the branch, or creates a new one, to this
+ * student. The guardian gets a parent sign-in; a new one is shown once.
+ */
 export function useAddGuardianForm(student: StudentDetail, onDone: () => void) {
   const link = useLinkGuardian(student.id);
-  const server = useServerForm<AddGuardianValues>({
+  const [parentLogin, setParentLogin] = useState<ParentLogin | null>(null);
+  const server = useServerForm<AddGuardianValues, AddedGuardianLink>({
     schema: addGuardianSchema,
     defaultValues: ADD_GUARDIAN_DEFAULTS,
     onSubmit: (values) => link.mutateAsync(toLinkGuardianInput(values)),
-    onSuccess: onDone,
+    onSuccess: (added) => (worthShowing(added.parentLogin) ? setParentLogin(added.parentLogin) : onDone()),
   });
   const { control, setValue, formState } = server.form;
   const mode = useWatch({ control, name: "mode" });
@@ -35,6 +43,7 @@ export function useAddGuardianForm(student: StudentDetail, onDone: () => void) {
 
   return {
     ...server,
+    parentLogin,
     mode,
     picker: {
       search,

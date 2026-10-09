@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="exams_skills_title">Behaviour &amp; skills</string>
+    <string name="exams_skills_card_title">Behaviour &amp; skills · %1$s</string>
+    <string name="exams_skills_card_supporting">Rate punctuality, neatness, sports and more for the report card</string>
+    <string name="exams_skills_unavailable">Ratings could not be loaded.</string>
+    <string name="exams_skills_complete">%1$d of %2$d students fully rated</string>
+    <string name="exams_skills_rated_of">%1$d of %2$d rated</string>
+    <string name="exams_skills_roll">Roll %1$d</string>
+    <string name="exams_skills_fill_empty">Fill empty items with</string>
+    <string name="exams_skills_affective">Affective (behaviour)</string>
+    <string name="exams_skills_psychomotor">Psychomotor (skills)</string>
+    <string name="exams_skills_previous">Previous</string>
+    <string name="exams_skills_next">Next student</string>
+    <string name="exams_skills_done">Back to list</string>
+    <string name="exams_skills_locked">Results are published, so these ratings are final.</string>
+    <string name="exams_skills_saved">Ratings saved.</string>
+    <plurals name="exams_skills_save">
+        <item quantity="one">Save %1$d change</item>
+        <item quantity="other">Save %1$d changes</item>
+    </plurals>
+</resources>

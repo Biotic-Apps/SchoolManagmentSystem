@@ -1,4 +1,4 @@
-import { CircleCheck, CircleX, UserX } from "lucide-react";
+import { CalendarCheck, CalendarX, CircleCheck, CircleX, UserX } from "lucide-react";
 import type { DataTableColumn } from "@/components/shared/DataTable";
 import { RowActions } from "@/components/shared/RowActions";
 import { StatusBadge } from "@/components/shared/StatusBadge";
@@ -11,11 +11,19 @@ interface MeetingRowHandlers {
   onCancel: (meeting: Meeting) => void;
   onNoShow: (meeting: Meeting) => void;
   onComplete: (meeting: Meeting) => void;
+  onAccept: (meeting: Meeting) => void;
+  onDecline: (meeting: Meeting) => void;
 }
 
 export function meetingColumns(handlers: MeetingRowHandlers): DataTableColumn<Meeting>[] {
   return [
-    { id: "date", header: "Date", className: "whitespace-nowrap", cell: (row) => formatDate(row.date) },
+    {
+      id: "date",
+      header: "Date",
+      className: "whitespace-nowrap",
+      // A request shows the parent's suggested time until it is accepted.
+      cell: (row) => (row.status === "REQUESTED" ? `Suggested ${formatDate(row.date)}` : formatDate(row.date)),
+    },
     {
       id: "time",
       header: "Time",
@@ -31,7 +39,12 @@ export function meetingColumns(handlers: MeetingRowHandlers): DataTableColumn<Me
       className: "min-w-48 max-w-72",
       cell: (row) => <span className="block truncate" title={row.agenda}>{row.agenda}</span>,
     },
-    { id: "status", header: "Status", className: "whitespace-nowrap", cell: (row) => <StatusBadge status={row.status} /> },
+    {
+      id: "status",
+      header: "Status",
+      className: "whitespace-nowrap",
+      cell: (row) => <StatusBadge status={row.status} label={row.status === "REQUESTED" ? "Awaiting reply" : undefined} />,
+    },
     {
       id: "actions",
       header: "",
@@ -39,10 +52,16 @@ export function meetingColumns(handlers: MeetingRowHandlers): DataTableColumn<Me
       cell: (row) => (
         <RowActions
           actions={[
-            { id: "complete", label: "Complete", icon: CircleCheck, onSelect: () => handlers.onComplete(row) },
-            { id: "no-show", label: "Mark no-show", icon: UserX, onSelect: () => handlers.onNoShow(row) },
-            { id: "cancel", label: "Cancel meeting", icon: CircleX, danger: true, onSelect: () => handlers.onCancel(row) },
-          ].map((action) => ({ ...action, hidden: row.status !== "SCHEDULED" }))}
+            ...[
+              { id: "accept", label: "Accept request", icon: CalendarCheck, onSelect: () => handlers.onAccept(row) },
+              { id: "decline", label: "Decline request", icon: CalendarX, danger: true, onSelect: () => handlers.onDecline(row) },
+            ].map((action) => ({ ...action, hidden: row.status !== "REQUESTED" })),
+            ...[
+              { id: "complete", label: "Complete", icon: CircleCheck, onSelect: () => handlers.onComplete(row) },
+              { id: "no-show", label: "Mark no-show", icon: UserX, onSelect: () => handlers.onNoShow(row) },
+              { id: "cancel", label: "Cancel meeting", icon: CircleX, danger: true, onSelect: () => handlers.onCancel(row) },
+            ].map((action) => ({ ...action, hidden: row.status !== "SCHEDULED" })),
+          ]}
         />
       ),
     },

@@ -1,3 +1,10 @@
+import {
+  BANK_ACCOUNT_KEY,
+  bankAccountError,
+  CHALLAN_NOTE_KEY,
+  EMPTY_BANK_ACCOUNT,
+} from '../../fees/challans/bank-account';
+
 export const BRANCH_SETTING_DEFAULTS: Readonly<Record<string, unknown>> = {
   'attendance.lockTime': '11:00',
   'diary.moderation': false,
@@ -10,6 +17,9 @@ export const BRANCH_SETTING_DEFAULTS: Readonly<Record<string, unknown>> = {
   'fees.proofUpload': true,
   'fees.onlineGateway': 'NONE',
   'fees.receiptFooter': '',
+  // Fee challans: deposit account printed on every copy, plus a short note.
+  [BANK_ACCOUNT_KEY]: EMPTY_BANK_ACCOUNT,
+  [CHALLAN_NOTE_KEY]: '',
   // Phase 4 §H: per approval type, { ROLE: amountMinor } a role may approve alone.
   'approval.limits.CONCESSION': { PRINCIPAL: 2_500_000 },
   'approval.limits.REFUND': { PRINCIPAL: 2_500_000 },
@@ -26,6 +36,7 @@ export const ONLINE_GATEWAYS = ['NONE', 'MANUAL'] as const;
 
 const FREE_TEXT_SETTINGS: Record<string, number> = {
   'fees.receiptFooter': 300,
+  [CHALLAN_NOTE_KEY]: 300,
 };
 
 const HH_MM = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -42,6 +53,7 @@ export function validateSetting(key: string, value: unknown): string | null {
       ? null
       : `${key} must be text of at most ${FREE_TEXT_SETTINGS[key]} characters`;
   }
+  if (key === BANK_ACCOUNT_KEY) return bankAccountError(value);
   if (key === 'fees.onlineGateway') {
     return ONLINE_GATEWAYS.includes(value as (typeof ONLINE_GATEWAYS)[number])
       ? null

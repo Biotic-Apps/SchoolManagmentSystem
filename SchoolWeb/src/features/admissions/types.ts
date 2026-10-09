@@ -1,3 +1,4 @@
+import type { ParentLogin } from "@/features/guardians/types";
 import type { SchoolDocument } from "@/features/documents/types";
 import type { ChildInput, GuardianEntry, MedicalInfo } from "@/features/people/types";
 
@@ -105,4 +106,13 @@ export interface TestResultInput {
   score: number;
   maxScore: number;
   remarks?: string;
+}
+
+/** POST /admissions/applications/:id/confirm */
+export interface ConfirmedAdmission {
+  application: Application;
+  studentId: string;
+  admissionNo: string;
+  /** Guardian sign-ins made at admission; temporary passwords are shown once. */
+  parentLogins: ParentLogin[];
 }

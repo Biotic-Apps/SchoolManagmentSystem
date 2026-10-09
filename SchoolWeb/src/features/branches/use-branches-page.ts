@@ -18,6 +18,7 @@ export function useBranchesPage() {
   const statusTarget = useDialogState<Branch>();
   const principal = useDialogState<Branch>();
   const settings = useDialogState<Branch>();
+  const timings = useDialogState<Branch>();
   const detail = useDialogState<Branch>();
   useBranchDeepLink(detail.show);
 
@@ -28,6 +29,7 @@ export function useBranchesPage() {
         {
           onView: detail.show,
           onEdit: perms.canEdit ? form.show : undefined,
+          onEditTimings: perms.canEditTimings ? timings.show : undefined,
           onToggleStatus: statusTarget.show,
           onChangePrincipal: perms.canChangePrincipal ? principal.show : undefined,
           onSettings: perms.canEditSettings ? settings.show : undefined,
@@ -36,14 +38,19 @@ export function useBranchesPage() {
         },
         showSchool,
       ),
-    [detail.show, form.show, statusTarget.show, principal.show, settings.show, perms, showSchool],
+    [detail.show, form.show, timings.show, statusTarget.show, principal.show, settings.show, perms, showSchool],
   );
+
+  const rows = query.data?.data;
+  // A principal usually runs one branch: offer "Edit timings" right in the page header.
+  const ownBranch = perms.canEditTimings && rows?.length === 1 ? rows[0] : null;
 
   return {
     perms,
     list,
     query,
-    rows: query.data?.data,
+    rows,
+    ownBranch,
     pagination: paginationFrom(query.data?.meta, list.setPage),
     columns,
     schoolOptions: schools.options,
@@ -52,6 +59,7 @@ export function useBranchesPage() {
     statusTarget,
     principal,
     settings,
+    timings,
     detail,
   };
 }

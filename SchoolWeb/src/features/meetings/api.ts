@@ -2,11 +2,14 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type {
+  AcceptMeetingInput,
   CompleteMeetingInput,
   FollowUp,
   Meeting,
   MeetingSlot,
+  MeetingTeacher,
   ParentBookingInput,
+  ParentRequestInput,
   SlotInput,
   StaffMeetingInput,
 } from "./types";
@@ -15,6 +18,7 @@ export const meetingKeys = {
   all: ["meetings"] as const,
   list: (params: Query) => ["meetings", "list", params] as const,
   slots: (params: Query) => ["meetings", "slots", params] as const,
+  teachers: (studentId: string) => ["meetings", "teachers", studentId] as const,
   followUps: (params: Query) => ["meetings", "follow-ups", params] as const,
 };
 
@@ -69,6 +73,42 @@ export function useBookMeeting() {
     mutationFn: async (input: ParentBookingInput) => (await http.post<Meeting>("/meetings", input)).data,
     invalidate: INVALIDATE,
     success: "Meeting booked",
+    toastError: false,
+  });
+}
+
+/** The child's class/subject teachers and principal, with open slot counts. */
+export function useMeetingTeachers(studentId: string) {
+  return useQuery({
+    queryKey: meetingKeys.teachers(studentId),
+    queryFn: async () => (await http.get<MeetingTeacher[]>("/meetings/teachers", { studentId })).data,
+  });
+}
+
+export function useParentRequest() {
+  return useApiMutation({
+    mutationFn: async (input: ParentRequestInput) => (await http.post<Meeting>("/meetings/requests", input)).data,
+    invalidate: INVALIDATE,
+    success: "Request sent to the teacher",
+    toastError: false,
+  });
+}
+
+export function useAcceptMeeting(id: string) {
+  return useApiMutation({
+    mutationFn: (input: AcceptMeetingInput) => http.post<Meeting>(`/meetings/${id}/accept`, input),
+    invalidate: INVALIDATE,
+    success: "Meeting confirmed",
+    toastError: false,
+  });
+}
+
+export function useDeclineMeeting() {
+  return useApiMutation({
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
+      http.post<Meeting>(`/meetings/${id}/decline`, reason ? { reason } : {}),
+    invalidate: INVALIDATE,
+    success: "Request declined",
     toastError: false,
   });
 }

@@ -13,6 +13,7 @@ import {
 } from '../../timetable/periods/bell-generator';
 import type { SessionDates } from '../session-defaults';
 import type { CurriculumPlan, PlannedClass } from './curriculum-plan';
+import { createDefaultGradingScheme } from './default-grading-scheme';
 import type { PlacedBranch, SetupContext } from './setup-context';
 
 export interface AcademicsPlan {
@@ -22,7 +23,7 @@ export interface AcademicsPlan {
   workingDays: number[];
 }
 
-/** ACTIVE session, classes with their sections and curriculum, subjects, bell schedule. */
+/** ACTIVE session + default grading scheme, classes with their sections and curriculum, subjects, bell schedule. */
 @Injectable()
 export class AcademicsStep {
   constructor(
@@ -48,6 +49,7 @@ export class AcademicsStep {
     this.record(ctx, branch, 'session.create', 'AcademicSession', session.id, {
       after: toSessionDto(session),
     });
+    await createDefaultGradingScheme(ctx, branch, session);
 
     const subjectIds = new Map<string, string>();
     for (const preset of plan.curriculum.subjects) {

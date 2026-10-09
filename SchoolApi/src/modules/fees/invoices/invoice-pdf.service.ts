@@ -2,15 +2,17 @@ import { Injectable } from '@nestjs/common';
 import type { AuthUser } from '../../../core/common/types/auth-user';
 import type { Scope } from '../../../core/rbac/scope/scope';
 import { GeneratedDocumentService } from '../../generated-docs/generated-document.service';
+import { ChallanSource } from '../challans/challan-source.service';
 import type { InvoicePdfDto } from './dto/invoice.dto';
 import { InvoiceReader } from './invoice-reader.service';
 
-/** Challan PDF: re-rendered when the invoice changed after the last version. */
+/** Challan PDF: re-rendered when anything it prints changed after the last version. */
 @Injectable()
 export class InvoicePdfService {
   constructor(
     private readonly reader: InvoiceReader,
     private readonly documents: GeneratedDocumentService,
+    private readonly source: ChallanSource,
   ) {}
 
   async request(
@@ -23,7 +25,7 @@ export class InvoicePdfService {
     const fresh =
       !!latest &&
       latest.status === 'READY' &&
-      invoice.updatedAt > latest.createdAt;
+      (await this.source.changedAt(invoice)) > latest.createdAt;
     const { jobId } = await this.documents.request(user, {
       kind: 'CHALLAN',
       entityId: id,

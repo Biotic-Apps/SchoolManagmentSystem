@@ -31,7 +31,7 @@ export function LoginPanel() {
   if (withCode) {
     return (
       <AuthLayout
-        title="Sign in with email code"
+        title="Sign in with a code"
         description="For parents: we email a one-time code to the address the school has on record."
       >
         <EmailCodeLoginForm onChallenge={setOtpChallengeId} />
@@ -50,9 +50,9 @@ export function LoginPanel() {
     >
       <LoginForm login={login} />
       <OrDivider />
-      <Button variant="secondary" size="lg" className="w-full" onClick={() => setWithCode(true)}>
+      <Button variant="ghost" size="lg" className="w-full" onClick={() => setWithCode(true)}>
         <Mail />
-        Sign in with email code
+        Parents: sign in with a code instead
       </Button>
     </AuthLayout>
   );

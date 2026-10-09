@@ -60,6 +60,11 @@ function setup() {
     branch: { update: jest.fn() },
     classSubject: { createMany: jest.fn() },
     branchPeriod: { createMany: jest.fn() },
+    gradingScheme: {
+      create: jest.fn((args: { data: Data }) =>
+        Promise.resolve({ id: 'scheme-1', ...args.data }),
+      ),
+    },
   };
   const prisma = {
     $transaction: jest.fn((fn: (t: typeof tx) => Promise<unknown>) => fn(tx)),
@@ -236,9 +241,18 @@ describe('SchoolSetupService', () => {
     )[0].data;
     expect(periods.filter((p) => p.day === 0).at(-1)?.endTime).toBe('13:50');
     expect(periods.filter((p) => p.day === 5).at(-1)?.endTime).toBe('11:45');
-    // One audit row per created entity (+ principal link, curricula, bell schedule).
+    // The new session gets an approved default grading scheme.
+    expect(t.tx.gradingScheme.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        sessionId: 'session-1',
+        name: `Standard ${result.session?.name}`,
+        status: 'APPROVED',
+        passPercent: 40,
+      }) as unknown,
+    });
+    // One audit row per created entity (+ principal link, curricula, bell schedule, grading scheme).
     expect(t.audit.stage).toHaveBeenCalledTimes(
-      1 + 1 + 2 + 1 + 13 + 13 + 8 + 13 + 1,
+      1 + 1 + 2 + 1 + 13 + 13 + 8 + 13 + 1 + 1,
     );
     expect(t.welcome.send).toHaveBeenCalledWith(
       'user-1',
@@ -326,6 +340,7 @@ describe('SchoolSetupService', () => {
       periods: 0,
     });
     expect(t.sessions.create).not.toHaveBeenCalled();
+    expect(t.tx.gradingScheme.create).not.toHaveBeenCalled();
   });
 
   it('sets both principal links like PUT /branches/:id/principal', async () => {

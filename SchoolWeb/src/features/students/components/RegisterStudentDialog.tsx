@@ -6,6 +6,7 @@ import { FormSection } from "@/components/shared/FormSection";
 import { InlineNotice } from "@/components/shared/InlineNotice";
 import { SelectField } from "@/components/shared/form/SelectField";
 import { TextField } from "@/components/shared/form/TextField";
+import { ParentSignInDialog } from "@/features/guardians/components/ParentSignInDialog";
 import { ChildFields } from "@/features/people/components/ChildFields";
 import { GuardiansRepeater } from "@/features/people/components/GuardiansRepeater";
 import { useRegisterStudentForm } from "../use-register-student-form";
@@ -17,7 +18,19 @@ interface RegisterStudentDialogProps {
 }
 
 export function RegisterStudentDialog({ scope, classOptions, onClose }: RegisterStudentDialogProps) {
-  const { form, submit, submitting, formError, sections, sectionFull } = useRegisterStudentForm(scope);
+  const { form, submit, submitting, formError, sections, sectionFull, registered, openRegistered } =
+    useRegisterStudentForm(scope);
+
+  if (registered) {
+    return (
+      <ParentSignInDialog
+        title={`${registered.name} is registered: parent sign-in details`}
+        child={{ name: registered.name, admissionNo: registered.admissionNo }}
+        logins={registered.parentLogins}
+        onClose={openRegistered}
+      />
+    );
+  }
 
   return (
     <FormDialog

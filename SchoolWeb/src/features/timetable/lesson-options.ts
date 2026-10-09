@@ -4,13 +4,13 @@ import { loadLabel } from "@/features/classes/teaching-staff-api";
 import type { BuilderLesson, BusyEntry, TimetableBuilder } from "./builder-types";
 import type { Ref } from "./types";
 
-/** "English — 2 left", "English — 6/6 done", or "English — 4 placed" when there is no weekly target. */
+/** "2 of 6 periods left to place", "all 6 periods placed", or "4 placed" when there is no weekly target. */
 export function lessonHint(lesson: BuilderLesson): string {
   const target = lesson.periodsPerWeek;
   if (!target) return `${lesson.placed} placed`;
   const left = target - lesson.placed;
-  if (left > 0) return `${left} left`;
-  return left === 0 ? `${target}/${target} done` : `${lesson.placed}/${target}, over`;
+  if (left > 0) return `${left} of ${target} periods a week left to place`;
+  return left === 0 ? `all ${target} periods placed` : `${lesson.placed} placed, only ${target} needed`;
 }
 
 export const subjectOptions = (lessons: BuilderLesson[]): HintedOption[] =>

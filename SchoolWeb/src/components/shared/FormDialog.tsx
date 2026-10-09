@@ -33,6 +33,8 @@ interface FormDialogProps<T extends FieldValues> {
   description?: string;
   submitLabel?: string;
   submitting?: boolean;
+  /** Blocks submitting, e.g. while a warning above says why. */
+  submitDisabled?: boolean;
   onSubmit: FormEventHandler<HTMLFormElement>;
   /** Provides the form to field components (TextField, SelectField, ...). */
   form?: UseFormReturn<T>;
@@ -48,6 +50,7 @@ export function FormDialog<T extends FieldValues>({
   description,
   submitLabel = "Save",
   submitting,
+  submitDisabled,
   onSubmit,
   form,
   error,
@@ -62,7 +65,7 @@ export function FormDialog<T extends FieldValues>({
         <Button variant="secondary" onClick={() => onOpenChange(false)} disabled={submitting}>
           Cancel
         </Button>
-        <Button type="submit" loading={submitting}>
+        <Button type="submit" loading={submitting} disabled={submitDisabled}>
           {submitLabel}
         </Button>
       </DialogFooter>

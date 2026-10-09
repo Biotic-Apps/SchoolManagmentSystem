@@ -12,6 +12,8 @@ import {
   DialogTitle,
 } from "@/components/ui/Dialog";
 import { downloadTextFile, recoveryCodesText } from "../recovery-codes";
+import { copyText } from "@/lib/clipboard";
+import { toast } from "@/lib/toast";
 
 interface RecoveryCodesDialogProps {
   codes: string[] | null;
@@ -25,8 +27,12 @@ export function RecoveryCodesDialog({ codes, account, onClose }: RecoveryCodesDi
   const text = codes ? recoveryCodesText(codes, account) : "";
 
   const copy = async () => {
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
+    try {
+      await copyText(text);
+      setCopied(true);
+    } catch {
+      toast.error("Couldn't copy. Select the codes and copy them by hand.");
+    }
   };
 
   return (

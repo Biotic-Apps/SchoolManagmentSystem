@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import type { User } from '../../generated/prisma/client';
 import { AuditService } from '../audit/audit.service';
 import { AppError } from '../common/errors/app-error';
 import { ErrorCode } from '../common/errors/error-code.enum';
@@ -47,7 +48,7 @@ export class AuthService {
     password: string,
     client: ClientInfo,
   ): Promise<LoginResultDto> {
-    const user = await this.users.findByIdentifier(parseIdentifier(identifier));
+    const user = await this.findUser(identifier, password);
     if (!user) {
       await this.hasher.verifyDummy(password);
       throw fail(ErrorCode.INVALID_CREDENTIALS, 'Invalid credentials');
@@ -75,6 +76,29 @@ export class AuthService {
       after: { platform: client.platform, deviceName: client.deviceName },
     });
     return this.issuer.start(user, client);
+  }
+
+  /**
+   * Email, phone or a child's admission number. Both parents may share an
+   * admission number: the one whose password matches signs in. Any of them
+   * being locked blocks the shared number, so it cannot be guessed around.
+   */
+  private async findUser(
+    identifier: string,
+    password: string,
+  ): Promise<User | null> {
+    const parsed = parseIdentifier(identifier);
+    if (!parsed.admissionNo) return this.users.findByIdentifier(parsed);
+    const parents = await this.users.findParentsByAdmissionNo(
+      parsed.admissionNo,
+    );
+    if (parents.length <= 1) return parents[0] ?? null;
+    parents.forEach((p) => this.lockout.assertNotLocked(p));
+    for (const parent of parents) {
+      if (await this.hasher.verify(parent.passwordHash, password))
+        return parent;
+    }
+    return parents[0];
   }
 
   async refresh(

@@ -19,10 +19,13 @@ internal fun CancelMeetingSheet(
     onReasonChange: (String) -> Unit,
     onSubmit: () -> Unit,
     onDismiss: () -> Unit,
+    declining: Boolean = false,
 ) {
-    AppBottomSheet(title = stringResource(R.string.meetings_cancel_title), onDismiss = onDismiss) {
+    val title = if (declining) R.string.meetings_decline_title else R.string.meetings_cancel_title
+    AppBottomSheet(title = stringResource(title), onDismiss = onDismiss) {
         error?.let { InlineMessage(appErrorMessage(it), StatusTone.Error) }
         AppTextArea(value = reason, onValueChange = onReasonChange, label = stringResource(R.string.meetings_cancel_reason), enabled = !busy)
-        PrimaryButton(stringResource(R.string.meetings_confirm_cancel), onSubmit, loading = busy)
+        val submit = if (declining) R.string.meetings_confirm_decline else R.string.meetings_confirm_cancel
+        PrimaryButton(stringResource(submit), onSubmit, loading = busy)
     }
 }

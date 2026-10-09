@@ -5,19 +5,21 @@ import { DataTable } from "@/components/shared/DataTable";
 import { ReasonDialog } from "@/components/shared/ReasonDialog";
 import type { MeetingBox } from "../api";
 import { useMeetingsList } from "../use-meetings-list";
+import { AcceptMeetingDialog } from "./AcceptMeetingDialog";
 import { CompleteMeetingDialog } from "./CompleteMeetingDialog";
 
 const EMPTY: Record<MeetingBox, { title: string; description: string }> = {
   upcoming: {
     title: "No upcoming meetings",
-    description: "Meetings parents book in your slots, or that you request, appear here.",
+    description:
+      "Meetings parents book in your open times, requests parents send you, and meetings you schedule appear here. Add open times under My slots so parents can book them.",
   },
   past: { title: "No past meetings", description: "Completed, cancelled and missed meetings appear here." },
 };
 
 export function MeetingsListTab({ box }: { box: MeetingBox }) {
   const list = useMeetingsList(box);
-  const { query, cancelDialog, noShowDialog, completeDialog } = list;
+  const { query, cancelDialog, noShowDialog, completeDialog, acceptDialog, declineDialog } = list;
 
   return (
     <>
@@ -53,7 +55,19 @@ export function MeetingsListTab({ box }: { box: MeetingBox }) {
         loading={list.markingNoShow}
         onConfirm={list.confirmNoShow}
       />
+      <ReasonDialog
+        open={declineDialog.open}
+        onOpenChange={declineDialog.onOpenChange}
+        title="Decline meeting request"
+        description={declineDialog.item ? `The guardian of ${declineDialog.item.student.name} is notified.` : undefined}
+        label="Reason"
+        submitLabel="Decline request"
+        submitting={list.declining}
+        error={list.declineError}
+        onSubmit={list.confirmDecline}
+      />
       {completeDialog.item && <CompleteMeetingDialog meeting={completeDialog.item} onClose={completeDialog.close} />}
+      {acceptDialog.item && <AcceptMeetingDialog meeting={acceptDialog.item} onClose={acceptDialog.close} />}
     </>
   );
 }

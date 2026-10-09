@@ -1,6 +1,6 @@
 "use client";
 
-import { FilePlus2, Plus } from "lucide-react";
+import { FilePlus2, Plus, Printer } from "lucide-react";
 import { DataTable } from "@/components/shared/DataTable";
 import { InlineNotice } from "@/components/shared/InlineNotice";
 import { JobProgressNotice } from "@/components/shared/JobProgressNotice";
@@ -8,11 +8,13 @@ import { Button } from "@/components/ui/Button";
 import { invoiceColumns } from "../../invoice-columns";
 import { feesKeys } from "../../keys";
 import { useInvoicesTab } from "../../use-invoices-tab";
+import { ChallanPrintNotice } from "./ChallanPrintNotice";
 import { GenerateInvoicesDialog } from "./GenerateInvoicesDialog";
 import { InvoiceDetailDrawer } from "./InvoiceDetailDrawer";
 import { InvoiceFilters } from "./InvoiceFilters";
 import { InvoiceFormDialog } from "./InvoiceFormDialog";
 import { InvoiceSelectionBar } from "./InvoiceSelectionBar";
+import { PrintChallansDialog } from "./PrintChallansDialog";
 
 interface InvoicesTabProps {
   branchId: string | null;
@@ -27,18 +29,29 @@ export function InvoicesTab({ branchId, schoolId }: InvoicesTabProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      {tab.canAdd && (
+      {(tab.canAdd || tab.canPrint) && (
         <div className="flex flex-wrap justify-end gap-2">
-          <Button variant="secondary" onClick={() => tab.createDialog.show()}>
-            <Plus />
-            New invoice
-          </Button>
-          <Button onClick={() => tab.generateDialog.show()}>
-            <FilePlus2 />
-            Generate invoices
-          </Button>
+          {tab.canPrint && (
+            <Button variant="secondary" onClick={() => tab.printDialog.show()}>
+              <Printer />
+              Print challans
+            </Button>
+          )}
+          {tab.canAdd && (
+            <>
+              <Button variant="secondary" onClick={() => tab.createDialog.show()}>
+                <Plus />
+                New invoice
+              </Button>
+              <Button onClick={() => tab.generateDialog.show()}>
+                <FilePlus2 />
+                Generate invoices
+              </Button>
+            </>
+          )}
         </div>
       )}
+      <ChallanPrintNotice key={tab.printJob?.jobId} job={tab.printJob} />
       <JobProgressNotice
         jobId={tab.jobId}
         label="Generating invoices"
@@ -68,6 +81,17 @@ export function InvoicesTab({ branchId, schoolId }: InvoicesTabProps) {
           classOptions={tab.classOptions}
           onStarted={tab.onGenerated}
           onClose={tab.generateDialog.close}
+        />
+      )}
+      {tab.printDialog.open && (
+        <PrintChallansDialog
+          branchId={branchId}
+          sessionId={tab.activeSessionId}
+          period={tab.period}
+          classId={tab.list.filters.classId}
+          classOptions={tab.classOptions}
+          onStarted={tab.onPrintStarted}
+          onClose={tab.printDialog.close}
         />
       )}
       {tab.createDialog.open && (

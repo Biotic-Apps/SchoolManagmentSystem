@@ -1,13 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { Payment } from '../../../generated/prisma/client';
 import { NotificationService } from '../../../core/notifications/notification.service';
-import { formatMinor } from '../../finance-core/money';
+import { LedgerService } from '../../finance-core/ledger.service';
 import { GeneratedDocumentService } from '../../generated-docs/generated-document.service';
 import { SchoolPeopleService } from '../../school-day/school-people.service';
 import type { TaskRequester } from '../../tasks/async-task.service';
+import { paymentReceivedMessage } from './payment-received-message';
 
 /**
- * After a payment is committed: render the receipt and tell the guardians.
+ * After a payment is committed (counter, verified proof, online): render the
+ * receipt and send guardians the fee-received alert (in-app + push + SMS,
+ * as the school's notification switches allow) with the remaining balance.
  * Failures are logged, never undo the payment (the receipt can be requested again).
  */
 @Injectable()
@@ -18,6 +21,7 @@ export class PaymentFollowup {
     private readonly documents: GeneratedDocumentService,
     private readonly people: SchoolPeopleService,
     private readonly notifications: NotificationService,
+    private readonly ledger: LedgerService,
   ) {}
 
   async afterRecord(
@@ -32,11 +36,18 @@ export class PaymentFollowup {
         schoolId: payment.schoolId,
         ownerUserId: payment.receivedById,
       });
+      const message = paymentReceivedMessage({
+        studentName,
+        amountMinor: payment.amountMinor,
+        currency: payment.currency,
+        receiptNo: payment.receiptNo,
+        balanceMinor: await this.ledger.balance(payment.studentId),
+      });
       await this.notifications.notify({
         userIds: await this.people.guardianUserIds([payment.studentId]),
         category: 'FEE',
-        title: 'Payment received',
-        body: `${formatMinor(payment.amountMinor, payment.currency)} received for ${studentName}. Receipt ${payment.receiptNo}.`,
+        ...message,
+        channels: ['PUSH', 'SMS'],
         data: {
           paymentId: payment.id,
           studentId: payment.studentId,

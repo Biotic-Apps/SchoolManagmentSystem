@@ -8,6 +8,20 @@ import type { TaskRequester } from '../../tasks/async-task.service';
 import { StudentAccessService } from '../shared/student-access.service';
 import type { ReportCardViewDto } from './report-card.dto';
 
+/**
+ * Cards rendered before the current layout (class position, behaviour &
+ * skills) are re-rendered once when next viewed.
+ */
+export const REPORT_CARD_LAYOUT_SINCE = new Date('2026-10-09T00:00:00Z');
+
+export const outdatedCard = (document: {
+  status: string;
+  generatedAt: Date | null;
+}): boolean =>
+  document.status === 'READY' &&
+  !!document.generatedAt &&
+  document.generatedAt < REPORT_CARD_LAYOUT_SINCE;
+
 export interface ResultRef {
   id: string;
   examId: string;
@@ -81,9 +95,18 @@ export class ReportCardsService {
     });
     if (!result) throw notFound('Report card');
     let document = await this.documents.latest('REPORT_CARD', result.id);
-    if (!document) {
+    const outdated =
+      !!document &&
+      outdatedCard(document) &&
+      result.exam.status === 'PUBLISHED';
+    if (!document || outdated) {
       if (result.exam.status !== 'PUBLISHED') throw notFound('Report card');
-      await this.issue(user, result, user.id);
+      await this.issue(
+        user,
+        result,
+        document?.ownerUserId ?? user.id,
+        outdated,
+      );
       document = await this.documents.latest('REPORT_CARD', result.id);
     }
     const view = this.documents.view(document);

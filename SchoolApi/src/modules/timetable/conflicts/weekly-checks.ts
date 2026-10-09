@@ -39,7 +39,7 @@ function weeklyCounts(input: ConflictInput): Conflict[] {
         warn(
           extra,
           'WEEKLY_PERIODS_EXCEEDED',
-          `${entry.name}: ${placed.length} of ${target} periods a week placed`,
+          `${entry.name}: ${placed.length} periods placed but only ${target} a week are needed`,
         ),
       );
     if (placed.length < target)
@@ -47,7 +47,7 @@ function weeklyCounts(input: ConflictInput): Conflict[] {
         warn(
           { day: 0, periodIndex: 0 },
           'WEEKLY_PERIODS_SHORT',
-          `${entry.name}: ${placed.length} of ${target} periods a week placed`,
+          `${entry.name}: ${placed.length} of ${target} weekly periods placed, add ${target - placed.length} more`,
         ),
       );
   }

@@ -32,7 +32,8 @@ export function useExamForm(exam: Exam | null, scope: ExamFormScope, onDone: (sa
     id: scheme.id,
     name: scheme.status === "APPROVED" ? scheme.name : `${scheme.name} (not approved)`,
   }));
+  const noSchemes = schemes.isSuccess && schemeOptions.length === 0;
   const termOptions: Option[] = (terms.data ?? []).map((term) => ({ id: term.id, name: term.name }));
 
-  return { ...server, schemeOptions, termOptions, classOptions: classes.options, classesLoading: classes.isLoading };
+  return { ...server, schemeOptions, noSchemes, termOptions, classOptions: classes.options, classesLoading: classes.isLoading };
 }

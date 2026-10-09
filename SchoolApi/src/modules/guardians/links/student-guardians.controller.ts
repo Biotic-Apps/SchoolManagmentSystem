@@ -14,6 +14,7 @@ import { RequirePermission } from '../../../core/rbac/require-permission.decorat
 import { CurrentScope } from '../../../core/rbac/scope/current-scope.decorator';
 import type { Scope } from '../../../core/rbac/scope/scope';
 import { GuardianLinkDto } from '../../students/dto/student.dto';
+import { AddedGuardianLinkDto } from '../dto/guardian.dto';
 import { AddGuardianLinkDto, ReasonDto } from '../dto/guardian-input.dto';
 import { StudentGuardiansService } from './student-guardians.service';
 
@@ -25,13 +26,13 @@ export class StudentGuardiansController {
 
   @Post()
   @RequirePermission('students.edit')
-  @ApiData(GuardianLinkDto)
+  @ApiData(AddedGuardianLinkDto)
   add(
     @CurrentUser() user: AuthUser,
     @CurrentScope() scope: Scope,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: AddGuardianLinkDto,
-  ): Promise<GuardianLinkDto> {
+  ): Promise<AddedGuardianLinkDto> {
     return this.links.add(user, scope, id, body);
   }
 

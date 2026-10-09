@@ -9,6 +9,7 @@ import { classLabel } from "./format";
 import { newThreadDefaults, newThreadSchema, toNewThreadInput } from "./schemas";
 import { notifySendResult } from "./send-result";
 import { recipientOptions, useMessageRecipients } from "./recipients";
+import { useGuardianReach } from "./use-guardian-reach";
 
 const TARGET_DENIED = "You can't message this person";
 
@@ -45,6 +46,7 @@ export function useNewThreadForm(onCreated: (threadId: string) => void) {
   // A different child has different teachers.
   useEffect(() => form.setValue("staffUserId", ""), [studentId, form]);
   const recipients = useMessageRecipients(isParent && studentId ? studentId : null);
+  const reach = useGuardianReach(!isParent && studentId ? studentId : null);
 
   const childOptions: Option[] = (session?.children ?? []).map((item) => {
     const label = classLabel(item.className, item.sectionName);
@@ -60,5 +62,6 @@ export function useNewThreadForm(onCreated: (threadId: string) => void) {
     childOptions,
     staffOptions: recipientOptions(recipients.data),
     staffLoading: recipients.isLoading,
+    reach,
   };
 }

@@ -1,6 +1,7 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
 import { useApiMutation } from "@/lib/use-api-mutation";
+import type { ParentLogin } from "@/features/guardians/types";
 import type {
   ChangeSectionInput,
   Enrollment,
@@ -48,7 +49,8 @@ export function useEnrollments(id: string | null) {
 
 export function useRegisterStudent() {
   return useApiMutation({
-    mutationFn: async (input: RegisterStudentInput) => (await http.post<StudentDetail>("/students", input)).data,
+    mutationFn: async (input: RegisterStudentInput) =>
+      (await http.post<StudentDetail & { parentLogins: ParentLogin[] }>("/students", input)).data,
     invalidate: INVALIDATE,
     success: (student) => `${student.name} registered (${student.admissionNo})`,
     toastError: false,

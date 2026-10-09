@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsUUID } from 'class-validator';
 import { ExamType } from '../../../../generated/prisma/client';
+import { StudentSkillDto } from '../../skills/dto/skill.dto';
 
 export class ResultQueryDto {
   @IsUUID()
@@ -34,7 +35,13 @@ export class StudentResultDto {
   maxTotal!: number;
   percent!: number;
   grade!: string;
+  /** Rank in the section; null when positions are off for the branch. */
   position!: number | null;
+  /** Students with a result in the section. */
+  sectionSize!: number;
+  /** Rank across all sections of the class; null when positions are off. */
+  classPosition!: number | null;
+  classSize!: number;
   passed!: boolean;
   remarks!: string | null;
   teacherRemark!: string | null;
@@ -45,6 +52,11 @@ export class PublishedResultDto extends StudentResultDto {
   @ApiProperty({ enum: ExamType })
   examType!: ExamType;
   publishedAt!: string | null;
+  @ApiProperty({
+    type: [StudentSkillDto],
+    description: 'Rated behaviour & skills (card order)',
+  })
+  skills!: StudentSkillDto[];
 }
 
 export class TrendPointDto {

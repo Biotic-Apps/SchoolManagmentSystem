@@ -4,6 +4,7 @@ import { FormDialog } from "@/components/shared/FormDialog";
 import { InlineNotice } from "@/components/shared/InlineNotice";
 import { SelectField } from "@/components/shared/form/SelectField";
 import { TextField } from "@/components/shared/form/TextField";
+import { ParentSignInDialog } from "@/features/guardians/components/ParentSignInDialog";
 import { FEE_STATUS_OPTIONS } from "../options";
 import { childName } from "../status";
 import type { Application } from "../types";
@@ -13,6 +14,16 @@ import { AdmissionConfirmedDialog } from "./AdmissionConfirmedDialog";
 export function ConfirmAdmissionDialog({ app, onClose }: { app: Application; onClose: () => void }) {
   const confirm = useConfirmAdmissionForm(app);
 
+  if (confirm.pendingLogins) {
+    return (
+      <ParentSignInDialog
+        title={`${childName(app)} is enrolled: parent sign-in details`}
+        child={{ name: childName(app), admissionNo: confirm.pendingLogins.admissionNo }}
+        logins={confirm.pendingLogins.parentLogins}
+        onClose={confirm.loginsSeen}
+      />
+    );
+  }
   if (confirm.studentId) {
     return <AdmissionConfirmedDialog name={childName(app)} studentId={confirm.studentId} onClose={onClose} />;
   }

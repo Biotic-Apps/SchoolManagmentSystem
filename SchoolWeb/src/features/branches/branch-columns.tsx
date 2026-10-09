@@ -1,4 +1,4 @@
-import { Archive, ArchiveRestore, Eye, Pencil, Settings, UserCog } from "lucide-react";
+import { Archive, ArchiveRestore, Clock, Eye, Pencil, Settings, UserCog } from "lucide-react";
 import type { DataTableColumn } from "@/components/shared/DataTable";
 import { RowActions } from "@/components/shared/RowActions";
 import { StatusBadge } from "@/components/shared/StatusBadge";
@@ -10,6 +10,7 @@ import type { Branch } from "./types";
 export interface BranchRowHandlers {
   onView: (branch: Branch) => void;
   onEdit?: (branch: Branch) => void;
+  onEditTimings?: (branch: Branch) => void;
   onToggleStatus: (branch: Branch) => void;
   onChangePrincipal?: (branch: Branch) => void;
   onSettings?: (branch: Branch) => void;
@@ -17,8 +18,16 @@ export interface BranchRowHandlers {
   canActivate: boolean;
 }
 
-function timingsLabel(branch: Branch): string {
-  return formatTimeRange(branch.timings?.opensAt, branch.timings?.closesAt);
+function timingsCell(branch: Branch) {
+  const t = branch.timings;
+  return (
+    <span className="flex flex-col">
+      <span>{formatTimeRange(t?.opensAt, t?.closesAt)}</span>
+      {t && (
+        <span className="text-caption text-fg-muted">Teachers {formatTimeRange(t.staffArrivesAt, t.staffLeavesAt)}</span>
+      )}
+    </span>
+  );
 }
 
 export function branchColumns(handlers: BranchRowHandlers, showSchool: boolean): DataTableColumn<Branch>[] {
@@ -35,7 +44,7 @@ export function branchColumns(handlers: BranchRowHandlers, showSchool: boolean):
     },
     showSchool && { id: "school", header: "School", cell: (row) => row.schoolName },
     { id: "principal", header: "Principal", cell: (row) => row.principal?.name ?? EMPTY_VALUE },
-    { id: "timings", header: "Timings", cell: timingsLabel, className: "whitespace-nowrap" },
+    { id: "timings", header: "Timings", cell: timingsCell, className: "whitespace-nowrap" },
     { id: "days", header: "Working days", cell: (row) => weekdayLabels(row.workingDays) || EMPTY_VALUE },
     { id: "status", header: "Status", cell: (row) => <StatusBadge status={row.status} /> },
     {
@@ -49,6 +58,13 @@ export function branchColumns(handlers: BranchRowHandlers, showSchool: boolean):
             actions={[
               { id: "view", label: "View details", icon: Eye, onSelect: () => handlers.onView(row) },
               { id: "edit", label: "Edit", icon: Pencil, onSelect: () => handlers.onEdit?.(row), hidden: !handlers.onEdit },
+              {
+                id: "timings",
+                label: "Edit timings",
+                icon: Clock,
+                onSelect: () => handlers.onEditTimings?.(row),
+                hidden: !handlers.onEditTimings,
+              },
               {
                 id: "principal",
                 label: "Change principal",

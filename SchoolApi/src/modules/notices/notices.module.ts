@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AttachmentsService } from './attachments.service';
 import { NoticeExpireProcessor } from './jobs/notice-expire.processor';
 import { NoticeApprovalHandler } from './notice-approval.handler';
+import { NoticeOverseers } from './notice-overseers.service';
 import { NoticePublisher } from './notice-publisher.service';
 import { NoticeRecipientsService } from './notice-recipients.service';
 import { NoticeTargetService } from './notice-target.service';
@@ -17,6 +18,7 @@ import { NoticesService } from './notices.service';
     NoticesService,
     NoticeTargetService,
     NoticeRecipientsService,
+    NoticeOverseers,
     NoticePublisher,
     NoticeWorkflowService,
     NoticeApprovalHandler,

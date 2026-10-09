@@ -6,11 +6,14 @@ import com.schoolapp.core.model.meeting.CompleteMeetingInput
 import com.schoolapp.core.model.meeting.FollowUp
 import com.schoolapp.core.model.meeting.Meeting
 import com.schoolapp.core.model.meeting.MeetingBox
+import com.schoolapp.core.model.meeting.MeetingRequestInput
 import com.schoolapp.core.model.meeting.MeetingSlot
+import com.schoolapp.core.model.meeting.MeetingTeacher
 import com.schoolapp.core.model.meeting.SlotInput
 import com.schoolapp.core.network.ApiCaller
 import com.schoolapp.core.network.api.MeetingsApi
 import com.schoolapp.core.network.dto.common.ReasonBodyDto
+import com.schoolapp.core.network.dto.meeting.AcceptMeetingBodyDto
 import com.schoolapp.core.network.dto.meeting.BookMeetingBodyDto
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -39,6 +42,18 @@ class DefaultMeetingsRepository @Inject constructor(
 
     override suspend fun book(slotId: String, studentId: String, agenda: String): AppResult<Meeting> =
         apiCaller.call { api.book(BookMeetingBodyDto(slotId, studentId, agenda.trim())).data.toModel() }
+
+    override suspend fun teachers(studentId: String): AppResult<List<MeetingTeacher>> =
+        apiCaller.call { api.teachers(studentId).data.map { it.toModel() } }
+
+    override suspend fun request(input: MeetingRequestInput): AppResult<Meeting> =
+        apiCaller.call { api.request(input.toBody()).data.toModel() }
+
+    override suspend fun accept(id: String): AppResult<Meeting> =
+        apiCaller.call { api.accept(id, AcceptMeetingBodyDto()).data.toModel() }
+
+    override suspend fun decline(id: String, reason: String?): AppResult<Meeting> =
+        apiCaller.call { api.decline(id, ReasonBodyDto(reason.clean())).data.toModel() }
 
     override suspend fun meetings(box: MeetingBox, studentId: String?): AppResult<List<Meeting>> = apiCaller.call {
         val list = api.meetings(box.name.lowercase(), studentId).data.map { it.toModel() }.chronological()

@@ -188,12 +188,18 @@ export class PdfBuilder {
 
   footer(text: string): this {
     const { doc } = this;
+    // The footer sits inside the bottom margin; lift the margin while drawing
+    // so PDFKit doesn't treat it as overflow and start a blank page.
+    const margins = doc.page.margins;
+    const bottom = margins.bottom;
+    margins.bottom = 0;
     doc.font('Helvetica').fontSize(7.5).fillColor(MUTED);
     doc.text(text, 40, doc.page.height - 45, {
       width: this.width,
       align: 'center',
       lineBreak: false,
     });
+    margins.bottom = bottom;
     return this;
   }
 

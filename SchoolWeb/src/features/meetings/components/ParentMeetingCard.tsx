@@ -13,6 +13,7 @@ interface ParentMeetingCardProps {
 }
 
 export function ParentMeetingCard({ meeting, onCancel }: ParentMeetingCardProps) {
+  const requested = meeting.status === "REQUESTED";
   return (
     <Card>
       <CardContent className="flex flex-col gap-4">
@@ -20,15 +21,19 @@ export function ParentMeetingCard({ meeting, onCancel }: ParentMeetingCardProps)
           <div className="flex flex-col gap-1">
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-body font-semibold text-fg">{meeting.staff.name}</h3>
-              <StatusBadge status={meeting.status} />
+              <StatusBadge status={meeting.status} label={requested ? "Awaiting teacher" : undefined} />
             </div>
             <p className="whitespace-nowrap text-label text-fg-muted">
+              {requested && "You suggested "}
               {formatDate(meeting.date)} · {formatTimeRange(meeting.startTime, meeting.endTime)}
             </p>
+            {requested && (
+              <p className="text-caption text-fg-muted">Waiting for the teacher to confirm this time or offer another.</p>
+            )}
           </div>
           {onCancel && (
             <Button variant="secondary" size="sm" onClick={onCancel} className="self-start">
-              Cancel meeting
+              {requested ? "Withdraw request" : "Cancel meeting"}
             </Button>
           )}
         </div>

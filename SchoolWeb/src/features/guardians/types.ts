@@ -11,6 +11,8 @@ export interface Guardian extends GuardianInput {
 
 export interface GuardianChild {
   studentId: string;
+  /** Also the parent's sign-in username. */
+  admissionNo?: string;
   name: string;
   className: string | null;
   sectionName: string | null;
@@ -20,7 +22,18 @@ export interface GuardianChild {
   linkId?: string;
 }
 
+/** The parent login behind a guardian; its email/phone may differ from the record's. */
+export interface GuardianLogin {
+  email: string | null;
+  phone: string | null;
+  status: "ACTIVE" | "DISABLED";
+  /** Still on a temporary password. */
+  mustChangePassword: boolean;
+  lastLoginAt: string | null;
+}
+
 export interface GuardianDetail extends Guardian {
+  login: GuardianLogin | null;
   children: GuardianChild[];
 }
 
@@ -31,6 +44,11 @@ export interface GuardianLink {
   isPrimary: boolean;
   status: GuardianLinkStatus;
   verifiedAt: string | null;
+}
+
+/** POST /students/:id/guardians: the link plus the guardian's parent sign-in. */
+export interface AddedGuardianLink extends GuardianLink {
+  parentLogin: ParentLogin | null;
 }
 
 export interface LinkGuardianInput {
@@ -66,4 +84,22 @@ export interface ContactChangeInput {
   phone?: string;
   email?: string;
   address?: string;
+}
+
+/** A guardian's parent sign-in after admission, adding a guardian, creating or resetting it. */
+export interface ParentLogin {
+  guardianId: string;
+  guardianName: string;
+  status: "CREATED" | "EXISTING" | "SKIPPED";
+  email: string | null;
+  phone: string | null;
+  /** Shown once. */
+  temporaryPassword: string | null;
+  reason: string | null;
+}
+
+/** The child whose admission number doubles as the parent's username. */
+export interface SlipChild {
+  name: string;
+  admissionNo: string;
 }

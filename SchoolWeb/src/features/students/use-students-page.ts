@@ -13,6 +13,7 @@ export function useStudentsPage() {
   const scope = useAcademicScope();
   const [tab, setTab] = useState<StudentsTabId>("students");
   const register = useDialogState<true>();
+  const printCards = useDialogState<true>();
 
   return {
     scope,
@@ -24,5 +25,7 @@ export function useStudentsPage() {
     noSession: !scope.isLoading && !!scope.branchId && !scope.sessionId,
     canAdd: can("students.add") && !!scope.sessionId,
     register,
+    canPrintCards: can("students.edit") && !!scope.sessionId,
+    printCards,
   };
 }

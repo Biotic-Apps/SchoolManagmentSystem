@@ -9,6 +9,7 @@ import { BranchDetailDrawer } from "./BranchDetailDrawer";
 import { BranchFormDialog } from "./BranchFormDialog";
 import { BranchSettingsDialog } from "./BranchSettingsDialog";
 import { BranchStatusDialog } from "./BranchStatusDialog";
+import { BranchTimingsDialog } from "./BranchTimingsDialog";
 import { ChangePrincipalDialog } from "./ChangePrincipalDialog";
 
 export function BranchesList({ page }: { page: BranchesPageState }) {
@@ -56,12 +57,14 @@ export function BranchesList({ page }: { page: BranchesPageState }) {
         />
       )}
       {page.principal.item && <ChangePrincipalDialog branch={page.principal.item} onClose={page.principal.close} />}
+      {page.timings.item && <BranchTimingsDialog branch={page.timings.item} onClose={page.timings.close} />}
       {page.settings.item && <BranchSettingsDialog branch={page.settings.item} onClose={page.settings.close} />}
       <BranchStatusDialog branch={page.statusTarget.item} onClose={page.statusTarget.close} />
       <BranchDetailDrawer
         branch={page.detail.item}
         onClose={page.detail.close}
         onEdit={perms.canEdit ? page.form.show : undefined}
+        onEditTimings={perms.canEditTimings ? page.timings.show : undefined}
         onChangePrincipal={perms.canChangePrincipal ? page.principal.show : undefined}
         onSettings={perms.canEditSettings ? page.settings.show : undefined}
       />

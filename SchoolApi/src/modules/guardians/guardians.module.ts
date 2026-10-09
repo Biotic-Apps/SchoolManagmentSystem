@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { DocumentsModule } from '../documents/documents.module';
+import { GuardianAccountController } from './account/guardian-account.controller';
+import { GuardianAccountService } from './account/guardian-account.service';
 import { StudentsModule } from '../students/students.module';
 import { ChildLinkRequestService } from './child-links/child-link-request.service';
 import { ChildLinkHandler } from './child-links/child-link.handler';
@@ -20,6 +22,7 @@ import { StudentGuardiansService } from './links/student-guardians.service';
     GuardiansController,
     StudentGuardiansController,
     ChildLinksController,
+    GuardianAccountController,
   ],
   providers: [
     GuardianAccessService,
@@ -31,6 +34,7 @@ import { StudentGuardiansService } from './links/student-guardians.service';
     ContactChangeService,
     ContactChangeHandler,
     GuardianDocumentOwner,
+    GuardianAccountService,
   ],
 })
 export class GuardiansModule {}

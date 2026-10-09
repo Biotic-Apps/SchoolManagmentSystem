@@ -15,6 +15,7 @@
     <string name="meetings_mode_in_person">In person</string>
     <string name="meetings_mode_phone">Phone</string>
     <string name="meetings_mode_video">Video</string>
+    <string name="meetings_status_requested">Awaiting reply</string>
     <string name="meetings_status_scheduled">Scheduled</string>
     <string name="meetings_status_completed">Completed</string>
     <string name="meetings_status_cancelled">Cancelled</string>
@@ -44,6 +45,31 @@
     <string name="meetings_slot_taken">That slot was just taken, pick another</string>
     <string name="meetings_booked">Meeting booked. The teacher has been notified.</string>
     <string name="meetings_back_to_meetings">Back to meetings</string>
+    <string name="meetings_choose_teacher">Who would you like to meet?</string>
+    <string name="meetings_choose_teacher_hint">Pick a teacher to see their open times, or suggest a time if they have none.</string>
+    <string name="meetings_no_teachers">No teachers are linked to your child\'s class yet. Please contact the school office.</string>
+    <string name="meetings_teacher_no_open_times">No open times yet</string>
+    <plurals name="meetings_teacher_open_times">
+        <item quantity="one">%d open time</item>
+        <item quantity="other">%d open times</item>
+    </plurals>
+    <string name="meetings_open_times_with">Open times with %1$s</string>
+    <string name="meetings_suggest_time">None of these work? Suggest a time</string>
+    <string name="meetings_request_intro">Suggest a time that suits you. %1$s will confirm it or offer another.</string>
+    <string name="meetings_request_intro_no_slots">%1$s hasn\'t shared open times yet (teachers add them under Meetings, My slots). Suggest a time and they\'ll confirm it or offer another.</string>
+    <string name="meetings_request_date">Preferred date</string>
+    <string name="meetings_request_time">Preferred time</string>
+    <string name="meetings_send_request">Send request</string>
+    <string name="meetings_pick_open_time">Pick an open time instead</string>
+    <string name="meetings_choose_other_teacher">Choose another teacher</string>
+    <string name="meetings_request_sent">Request sent. The teacher will confirm the time or offer another.</string>
+    <string name="meetings_accept_request">Accept suggested time</string>
+    <string name="meetings_decline_request">Decline</string>
+    <string name="meetings_decline_title">Decline meeting request</string>
+    <string name="meetings_confirm_decline">Decline request</string>
+    <string name="meetings_request_waiting">The parent suggested this time. Accept it, or decline with a reason.</string>
+    <string name="meetings_done_accepted">Meeting confirmed. The parent has been notified.</string>
+    <string name="meetings_done_declined">Request declined. The parent has been notified.</string>
 
     <string name="meetings_complete">Complete</string>
     <string name="meetings_complete_title">Complete meeting</string>

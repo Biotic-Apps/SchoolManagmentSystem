@@ -2,7 +2,7 @@ import { z } from "zod";
 import { passwordRule } from "@/lib/validation";
 
 export const loginSchema = z.object({
-  identifier: z.string().trim().min(1, "Enter your email or phone"),
+  identifier: z.string().trim().min(1, "Enter your email, phone or child's admission number"),
   password: z.string().min(1, "Enter your password"),
 });
 

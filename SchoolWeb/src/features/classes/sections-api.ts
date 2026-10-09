@@ -40,7 +40,10 @@ export function useArchiveSection() {
 
 function sectionLabel(section: Section, withClass: boolean): string {
   const name = withClass ? `${section.className} ${section.name}` : section.name;
-  return `${name} (${section.studentCount}/${section.capacity})`;
+  const students = `${section.studentCount} ${section.studentCount === 1 ? "student" : "students"}`;
+  // Capacity is optional; without it there is no seat limit to show.
+  const seats = section.capacity == null ? students : `${students} of ${section.capacity} seats`;
+  return `${name} · ${seats}`;
 }
 
 /** Active sections of a branch session for pickers, labelled with seats used / capacity. */

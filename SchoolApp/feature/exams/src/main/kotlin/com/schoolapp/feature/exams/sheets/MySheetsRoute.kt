@@ -22,8 +22,10 @@ import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.model.exams.MarkSheet
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.exams.MarkSheetDestination
+import com.schoolapp.feature.exams.SkillsEntryDestination
 import com.schoolapp.feature.exams.R
 import com.schoolapp.feature.exams.components.MarkSheetCard
+import com.schoolapp.feature.exams.skills.components.SkillsEntryCard
 
 @Composable
 internal fun MySheetsRoute(
@@ -41,6 +43,9 @@ internal fun MySheetsRoute(
         onRetry = viewModel::load,
         onRefresh = viewModel::refresh,
         onSheetClick = { sheet -> onOpen(MarkSheetDestination(sheet.id, sheet.title)) },
+        onSkillsClick = { group, section ->
+            onOpen(SkillsEntryDestination(group.examId, section.sectionId, "${group.examName} - ${section.label}"))
+        },
         modifier = modifier,
     )
 }
@@ -51,6 +56,7 @@ internal fun MySheetsScreen(
     onRetry: () -> Unit,
     onRefresh: () -> Unit,
     onSheetClick: (MarkSheet) -> Unit,
+    onSkillsClick: (ExamSheetGroup, SheetSection) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when {
@@ -74,6 +80,9 @@ internal fun MySheetsScreen(
                     }
                     items(group.sheets, key = { "sheet_${it.id}" }) { sheet ->
                         MarkSheetCard(sheet = sheet, title = sheet.title, onClick = { onSheetClick(sheet) })
+                    }
+                    items(group.sections, key = { "skills_${group.examId}_${it.sectionId}" }) { section ->
+                        SkillsEntryCard(section.label, onClick = { onSkillsClick(group, section) })
                     }
                 }
             }

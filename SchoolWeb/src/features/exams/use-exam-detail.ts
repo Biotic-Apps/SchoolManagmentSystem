@@ -5,7 +5,7 @@ import { useCan } from "@/features/auth/use-can";
 import { useExam } from "./exams-api";
 import { reached } from "./options";
 
-export type ExamTabId = "overview" | "schedule" | "mark-sheets" | "completeness" | "results";
+export type ExamTabId = "overview" | "schedule" | "mark-sheets" | "completeness" | "skills" | "results" | "print";
 
 /** Exam page: tabs switch (and leave) only after unsaved schedule edits are confirmed. */
 export function useExamDetail(examId: string) {
@@ -32,5 +32,6 @@ export function useExamDetail(examId: string) {
     showMarkSheets: marksStarted,
     showCompleteness: marksStarted,
     showResults,
+    showSkills: !!exam && exam.status !== "DRAFT",
   };
 }

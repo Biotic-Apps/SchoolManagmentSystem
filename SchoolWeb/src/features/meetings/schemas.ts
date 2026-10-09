@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { todayIso } from "@/lib/dates";
+import { addDays, todayIso } from "@/lib/dates";
 import { blankToUndefined, isoDate, optionalText, requiredText, timeOfDay } from "@/lib/validation";
-import type { CompleteMeetingInput, MeetingMode, SlotInput, StaffMeetingInput } from "./types";
+import type { AcceptMeetingInput, CompleteMeetingInput, MeetingMode, SlotInput, StaffMeetingInput } from "./types";
 
 const endAfterStart = (value: { startTime: string; endTime: string }) => value.endTime > value.startTime;
 const END_MESSAGE = { message: "End time must be after the start time", path: ["endTime"] };
@@ -102,8 +102,49 @@ export function toRequestInput(values: RequestFormValues): StaffMeetingInput {
   return { ...values, mode: values.mode as MeetingMode, agenda: values.agenda.trim() };
 }
 
-export const bookingSchema = z.object({
-  slotId: z.string().min(1, "Pick a time"),
-  agenda: requiredText("what you'd like to discuss", 1000),
-});
+/** One form for both ways a parent asks: an open slot, or a suggested time. */
+export const bookingSchema = z
+  .object({
+    kind: z.enum(["slot", "request"]),
+    slotId: z.string(),
+    date: z.string(),
+    startTime: z.string(),
+    mode: z.string(),
+    agenda: requiredText("what you'd like to discuss", 1000),
+  })
+  .superRefine((value, ctx) => {
+    const issue = (path: string, message: string) => ctx.addIssue({ code: "custom", path: [path], message });
+    if (value.kind === "slot") {
+      if (!value.slotId) issue("slotId", "Pick a time");
+      return;
+    }
+    if (!isoDate.safeParse(value.date).success) issue("date", "Pick a date");
+    else if (value.date < todayIso()) issue("date", "Pick today or a later date");
+    if (!timeOfDay.safeParse(value.startTime).success) issue("startTime", "Pick a time");
+    if (!value.mode) issue("mode", "Choose a mode");
+  });
 export type BookingFormValues = z.infer<typeof bookingSchema>;
+
+export const bookingDefaults = (): BookingFormValues => ({
+  kind: "slot",
+  slotId: "",
+  date: addDays(todayIso(), 1),
+  startTime: "13:00",
+  mode: "IN_PERSON",
+  agenda: "",
+});
+
+export const acceptSchema = z
+  .object({
+    date: isoDate.refine((value) => value >= todayIso(), "Pick today or a later date"),
+    startTime: timeOfDay,
+    endTime: timeOfDay,
+    mode: z.string().min(1, "Choose a mode"),
+    location: optionalText(120),
+  })
+  .refine(endAfterStart, END_MESSAGE);
+export type AcceptFormValues = z.infer<typeof acceptSchema>;
+
+export function toAcceptInput(values: AcceptFormValues): AcceptMeetingInput {
+  return { ...values, mode: values.mode as MeetingMode, location: blankToUndefined(values.location) };
+}

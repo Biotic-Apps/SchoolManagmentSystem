@@ -5,12 +5,11 @@ import { FormField } from "@/components/shared/FormField";
 import { Input } from "@/components/ui/Input";
 import { SelectField } from "@/components/shared/form/SelectField";
 import { TextField } from "@/components/shared/form/TextField";
-import { TimeField } from "@/components/shared/form/TimeField";
 import { TextareaField } from "@/components/shared/form/TextareaField";
-import { WeekdaysField } from "@/components/shared/form/WeekdaysField";
 import { useSchoolOptions } from "@/features/schools/api";
 import type { Branch } from "../types";
 import { useBranchForm } from "../use-branch-form";
+import { BranchTimingsFields } from "./BranchTimingsFields";
 
 interface BranchFormDialogProps {
   branch: Branch | null;
@@ -55,18 +54,7 @@ export function BranchFormDialog({ branch, defaultSchoolId, onClose }: BranchFor
         <TextField name="email" label="Email" type="email" />
         <TextareaField name="address" label="Address" rows={2} className="sm:col-span-2" />
       </div>
-      <fieldset className="grid gap-4 sm:grid-cols-3">
-        <legend className="mb-2 text-label font-medium text-fg">Student timings</legend>
-        <TimeField name="opensAt" label="School opens" required />
-        <TimeField name="closesAt" label="School closes" required />
-        <TimeField name="attendanceLockAt" label="Attendance locks at" required />
-      </fieldset>
-      <fieldset className="grid gap-4 sm:grid-cols-3">
-        <legend className="mb-2 text-label font-medium text-fg">Teacher timings</legend>
-        <TimeField name="staffArrivesAt" label="Teachers arrive" required hint="At or before school opens" />
-        <TimeField name="staffLeavesAt" label="Teachers leave" required hint="At or after school closes" />
-      </fieldset>
-      <WeekdaysField name="workingDays" label="Working days" required />
+      <BranchTimingsFields />
     </FormDialog>
   );
 }

@@ -19,7 +19,9 @@ import { ProofSubmitService } from './proofs/proof-submit.service';
 import { ProofVerifier } from './proofs/proof-verifier';
 import { ProofsController } from './proofs/proofs.controller';
 import { ReceiptRenderer } from './receipts/receipt.renderer';
+import { ReceiptSource } from './receipts/receipt-source';
 import { ReceiptsService } from './receipts/receipts.service';
+import { ThermalReceiptRenderer } from './receipts/thermal-receipt.renderer';
 import { RefundApprovalHandler } from './refunds/refund-approval.handler';
 import { RefundsController } from './refunds/refunds.controller';
 import { RefundsService } from './refunds/refunds.service';
@@ -46,7 +48,9 @@ import { FinanceAccess } from './shared/finance-access';
     PaymentsService,
     PaymentQueryService,
     ReceiptsService,
+    ReceiptSource,
     ReceiptRenderer,
+    ThermalReceiptRenderer,
     PaymentReversalService,
     PaymentReversalHandler,
     RefundsService,

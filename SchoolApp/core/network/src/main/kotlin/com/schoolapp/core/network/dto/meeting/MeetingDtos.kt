@@ -45,6 +45,35 @@ data class FollowUpDto(
 )
 
 @Serializable
+data class MeetingTeacherDto(
+    val userId: String,
+    val name: String = "",
+    val roles: List<String> = emptyList(),
+    val openSlots: Int = 0,
+)
+
+/** `POST /meetings/requests`: parent suggests a time (end defaults to +30 min). */
+@Serializable
+data class MeetingRequestBodyDto(
+    val studentId: String,
+    val staffUserId: String,
+    val date: String,
+    val startTime: String,
+    val mode: String,
+    val agenda: String,
+)
+
+/** `POST /meetings/{id}/accept`: omitted fields keep the parent's suggestion. */
+@Serializable
+data class AcceptMeetingBodyDto(
+    val date: String? = null,
+    val startTime: String? = null,
+    val endTime: String? = null,
+    val mode: String? = null,
+    val location: String? = null,
+)
+
+@Serializable
 data class BookMeetingBodyDto(val slotId: String, val studentId: String, val agenda: String)
 
 @Serializable

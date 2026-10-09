@@ -27,3 +27,6 @@ SchoolApi/storage/
 .DS_Store
 Thumbs.db
 SchoolApi/.pgdata-*/
+
+# Claude Code agent worktrees
+.claude/worktrees/

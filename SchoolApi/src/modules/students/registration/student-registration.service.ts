@@ -9,6 +9,7 @@ import {
 import type { ChildInputDto } from '../dto/child-input.dto';
 import type { PrimaryGuardianInputDto } from '../dto/guardian-input.dto';
 import type { MedicalInputDto } from '../dto/medical-input.dto';
+import type { ParentLoginDto } from '../dto/parent-login.dto';
 import { EnrollmentWriter } from '../enrollment/enrollment-writer';
 import { queueIdCard } from '../id-card/id-card-job';
 import { GuardianWriter } from './guardian-writer';
@@ -32,6 +33,8 @@ export interface Registered {
   outboxIds: string[];
   /** Guardian accounts whose access cache must be refreshed after commit. */
   guardianUserIds: string[];
+  /** Parent sign-ins made or found for the guardians (temporary passwords shown once). */
+  parentLogins: ParentLoginDto[];
 }
 
 /**
@@ -84,7 +87,7 @@ export class StudentRegistrationService {
         },
       });
     }
-    const guardianUserIds = await this.guardians.attachVerified(tx, {
+    const attached = await this.guardians.attachVerified(tx, {
       schoolId: input.schoolId,
       studentId: student.id,
       guardians: input.guardians,
@@ -107,7 +110,8 @@ export class StudentRegistrationService {
       admissionNo,
       enrollmentId: enrollment.id,
       outboxIds: [card.outboxId],
-      guardianUserIds,
+      guardianUserIds: attached.userIds,
+      parentLogins: attached.parentLogins,
     };
   }
 }

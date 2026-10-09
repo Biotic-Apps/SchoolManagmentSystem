@@ -34,7 +34,7 @@ export function rowsFromPapers(papers: ExamPaper[] | undefined): ScheduleRow[] {
   return (papers ?? []).map((paper) => ({
     key: paper.id ?? nextKey(),
     classId: paper.classId,
-    subjectId: paper.subjectId,
+    subjectId: paper.subjectId ?? paper.subject?.id ?? "",
     date: paper.date?.slice(0, 10) ?? "",
     startTime: paper.startTime ?? "",
     endTime: paper.endTime ?? "",

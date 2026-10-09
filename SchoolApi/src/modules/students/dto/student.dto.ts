@@ -6,6 +6,7 @@ import type {
   StudentStatus,
 } from '../../../generated/prisma/client';
 import { DocumentDto } from '../../documents/dto/document.dto';
+import { ParentLoginDto } from './parent-login.dto';
 
 export class NamePhoneDto {
   name!: string;
@@ -85,6 +86,11 @@ export class StudentDetailDto extends StudentSummaryDto {
   documents!: DocumentDto[];
   /** Only with `health.view`. */
   medical!: MedicalDto | null;
+}
+
+export class RegisteredStudentDetailDto extends StudentDetailDto {
+  /** Guardian sign-ins created at admission; temporary passwords are shown once. */
+  parentLogins!: ParentLoginDto[];
 }
 
 export class RegisteredStudentDto {

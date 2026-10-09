@@ -8,6 +8,7 @@ import { SectionHeading } from "@/components/shared/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EMPTY_VALUE, textOrDash } from "@/lib/format";
 import { formatPercent } from "../../options";
+import { positionText } from "../../position-text";
 import { useStudentResultDrawer } from "../../use-student-result-drawer";
 import { ReportCardPanel } from "./ReportCardPanel";
 import { SubjectMarksTable } from "./SubjectMarksTable";
@@ -38,7 +39,8 @@ export function StudentResultDrawer({ studentId, examId, open, onOpenChange }: S
             items={[
               { label: "Percentage", value: formatPercent(result.percent) },
               { label: "Grade", value: result.grade ?? EMPTY_VALUE },
-              { label: "Position", value: result.position ?? EMPTY_VALUE },
+              { label: "Position in section", value: positionText(result.position, result.sectionSize) },
+              { label: "Position in class", value: positionText(result.classPosition, result.classSize) },
               { label: "Result", value: result.passed ? "Pass" : "Fail" },
             ]}
           />

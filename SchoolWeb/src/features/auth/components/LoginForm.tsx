@@ -14,7 +14,12 @@ export function LoginForm({ login }: { login: ReturnType<typeof useLoginForm> })
     <form onSubmit={submit} noValidate className="flex flex-col gap-5">
       {notice && <InlineNotice>{notice}</InlineNotice>}
       <FormAlert message={serverError} />
-      <FormField id="identifier" label="Email or phone" error={errors.identifier}>
+      <FormField
+        id="identifier"
+        label="Email, phone or admission number"
+        hint="Parents can use their child’s admission number, e.g. SMS-2026-0002."
+        error={errors.identifier}
+      >
         <Input
           id="identifier"
           autoComplete="username"

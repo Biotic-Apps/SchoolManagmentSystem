@@ -8,6 +8,7 @@ import { PrismaService } from '../../core/prisma/prisma.service';
 import { AccessCache } from '../../core/rbac/access/access-cache';
 import type { Scope } from '../../core/rbac/scope/scope';
 import type { MedicalInputDto } from '../students/dto/medical-input.dto';
+import { auditedLogins } from '../students/registration/parent-login-audit';
 import { StudentRegistrationService } from '../students/registration/student-registration.service';
 import { ApplicationAccessService } from './application-access.service';
 import { childOf, guardiansOf } from './application.mapper';
@@ -103,11 +104,14 @@ export class AdmissionConfirmService {
         studentId: result.registered.studentId,
         admissionNo: result.registered.admissionNo,
         admissionFee: dto.admissionFee,
+        parentLogins: auditedLogins(result.registered.parentLogins),
       },
     });
     return {
       application: await this.access.toDto(result.row),
       studentId: result.registered.studentId,
+      admissionNo: result.registered.admissionNo,
+      parentLogins: result.registered.parentLogins,
     };
   }
 }

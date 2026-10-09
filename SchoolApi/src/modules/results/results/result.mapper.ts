@@ -1,6 +1,7 @@
 import type { ExamResult } from '../../../generated/prisma/client';
 import { decimalToNumber } from '../shared/hundredths';
 import type { SubjectResult } from './result-calculator';
+import type { Standing } from './standings';
 import type { StudentResultDto } from './dto/result.dto';
 
 export interface ResultPerson {
@@ -18,6 +19,7 @@ export const subjectsOf = (
 export function toStudentResultDto(
   row: ExamResult,
   person: ResultPerson | undefined,
+  standing?: Standing,
 ): StudentResultDto {
   return {
     studentId: row.studentId,
@@ -40,6 +42,10 @@ export function toStudentResultDto(
     percent: decimalToNumber(row.percent) ?? 0,
     grade: row.grade,
     position: row.position,
+    sectionSize: standing?.sectionSize ?? 0,
+    classPosition:
+      row.position === null ? null : (standing?.classPosition ?? null),
+    classSize: standing?.classSize ?? 0,
     passed: row.passed,
     remarks: row.remarks,
     teacherRemark: row.teacherRemark,

@@ -1,52 +1,50 @@
 import { useMemo, useState } from "react";
-import type { Option } from "@/components/shared/OptionSelect";
 import type { ChildSummary } from "@/features/auth/types";
-import { staffTargetOptions } from "@/features/messages/staff-targets";
-import { useCan } from "@/features/auth/use-can";
-import { useSectionStaff } from "@/features/staff/api";
-import { useStudent } from "@/features/students/api";
 import { ApiError } from "@/lib/api-error";
 import { useServerForm } from "@/lib/use-server-form";
-import { useBookMeeting, useSlots } from "./api";
+import { useBookMeeting, useMeetingTeachers, useParentRequest, useSlots } from "./api";
 import { bookingWindow, groupByDate } from "./options";
-import { bookingSchema } from "./schemas";
-import type { MeetingSlot } from "./types";
+import { bookingDefaults, bookingSchema, type BookingFormValues } from "./schemas";
+import { teacherOptions } from "./teacher-options";
+import type { MeetingMode } from "./types";
 
 const TAKEN = "Someone just booked this slot. Pick another time.";
 
-/** Teachers come from the child's section; without user ids on that list, from the open slots. */
-function teacherOptionsFromSlots(slots: MeetingSlot[]): Option[] {
-  const byUser = new Map<string, string>();
-  for (const slot of slots) if (!byUser.has(slot.staffUserId)) byUser.set(slot.staffUserId, slot.staffName ?? "Teacher");
-  return [...byUser].map(([id, name]) => ({ id, name }));
-}
-
+/**
+ * Parent picks one of the child's teachers, then books an open slot — or, when
+ * the teacher has none (or none suits), suggests a time the teacher confirms.
+ */
 export function useParentBooking(child: ChildSummary, onBooked: () => void) {
-  const student = useStudent(child.id);
-  // Parents have no staff.view: they pick teachers from the open slots instead.
-  const canSeeStaff = useCan()("staff.view");
-  const sectionStaff = useSectionStaff(student.data?.enrollment?.sectionId ?? null, canSeeStaff);
-  const sectionTeachers = staffTargetOptions(sectionStaff.data);
-  const filterOnServer = sectionTeachers.length > 0;
+  const teachers = useMeetingTeachers(child.id);
   const [teacherId, setTeacherId] = useState<string | null>(null);
   const [range] = useState(bookingWindow);
+  const teacher = teachers.data?.find((t) => t.userId === teacherId) ?? null;
 
-  const slots = useSlots(
-    { staffUserId: filterOnServer ? teacherId : undefined, ...range },
-    filterOnServer ? !!teacherId : !sectionStaff.isLoading,
-  );
+  const slots = useSlots({ staffUserId: teacherId, ...range }, !!teacherId);
   const open = useMemo(
-    () => (slots.data ?? []).filter((slot) => slot.status === "OPEN" && (!teacherId || slot.staffUserId === teacherId)),
+    () => (slots.data ?? []).filter((slot) => slot.status === "OPEN" && slot.staffUserId === teacherId),
     [slots.data, teacherId],
   );
 
   const book = useBookMeeting();
+  const request = useParentRequest();
   const { form, submit, submitting, formError } = useServerForm({
     schema: bookingSchema,
-    defaultValues: { slotId: "", agenda: "" },
-    onSubmit: async (values) => {
+    defaultValues: bookingDefaults(),
+    onSubmit: async (values: BookingFormValues) => {
+      if (!teacherId) return null;
+      if (values.kind === "request") {
+        return request.mutateAsync({
+          studentId: child.id,
+          staffUserId: teacherId,
+          date: values.date,
+          startTime: values.startTime,
+          mode: values.mode as MeetingMode,
+          agenda: values.agenda,
+        });
+      }
       try {
-        return await book.mutateAsync({ ...values, studentId: child.id });
+        return await book.mutateAsync({ slotId: values.slotId, agenda: values.agenda, studentId: child.id });
       } catch (error) {
         if (error instanceof ApiError && error.status === 409) {
           form.setError("slotId", { type: "server", message: TAKEN });
@@ -59,26 +57,44 @@ export function useParentBooking(child: ChildSummary, onBooked: () => void) {
     },
     onSuccess: (meeting) => {
       if (!meeting) return;
-      form.reset({ slotId: "", agenda: "" });
+      form.reset(bookingDefaults());
+      setTeacherId(null);
       onBooked();
     },
   });
 
-  const teacherOptions = filterOnServer ? sectionTeachers : teacherOptionsFromSlots(slots.data ?? []);
+  const kind = form.watch("kind");
+  const hasOpenTimes = !slots.isLoading && open.length > 0;
+  // Without open times the only way forward is suggesting one.
+  const requesting = !!teacher && (kind === "request" || (!slots.isLoading && open.length === 0));
+  const setKind = (next: BookingFormValues["kind"]) => {
+    form.setValue("kind", next);
+    form.clearErrors(["slotId", "date", "startTime"]);
+  };
 
   return {
     form,
-    submit,
+    submit: (event?: Parameters<typeof submit>[0]) => {
+      // Keep the hidden `kind` in step with what the screen shows before validating.
+      if (requesting && kind !== "request") form.setValue("kind", "request");
+      return submit(event);
+    },
     submitting,
     formError,
-    teacherOptions,
-    teachersLoading: student.isLoading || sectionStaff.isLoading,
+    teachers,
+    teacherOptions: teacherOptions(teachers.data ?? []),
+    teacher,
     teacherId,
     setTeacherId: (id: string) => {
       setTeacherId(id);
       form.setValue("slotId", "");
+      setKind("slot");
     },
-    needsTeacher: filterOnServer && !teacherId,
+    needsTeacher: !teacherId,
+    requesting,
+    hasOpenTimes,
+    askOtherTime: () => setKind("request"),
+    pickOpenTime: () => setKind("slot"),
     slots,
     days: groupByDate(open),
     selectedSlotId: form.watch("slotId"),

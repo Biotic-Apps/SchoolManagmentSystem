@@ -7,6 +7,10 @@ import { RoleKey } from '../../core/rbac/role-key.enum';
 import type { Scope } from '../../core/rbac/scope/scope';
 import { BranchSettingsReader } from '../branches/settings/branch-settings.reader';
 import type { NoticeDto } from './dto/notice.dto';
+import {
+  NoticeOverseers,
+  type OverseenNotice,
+} from './notice-overseers.service';
 import { NoticePublisher } from './notice-publisher.service';
 import { NoticesService } from './notices.service';
 
@@ -19,6 +23,7 @@ export class NoticeWorkflowService {
     private readonly publisher: NoticePublisher,
     private readonly approvals: ApprovalService,
     private readonly settings: BranchSettingsReader,
+    private readonly overseers: NoticeOverseers,
   ) {}
 
   async publish(user: AuthUser, scope: Scope, id: string): Promise<NoticeDto> {
@@ -51,7 +56,7 @@ export class NoticeWorkflowService {
   private async submit(
     user: AuthUser,
     id: string,
-    notice: { schoolId: string; branchId: string | null; title: string },
+    notice: OverseenNotice,
   ): Promise<NoticeDto> {
     await this.prisma.$transaction(async (tx) => {
       const approval = await this.approvals.create(
@@ -72,6 +77,7 @@ export class NoticeWorkflowService {
         where: { id },
         data: { status: 'PENDING_APPROVAL', approvalId: approval.id },
       });
+      await this.overseers.notifyPending(notice, tx);
     });
     return this.notices.done(user, 'notice.submit', id, { status: 'DRAFT' });
   }

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { EMPTY_VALUE } from "@/lib/format";
 import { toast } from "@/lib/toast";
+import { copyText } from "@/lib/clipboard";
 
 export function ChecksumCell({ value }: { value: string | null }) {
   const [copied, setCopied] = useState(false);
@@ -12,7 +13,7 @@ export function ChecksumCell({ value }: { value: string | null }) {
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(value);
+      await copyText(value);
       setCopied(true);
     } catch {
       toast.error("Couldn't copy the checksum");

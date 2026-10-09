@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '../../generated/prisma/client';
 import { NotificationService } from '../../core/notifications/notification.service';
+import { NoticeOverseers } from './notice-overseers.service';
 import { NoticeRecipientsService } from './notice-recipients.service';
 
-/** Publishes a notice: resolves recipients, stores them and notifies. */
+/** Publishes a notice: resolves recipients, stores them and notifies them and the principals. */
 @Injectable()
 export class NoticePublisher {
   constructor(
     private readonly recipients: NoticeRecipientsService,
     private readonly notifications: NotificationService,
+    private readonly overseers: NoticeOverseers,
   ) {}
 
   async publish(
@@ -40,6 +42,7 @@ export class NoticePublisher {
       body: notice.body.slice(0, 200),
       data: { noticeId },
     });
+    await this.overseers.notifyPosted(notice, [...userIds, publishedById], tx);
     return userIds.length;
   }
 }

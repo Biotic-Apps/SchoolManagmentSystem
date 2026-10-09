@@ -33,7 +33,13 @@ export function StudentGuardiansTab({ student, readOnly = false }: { student: St
       ) : (
         <ul className="flex flex-col gap-3">
           {tab.links.map((link) => (
-            <GuardianLinkCard key={link.id} link={link} linkName={!readOnly && guardiansScreen} onRemove={tab.onRemove} />
+            <GuardianLinkCard
+              key={link.id}
+              link={link}
+              linkName={!readOnly && guardiansScreen}
+              child={{ name: student.name, admissionNo: student.admissionNo }}
+              onRemove={tab.onRemove}
+            />
           ))}
         </ul>
       )}

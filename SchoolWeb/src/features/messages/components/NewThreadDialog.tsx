@@ -7,6 +7,7 @@ import { TextField } from "@/components/shared/form/TextField";
 import { AttachmentsField } from "@/features/files/components/AttachmentsField";
 import { StudentSearchField } from "@/features/students/components/StudentSearchField";
 import { useNewThreadForm } from "../use-new-thread-form";
+import { GuardianReachNotice } from "./GuardianReachNotice";
 
 interface NewThreadDialogProps {
   onClose: () => void;
@@ -28,6 +29,7 @@ export function NewThreadDialog({ onClose, onCreated }: NewThreadDialogProps) {
       }
       submitLabel="Send"
       submitting={thread.submitting}
+      submitDisabled={thread.reach.blocked || thread.reach.checking}
       onSubmit={thread.submit}
       form={thread.form}
       error={thread.error}
@@ -46,7 +48,10 @@ export function NewThreadDialog({ onClose, onCreated }: NewThreadDialogProps) {
           />
         </div>
       ) : (
-        <StudentSearchField name="studentId" required />
+        <div className="flex flex-col gap-2">
+          <StudentSearchField name="studentId" required />
+          <GuardianReachNotice message={thread.reach.message} studentId={thread.reach.studentId} />
+        </div>
       )}
       <TextField name="subject" label="Subject" required maxLength={150} />
       <TextareaField name="body" label="Message" required rows={5} />

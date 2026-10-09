@@ -46,6 +46,7 @@ const session = (overrides = {}) => ({
 function setup() {
   const users = {
     findByIdentifier: jest.fn(),
+    findParentsByAdmissionNo: jest.fn().mockResolvedValue([]),
     findById: jest.fn(),
     incrementFailures: jest.fn(),
     lock: jest.fn().mockResolvedValue(true),
@@ -278,6 +279,77 @@ describe('AuthService', () => {
         await codeOf(service.login('a@b.c', 'bad', { platform: 'WEB' })),
       ).toBe(ErrorCode.INVALID_CREDENTIALS);
       expect(twoFactor.challenge).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('login with a child admission number', () => {
+    it('signs in the only parent of that child', async () => {
+      const { service, users, hasher } = setup();
+      users.findParentsByAdmissionNo.mockResolvedValue([user({ id: 'p1' })]);
+      hasher.verify.mockResolvedValue(true);
+
+      await service.login(' sms-2026-0002 ', 'right', { platform: 'WEB' });
+
+      expect(users.findParentsByAdmissionNo).toHaveBeenCalledWith(
+        'SMS-2026-0002',
+      );
+      expect(users.findByIdentifier).not.toHaveBeenCalled();
+      expect(users.recordLogin).toHaveBeenCalledWith('p1');
+    });
+
+    it('picks the parent whose password matches when both have logins', async () => {
+      const { service, users, hasher } = setup();
+      users.findParentsByAdmissionNo.mockResolvedValue([
+        user({ id: 'mother', passwordHash: 'm' }),
+        user({ id: 'father', passwordHash: 'f' }),
+      ]);
+      hasher.verify.mockImplementation((hash: string) =>
+        Promise.resolve(hash === 'f'),
+      );
+
+      await service.login('SMS-2026-0002', 'fathers', { platform: 'WEB' });
+
+      expect(users.recordLogin).toHaveBeenCalledWith('father');
+    });
+
+    it('counts a wrong password against the first parent', async () => {
+      const { service, users, hasher } = setup();
+      users.findParentsByAdmissionNo.mockResolvedValue([
+        user({ id: 'mother' }),
+        user({ id: 'father' }),
+      ]);
+      users.incrementFailures.mockResolvedValue(1);
+      hasher.verify.mockResolvedValue(false);
+
+      expect(
+        await codeOf(
+          service.login('SMS-2026-0002', 'bad', { platform: 'WEB' }),
+        ),
+      ).toBe(ErrorCode.INVALID_CREDENTIALS);
+      expect(users.incrementFailures).toHaveBeenCalledWith('mother');
+    });
+
+    it('blocks a shared number while either parent is locked', async () => {
+      const { service, users, hasher } = setup();
+      users.findParentsByAdmissionNo.mockResolvedValue([
+        user({ id: 'mother', lockedUntil: new Date(Date.now() + 60_000) }),
+        user({ id: 'father' }),
+      ]);
+      hasher.verify.mockResolvedValue(true);
+
+      expect(
+        await codeOf(service.login('SMS-2026-0002', 'x', { platform: 'WEB' })),
+      ).toBe(ErrorCode.ACCOUNT_LOCKED);
+      expect(hasher.verify).not.toHaveBeenCalled();
+    });
+
+    it('answers an unknown number like an unknown email', async () => {
+      const { service, hasher } = setup();
+
+      expect(
+        await codeOf(service.login('SMS-1999-0001', 'pw', { platform: 'WEB' })),
+      ).toBe(ErrorCode.INVALID_CREDENTIALS);
+      expect(hasher.verifyDummy).toHaveBeenCalled();
     });
   });
 

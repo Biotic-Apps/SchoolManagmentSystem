@@ -5,7 +5,7 @@ import { MoneyText } from "@/components/shared/MoneyText";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/Dialog";
 import { formatDate } from "@/lib/format";
 import type { Payment } from "../../types";
-import { FileLinkButton } from "./FileLinkButton";
+import { ReceiptDownload } from "./ReceiptDownload";
 
 interface ReceiptDialogProps {
   payment: Payment | null;
@@ -20,7 +20,7 @@ export function ReceiptDialog({ payment, open, onOpenChange }: ReceiptDialogProp
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>Receipt {payment?.receiptNo}</DialogTitle>
-          <DialogDescription>The receipt PDF is generated on request and opens in a new tab.</DialogDescription>
+          <DialogDescription>Choose A4 (school and student copies) or an 80 mm thermal slip. The PDF opens in a new tab.</DialogDescription>
         </DialogHeader>
         {payment && (
           <>
@@ -32,7 +32,7 @@ export function ReceiptDialog({ payment, open, onOpenChange }: ReceiptDialogProp
               ]}
             />
             <DialogFooter>
-              <FileLinkButton key={payment.id} path={`/payments/${payment.id}/receipt`} label="Download receipt" variant="primary" autoStart />
+              <ReceiptDownload key={payment.id} paymentId={payment.id} variant="primary" autoStart />
             </DialogFooter>
           </>
         )}

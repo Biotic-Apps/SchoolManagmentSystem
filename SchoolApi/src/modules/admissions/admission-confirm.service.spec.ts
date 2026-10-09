@@ -59,6 +59,7 @@ function setup(section: object | null, claimed = 1) {
       enrollmentId: 'enr-1',
       outboxIds: ['evt-1'],
       guardianUserIds: ['parent-user'],
+      parentLogins: [],
     }),
   };
   const outbox = { publish: jest.fn() };

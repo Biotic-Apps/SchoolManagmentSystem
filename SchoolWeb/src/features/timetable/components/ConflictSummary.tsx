@@ -19,8 +19,14 @@ export function ConflictSummary({ conflicts }: { conflicts: Conflict[] }) {
           {errors.length > 0 && `${errors.length} to fix before publishing`}
           {errors.length > 0 && warnings.length > 0 && " · "}
           {warnings.length > 0 && `${warnings.length} warning${warnings.length === 1 ? "" : "s"}`}
-          <span className="font-normal"> (show)</span>
+          <span className="font-normal"> (show details)</span>
         </summary>
+        {warnings.length > 0 && (
+          <p className="mt-1">
+            Warnings don&apos;t stop publishing. They mostly list subjects that don&apos;t have all their weekly periods
+            in the grid yet (the weekly count is set per subject in Classes, Sections &amp; Subjects).
+          </p>
+        )}
         <ul className="mt-1 flex list-disc flex-col gap-1 pl-4">
           {[...errors, ...warnings].map((conflict, index) => (
             <li key={`${conflict.type}-${conflict.day}-${conflict.periodIndex}-${index}`}>

@@ -2,10 +2,12 @@ import { Module } from '@nestjs/common';
 import { DocumentsModule } from '../documents/documents.module';
 import { EnrollmentActionsService } from './enrollment/enrollment-actions.service';
 import { EnrollmentWriter } from './enrollment/enrollment-writer';
+import { IdCardBulkModule } from './id-card/bulk/id-card-bulk.module';
 import { IdCardController } from './id-card/id-card.controller';
 import { IdCardProcessor } from './id-card/id-card.processor';
 import { IdCardService } from './id-card/id-card.service';
 import { GuardianWriter } from './registration/guardian-writer';
+import { ParentLoginWriter } from './registration/parent-login.writer';
 import { StudentRegistrationService } from './registration/student-registration.service';
 import { SectionAccessService } from './section-access.service';
 import { StudentAccessService } from './student-access.service';
@@ -19,7 +21,7 @@ import { TransfersRepository } from './transfers/transfers.repository';
 import { TransfersService } from './transfers/transfers.service';
 
 @Module({
-  imports: [DocumentsModule],
+  imports: [DocumentsModule, IdCardBulkModule],
   controllers: [StudentsController, TransfersController, IdCardController],
   providers: [
     StudentsRepository,
@@ -29,6 +31,7 @@ import { TransfersService } from './transfers/transfers.service';
     EnrollmentWriter,
     EnrollmentActionsService,
     GuardianWriter,
+    ParentLoginWriter,
     StudentRegistrationService,
     TransfersRepository,
     TransfersService,
@@ -43,6 +46,7 @@ import { TransfersService } from './transfers/transfers.service';
     StudentMapper,
     StudentRegistrationService,
     GuardianWriter,
+    ParentLoginWriter,
     EnrollmentWriter,
     SectionAccessService,
   ],

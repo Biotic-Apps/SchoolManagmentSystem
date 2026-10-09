@@ -5,7 +5,9 @@ import com.schoolapp.core.model.meeting.CompleteMeetingInput
 import com.schoolapp.core.model.meeting.FollowUp
 import com.schoolapp.core.model.meeting.Meeting
 import com.schoolapp.core.model.meeting.MeetingBox
+import com.schoolapp.core.model.meeting.MeetingRequestInput
 import com.schoolapp.core.model.meeting.MeetingSlot
+import com.schoolapp.core.model.meeting.MeetingTeacher
 import com.schoolapp.core.model.meeting.SlotInput
 
 interface MeetingsRepository {
@@ -23,6 +25,17 @@ interface MeetingsRepository {
 
     /** 409 when the slot was taken meanwhile. */
     suspend fun book(slotId: String, studentId: String, agenda: String): AppResult<Meeting>
+
+    /** The child's teachers and principal, even those without open slots. */
+    suspend fun teachers(studentId: String): AppResult<List<MeetingTeacher>>
+
+    /** Parent suggests a time to a teacher; 409 while an earlier request to them is unanswered. */
+    suspend fun request(input: MeetingRequestInput): AppResult<Meeting>
+
+    /** Staff confirm a parent's request at the suggested time. */
+    suspend fun accept(id: String): AppResult<Meeting>
+
+    suspend fun decline(id: String, reason: String?): AppResult<Meeting>
 
     suspend fun meetings(box: MeetingBox, studentId: String? = null): AppResult<List<Meeting>>
     suspend fun cancel(id: String, reason: String?): AppResult<Meeting>

@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { ParentLogin } from "@/features/guardians/types";
 import { useWatch } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useSectionOptions } from "@/features/classes/sections-api";
@@ -18,15 +19,22 @@ interface RegisterScope {
   classId: string | undefined;
 }
 
-/** Direct registration (bypassing admissions); opens the new student's page when done. */
+type Registered = StudentDetail & { parentLogins: ParentLogin[] };
+
+/**
+ * Direct registration (bypassing admissions). Guardians get parent sign-ins;
+ * new ones are shown once, then the new student's page opens.
+ */
 export function useRegisterStudentForm(scope: RegisterScope) {
   const router = useRouter();
   const register = useRegisterStudent();
-  const server = useServerForm<RegisterStudentValues, StudentDetail>({
+  const [registered, setRegistered] = useState<Registered | null>(null);
+  const open = (student: StudentDetail) => router.push(`/students/${student.id}`);
+  const server = useServerForm<RegisterStudentValues, Registered>({
     schema: registerStudentSchema,
     defaultValues: registerStudentDefaults(scope.classId),
     onSubmit: (values) => register.mutateAsync(toRegisterStudentInput(values)),
-    onSuccess: (student) => router.push(`/students/${student.id}`),
+    onSuccess: (student) => (student.parentLogins.length > 0 ? setRegistered(student) : open(student)),
   });
 
   const { control, setValue, getValues } = server.form;
@@ -42,5 +50,11 @@ export function useRegisterStudentForm(scope: RegisterScope) {
     }
   }, [classId, sections.isLoading, sections.options, getValues, setValue]);
 
-  return { ...server, sections, sectionFull: !!sectionId && sections.isFull(sectionId) };
+  return {
+    ...server,
+    sections,
+    sectionFull: !!sectionId && sections.isFull(sectionId),
+    registered,
+    openRegistered: () => registered && open(registered),
+  };
 }

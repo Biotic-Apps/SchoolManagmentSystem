@@ -3,6 +3,7 @@ import { DocumentDto } from '../../documents/dto/document.dto';
 import { ChildInputDto } from '../../students/dto/child-input.dto';
 import { PrimaryGuardianInputDto } from '../../students/dto/guardian-input.dto';
 import { MedicalInputDto } from '../../students/dto/medical-input.dto';
+import { ParentLoginDto } from '../../students/dto/parent-login.dto';
 
 export class EntranceTestDto {
   scheduledAt!: string;
@@ -35,4 +36,7 @@ export class ApplicationDto {
 export class ConfirmedApplicationDto {
   application!: ApplicationDto;
   studentId!: string;
+  admissionNo!: string;
+  /** Guardian sign-ins created at admission; temporary passwords are shown once. */
+  parentLogins!: ParentLoginDto[];
 }

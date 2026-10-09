@@ -7,6 +7,7 @@ import { currentPeriod } from "@/lib/period";
 import { toast } from "@/lib/toast";
 import { useDialogState } from "@/lib/use-dialog-state";
 import { useListState } from "@/lib/use-list-state";
+import type { PrintChallansJob } from "./challan-print";
 import { useInvoices, useIssueInvoices } from "./invoices-api";
 import { useInvoiceSelection } from "./use-invoice-selection";
 
@@ -15,7 +16,7 @@ interface InvoicesScope {
   schoolId: string | null;
 }
 
-/** Invoices of one branch and billing month, with bulk issue, generation and ad-hoc invoices. */
+/** Invoices of one branch and billing month, with bulk issue, generation, challan printing and ad-hoc invoices. */
 export function useInvoicesTab({ branchId, schoolId }: InvoicesScope) {
   const can = useCan();
   const list = useListState<{ status?: string; classId?: string }>({ status: undefined, classId: undefined });
@@ -30,6 +31,8 @@ export function useInvoicesTab({ branchId, schoolId }: InvoicesScope) {
   const [openId, setOpenId] = useState<string | null>(null);
   const generateDialog = useDialogState<null>();
   const createDialog = useDialogState<null>();
+  const printDialog = useDialogState<null>();
+  const [printJob, setPrintJob] = useState<PrintChallansJob | null>(null);
 
   return {
     list,
@@ -46,11 +49,18 @@ export function useInvoicesTab({ branchId, schoolId }: InvoicesScope) {
     activeSessionId: sessions.activeId,
     canAdd: can("fees.add"),
     canIssue: can("fees.approve"),
+    canPrint: can("fees.view"),
     selection,
     issuing: issue.isPending,
     issueSelected: () => issue.mutate(selection.selectedIds, { onSuccess: selection.clear }),
     generateDialog,
     createDialog,
+    printDialog,
+    printJob,
+    onPrintStarted: (job: PrintChallansJob) => {
+      setPrintJob(job);
+      toast.info(`Preparing ${job.count} challans in the background`);
+    },
     jobId,
     onGenerated: (result: { jobId?: string | null } | null) => {
       if (result?.jobId) {

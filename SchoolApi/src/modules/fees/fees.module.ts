@@ -1,4 +1,8 @@
 import { Module } from '@nestjs/common';
+import { ChallanBatchProcessor } from './challans/challan-batch.processor';
+import { ChallanBatchService } from './challans/challan-batch.service';
+import { ChallanPrintController } from './challans/challan-print.controller';
+import { ChallanSource } from './challans/challan-source.service';
 import { ConcessionApprovalHandler } from './concessions/concession-approval.handler';
 import { ConcessionReader } from './concessions/concession-reader.service';
 import { ConcessionsController } from './concessions/concessions.controller';
@@ -36,6 +40,7 @@ import { StudentLedgerService } from './student-fees/student-ledger.service';
   controllers: [
     FeeStructureController,
     InvoicesController,
+    ChallanPrintController,
     ConcessionsController,
     StudentFeesController,
     DuesController,
@@ -57,6 +62,9 @@ import { StudentLedgerService } from './student-fees/student-ledger.service';
     InvoiceCancelApprovalHandler,
     InvoicePdfService,
     ChallanRenderer,
+    ChallanSource,
+    ChallanBatchService,
+    ChallanBatchProcessor,
     MarkOverdueProcessor,
     ConcessionReader,
     ConcessionsService,

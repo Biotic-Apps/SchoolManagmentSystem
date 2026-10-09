@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Settings, UserCog } from "lucide-react";
+import { Clock, Pencil, Settings, UserCog } from "lucide-react";
 import { DetailDrawer } from "@/components/shared/DetailDrawer";
 import { DetailList } from "@/components/shared/DetailList";
 import { StatusBadge } from "@/components/shared/StatusBadge";
@@ -16,6 +16,7 @@ interface BranchDetailDrawerProps {
   branch: Branch | null;
   onClose: () => void;
   onEdit?: (branch: Branch) => void;
+  onEditTimings?: (branch: Branch) => void;
   onChangePrincipal?: (branch: Branch) => void;
   onSettings?: (branch: Branch) => void;
 }
@@ -24,7 +25,7 @@ function principalNames(branch: Branch): Record<string, string> | undefined {
   return branch.principal ? { [branch.principal.id]: branch.principal.name } : undefined;
 }
 
-export function BranchDetailDrawer({ branch, onClose, onEdit, onChangePrincipal, onSettings }: BranchDetailDrawerProps) {
+export function BranchDetailDrawer({ branch, onClose, onEdit, onEditTimings, onChangePrincipal, onSettings }: BranchDetailDrawerProps) {
   const query = useBranch(branch?.id ?? null);
   const data = query.data ?? branch;
   const timings = data?.timings;
@@ -42,6 +43,12 @@ export function BranchDetailDrawer({ branch, onClose, onEdit, onChangePrincipal,
               <Button variant="secondary" size="sm" onClick={() => onEdit(data)}>
                 <Pencil />
                 Edit
+              </Button>
+            )}
+            {onEditTimings && (
+              <Button variant="secondary" size="sm" onClick={() => onEditTimings(data)}>
+                <Clock />
+                Edit timings
               </Button>
             )}
             {onChangePrincipal && (

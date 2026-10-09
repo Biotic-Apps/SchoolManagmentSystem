@@ -1,0 +1,61 @@
+// Behaviour & skills on the report card: branch-defined items in two domains,
+// a branch rating scale, and per exam ratings entered by the section's teachers.
+
+enum SkillDomain {
+  AFFECTIVE
+  PSYCHOMOTOR
+
+  @@map("skill_domain")
+}
+
+model SkillItem {
+  id        String      @id @default(uuid(7)) @db.Uuid
+  schoolId  String      @map("school_id") @db.Uuid
+  branchId  String      @map("branch_id") @db.Uuid
+  domain    SkillDomain
+  name      String      @db.VarChar(60)
+  sortOrder Int         @default(0) @map("sort_order")
+  active    Boolean     @default(true)
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  ratings SkillRating[]
+
+  @@unique([branchId, domain, name])
+  @@index([branchId, active])
+  @@map("skill_items")
+}
+
+// value 1 = lowest; `code` is what the card prints (e.g. "A" or "5").
+model SkillScaleLevel {
+  id       String @id @default(uuid(7)) @db.Uuid
+  schoolId String @map("school_id") @db.Uuid
+  branchId String @map("branch_id") @db.Uuid
+  value    Int
+  code     String @db.VarChar(4)
+  label    String @db.VarChar(40)
+
+  @@unique([branchId, value])
+  @@map("skill_scale_levels")
+}
+
+model SkillRating {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  schoolId    String   @map("school_id") @db.Uuid
+  branchId    String   @map("branch_id") @db.Uuid
+  examId      String   @map("exam_id") @db.Uuid
+  sectionId   String   @map("section_id") @db.Uuid
+  studentId   String   @map("student_id") @db.Uuid
+  itemId      String   @map("item_id") @db.Uuid
+  value       Int
+  updatedById String   @map("updated_by_id") @db.Uuid
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  exam Exam      @relation(fields: [examId], references: [id], onDelete: Cascade)
+  item SkillItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([examId, studentId, itemId])
+  @@index([examId, sectionId])
+  @@index([studentId])
+  @@map("skill_ratings")
+}

@@ -4,6 +4,8 @@ import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.time.AppClock
 import com.schoolapp.core.model.ChildSummary
 import com.schoolapp.core.model.RoleKey
+import com.schoolapp.core.model.meeting.MeetingMode
+import com.schoolapp.core.model.meeting.MeetingRequestInput
 import com.schoolapp.core.testing.FakeAuthRepository
 import com.schoolapp.core.testing.MainDispatcherRule
 import com.schoolapp.core.testing.TestSessions
@@ -72,6 +74,54 @@ class BookMeetingViewModelTest {
         vm.book()
         assertTrue(vm.uiState.value.booked)
         assertEquals(Triple("s3", "c1", "Homework"), repository.bookings.single())
+    }
+
+    @Test
+    fun lists_teachers_even_without_open_slots() {
+        val vm = viewModel()
+        assertEquals(listOf("t1", "t2"), vm.uiState.value.teachers.map { it.userId })
+    }
+
+    @Test
+    fun choosing_a_teacher_shows_only_their_slots() {
+        repository.slots = listOf(slot("s1"), slot("x1").copy(staff = com.schoolapp.core.model.common.PersonRef("t9", "Other")))
+        val vm = viewModel()
+        vm.onTeacherSelected("t1")
+        assertEquals(listOf("s1"), vm.uiState.value.days.flatMap { it.slots }.map { it.id })
+        assertNull(vm.uiState.value.request)
+    }
+
+    @Test
+    fun teacher_without_slots_opens_the_request_form_and_sends_it() {
+        val vm = viewModel()
+        vm.onTeacherSelected("t2")
+        val draft = vm.uiState.value.request
+        assertEquals("2026-10-07", draft?.date)
+        vm.onRequestTime("15:30")
+        vm.onRequestMode(MeetingMode.PHONE)
+        vm.sendRequest()
+        assertTrue(vm.uiState.value.agendaMissing)
+        assertTrue(repository.requests.isEmpty())
+        vm.onAgendaChange("  Urdu homework ")
+        vm.sendRequest()
+        assertTrue(vm.uiState.value.requested)
+        assertEquals(
+            MeetingRequestInput("c1", "t2", "2026-10-07", "15:30", MeetingMode.PHONE, "Urdu homework"),
+            repository.requests.single(),
+        )
+    }
+
+    @Test
+    fun request_errors_are_shown_and_form_kept() {
+        val vm = viewModel()
+        vm.onTeacherSelected("t2")
+        vm.onAgendaChange("Progress")
+        repository.requestError = AppError.Server(409, "CONFLICT", "Already asked")
+        vm.sendRequest()
+        val state = vm.uiState.value
+        assertFalse(state.requested)
+        assertEquals(repository.requestError, state.bookError)
+        assertEquals("t2", state.teacherId)
     }
 
     @Test

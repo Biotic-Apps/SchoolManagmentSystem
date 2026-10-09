@@ -59,7 +59,7 @@ export class SlotsService {
     dto: CreateSlotsDto,
   ): Promise<MeetingSlotDto[]> {
     if (scope.guardian) throw forbidden('Only staff can publish slots');
-    const staff = await this.people.staffOfUser(user.id);
+    const staff = await this.people.workplaceOf(user);
     if (!staff) throw forbidden('Only staff can publish slots');
     const inputs = this.inputs(dto);
     const days = inputs.map((s) =>

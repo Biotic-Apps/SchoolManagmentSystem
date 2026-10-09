@@ -24,6 +24,8 @@ internal fun MeetingDetailRoute(
         onComplete = viewModel::openComplete,
         onCancel = viewModel::openCancel,
         onNoShow = viewModel::askNoShow,
+        onAccept = viewModel::accept,
+        onDecline = viewModel::openDecline,
         modifier = modifier,
     )
     val completeActions = remember(viewModel) {
@@ -45,7 +47,8 @@ internal fun MeetingDetailRoute(
     if (state.cancelOpen) {
         CancelMeetingSheet(
             reason = state.cancelReason,
-            busy = state.busy == MeetingAction.CANCEL,
+            busy = state.busy == MeetingAction.CANCEL || state.busy == MeetingAction.DECLINE,
+            declining = state.declining,
             error = state.actionError,
             onReasonChange = viewModel::onCancelReasonChange,
             onSubmit = viewModel::submitCancel,

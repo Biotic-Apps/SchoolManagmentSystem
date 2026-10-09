@@ -28,6 +28,15 @@ import { PromotionScope } from './promotions/promotion-scope';
 import { PromotionMapper } from './promotions/promotion.mapper';
 import { PromotionsController } from './promotions/promotions.controller';
 import { PromotionsService } from './promotions/promotions.service';
+import { AwardListComposer } from './printing/composers/award-list.composer';
+import { DateSheetComposer } from './printing/composers/date-sheet.composer';
+import { ReportCardsComposer } from './printing/composers/report-cards.composer';
+import { ExamPrintContext } from './printing/exam-print-context';
+import { ExamPrintController } from './printing/exam-print.controller';
+import { ExamPrintProcessor } from './printing/exam-print.processor';
+import { ExamPrintService } from './printing/exam-print.service';
+import { PrintFileWriter } from './printing/print-file.writer';
+import { ReportCardLoader } from './report-cards/report-card.loader';
 import { ReportCardRenderer } from './report-cards/report-card.renderer';
 import { ReportCardsService } from './report-cards/report-cards.service';
 import { ExamReadinessService } from './results/exam-readiness.service';
@@ -39,10 +48,16 @@ import { ResultPublishService } from './results/result-publish.service';
 import { ResultWriter } from './results/result-writer';
 import { ResultsController } from './results/results.controller';
 import { ResultsQueryService } from './results/results-query.service';
+import { StandingsReader } from './results/standings.reader';
 import { ExamAccessService } from './shared/exam-access.service';
 import { LookupService } from './shared/lookup.service';
 import { RosterService } from './shared/roster.service';
 import { StudentAccessService } from './shared/student-access.service';
+import { SkillCardReader } from './skills/skill-card.reader';
+import { SkillConfigService } from './skills/skill-config.service';
+import { SkillRatingsService } from './skills/skill-ratings.service';
+import { SkillSectionAccess } from './skills/skill-section-access';
+import { SkillsController } from './skills/skills.controller';
 
 /** Phase 4 §A: grading, exams, marks, results, report cards, progress, promotion. */
 @Module({
@@ -53,6 +68,8 @@ import { StudentAccessService } from './shared/student-access.service';
     ResultsController,
     ProgressController,
     PromotionsController,
+    SkillsController,
+    ExamPrintController,
   ],
   providers: [
     LookupService,
@@ -93,6 +110,19 @@ import { StudentAccessService } from './shared/student-access.service';
     PromotionConfirmService,
     PromotionApprovalHandler,
     PromotionApplyService,
+    StandingsReader,
+    SkillConfigService,
+    SkillSectionAccess,
+    SkillRatingsService,
+    SkillCardReader,
+    ReportCardLoader,
+    ExamPrintContext,
+    PrintFileWriter,
+    ReportCardsComposer,
+    DateSheetComposer,
+    AwardListComposer,
+    ExamPrintService,
+    ExamPrintProcessor,
   ],
 })
 export class ResultsModule {}

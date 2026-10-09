@@ -26,7 +26,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/** One meeting for staff; SCHEDULED meetings can be completed (notes, summary, follow-ups), marked no-show or cancelled. */
+/**
+ * One meeting for staff; SCHEDULED meetings can be completed (notes, summary, follow-ups), marked no-show or
+ * cancelled, and a parent's REQUESTED meeting accepted (at the suggested time) or declined.
+ */
 @HiltViewModel
 class MeetingDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -91,14 +94,30 @@ class MeetingDetailViewModel @Inject constructor(
         perform(MeetingAction.COMPLETE) { repository.complete(meetingId, form.toInput()) }
     }
 
-    fun openCancel() = _uiState.update { if (!it.canAct) it else it.copy(cancelOpen = true, cancelReason = "", actionError = null, done = null) }
-    fun dismissCancel() = _uiState.update { if (it.busy == MeetingAction.CANCEL) it else it.copy(cancelOpen = false) }
+    fun openCancel() = _uiState.update {
+        if (!it.canAct) it else it.copy(cancelOpen = true, declining = false, cancelReason = "", actionError = null, done = null)
+    }
+
+    fun openDecline() = _uiState.update {
+        if (!it.canAnswer) it else it.copy(cancelOpen = true, declining = true, cancelReason = "", actionError = null, done = null)
+    }
+
+    fun dismissCancel() = _uiState.update {
+        if (it.busy == MeetingAction.CANCEL || it.busy == MeetingAction.DECLINE) it else it.copy(cancelOpen = false)
+    }
+
     fun onCancelReasonChange(value: String) = _uiState.update { it.copy(cancelReason = value) }
 
     fun submitCancel() {
         val reason = _uiState.value.cancelReason.trim().ifEmpty { null }
-        perform(MeetingAction.CANCEL) { repository.cancel(meetingId, reason) }
+        if (_uiState.value.declining) {
+            perform(MeetingAction.DECLINE) { repository.decline(meetingId, reason) }
+        } else {
+            perform(MeetingAction.CANCEL) { repository.cancel(meetingId, reason) }
+        }
     }
+
+    fun accept() = perform(MeetingAction.ACCEPT) { repository.accept(meetingId) }
 
     fun askNoShow() = _uiState.update { if (!it.canAct) it else it.copy(confirmNoShow = true, actionError = null, done = null) }
     fun dismissNoShow() = _uiState.update { it.copy(confirmNoShow = false) }
@@ -109,7 +128,9 @@ class MeetingDetailViewModel @Inject constructor(
     }
 
     private fun perform(action: MeetingAction, call: suspend () -> AppResult<Meeting>) {
-        if (_uiState.value.busy != null || !_uiState.value.canAct) return
+        val answering = action == MeetingAction.ACCEPT || action == MeetingAction.DECLINE
+        val allowed = if (answering) _uiState.value.canAnswer else _uiState.value.canAct
+        if (_uiState.value.busy != null || !allowed) return
         _uiState.update { it.copy(busy = action, actionError = null) }
         viewModelScope.launch {
             when (val result = call()) {
@@ -133,5 +154,6 @@ class MeetingDetailViewModel @Inject constructor(
     private fun MeetingDetailUiState.withMeeting(meeting: Meeting?) = copy(
         meeting = meeting,
         canAct = isStaffViewer && meeting?.status == MeetingStatus.SCHEDULED,
+        canAnswer = isStaffViewer && meeting?.status == MeetingStatus.REQUESTED,
     )
 }

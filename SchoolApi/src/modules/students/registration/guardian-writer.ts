@@ -6,12 +6,20 @@ import type {
   GuardianInputDto,
   PrimaryGuardianInputDto,
 } from '../dto/guardian-input.dto';
+import type { ParentLoginDto } from '../dto/parent-login.dto';
+import { ParentLoginWriter } from './parent-login.writer';
 
 export interface AttachGuardiansInput {
   schoolId: string;
   studentId: string;
   guardians: PrimaryGuardianInputDto[];
   actorId: string;
+}
+
+export interface AttachedGuardians {
+  /** Logins whose access cache must be refreshed after commit. */
+  userIds: string[];
+  parentLogins: ParentLoginDto[];
 }
 
 export function assertOnePrimary(
@@ -27,6 +35,8 @@ export function assertOnePrimary(
 /** Finds guardians by phone within the school (siblings) or creates them. */
 @Injectable()
 export class GuardianWriter {
+  constructor(private readonly logins: ParentLoginWriter) {}
+
   async findOrCreate(
     tx: Prisma.TransactionClient,
     schoolId: string,
@@ -54,13 +64,14 @@ export class GuardianWriter {
     });
   }
 
-  /** Staff-entered guardians are linked VERIFIED at once. Returns their user ids. */
+  /** Staff-entered guardians are linked VERIFIED at once and get a parent login. */
   async attachVerified(
     tx: Prisma.TransactionClient,
     input: AttachGuardiansInput,
-  ): Promise<string[]> {
+  ): Promise<AttachedGuardians> {
     assertOnePrimary(input.guardians);
     const userIds: string[] = [];
+    const parentLogins: ParentLoginDto[] = [];
     for (const entry of input.guardians) {
       const guardian = await this.findOrCreate(
         tx,
@@ -81,8 +92,14 @@ export class GuardianWriter {
           createdById: input.actorId,
         },
       });
-      if (guardian.userId) userIds.push(guardian.userId);
+      const login = await this.logins.ensure(tx, guardian, input.actorId);
+      parentLogins.push(login);
+      const linked = await tx.guardian.findUnique({
+        where: { id: guardian.id },
+        select: { userId: true },
+      });
+      if (linked?.userId) userIds.push(linked.userId);
     }
-    return userIds;
+    return { userIds, parentLogins };
   }
 }

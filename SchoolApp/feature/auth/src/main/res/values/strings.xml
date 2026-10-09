@@ -1,8 +1,8 @@
 <resources>
     <string name="auth_title">eSchool</string>
     <string name="auth_subtitle">Sign in to continue</string>
-    <string name="auth_identifier_label">Email or phone</string>
-    <string name="auth_identifier_hint">Use the email or phone number your school registered</string>
+    <string name="auth_identifier_label">Email, phone or admission number</string>
+    <string name="auth_identifier_hint">Parents can also use their child\'s admission number, e.g. SMS-2026-0002</string>
     <string name="auth_password_label">Password</string>
     <string name="auth_sign_in">Sign in</string>
     <string name="auth_error_required">This field is required</string>
@@ -46,7 +46,7 @@
     <string name="auth_reset_error_short">Use at least 8 characters</string>
     <string name="auth_reset_error_mix">Include at least one letter and one number</string>
     <string name="auth_reset_error_mismatch">Passwords do not match</string>
-    <string name="auth_use_email_code">Parent? Sign in with an email code</string>
+    <string name="auth_use_email_code">Parents: sign in with a code instead</string>
     <string name="auth_email_code_title">Sign in with an email code</string>
     <string name="auth_email_code_message">For parents. Enter the email address your school has on record and we will email you a 6-digit code.</string>
     <string name="auth_email_code_address_label">Email address</string>

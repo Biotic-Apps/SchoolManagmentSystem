@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { RecordStatus } from '../../generated/prisma/client';
 import { AuditService } from '../../core/audit/audit.service';
-import { forbidden, invalid, notFound } from '../../core/common/errors/errors';
+import { invalid, notFound } from '../../core/common/errors/errors';
 import type { PageResult } from '../../core/common/pagination/page-result';
 import { toPageResult } from '../../core/common/pagination/paginate';
 import { toJson } from '../../core/common/prisma-json';
@@ -14,6 +14,7 @@ import type { BranchDto } from './dto/branch.dto';
 import type { BranchQueryDto } from './dto/branch-query.dto';
 import type { CreateBranchDto } from './dto/create-branch.dto';
 import type { UpdateBranchDto } from './dto/update-branch.dto';
+import { assertCanEditBranch } from './edit/branch-edit-policy';
 import { BranchSettingsRepository } from './settings/branch-settings.repository';
 import { withStaffDefaults } from './timings/branch-timings';
 
@@ -78,7 +79,7 @@ export class BranchesService {
     return result;
   }
 
-  /** School managers edit everything; branch principals only contacts/timings/days. */
+  /** School managers edit everything; principals only their own branch's timings/days/contacts. */
   async update(
     user: AuthUser,
     scope: Scope,
@@ -86,15 +87,7 @@ export class BranchesService {
     dto: UpdateBranchDto,
   ): Promise<BranchDto> {
     const before = await this.find(scope, id);
-    scope.assertManageBranch(before);
-    if (
-      !scope.canManageSchool(before.schoolId) &&
-      (dto.name !== undefined || dto.code !== undefined)
-    ) {
-      throw forbidden(
-        'Only school administrators can change branch name or code',
-      );
-    }
+    assertCanEditBranch(scope, before, dto);
     const { timings, ...rest } = dto;
     const row = await this.repository.update(id, {
       ...rest,

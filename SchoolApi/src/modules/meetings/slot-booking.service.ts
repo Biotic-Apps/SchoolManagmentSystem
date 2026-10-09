@@ -113,7 +113,8 @@ export class SlotBookingService {
     dto: CreateMeetingDto,
   ): Promise<string> {
     const placement = await this.placements.read(scope, dto.studentId);
-    if (!(await this.people.staffOfUser(user.id))) {
+    // Principals made by school setup have no staff record but run meetings.
+    if (!(await this.people.workplaceOf(user))) {
       throw forbidden('Only staff can request meetings');
     }
     const link = await this.prisma.studentGuardian.findFirst({

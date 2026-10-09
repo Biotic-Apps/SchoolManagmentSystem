@@ -9,8 +9,10 @@ import com.schoolapp.core.model.meeting.FollowUp
 import com.schoolapp.core.model.meeting.Meeting
 import com.schoolapp.core.model.meeting.MeetingBox
 import com.schoolapp.core.model.meeting.MeetingMode
+import com.schoolapp.core.model.meeting.MeetingRequestInput
 import com.schoolapp.core.model.meeting.MeetingSlot
 import com.schoolapp.core.model.meeting.MeetingStatus
+import com.schoolapp.core.model.meeting.MeetingTeacher
 import com.schoolapp.core.model.meeting.SlotInput
 
 internal fun slot(id: String, date: String = "2026-10-08", start: String = "09:00") =
@@ -29,6 +31,32 @@ internal class FakeMeetingsRepository : MeetingsRepository {
     val bookings = mutableListOf<Triple<String, String, String>>()
     val completions = mutableListOf<CompleteMeetingInput>()
     var upcoming = listOf(meeting())
+    var teachers = listOf(
+        MeetingTeacher("t1", "Ms Sana", listOf("Class teacher"), openSlots = 3),
+        MeetingTeacher("t2", "Mr Imran", listOf("Urdu"), openSlots = 0),
+    )
+    var requestError: AppError? = null
+    val requests = mutableListOf<MeetingRequestInput>()
+    val accepted = mutableListOf<String>()
+    val declined = mutableListOf<Pair<String, String?>>()
+
+    override suspend fun teachers(studentId: String): AppResult<List<MeetingTeacher>> = AppResult.Success(teachers)
+
+    override suspend fun request(input: MeetingRequestInput): AppResult<Meeting> {
+        requestError?.let { return AppResult.Failure(it) }
+        requests += input
+        return AppResult.Success(meeting(status = MeetingStatus.REQUESTED))
+    }
+
+    override suspend fun accept(id: String): AppResult<Meeting> {
+        accepted += id
+        return AppResult.Success(meeting(id, MeetingStatus.SCHEDULED))
+    }
+
+    override suspend fun decline(id: String, reason: String?): AppResult<Meeting> {
+        declined += id to reason
+        return AppResult.Success(meeting(id, MeetingStatus.CANCELLED))
+    }
 
     override suspend fun openSlots(from: String, to: String, staffUserId: String?): AppResult<List<MeetingSlot>> {
         slotRequests += from to to

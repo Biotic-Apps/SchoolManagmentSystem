@@ -53,8 +53,9 @@ class FieldKindTest {
         assertEquals(ContentType.Password, FieldKind.Password.contentType)
         assertEquals(ContentType.NewPassword, FieldKind.NewPassword.contentType)
         assertEquals(ContentType.SmsOtpCode, FieldKind.OneTimeCode.contentType)
-        assertEquals(ContentType.PhoneNumber, FieldKind.Phone.contentType)
-        assertEquals(ContentType.EmailAddress, FieldKind.Email.contentType)
+        // Phone/email fields usually hold someone else's details (guardians, staff), so no hint.
+        assertNull(FieldKind.Phone.contentType)
+        assertNull(FieldKind.Email.contentType)
         assertNull(FieldKind.Sentence.contentType)
     }
 }

@@ -5,6 +5,7 @@ import { FormField } from "@/components/shared/FormField";
 import { SearchPicker } from "@/components/shared/SearchPicker";
 import { CheckboxField } from "@/components/shared/form/CheckboxField";
 import { SelectField } from "@/components/shared/form/SelectField";
+import { ParentSignInDialog } from "@/features/guardians/components/ParentSignInDialog";
 import { GuardianFields } from "@/features/people/components/GuardianFields";
 import { RELATION_OPTIONS } from "@/features/people/options";
 import type { StudentDetail } from "../types";
@@ -16,14 +17,27 @@ const MODE_OPTIONS = [
 ];
 
 export function AddGuardianDialog({ student, onClose }: { student: StudentDetail; onClose: () => void }) {
-  const { form, submit, submitting, formError, mode, picker, pickerError } = useAddGuardianForm(student, onClose);
+  const { form, submit, submitting, formError, mode, picker, pickerError, parentLogin } = useAddGuardianForm(
+    student,
+    onClose,
+  );
+
+  if (parentLogin) {
+    return (
+      <ParentSignInDialog
+        child={{ name: student.name, admissionNo: student.admissionNo }}
+        logins={[parentLogin]}
+        onClose={onClose}
+      />
+    );
+  }
 
   return (
     <FormDialog
       open
       onOpenChange={(open) => !open && onClose()}
       title={`Add guardian for ${student.name}`}
-      description="Links added by staff are verified immediately."
+      description="Links added by staff are verified immediately. A guardian without a parent sign-in gets one, shown once."
       submitLabel="Add guardian"
       submitting={submitting}
       onSubmit={submit}
