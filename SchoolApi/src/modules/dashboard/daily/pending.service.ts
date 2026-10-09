@@ -60,7 +60,6 @@ export class PendingService {
       pendingLeave,
       openComplaints,
       overdueComplaints,
-      delayedTopics,
       todayIncidents,
       earlyLeavesToday,
       staffAbsentToday,
@@ -72,17 +71,6 @@ export class PendingService {
       this.prisma.complaint.count({ where: complaints }),
       this.prisma.complaint.count({
         where: { ...complaints, slaDueAt: { lt: new Date() } },
-      }),
-      this.prisma.syllabusTopic.count({
-        where: {
-          status: { not: 'COMPLETED' },
-          targetDate: { lt: day },
-          plan: {
-            ...inBranches,
-            status: 'APPROVED',
-            session: { status: 'ACTIVE' },
-          },
-        },
       }),
       this.prisma.healthIncident.count({
         where: { ...inBranches, occurredAt: { gte: day, lt: dayEnd } },
@@ -101,7 +89,6 @@ export class PendingService {
       pendingLeave,
       openComplaints,
       overdueComplaints,
-      delayedTopics,
       todayIncidents,
       earlyLeavesToday,
       staffAbsentToday,

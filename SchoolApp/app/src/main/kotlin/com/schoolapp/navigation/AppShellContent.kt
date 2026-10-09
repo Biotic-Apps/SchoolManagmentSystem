@@ -2,7 +2,6 @@ package com.schoolapp.navigation
 
 import androidx.compose.runtime.Composable
 import com.schoolapp.core.model.RoleKey
-import com.schoolapp.core.model.syllabus.SyllabusPlan
 import com.schoolapp.core.navigation.MenuIds
 import com.schoolapp.core.navigation.NotificationPreferencesDestination
 import com.schoolapp.feature.activities.ActivitiesMenuScreen
@@ -58,11 +57,6 @@ import com.schoolapp.feature.students.navigation.SectionRosterDestination
 import com.schoolapp.feature.students.navigation.StudentDetailDestination
 import com.schoolapp.feature.students.navigation.studentsDestinations
 import com.schoolapp.feature.students.sections.MyClassesRoute
-import com.schoolapp.feature.syllabus.coverage.CoverageRoute
-import com.schoolapp.feature.syllabus.navigation.PlanDetailDestination
-import com.schoolapp.feature.syllabus.navigation.syllabusDestinations
-import com.schoolapp.feature.syllabus.parent.ParentSyllabusRoute
-import com.schoolapp.feature.syllabus.plans.MyPlansRoute
 import com.schoolapp.feature.timetable.ParentTimetableScreen
 import com.schoolapp.feature.timetable.TimetableRoute
 import com.schoolapp.feature.timetable.builder.TimetableAdminRoute
@@ -126,18 +120,6 @@ internal val AppShellContent = ShellContent(
                 )
             }
         },
-        MenuIds.SYLLABUS to { shell ->
-            val openPlan = { plan: SyllabusPlan ->
-                shell.open(PlanDetailDestination(plan.id, plan.sectionId, plan.subjectId))
-            }
-            when (shell.activeRole) {
-                RoleKey.TEACHER, RoleKey.HELPER -> MyPlansRoute(onOpenPlan = openPlan)
-                RoleKey.PARENT -> ParentSyllabusRoute(onOpenPlan = openPlan)
-                else -> CoverageRoute(
-                    onReviewSubmitted = { shell.openMenu(MenuIds.APPROVALS) }.takeIf { shell.canOpenMenu(MenuIds.APPROVALS) },
-                )
-            }
-        },
         MenuIds.ADMISSIONS to { shell ->
             AdmissionsRoute(
                 onOpenApplication = { shell.open(ApplicationDetailDestination(it)) },
@@ -180,7 +162,6 @@ internal val AppShellContent = ShellContent(
         organisationDestinations(navController, canBuildTimetable = { true })
         timetableDestinations(navController)
         studentsDestinations(navController)
-        syllabusDestinations(navController)
         admissionsDestinations(navController)
         staffDestinations(navController)
         attendanceDestinations(navController)

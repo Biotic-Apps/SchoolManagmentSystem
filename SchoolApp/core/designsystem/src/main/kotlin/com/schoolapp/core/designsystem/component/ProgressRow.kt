@@ -82,5 +82,5 @@ fun ProgressRow(
 @Preview
 @Composable
 private fun ProgressRowPreview() = PreviewContainer {
-    ProgressRow(title = "Class 5 - A · Mathematics", percent = 42, supporting = "5 of 12 topics · 2 delayed", tone = StatusTone.Warning)
+    ProgressRow(title = "Class 5 - A · Mathematics", percent = 42, supporting = "5 of 12 sheets entered · 2 late", tone = StatusTone.Warning)
 }

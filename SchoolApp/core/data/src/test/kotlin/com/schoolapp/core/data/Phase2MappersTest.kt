@@ -4,19 +4,12 @@ import com.schoolapp.core.data.admissions.toModel
 import com.schoolapp.core.data.approvals.toApprovalDetails
 import com.schoolapp.core.data.auth.toSessionContext
 import com.schoolapp.core.data.people.toModel
-import com.schoolapp.core.data.syllabus.toModel
-import com.schoolapp.core.data.syllabus.toProgressOutcome
 import com.schoolapp.core.data.timetable.toModel
 import com.schoolapp.core.model.admissions.ApplicationStatus
-import com.schoolapp.core.model.syllabus.PlanProgress
-import com.schoolapp.core.model.syllabus.ProgressOutcome
-import com.schoolapp.core.model.syllabus.TopicStatus
 import com.schoolapp.core.network.NetworkJson
 import com.schoolapp.core.network.dto.admissions.ApplicationDto
 import com.schoolapp.core.network.dto.me.MeDto
 import com.schoolapp.core.network.dto.people.StudentDetailDto
-import com.schoolapp.core.network.dto.syllabus.CoverageDto
-import com.schoolapp.core.network.dto.syllabus.SyllabusPlanDto
 import com.schoolapp.core.network.dto.timetable.TeacherSlotDto
 import com.schoolapp.core.network.dto.timetable.TimetableDto
 import kotlinx.serialization.json.JsonObject
@@ -75,36 +68,6 @@ class Phase2MappersTest {
         ).toModel()
         assertEquals(listOf(1, 2), table.periods.map { it.index })
         assertEquals("Hina", table.slots.single().staffName)
-    }
-
-    @Test
-    fun syllabus_plan_orders_chapters_and_rounds_progress() {
-        val plan = decode<SyllabusPlanDto>(
-            """{"id":"p1","subjectName":"Maths","progress":{"total":3,"completed":1,"delayed":1,"percent":33.4},
-               "chapters":[{"id":"c2","title":"B","order":2,"topics":[]},
-                 {"id":"c1","title":"A","order":1,"topics":[{"id":"t1","title":"x","status":"COMPLETED","pendingReview":true}]}]}""",
-        ).toModel()
-        assertEquals(listOf("c1", "c2"), plan.chapters.map { it.id })
-        assertEquals(PlanProgress(3, 1, 1, 33), plan.progress)
-        assertEquals(TopicStatus.COMPLETED, plan.chapters.first().topics.single().status)
-        assertTrue(plan.chapters.first().topics.single().pendingReview)
-    }
-
-    @Test
-    fun coverage_accepts_nested_section_and_subject() {
-        val row = decode<CoverageDto>("""{"section":{"id":"s","name":"A","className":"Class 5"},"subject":{"name":"Maths"},"total":4,"completed":2,"percent":50}""").toModel()
-        assertEquals("Class 5", row.className)
-        assertEquals("Maths", row.subjectName)
-        assertEquals(50, row.progress.percent)
-    }
-
-    @Test
-    fun progress_response_detects_probation_hold() {
-        assertEquals(
-            ProgressOutcome.PendingReview("ap9"),
-            decode<JsonObject>("""{"status":"PENDING_REVIEW","approvalId":"ap9"}""").toProgressOutcome(),
-        )
-        assertEquals(ProgressOutcome.Applied, decode<JsonObject>("""{"id":"t1","status":"COMPLETED"}""").toProgressOutcome())
     }
 
     @Test

@@ -21,7 +21,7 @@ export function ProbationDialog({ staff, branchId, onClose }: ProbationDialogPro
       open
       onOpenChange={(open) => !open && onClose()}
       title="Probation review"
-      description={`While on review, changes ${staff.name} makes (such as syllabus progress) wait for the reviewer's approval.`}
+      description={`While on review, changes ${staff.name} makes (such as attendance, diary entries or marks) wait for the reviewer's approval.`}
       submitLabel="Save"
       submitting={probation.submitting}
       onSubmit={probation.submit}

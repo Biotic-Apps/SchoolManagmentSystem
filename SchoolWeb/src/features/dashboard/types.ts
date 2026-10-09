@@ -34,7 +34,6 @@ export interface PendingCounts {
   pendingLeave: number;
   openComplaints: number;
   overdueComplaints: number;
-  delayedTopics: number;
   todayIncidents: number;
   earlyLeavesToday: number;
   staffAbsentToday: number;

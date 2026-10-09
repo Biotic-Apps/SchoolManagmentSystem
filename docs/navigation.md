@@ -26,7 +26,6 @@ Both clients keep the same catalogue. Ids, labels and permission keys must be id
 | guardians | Parents & Guardians | `guardians.view` | users / FamilyRestroom |
 | staff | Teachers & Helpers | `staff.view` | id-card / Badge |
 | timetable | Timetable | `timetable.view` | clock / Schedule |
-| syllabus | Syllabus & Books | `syllabus.view` | book-open / MenuBook |
 | diary | Daily Diary & Homework | `diary.view` | notebook-pen / EditNote |
 | activities | Activities & Events | `activities.view` | trophy / EmojiEvents |
 | notices | Notices | `notices.view` | megaphone / Campaign |
@@ -51,12 +50,12 @@ Both clients keep the same catalogue. Ids, labels and permission keys must be id
 
 ## Default menus by role (order)
 
-- **SUPER_ADMIN**: dashboard, schools, branches, users, roles, sessions, classes, students, admissions, guardians, staff, timetable, syllabus, diary, activities, notices, attendance, exams, fees, payroll, expenses, inventory, health, pickup, complaints, certificates, approvals, reports, settings, profile
-- **PRINCIPAL**: dashboard, branches (label "Branch & Calendar"), classes, students, admissions, guardians, staff, timetable, attendance, diary, syllabus, activities, notices, exams, fees, payroll, expenses, inventory, health, pickup, messages, meetings, complaints, certificates, approvals, reports, settings (label "Settings"), profile
-- **COORDINATOR / HEAD_TEACHER**: dashboard, classes, students, staff, timetable, attendance, diary, syllabus, activities, exams, progress, health, pickup, messages, meetings, complaints, approvals, my_salary, profile
-- **TEACHER**: dashboard, classes (label "My Classes & Students"), timetable, attendance, diary, syllabus, activities, exams, progress, messages, meetings, complaints, my_salary, profile
+- **SUPER_ADMIN**: dashboard, schools, branches, users, roles, sessions, classes, students, admissions, guardians, staff, timetable, diary, activities, notices, attendance, exams, fees, payroll, expenses, inventory, health, pickup, complaints, certificates, approvals, reports, settings, profile
+- **PRINCIPAL**: dashboard, branches (label "Branch & Calendar"), classes, students, admissions, guardians, staff, timetable, attendance, diary, activities, notices, exams, fees, payroll, expenses, inventory, health, pickup, messages, meetings, complaints, certificates, approvals, reports, settings (label "Settings"), profile
+- **COORDINATOR / HEAD_TEACHER**: dashboard, classes, students, staff, timetable, attendance, diary, activities, exams, progress, health, pickup, messages, meetings, complaints, approvals, my_salary, profile
+- **TEACHER**: dashboard, classes (label "My Classes & Students"), timetable, attendance, diary, activities, exams, progress, messages, meetings, complaints, my_salary, profile
 - **HELPER**: dashboard, classes, attendance, diary, activities, complaints, my_salary, profile
 - **ACCOUNTANT**: dashboard, students, fees, payroll, expenses, inventory, complaints, reports, my_salary, profile
-- **PARENT** (child switcher on top): dashboard (label "Home"), students (label "Child Profile"), diary, attendance, progress (label "Progress & Results"), syllabus, timetable (label "Timetable, Calendar & Activities"), fees (label "Fees, Dues & Receipts"), certificates, messages (label "Messages, Notices & Requests"), meetings, complaints, profile
+- **PARENT** (child switcher on top): dashboard (label "Home"), students (label "Child Profile"), diary, attendance, progress (label "Progress & Results"), timetable (label "Timetable, Calendar & Activities"), fees (label "Fees, Dues & Receipts"), certificates, messages (label "Messages, Notices & Requests"), meetings, complaints, profile
 
 Label overrides per role live next to the catalogue in each client (`labelFor(role, id)`).

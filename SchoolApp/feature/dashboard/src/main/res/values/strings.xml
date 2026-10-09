@@ -29,7 +29,6 @@
     <string name="dashboard_pending_leave">Leave requests</string>
     <string name="dashboard_pending_open_complaints">Open complaints</string>
     <string name="dashboard_pending_overdue_complaints">Overdue complaints</string>
-    <string name="dashboard_pending_delayed_topics">Delayed topics</string>
     <string name="dashboard_pending_incidents">Health incidents today</string>
     <string name="dashboard_pending_early_leaves">Early leaves today</string>
     <string name="dashboard_pending_staff_absent">Staff absent today</string>

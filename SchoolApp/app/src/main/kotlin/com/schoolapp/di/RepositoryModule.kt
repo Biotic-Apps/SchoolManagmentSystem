@@ -34,8 +34,6 @@ import com.schoolapp.core.data.timetable.BellScheduleRepository
 import com.schoolapp.core.data.timetable.DefaultBellScheduleRepository
 import com.schoolapp.core.data.timetable.TimetableRepository
 import com.schoolapp.core.data.timetable.DefaultTimetableRepository
-import com.schoolapp.core.data.syllabus.SyllabusRepository
-import com.schoolapp.core.data.syllabus.DefaultSyllabusRepository
 import com.schoolapp.core.data.admissions.AdmissionsRepository
 import com.schoolapp.core.data.admissions.DefaultAdmissionsRepository
 import com.schoolapp.core.data.attendance.AttendanceRepository
@@ -156,9 +154,6 @@ interface RepositoryModule {
 
     @Binds
     fun bindStudentCalendarRepository(impl: DefaultStudentCalendarRepository): StudentCalendarRepository
-
-    @Binds
-    fun bindSyllabusRepository(impl: DefaultSyllabusRepository): SyllabusRepository
 
     @Binds
     fun bindAdmissionsRepository(impl: DefaultAdmissionsRepository): AdmissionsRepository

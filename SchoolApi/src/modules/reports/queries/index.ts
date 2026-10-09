@@ -9,13 +9,11 @@ import { inventoryStock } from './inventory-stock';
 import { payrollSummary } from './payroll-summary';
 import type { ReportQuery } from './report-query';
 import { resultsAnalysis } from './results-analysis';
-import { syllabusCoverage } from './syllabus-coverage';
 
 /** Report key → query (keys match `REPORTS` in report-catalog.ts). */
 export const REPORT_QUERIES: Record<string, ReportQuery> = {
   'attendance.monthly': attendanceMonthly,
   'attendance.staff': attendanceStaff,
-  'syllabus.coverage': syllabusCoverage,
   'results.analysis': resultsAnalysis,
   'fees.collection': feesCollection,
   'fees.aging': feesAging,

@@ -42,7 +42,6 @@ import { SchoolsModule } from './modules/schools/schools.module';
 import { SchoolSetupModule } from './modules/school-setup/school-setup.module';
 import { StaffModule } from './modules/staff/staff.module';
 import { StudentsModule } from './modules/students/students.module';
-import { SyllabusModule } from './modules/syllabus/syllabus.module';
 import { TimetableModule } from './modules/timetable/timetable.module';
 import { UsersModule } from './modules/users/users.module';
 import { TasksModule } from './modules/tasks/tasks.module';
@@ -97,7 +96,6 @@ import { ImportsModule } from './modules/imports/imports.module';
     AdmissionsModule,
     StaffModule,
     TimetableModule,
-    SyllabusModule,
     SchoolDayModule,
     AttendanceModule,
     StaffAttendanceModule,

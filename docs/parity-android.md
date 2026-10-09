@@ -30,7 +30,6 @@ Snapshot **2026-10-08** (after `9fb30fe`). Static comparison of the web panel (`
 | guardians | list, edit, link/unlink child, link requests | list + link-request tab (approve via Approvals) | ⚠️ no edit, link or unlink |
 | staff | add, edit, status, assign classes, sign-in create/reset, probation, assignments tab, workload | `feature/staff` add, edit, status, assign classes, sign-in, workload | ⚠️ no probation, no generic assignments tab |
 | timetable | builder, bell schedule, substitutions/overrides, teacher week | `TimetableAdminRoute` + Substitutions tab (list by date; assign/remove with `timetable.edit`) | ⏳ builder and bell; ✅ substitutions |
-| syllabus | plan editor, book-list editor + history, coverage, review | `CoverageRoute` (review via Approvals) | ⚠️ no plan or book-list authoring |
 | diary | missing list, moderation, return | `SupervisorDiaryRoute` | ✅ |
 | activities | add/edit, approve/reject, start/complete/cancel, participants, consent tracker | list, propose, approve/reject, consent summary | ⚠️ no lifecycle, participants edit or edit |
 | notices | compose (audience), publish, pin, expiry, edit/archive, read receipts | feed + compose + publish | ⚠️ no edit, archive or read receipts |
@@ -66,7 +65,6 @@ Same as SUPER_ADMIN for shared pages, scoped to the principal's branch. Rows tha
 | timetable | builder, publish/discard, bell schedule, substitutions | Substitutions tab | ⏳ builder and bell; ✅ substitutions |
 | attendance | branch day, corrections, staff attendance, leave approvals | classes + staff tabs, leave review | ✅ |
 | diary | moderation/return | `SupervisorDiaryRoute` | ✅ |
-| syllabus | coverage, review, plan and book-list authoring | coverage | ⚠️ |
 | activities | add, approve/reject, lifecycle, participants | propose, approve/reject, consents | ⚠️ |
 | notices | compose, publish, edit/archive, read receipts | compose + publish | ⚠️ |
 | exams | completeness, accept/return, proxy marks, publish, promotions, report cards | completeness, review, marks entry when `canEdit` | ⚠️ |
@@ -91,7 +89,6 @@ Same as SUPER_ADMIN for shared pages, scoped to the principal's branch. Rows tha
 | timetable | view; **draft branch-wide** (new builder role rule); substitutions | Substitutions tab | ⏳ drafting; ✅ substitutions |
 | attendance | branch day, proxy register, corrections, leave review | `BranchTodayRoute`, register, leave review | ✅ |
 | diary | missing, moderation, return | yes | ✅ |
-| syllabus | coverage, review | coverage + Approvals link | ✅ |
 | activities | propose, view | list, propose, detail | ✅ |
 | exams | completeness, accept/return, class results | completeness + review + Class results tab (`exams.view`) | ✅ |
 | progress | notes, homework ticks | Notes + Homework tabs | ✅ |
@@ -113,7 +110,6 @@ Same as SUPER_ADMIN for shared pages, scoped to the principal's branch. Rows tha
 | timetable | my week, section view; **class teacher drafts own section** | week/day view (`TimetableRoute`) | ⏳ drafting (needs builder); view ✅ |
 | attendance | mark, mark all, draft, submit, correction request, health alerts, student leave review | `MarkHomeRoute`, `RegisterRoute` (offline), `LeaveReviewRoute` | ✅ |
 | diary | write, attachments, draft, publish | `TeacherDiaryRoute`, `DiaryEditorRoute` (offline) | ✅ |
-| syllabus | my plans, topic progress, plan authoring (`PlanEditorDialog`) | `MyPlansRoute`, topic sheet | ⚠️ no plan authoring |
 | activities | propose, view | yes | ✅ |
 | exams | my sheets, marks entry, absent, submit, class results | `MySheetsRoute`, `MarksEntryRoute` (offline), Class results tab | ✅ |
 | progress | notes, homework ticks | yes | ✅ |
@@ -167,7 +163,6 @@ Same as SUPER_ADMIN for shared pages, scoped to the principal's branch. Rows tha
 | diary | child feed | `ParentDiaryRoute` | ✅ |
 | attendance | month calendar, leave request | `ChildAttendanceRoute` + `LeaveRequestSheet` | ✅ |
 | progress ("Progress & Results") | results, report card, feedback, homework | `ParentProgressScreen` | ✅ |
-| syllabus | plans, book lists | `ParentSyllabusRoute` | ✅ |
 | timetable ("Timetable, Calendar & Activities") | week, calendar, activities + consent | `ParentTimetableScreen` 3 tabs | ✅ |
 | fees ("Fees, Dues & Receipts") | summary, invoices, receipt, pay online, upload proof, proof status | `ParentFeesRoute` (+ submitted proofs with status and rejection reason), invoice detail, `ProofUploadRoute` | ✅ |
 | certificates | request, status, download | `ParentCertificatesRoute` | ⚠️ (serial and rejection reason now shown) |
@@ -245,7 +240,6 @@ Non-bugs that were checked: every path in `app_eps` matches the API. `classes/{i
 | 10 | Payroll processing: create/calculate/review/close run, payments, adjustments, structures | `payroll/*` | `feature/payroll` | Run actions bar mirroring `RunActionsBar` |
 | 11 | Activities lifecycle (start/complete/cancel), edit, participants | `activities/ActivityDetailActions`, `ParticipantsEditor` | `feature/activities` detail | Add action row + participants sheet |
 | 12 | Notices edit/archive + read receipts | `notices/NoticesManagePage`, `NoticeReadsDialog` | `feature/notices` | Overflow menu on own notices; read counts list |
-| 13 | Syllabus plan + book-list authoring | `syllabus/PlanEditorDialog`, `BookListEditorDialog` | `feature/syllabus` | Chapter/topic editor list |
 | 14 | Health profile edit + change-request review | `health/HealthProfileDialog`, `ChangeRequestsTab` | `feature/health` | Review list reusing `ChangeRequestEditor` diff |
 | 15 | Staff-side authorised pickup persons (add/revoke) | `pickup/PickupPersonsTab`, `AddPickupPersonDialog` | `feature/pickup` | Reuse parent `AddPersonSheet` from student search |
 | 16 | Certificate issue/reissue + PDF download | `certificates/CertificateActions` | `feature/certificates/review` | Issue action → job → open `fileUrl` |
@@ -269,4 +263,4 @@ Non-bugs that were checked: every path in `app_eps` matches the API. `classes/{i
 | 10 | ✅ done 2026-10-08: Exam term label (B8) | `exams/ExamHeader` | `feature/exams` | Resolve `termId` |
 
 ## Android-only (unchanged)
-Offline outbox (registers, diary, mark sheets, cash payments, syllabus progress), push notifications (FCM via `DeviceRegistrar`), `FLAG_SECURE` on payroll, my salary and health screens, release certificate pinning, app lock (biometric/device credential), pull-to-refresh, branded splash/launcher icon.
+Offline outbox (registers, diary, mark sheets, cash payments), push notifications (FCM via `DeviceRegistrar`), `FLAG_SECURE` on payroll, my salary and health screens, release certificate pinning, app lock (biometric/device credential), pull-to-refresh, branded splash/launcher icon.

@@ -13,7 +13,6 @@ object MenuGroups {
         MenuIds.TIMETABLE to MenuGroup.TEACHING,
         MenuIds.ATTENDANCE to MenuGroup.TEACHING,
         MenuIds.DIARY to MenuGroup.TEACHING,
-        MenuIds.SYLLABUS to MenuGroup.TEACHING,
         MenuIds.EXAMS to MenuGroup.TEACHING,
         MenuIds.PROGRESS to MenuGroup.TEACHING,
         MenuIds.ACTIVITIES to MenuGroup.TEACHING,

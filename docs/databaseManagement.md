@@ -54,8 +54,8 @@ PostgreSQL 16, accessed only through Prisma in `SchoolApi`. Android Room is a ca
 
 ### 2.5 Academics
 - `timetables` (section_id, session_id, status, version), `timetable_slots` (day, period, subject_id, staff_id, room_id), `timetable_overrides`
-- `book_lists` + `book_list_revisions` + `book_list_items`
-- `syllabus_plans` (section/subject/session, status, revision), `syllabus_topics` (chapter, topic, target_date, status, completed_at)
+- `book_lists` + `book_list_revisions` + `book_list_items` (retired feature, kept for data)
+- `syllabus_plans` (section/subject/session, status, revision), `syllabus_topics` (chapter, topic, target_date, status, completed_at) (retired feature, kept for data)
 
 ### 2.6 Daily operations
 - `attendance_registers` (section_id, date, status DRAFT/SUBMITTED/LOCKED, submitted_by_id, on_behalf_of_staff_id, version, client_request_id) unique (section_id, date)

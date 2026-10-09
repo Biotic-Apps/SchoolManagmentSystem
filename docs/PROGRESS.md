@@ -1,5 +1,7 @@
 # Progress Tracker
 
+> Retired 2026-10-10: Syllabus & Books, Live classes — removed by owner decision. Menus, screens, API endpoints, permissions and demo seed are gone (web, Android, API); live-class tables were dropped (migration `20261010120000_retire_live_classes_syllabus`), syllabus/book-list tables are kept with their data.
+
 Legend: `[x]` done (meets Definition of Done) · `[~]` in progress · `[ ]` remaining
 
 Definition of Done per module: schema + migration · API with permission/scope guard · audit · approvals hook · jobs/notifications · seed · tests · web screens · Android screens · docs updated.
@@ -34,7 +36,7 @@ Definition of Done per module: schema + migration · API with permission/scope g
 - [x] Guardians + verified child links + child switcher
 - [x] Staff (teachers, helpers, coordinators, head teachers, probation, substitutes)
 - [x] Timetable
-- [x] Syllabus & books
+- [x] ~~Syllabus & books~~ (retired 2026-10-10)
 
 ## Phase 3 — Daily operations
 - [x] Student attendance (offline Android)

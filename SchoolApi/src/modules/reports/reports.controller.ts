@@ -31,7 +31,6 @@ const REPORT_ACCESS: PermissionKey[] = [
   'expenses.view',
   'inventory.view',
   'attendance.view',
-  'syllabus.view',
 ];
 
 @ApiTags('reports')

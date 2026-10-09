@@ -60,7 +60,6 @@ Holds every permission (`PERMISSION_CATALOGUE`).
 | Parents & Guardians | Branch picker; Guardians (detail: edit, create parent login with one-time password, link child, unlink, history); Link requests (approve / reject) | ✔ | List + link-request tab; approve via Approvals | Android (subset) | Edit/unlink is web |
 | Teachers & Helpers | Add staff; list. Detail `/staff/[id]`: edit details, change status, probation; tabs Profile, Assignments (add/end), Workload, Documents (upload, verify) | ✔ | List + read-only detail | Android (subset) | HR setup |
 | Timetable | Section timetable (edit cells, save draft, conflict check, publish); Bell schedule (edit periods); Substitutions (add/remove); Teacher week | ✔ | Read-only week per section | Android (subset) | Needs a grid editor |
-| Syllabus & Books | Book lists (edit, submit, approve/return, history); Syllabus plans (edit chapters/topics, submit, approve/return, topic progress); Coverage | ✔ | Coverage read-only; decisions in Approvals | Android (subset) | Plan authoring is web |
 | Daily Diary & Homework | Diary (add/edit/publish entries per section & day); Moderation (publish / return); Missing diaries | ✔ | `SupervisorDiaryRoute` (missing, return with comment) | Same | |
 | Activities & Events | List / Calendar view, filters; propose; detail: edit (proposed), approve/reject, start, complete, cancel; participants & results; parent consent tracker | ✔ | List, propose, detail approve/reject, consent summary | Android (subset) | Lifecycle and participant editing are web |
 | Notices | Compose with audience builder; save draft; publish; edit draft; read receipts | ✔ | Feed + compose (`notices.add`) | Android (subset) | Read receipts and edit/archive are web-only by design |
@@ -97,7 +96,6 @@ Branch-scoped. No `settings.edit`, no `fees.add/edit`, no `payroll.add/edit`, no
 | Timetable | Section timetable edit + publish; bell schedule; substitutions; teacher week | ✔ | Read-only week per section | Android (subset) | |
 | Attendance & Leave | Register (proxy: mark, submit, correction); Branch summary; Staff attendance; Leave approve/reject | ✔ | Branch day; leave via Approvals; staff attendance being added | Android (see parity-android.md) | Gap 3. `teacherwork.proxy` |
 | Daily Diary & Homework | Add/edit/publish; Moderation (publish/return); Missing | ✔ | Moderation / return | Same | |
-| Syllabus & Books | Edit book lists/plans, approve/return, topic progress, coverage | ✔ | Coverage + Approvals | Android (subset) | |
 | Activities & Events | Propose; approve/reject; start/complete/cancel; participants & results; consent tracker | ✔ | List, propose, approve/reject, consent summary | Android (subset) | |
 | Notices | Compose, draft, publish, edit draft, read receipts | ✔ | Feed + compose | Android (subset) | |
 | Exams & Results | Create/edit exams; grading schemes add/edit/approve; promotions (suggest, override, confirm, apply); open/close marks; mark sheets (proxy entry, accept/return); compute; send for approval; publish; report cards | ✔ | Completeness, review, marks entry when `canEdit` | Android (subset) | Publish / promotions are web |
@@ -120,7 +118,7 @@ Branch-scoped. No `settings.edit`, no `fees.add/edit`, no `payroll.add/edit`, no
 
 ## COORDINATOR / HEAD_TEACHER
 
-Same default permissions (SUPERVISOR set). View-only on classes, students, staff, timetable, health, certificates; full diary/attendance/syllabus/exams review; `teacherwork.proxy`.
+Same default permissions (SUPERVISOR set). View-only on classes, students, staff, timetable, health, certificates; full diary/attendance/exams review; `teacherwork.proxy`.
 
 | Menu entry | Key actions (web) | Web | Android | Status | Notes |
 |---|---|---|---|---|---|
@@ -131,7 +129,6 @@ Same default permissions (SUPERVISOR set). View-only on classes, students, staff
 | Timetable | Read-only admin view (section timetable, bell schedule, substitutions, teacher week) | ✔ | Read-only view | Android (subset) | Substitution editing is web |
 | Attendance & Leave | Register (proxy mark/submit, correction); Branch summary; Staff attendance; Leave approve/reject | ✔ | `BranchTodayRoute`, proxy register from the branch day | Android (subset) | |
 | Daily Diary & Homework | Add/edit/publish; Moderation; Missing | ✔ | Missing, return | Same | |
-| Syllabus & Books | Edit, submit, approve/return, topic progress, coverage | ✔ | Coverage + Approvals link | Same | |
 | Activities & Events | Propose; start/complete/cancel; participants & results | ✔ | List, propose, detail | Same | No approve (`activities.approve` not held) |
 | Exams & Results | Create/edit exams; grading add/edit/approve; Promotions tab: suggest only; open/close marks; mark sheets (enter, submit, accept/return); compute; send for approval; results | ✔ | Completeness, accept/return | Android (subset) | Exam setup and grading are web (parity-android.md rationale). No publish; confirm/apply promotions are PRINCIPAL/SUPER_ADMIN only |
 | Student Progress | Feedback notes (add); Homework completion (mark, mark all done, save) | ✔ | Notes + Homework tabs | Same | |
@@ -155,7 +152,6 @@ Same default permissions (SUPERVISOR set). View-only on classes, students, staff
 | Timetable | "My week" view with week navigation | ✔ | My week | Same | |
 | Attendance & Leave | Register (mark, mark all present, save draft, submit, request correction); Leave (decide student leave as class teacher) | ✔ | `MarkHomeRoute`, `RegisterRoute` (offline draft + outbox), `LeaveReviewRoute` | Same | Offline register is Android-only |
 | Daily Diary & Homework | Add/edit/publish entries | ✔ | `TeacherDiaryRoute`, `DiaryEditorRoute` (offline drafts) | Same | Probation teachers' actions go to approval (API) |
-| Syllabus & Books | Edit book lists and plans, submit, topic progress, coverage | ✔ | `MyPlansRoute`, topic progress (offline queue) | Same | Plan authoring is web by design |
 | Activities & Events | Propose; start/complete/cancel; participants & results | ✔ | List, propose, detail | Same | |
 | Exams & Results | Exams list (create/edit shown by `exams.add/edit`); grading add/edit; open/close marks; mark sheets (enter, submit) | ✔ | `MySheetsRoute`, `MarksEntryRoute` (offline queue) | Android (subset) | Exam setup is web. API scope limits to assigned sections |
 | Student Progress | Feedback notes (add); Homework completion | ✔ | Notes + Homework tabs | Same | |
@@ -210,7 +206,6 @@ Every screen is scoped to the child picked in the top-bar child switcher. With n
 | Daily Diary & Homework | Published diary, week by week | ✔ | `ParentDiaryRoute` | Same | |
 | Attendance & Leave | Child attendance; leave requests (apply) | ✔ | `ChildAttendanceRoute` + `LeaveRequestSheet` | Same | |
 | Progress & Results | Results with trend + report card PDF; teacher feedback; homework (last 30 days) | ✔ | `ParentProgressScreen`: Results & feedback / Homework (`ChildHomeworkRoute`, last 30 days) | Same | Label override |
-| Syllabus & Books | Child syllabus plans with progress; book list | ✔ | `ParentSyllabusRoute` | Same | |
 | Timetable, Calendar & Activities | Week timetable; upcoming school calendar (holidays/events, next 90 days); activities with consent (grant / decline) | ✔ | `ParentTimetableScreen` tabs: Timetable / Calendar (`SchoolCalendarRoute`) / Activities (consent via detail) | Same | Calendar from `GET /students/:studentId/calendar` (`timetable.view`). Label override |
 | Fees, Dues & Receipts | Invoices; invoice drawer (challan PDF, payments with receipt PDF); upload payment proof; proofs list | ✔ | `ParentFeesRoute`, invoice detail, `ProofUploadRoute` | Same | Label override. No online payment (gateway off) |
 | Certificates | Request for the child; download issued PDF | ✔ | `ParentCertificatesRoute` | Same | |
@@ -226,7 +221,7 @@ Custom roles: both clients build the menu from every catalogue `.view` the role 
 ## Web notes
 
 ### Web-only by design
-Decided in parity-android.md "Web-only by design (rationale)": org setup (schools, users, roles, sessions/classes setup, timetable editor, staff HR, student registration), Settings & Backups, Data import, 2FA setup (QR), reports and certificate PDFs, fee/payroll setup and processing, expenses, inventory, exam setup, admissions data entry, syllabus authoring, activity lifecycle. Idle sign-out is web-only per phase5-contract Deviations (Android sessions are not idle-limited).
+Decided in parity-android.md "Web-only by design (rationale)": org setup (schools, users, roles, sessions/classes setup, timetable editor, staff HR, student registration), Settings & Backups, Data import, 2FA setup (QR), reports and certificate PDFs, fee/payroll setup and processing, expenses, inventory, exam setup, admissions data entry, activity lifecycle. Idle sign-out is web-only per phase5-contract Deviations (Android sessions are not idle-limited).
 
 ### Web-side gaps and inconsistencies found
 1. **PRINCIPAL `/settings`** — Fixed: the API grants PRINCIPAL `settings.view` + `settings.import`, so the read-only settings and Data import open.

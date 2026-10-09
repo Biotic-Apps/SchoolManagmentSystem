@@ -23,7 +23,6 @@ const TO = param("to", "date", "To");
 export const DEFAULT_PARAMS: Record<string, ParamSpec[]> = {
   "attendance.monthly": [BRANCH, MONTH, param("sectionId", "section", "Section", false)],
   "attendance.staff": [BRANCH, MONTH],
-  "syllabus.coverage": [BRANCH, param("sessionId", "session", "Session")],
   "results.analysis": [BRANCH, param("examId", "exam", "Exam")],
   "fees.collection": [BRANCH, FROM, TO],
   "fees.aging": [BRANCH],
@@ -41,10 +40,6 @@ export const REPORT_TEXT: Record<string, { name: string; description: string }> 
     description: "Day-by-day attendance for each student over a month.",
   },
   "attendance.staff": { name: "Staff attendance", description: "Monthly attendance, late arrivals and leave for staff." },
-  "syllabus.coverage": {
-    name: "Syllabus coverage",
-    description: "Topics completed and delayed per section and subject.",
-  },
   "results.analysis": { name: "Result analysis", description: "Pass rates, averages and grade spread for an exam." },
   "fees.collection": { name: "Fee collection", description: "Payments received in a date range, by method and fee head." },
   "fees.aging": { name: "Dues aging", description: "Outstanding balances grouped by how long they are overdue." },

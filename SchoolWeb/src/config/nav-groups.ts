@@ -14,7 +14,7 @@ const GROUPS: { id: string; label: string | null; ids: NavId[] }[] = [
   {
     id: "academics",
     label: "Academics",
-    ids: ["classes", "timetable", "attendance", "syllabus", "diary", "exams", "progress", "activities"],
+    ids: ["classes", "timetable", "attendance", "diary", "exams", "progress", "activities"],
   },
   { id: "communication", label: "Communication", ids: ["notices", "messages", "meetings", "complaints"] },
   { id: "finance", label: "Finance", ids: ["fees", "payroll", "expenses", "inventory", "my_salary"] },

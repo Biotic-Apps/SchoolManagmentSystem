@@ -153,7 +153,9 @@ Conflict = { type: "TEACHER_DOUBLE_BOOKED"|"ROOM_DOUBLE_BOOKED"|"TEACHER_NOT_ASS
 TeacherSlot = { date, day, periodIndex, startTime, endTime, section: {id,name,className}, subject: {id,name}, room, isSubstitute }
 ```
 
-## 7. Syllabus and books
+## 7. Syllabus and books (retired 2026-10-10)
+
+> Retired by owner decision: these endpoints were removed from the API and all clients. Kept here for history only.
 | Method | Path | Permission |
 |---|---|---|
 | GET | `/book-lists?branchId=&sessionId=&classId=` | `syllabus.view` (parent: child's class, APPROVED only) |

@@ -55,8 +55,8 @@ Short, hands-on sessions on the real school data, in the school. Each person sig
 |---|---|---|
 | Principal | 2 h | Dashboard, approvals inbox, attendance/diary review, fee monitoring, notices, complaints, reports, staff and users, Settings (read-only parts), 2FA |
 | Office / admin | 2 h | Admissions, students and guardians, contact-change approvals, data import, certificates, pickup, parent help desk (password reset, phone sign-in) |
-| Coordinator / Head teacher | 1.5 h | Sections and timetable, proxy attendance/diary, syllabus review, exams and progress, approvals |
-| Teacher | 1 h (+ 30 min on the Android app) | Mark attendance, diary and homework, syllabus progress, marks entry, messages, meetings, own salary/leave |
+| Coordinator / Head teacher | 1.5 h | Sections and timetable, proxy attendance/diary, exams and progress, approvals |
+| Teacher | 1 h (+ 30 min on the Android app) | Mark attendance, diary and homework, marks entry, messages, meetings, own salary/leave |
 | Helper | 30 min | Draft attendance/diary, activities, own leave |
 | Accountant | 2 h | Invoices, recording payments, verifying payment proofs, receipts, reversals with reason, expenses, payroll, inventory, reports |
 | Parents | 10-min demo at a parent meeting + one-page handout | Install app / open the web link, sign in with email code, child switcher, diary, attendance, fees and receipts, messages |
@@ -74,28 +74,28 @@ app. Anything that fails goes into the feedback log (section 8) with a screensho
 - [ ] Profile & Security: change password, see and revoke sessions; 2FA where required.
 - [ ] Forgot password → email/SMS arrives → reset works.
 
-**Super Admin** — menu: Dashboard, Schools, Branches, Principals & Admin Users, Roles & Permissions, Sessions & Calendar, Classes, Students, Admissions, Parents & Guardians, Teachers & Helpers, Timetable, Syllabus, Diary, Activities, Notices, Attendance, Exams, Fees, Payroll, Expenses, Inventory, Health, Pickup, Complaints, Certificates, Approvals, Reports, Settings & Backups, Profile
+**Super Admin** — menu: Dashboard, Schools, Branches, Principals & Admin Users, Roles & Permissions, Sessions & Calendar, Classes, Students, Admissions, Parents & Guardians, Teachers & Helpers, Timetable, Diary, Activities, Notices, Attendance, Exams, Fees, Payroll, Expenses, Inventory, Health, Pickup, Complaints, Certificates, Approvals, Reports, Settings & Backups, Profile
 - [ ] Create a user, assign a role, disable it (sessions end at once), unlock a locked account.
 - [ ] Custom role in Roles & Permissions shows only its menus.
 - [ ] Settings & Backups: Run backup → DONE; Verify restore → passed; Support → health all green; Send test message (email + SMS) arrives.
 - [ ] Audit: filter by user and date.
 
-**Principal** — menu: Dashboard, Branch & Calendar, Classes, Students, Admissions, Guardians, Staff, Timetable, Attendance, Diary, Syllabus, Activities, Notices, Exams, Fees, Payroll, Expenses, Inventory, Health, Pickup, Messages, Meetings, Complaints, Certificates, Approvals, Reports, Settings, Profile
+**Principal** — menu: Dashboard, Branch & Calendar, Classes, Students, Admissions, Guardians, Staff, Timetable, Attendance, Diary, Activities, Notices, Exams, Fees, Payroll, Expenses, Inventory, Health, Pickup, Messages, Meetings, Complaints, Certificates, Approvals, Reports, Settings, Profile
 - [ ] Approve an attendance correction, a leave request, a concession within the limit (above the limit escalates).
 - [ ] Publish a notice to one class; parents of that class see it, others do not.
 - [ ] Publish exam results; parents see only published results.
 - [ ] Data import (students) with one deliberate error row → error shown → fix → commit.
 - [ ] Issue a certificate; verify it via its public link/QR.
 
-**Coordinator / Head teacher** — menu: Dashboard, Classes, Students, Staff, Timetable, Attendance, Diary, Syllabus, Activities, Exams, Progress, Health, Pickup, Messages, Meetings, Complaints, Approvals, My Attendance/Leave/Salary, Profile
+**Coordinator / Head teacher** — menu: Dashboard, Classes, Students, Staff, Timetable, Attendance, Diary, Activities, Exams, Progress, Health, Pickup, Messages, Meetings, Complaints, Approvals, My Attendance/Leave/Salary, Profile
 - [ ] Proxy attendance for an absent teacher (audit shows both names).
 - [ ] Review a probation teacher's diary entry (approve/return).
 
-**Teacher** — menu: Dashboard, My Classes & Students, Timetable, Attendance, Diary, Syllabus, Activities, Exams, Progress, Messages, Meetings, Complaints, My Attendance/Leave/Salary, Profile
+**Teacher** — menu: Dashboard, My Classes & Students, Timetable, Attendance, Diary, Activities, Exams, Progress, Messages, Meetings, Complaints, My Attendance/Leave/Salary, Profile
 - [ ] Mark attendance for own section (W + A); on Android also with no internet → syncs when back online.
 - [ ] Cannot open another section's students or another teacher's payslip.
 - [ ] Post diary/homework with an attachment; parent sees it.
-- [ ] Enter marks for an assigned subject; update syllabus progress.
+- [ ] Enter marks for an assigned subject.
 - [ ] Reply to a parent message; publish meeting slots.
 
 **Helper** — menu: Dashboard, Classes, Attendance, Diary, Activities, Complaints, My Attendance/Leave/Salary, Profile
@@ -109,7 +109,7 @@ app. Anything that fails goes into the feedback log (section 8) with a screensho
 - [ ] Run payroll for the month; payslips visible to each staff member only.
 - [ ] Export a fee report (XLSX/PDF).
 
-**Parent** — menu: Home, Child Profile, Diary, Attendance, Progress & Results, Syllabus, Timetable/Calendar/Activities, Fees/Dues/Receipts, Certificates, Messages/Notices/Requests, Meetings, Complaints, Profile
+**Parent** — menu: Home, Child Profile, Diary, Attendance, Progress & Results, Timetable/Calendar/Activities, Fees/Dues/Receipts, Certificates, Messages/Notices/Requests, Meetings, Complaints, Profile
 - [ ] Sign in with email code (W + A); wrong code is refused; email/password sign-in still works.
 - [ ] Child switcher shows only own children; each screen follows the selected child.
 - [ ] See today's attendance and diary, fee dues, download a receipt, upload a payment proof.

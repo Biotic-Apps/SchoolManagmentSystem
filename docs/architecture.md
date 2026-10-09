@@ -78,7 +78,7 @@ src/
 └─ modules/
    ├─ schools/  branches/  users/  roles/  sessions/  academics/ (classes, sections, subjects, rooms)
    ├─ admissions/  students/  guardians/  documents/  staff/
-   ├─ timetable/  syllabus/  attendance/  leave/  diary/
+   ├─ timetable/  attendance/  leave/  diary/
    ├─ activities/  notices/  messaging/  complaints/  meetings/  health/  pickup/
    ├─ exams/  results/  promotion/  certificates/
    ├─ fees/  payments/  payroll/  expenses/  inventory/
@@ -143,7 +143,7 @@ A **role assignment** = `user + role + scopeType + scopeId + validFrom/validUnti
 `ScopeService.resolve(user, permission)` returns the set of branch/section/student IDs the user may touch; repositories always apply it. Temporary assignments (substitutes) expire automatically via `validUntil`.
 
 ### 6.4 Special working modes
-- **Supervisor proxy ("act as teacher")** — Principal, Coordinator and Head Teacher hold `teacherwork.proxy` for their scope. They can mark attendance, write diary, enter marks, update syllabus progress for any section in scope. Records store `performedById` and `onBehalfOfStaffId`. This supports schools where teachers are not allowed phones.
+- **Supervisor proxy ("act as teacher")** — Principal, Coordinator and Head Teacher hold `teacherwork.proxy` for their scope. They can mark attendance, write diary, enter marks for any section in scope. Records store `performedById` and `onBehalfOfStaffId`. This supports schools where teachers are not allowed phones.
 - **Probation (new teacher)** — `StaffProfile.requiresReview = true` + `reviewerId`. Their submissions create an approval request (`PROBATION_REVIEW`) instead of publishing; on approval the original action completes. Principal removes the flag when the teacher is ready.
 - **Helper drafts** — helper output is always `DRAFT` until the responsible teacher finalizes.
 - **Multiple roles** — one login may hold several assignments (e.g. teacher + parent). The client shows a context switcher; the active context is sent as header `X-Active-Role`.
@@ -166,7 +166,7 @@ ApprovalStep    { requestId, order, approverRole | approverUserId, amountLimitMi
 - Self-approval is blocked (a principal's own salary goes to a higher admin).
 - One inbox on web and app: "Approvals" filtered by what the user can decide.
 
-Types: `HELPER_DRAFT, PROBATION_REVIEW, ATTENDANCE_CORRECTION, LEAVE, TIMETABLE_PUBLISH, SYLLABUS_PLAN, ACTIVITY, DIARY_MODERATION, RESULT_PUBLISH, PROMOTION, CONCESSION, REFUND, PAYMENT_REVERSAL, PAYROLL, EXPENSE, PURCHASE_ORDER, ADMISSION, CHILD_LINK, CONTACT_CHANGE, EARLY_LEAVE, CERTIFICATE`.
+Types: `HELPER_DRAFT, PROBATION_REVIEW, ATTENDANCE_CORRECTION, LEAVE, TIMETABLE_PUBLISH, ACTIVITY, DIARY_MODERATION, RESULT_PUBLISH, PROMOTION, CONCESSION, REFUND, PAYMENT_REVERSAL, PAYROLL, EXPENSE, PURCHASE_ORDER, ADMISSION, CHILD_LINK, CONTACT_CHANGE, EARLY_LEAVE, CERTIFICATE`.
 
 ## 8. Web architecture (SchoolWeb)
 

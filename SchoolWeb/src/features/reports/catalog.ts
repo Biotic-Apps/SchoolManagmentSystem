@@ -8,7 +8,6 @@ export const OTHER_AREA = "Other";
 
 const AREA_BY_PREFIX: Record<string, string> = {
   attendance: "Attendance",
-  syllabus: "Academics",
   results: "Academics",
   exams: "Academics",
   fees: "Fees",

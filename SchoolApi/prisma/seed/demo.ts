@@ -5,7 +5,6 @@ import { seedAdmissions } from './demo-admissions';
 import { seedUpcomingCalendar } from './demo-calendar';
 import { loadOrg, seedStudents } from './demo-people';
 import { seedAssignments, seedStaff } from './demo-staff';
-import { seedSyllabus } from './demo-syllabus';
 import { seedPeriods, seedTimetables } from './demo-timetable';
 import { seedDailyOperations } from './demo-daily';
 import { seedOrganisation } from './demo-org';
@@ -63,7 +62,6 @@ export async function seedDemo(prisma: SeedClient, roles: SystemRoleIds): Promis
   await seedStudents(prisma, people);
   await seedPeriods(prisma, people);
   await seedTimetables(prisma, people, staffIds);
-  await seedSyllabus(prisma, people);
   await seedAdmissions(prisma, people);
   await seedDailyOperations(prisma, people);
   await seedFinanceAndResults(prisma, people);

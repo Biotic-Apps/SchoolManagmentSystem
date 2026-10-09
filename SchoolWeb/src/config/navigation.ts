@@ -2,7 +2,6 @@
 import {
   Award,
   Banknote,
-  BookOpen,
   Building2,
   CalendarCheck,
   CalendarClock,
@@ -40,7 +39,7 @@ import type { RoleKey } from "./roles";
 
 export type NavId =
   | "dashboard" | "schools" | "branches" | "users" | "roles" | "sessions" | "classes"
-  | "admissions" | "students" | "guardians" | "staff" | "timetable" | "syllabus" | "diary"
+  | "admissions" | "students" | "guardians" | "staff" | "timetable" | "diary"
   | "activities" | "notices" | "attendance" | "exams" | "progress" | "fees" | "payroll"
   | "expenses" | "inventory" | "health" | "pickup" | "messages" | "meetings" | "complaints"
   | "certificates" | "approvals" | "reports" | "my_salary" | "settings" | "profile";
@@ -70,7 +69,6 @@ export const NAV_CATALOGUE: readonly NavItem[] = [
   item("guardians", "Parents & Guardians", "guardians.view", Users),
   item("staff", "Teachers & Helpers", "staff.view", IdCard),
   item("timetable", "Timetable", "timetable.view", Clock),
-  item("syllabus", "Syllabus & Books", "syllabus.view", BookOpen),
   item("diary", "Daily Diary & Homework", "diary.view", NotebookPen),
   item("activities", "Activities & Events", "activities.view", Trophy),
   item("notices", "Notices", "notices.view", Megaphone),
@@ -105,7 +103,7 @@ export function findNavByRoute(segment: string): NavItem | undefined {
 }
 
 const SUPERVISOR_MENU: readonly NavId[] = [
-  "dashboard", "classes", "students", "staff", "timetable", "attendance", "diary", "syllabus",
+  "dashboard", "classes", "students", "staff", "timetable", "attendance", "diary",
   "activities", "exams", "progress", "health", "pickup", "messages", "meetings", "complaints",
   "approvals", "my_salary", "profile",
 ];
@@ -113,20 +111,20 @@ const SUPERVISOR_MENU: readonly NavId[] = [
 export const ROLE_MENUS: Record<RoleKey, readonly NavId[]> = {
   SUPER_ADMIN: [
     "dashboard", "schools", "branches", "users", "roles", "sessions", "classes", "students",
-    "admissions", "guardians", "staff", "timetable", "syllabus", "diary", "activities", "notices",
+    "admissions", "guardians", "staff", "timetable", "diary", "activities", "notices",
     "attendance", "exams", "fees", "payroll", "expenses", "inventory", "health", "pickup",
     "complaints", "certificates", "approvals", "reports", "settings", "profile",
   ],
   PRINCIPAL: [
     "dashboard", "branches", "classes", "students", "admissions", "guardians", "staff", "timetable",
-    "attendance", "diary", "syllabus", "activities", "notices", "exams", "fees", "payroll",
+    "attendance", "diary", "activities", "notices", "exams", "fees", "payroll",
     "expenses", "inventory", "health", "pickup", "messages", "meetings", "complaints",
     "certificates", "approvals", "reports", "settings", "profile",
   ],
   COORDINATOR: SUPERVISOR_MENU,
   HEAD_TEACHER: SUPERVISOR_MENU,
   TEACHER: [
-    "dashboard", "classes", "timetable", "attendance", "diary", "syllabus", "activities", "exams",
+    "dashboard", "classes", "timetable", "attendance", "diary", "activities", "exams",
     "progress", "messages", "meetings", "complaints", "my_salary", "profile",
   ],
   HELPER: ["dashboard", "classes", "attendance", "diary", "activities", "complaints", "my_salary", "profile"],
@@ -135,7 +133,7 @@ export const ROLE_MENUS: Record<RoleKey, readonly NavId[]> = {
     "my_salary", "profile",
   ],
   PARENT: [
-    "dashboard", "students", "diary", "attendance", "progress", "syllabus", "timetable", "fees",
+    "dashboard", "students", "diary", "attendance", "progress", "timetable", "fees",
     "certificates", "messages", "meetings", "complaints", "profile",
   ],
 };

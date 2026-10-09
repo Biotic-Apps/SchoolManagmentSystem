@@ -11,7 +11,6 @@ export const PERMISSION_MODULES = [
   'guardians',
   'staff',
   'timetable',
-  'syllabus',
   'diary',
   'activities',
   'notices',

@@ -1,7 +1,6 @@
 package com.schoolapp.feature.dashboard.supervisor
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.EventNote
 import androidx.compose.material.icons.automirrored.outlined.FactCheck
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.automirrored.outlined.DirectionsWalk
@@ -55,10 +54,6 @@ private val Specs: Map<String, TileSpec> = linkedMapOf(
     ),
     "overdueComplaints" to TileSpec(
         R.string.dashboard_pending_overdue_complaints, Icons.Outlined.Timer, StatusTone.Error, DashboardLink.Menu(MenuIds.COMPLAINTS),
-    ),
-    "delayedTopics" to TileSpec(
-        R.string.dashboard_pending_delayed_topics, Icons.AutoMirrored.Outlined.EventNote, StatusTone.Warning,
-        DashboardLink.Menu(MenuIds.SYLLABUS),
     ),
     "todayIncidents" to TileSpec(
         R.string.dashboard_pending_incidents, Icons.Outlined.HealthAndSafety, StatusTone.Error, DashboardLink.Menu(MenuIds.HEALTH),

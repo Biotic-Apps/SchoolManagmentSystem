@@ -80,10 +80,8 @@ DRAFT → CONFLICT_CHECKED → PUBLISHED → (change) DRAFT_REVISION → PUBLISH
 ```
 Conflict check (sync, small): same teacher/room in same period/day; section double-booked; teacher outside branch working days. Publish requires `timetable.publish` (Principal). Substitute assignment for a day creates `TimetableOverride` and notifies teacher.
 
-## 6. Syllabus and books
-- Book list per class/subject/session: `DRAFT → APPROVED`; changes create a new **revision** (old kept); approved revision change notifies affected parents.
-- Syllabus plan: chapters → topics with target dates. `DRAFT → SUBMITTED → APPROVED | RETURNED` (Principal).
-- Progress: teacher marks topic `NOT_STARTED → IN_PROGRESS → COMPLETED` (P). Weekly job `syllabus.delayReport` flags topics past target date to principal dashboard.
+## 6. Syllabus and books (retired 2026-10-10)
+- Removed by owner decision; tables kept for data, no endpoints or jobs.
 
 ## 7. Attendance
 
@@ -232,7 +230,7 @@ Correction / information requests: `SUBMITTED → ASSIGNED (teacher or office) �
 
 ## 24. Reports and dashboards
 - Dashboard counters served from lightweight aggregate queries with short cache (Redis, 60 s) and scope.
-- Heavy reports (fee aging, payroll summary, attendance %, syllabus coverage, results analysis, branch comparison) → `reports` queue → file in storage → signed link.
+- Heavy reports (fee aging, payroll summary, attendance %, results analysis, branch comparison) → `reports` queue → file in storage → signed link.
 
 ## 25. Scheduled jobs (summary)
 | Job | When |
@@ -242,7 +240,6 @@ Correction / information requests: `SUBMITTED → ASSIGNED (teacher or office) �
 | fees.generateInvoices | Monthly per plan |
 | fees.markOverdue | Daily |
 | fees.dailyCollection | End of day |
-| syllabus.delayReport | Weekly |
 | complaints.slaCheck | Hourly |
 | maintenance.expireAssignments | Nightly |
 | expenses.recurring | Monthly |

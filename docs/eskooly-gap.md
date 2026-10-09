@@ -34,12 +34,11 @@ admissions pipeline, certificate QR verification, data import, fee reminders tha
 19. Question bank and paper generator
 20. Custom fields
 21. Custom report columns
-22. Online class links
-23. Homework submission
-24. Parent store and POS
-25. Biometric import
-26. School website
-27. Bulk / custom certificates
+22. Homework submission
+23. Parent store and POS
+24. Biometric import
+25. School website
+26. Bulk / custom certificates
 
 ## Status
 - Done 2026-10-09 (commit 405f7f2): P0 #1, #2, #4, #5 (login slip), #6, #8, plus the fee-received alert and parent password login by admission number.

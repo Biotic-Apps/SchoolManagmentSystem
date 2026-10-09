@@ -6,7 +6,6 @@ import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.material.icons.automirrored.outlined.DirectionsWalk
 import androidx.compose.material.icons.automirrored.outlined.FactCheck
 import androidx.compose.material.icons.automirrored.outlined.Grading
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.AccountBalance
@@ -54,7 +53,6 @@ internal val CatalogEntries: List<MenuItem> = listOf(
     item(MenuIds.GUARDIANS, "Parents & Guardians", "guardians.view", Icons.Outlined.FamilyRestroom),
     item(MenuIds.STAFF, "Teachers & Helpers", "staff.view", Icons.Outlined.Badge),
     item(MenuIds.TIMETABLE, "Timetable", "timetable.view", Icons.Outlined.Schedule),
-    item(MenuIds.SYLLABUS, "Syllabus & Books", "syllabus.view", Icons.AutoMirrored.Outlined.MenuBook),
     item(MenuIds.DIARY, "Daily Diary & Homework", "diary.view", Icons.Outlined.EditNote),
     item(MenuIds.ACTIVITIES, "Activities & Events", "activities.view", Icons.Outlined.EmojiEvents),
     item(MenuIds.NOTICES, "Notices", "notices.view", Icons.Outlined.Campaign),

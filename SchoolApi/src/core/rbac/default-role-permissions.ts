@@ -24,7 +24,6 @@ const PRINCIPAL: PermissionKey[] = [
   // Principals can do any teacher task (proxy) for schools where teachers don't carry phones.
   ...grant('attendance', 'view', 'add', 'edit', 'submit', 'approve', 'export'),
   ...grant('diary', 'view', 'add', 'edit', 'submit', 'approve', 'publish'),
-  ...grant('syllabus', 'view', 'edit', 'approve'),
   ...grant('progress', 'view', 'edit'),
   ...grant('activities', 'view', 'add', 'edit', 'approve', 'publish'),
   ...grant('notices', 'view', 'add', 'edit', 'publish'),
@@ -68,7 +67,6 @@ const SUPERVISOR: PermissionKey[] = [
   ...grant('timetable', 'view', 'add', 'edit'),
   ...grant('attendance', 'view', 'add', 'edit', 'submit', 'approve'),
   ...grant('diary', 'view', 'add', 'edit', 'submit', 'approve', 'publish'),
-  ...grant('syllabus', 'view', 'add', 'edit', 'submit', 'approve'),
   ...grant('activities', 'view', 'add', 'edit', 'submit'),
   ...grant('exams', 'view', 'add', 'edit', 'submit', 'approve'),
   ...grant('progress', 'view', 'edit'),
@@ -92,7 +90,6 @@ const TEACHER: PermissionKey[] = [
   ...grant('progress', 'view', 'edit'),
   ...grant('attendance', 'view', 'add', 'edit', 'submit'),
   ...grant('diary', 'view', 'add', 'edit', 'submit', 'publish'),
-  ...grant('syllabus', 'view', 'add', 'edit', 'submit'),
   ...grant('activities', 'view', 'add', 'edit', 'submit'),
   ...grant('exams', 'view', 'add', 'edit', 'submit'),
   ...grant('notices', 'view', 'add'),
@@ -137,7 +134,7 @@ const ACCOUNTANT: PermissionKey[] = [
 
 const PARENT: PermissionKey[] = [
   ...viewOnly('dashboard', 'students', 'diary', 'attendance', 'progress'),
-  ...viewOnly('syllabus', 'timetable', 'activities', 'notices', 'exams'),
+  ...viewOnly('timetable', 'activities', 'notices', 'exams'),
   ...grant('fees', 'view', 'add'),
   ...grant('certificates', 'view', 'add'),
   ...grant('guardians', 'add'),

@@ -20,7 +20,6 @@ import com.schoolapp.core.network.api.TimetableEditApi
 import com.schoolapp.core.network.api.StaffAttendanceApi
 import com.schoolapp.core.network.api.TimetableApi
 import com.schoolapp.core.network.api.TimetableOverridesApi
-import com.schoolapp.core.network.api.SyllabusApi
 import com.schoolapp.core.network.api.AdmissionsApi
 import com.schoolapp.core.network.api.ActivitiesApi
 import com.schoolapp.core.network.api.AttendanceApi
@@ -170,10 +169,6 @@ internal object NetworkModule {
     @Provides
     @Singleton
     fun provideTimetableOverridesApi(retrofit: Retrofit): TimetableOverridesApi = retrofit.create(TimetableOverridesApi::class.java)
-
-    @Provides
-    @Singleton
-    fun provideSyllabusApi(retrofit: Retrofit): SyllabusApi = retrofit.create(SyllabusApi::class.java)
 
     @Provides
     @Singleton

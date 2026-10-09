@@ -47,14 +47,6 @@ export const REPORTS: readonly ReportDefinition[] = [
     params: [BRANCH, MONTH],
   },
   {
-    key: 'syllabus.coverage',
-    title: 'Syllabus coverage',
-    description:
-      'Topics completed and behind schedule per section and subject.',
-    permission: 'syllabus.view',
-    params: [BRANCH, p('sessionId', 'uuid', false)],
-  },
-  {
     key: 'results.analysis',
     title: 'Results analysis',
     description: 'Average, pass rate and top scorer per section and subject.',

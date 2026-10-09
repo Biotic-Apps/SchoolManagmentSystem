@@ -24,6 +24,14 @@ const INCLUDE = {
   },
 } satisfies Prisma.ApprovalRequestInclude;
 
+/** Requests of retired features (kept in the database, never listed). */
+const RETIRED: Prisma.ApprovalRequestWhereInput = {
+  OR: [
+    { type: 'SYLLABUS_PLAN' },
+    { entityType: { in: ['SyllabusPlan', 'SyllabusTopic', 'BookList'] } },
+  ],
+};
+
 @Injectable()
 export class ApprovalsRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -36,6 +44,7 @@ export class ApprovalsRepository {
     return {
       status: filter.status,
       type: filter.type,
+      NOT: RETIRED,
       OR: [
         { requestedById: filter.userId },
         { steps: { some: { decision: null, approverUserId: filter.userId } } },

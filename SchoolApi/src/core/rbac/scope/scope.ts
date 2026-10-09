@@ -27,7 +27,7 @@ export interface SectionRef {
   schoolId: string;
 }
 
-/** Where section-level data (students, timetables, syllabus) may be read. */
+/** Where section-level data (students, timetables, diaries) may be read. */
 export interface SectionAccess {
   all: boolean;
   schoolIds: string[];

@@ -8,7 +8,6 @@ import { ApprovalPayloadLines } from "./ApprovalPayloadLines";
 const TITLES: Record<string, string> = {
   CHILD_LINK: "Link requested",
   CONTACT_CHANGE: "Requested contact change",
-  SYLLABUS_PLAN: "Syllabus plan",
   PROBATION_REVIEW: "Change awaiting review",
   RESULT_PUBLISH: "Results to publish",
   PROMOTION: "Promotion decisions",

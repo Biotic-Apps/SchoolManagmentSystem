@@ -122,7 +122,7 @@ function concessionLines(payload: Payload): PayloadLine[] {
   return [line, ...lines];
 }
 
-/** Human-readable lines for an approval's payload (CHILD_LINK, CONTACT_CHANGE, SYLLABUS_PLAN, CONCESSION, PAYROLL, ...). */
+/** Human-readable lines for an approval's payload (CHILD_LINK, CONTACT_CHANGE, CONCESSION, PAYROLL, ...). */
 export function payloadSummary(type: string, payload: unknown): PayloadLine[] {
   if (!isRecord(payload)) return [];
   if (type === "CONTACT_CHANGE") return changeLines(payload) ?? flatten(payload);

@@ -25,9 +25,9 @@ class NavigationCatalogTest {
             .toTypedArray()
 
     @Test
-    fun catalogue_has_34_unique_entries() {
-        assertEquals(34, NavigationCatalog.entries.size)
-        assertEquals(34, NavigationCatalog.entries.map { it.id }.toSet().size)
+    fun catalogue_has_33_unique_entries() {
+        assertEquals(33, NavigationCatalog.entries.size)
+        assertEquals(33, NavigationCatalog.entries.map { it.id }.toSet().size)
     }
 
     @Test
@@ -89,9 +89,9 @@ class NavigationCatalogTest {
 
     @Test
     fun menu_sizes_match_navigation_doc() {
-        assertEquals(30, NavigationCatalog.defaultOrder(RoleKey.SUPER_ADMIN).size)
-        assertEquals(28, NavigationCatalog.defaultOrder(RoleKey.PRINCIPAL).size)
-        assertEquals(14, NavigationCatalog.defaultOrder(RoleKey.TEACHER).size)
-        assertEquals(13, NavigationCatalog.defaultOrder(RoleKey.PARENT).size)
+        assertEquals(29, NavigationCatalog.defaultOrder(RoleKey.SUPER_ADMIN).size)
+        assertEquals(27, NavigationCatalog.defaultOrder(RoleKey.PRINCIPAL).size)
+        assertEquals(13, NavigationCatalog.defaultOrder(RoleKey.TEACHER).size)
+        assertEquals(12, NavigationCatalog.defaultOrder(RoleKey.PARENT).size)
     }
 }

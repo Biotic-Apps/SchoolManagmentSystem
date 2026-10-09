@@ -34,7 +34,6 @@ import com.schoolapp.core.network.api.StaffApi
 import com.schoolapp.core.network.api.StaffAttendanceApi
 import com.schoolapp.core.network.api.StudentAdminApi
 import com.schoolapp.core.network.api.StudentsApi
-import com.schoolapp.core.network.api.SyllabusApi
 import com.schoolapp.core.network.api.TimetableApi
 import com.schoolapp.core.network.api.TimetableEditApi
 import com.schoolapp.core.network.api.TimetableOverridesApi
@@ -70,7 +69,7 @@ class ServiceInterfacesTest {
             HealthApi::class.java, LeaveApi::class.java, MeApi::class.java, MeetingsApi::class.java, MessagesApi::class.java,
             NoticesApi::class.java, NotificationsApi::class.java, OrganisationApi::class.java, PayrollApi::class.java,
             PickupApi::class.java, ProgressApi::class.java, RefreshApi::class.java, SetupApi::class.java, StaffApi::class.java,
-            StaffAttendanceApi::class.java, StudentAdminApi::class.java, StudentsApi::class.java, SyllabusApi::class.java,
+            StaffAttendanceApi::class.java, StudentAdminApi::class.java, StudentsApi::class.java,
             TimetableApi::class.java, TimetableEditApi::class.java, TimetableOverridesApi::class.java,
         )
     }

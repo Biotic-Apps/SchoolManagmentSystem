@@ -12,7 +12,7 @@ interface SectionRow {
   name: string;
 }
 
-describe('Staff, timetable and syllabus (e2e)', () => {
+describe('Staff and timetable (e2e)', () => {
   let app: INestApplication<App>;
   let principal: string;
   let sections: SectionRow[];
@@ -109,77 +109,5 @@ describe('Staff, timetable and syllabus (e2e)', () => {
     );
     expect(tt.status).toBe('PUBLISHED');
     expect(tt.slots).toHaveLength(42);
-  });
-
-  it('probation teacher progress waits for the coordinator, then applies', async () => {
-    const newTeacher = (await login(app, 'newteacher@eschool.local'))
-      .accessToken;
-    const coordinator = (await login(app, 'coordinator@eschool.local'))
-      .accessToken;
-    const plans = data<
-      {
-        subjectName: string;
-        chapters: { topics: { id: string; status: string }[] }[];
-      }[]
-    >(
-      await as(app, newTeacher)
-        .get(`/syllabus-plans?sectionId=${section(5, 'A').id}`)
-        .expect(200),
-    );
-    const english = plans.find((p) => p.subjectName === 'English')!;
-    const topicId = english.chapters[0].topics[0].id;
-
-    const held = data<{
-      status: string;
-      approvalId: string;
-      topic: { status: string; pendingReview: boolean };
-    }>(
-      await as(app, newTeacher)
-        .post(`/syllabus-topics/${topicId}/progress`, { status: 'IN_PROGRESS' })
-        .expect(200),
-    );
-    expect(held.status).toBe('PENDING_REVIEW');
-    expect(held.topic).toEqual(
-      expect.objectContaining({ status: 'NOT_STARTED', pendingReview: true }),
-    );
-
-    const approval = data<{ type: string; status: string }>(
-      await as(app, coordinator)
-        .post(`/approvals/${held.approvalId}/decide`, { decision: 'APPROVED' })
-        .expect(200),
-    );
-    expect(approval).toEqual(
-      expect.objectContaining({ type: 'PROBATION_REVIEW', status: 'APPROVED' }),
-    );
-
-    const after = data<typeof plans>(
-      await as(app, newTeacher)
-        .get(`/syllabus-plans?sectionId=${section(5, 'A').id}`)
-        .expect(200),
-    );
-    const topic = after.find((p) => p.subjectName === 'English')!.chapters[0]
-      .topics[0];
-    expect(topic).toEqual(
-      expect.objectContaining({ status: 'IN_PROGRESS', pendingReview: false }),
-    );
-  });
-
-  it('a teacher outside the subject cannot update progress', async () => {
-    const teacher3 = (await login(app, 'teacher3@eschool.local')).accessToken;
-    const principalPlans = data<
-      { subjectName: string; chapters: { topics: { id: string }[] }[] }[]
-    >(
-      await as(app, principal)
-        .get(`/syllabus-plans?sectionId=${section(5, 'A').id}`)
-        .expect(200),
-    );
-    const mathTopic = principalPlans.find(
-      (p) => p.subjectName === 'Mathematics',
-    )!.chapters[0].topics[0];
-    await as(app, teacher3)
-      .post(`/syllabus-topics/${mathTopic.id}/progress`, {
-        status: 'COMPLETED',
-      })
-      .expect(403);
   });
 });

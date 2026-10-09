@@ -14,7 +14,6 @@ internal val ShortLabels: Map<String, String> = mapOf(
     MenuIds.GUARDIANS to "Parents",
     MenuIds.STAFF to "Staff",
     MenuIds.TIMETABLE to "Timetable",
-    MenuIds.SYLLABUS to "Syllabus",
     MenuIds.DIARY to "Diary",
     MenuIds.ACTIVITIES to "Activities",
     MenuIds.NOTICES to "Notices",

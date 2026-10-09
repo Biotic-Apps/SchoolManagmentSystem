@@ -14,7 +14,6 @@ object MenuIds {
     const val GUARDIANS = "guardians"
     const val STAFF = "staff"
     const val TIMETABLE = "timetable"
-    const val SYLLABUS = "syllabus"
     const val DIARY = "diary"
     const val ACTIVITIES = "activities"
     const val NOTICES = "notices"

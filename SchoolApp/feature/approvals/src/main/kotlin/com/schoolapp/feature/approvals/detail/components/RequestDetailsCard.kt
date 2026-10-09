@@ -10,7 +10,7 @@ import com.schoolapp.core.designsystem.component.SectionHeader
 import com.schoolapp.feature.approvals.R
 
 /**
- * Payload summary for typed requests (SYLLABUS_PLAN, CHILD_LINK, LEAVE, ..., PAYROLL, EXPENSE, CERTIFICATE):
+ * Payload summary for typed requests (CHILD_LINK, LEAVE, ..., PAYROLL, EXPENSE, CERTIFICATE):
  * the server payload flattened to label/value rows, known keys first, `…Minor` amounts as money.
  */
 @Composable
@@ -25,7 +25,6 @@ internal fun RequestDetailsCard(type: String, details: List<Pair<String, String>
 }
 
 private fun titleFor(type: String): Int = when (type) {
-    "SYLLABUS_PLAN" -> R.string.approvals_details_syllabus
     "CHILD_LINK" -> R.string.approvals_details_child_link
     "CONTACT_CHANGE" -> R.string.approvals_details_contact
     "PROBATION_REVIEW" -> R.string.approvals_details_probation
@@ -47,7 +46,6 @@ private fun titleFor(type: String): Int = when (type) {
 }
 
 private val PreferredKeys: Map<String, List<String>> = mapOf(
-    "SYLLABUS_PLAN" to listOf("className", "sectionName", "subjectName", "revision", "chapters", "topics"),
     "CHILD_LINK" to listOf("student.name", "student.admissionNo", "student.className", "relation", "guardian.name", "guardian.phone"),
     "CONTACT_CHANGE" to listOf("phone", "email", "address", "old.phone", "old.email", "old.address"),
     "PROBATION_REVIEW" to listOf("action", "topicTitle", "status", "completedOn", "note"),
