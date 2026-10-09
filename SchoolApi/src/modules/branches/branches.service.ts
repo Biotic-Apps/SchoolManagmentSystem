@@ -14,6 +14,8 @@ import type { BranchDto } from './dto/branch.dto';
 import type { BranchQueryDto } from './dto/branch-query.dto';
 import type { CreateBranchDto } from './dto/create-branch.dto';
 import type { UpdateBranchDto } from './dto/update-branch.dto';
+import { BranchSettingsRepository } from './settings/branch-settings.repository';
+import { withStaffDefaults } from './timings/branch-timings';
 
 @Injectable()
 export class BranchesService {
@@ -21,6 +23,7 @@ export class BranchesService {
     private readonly repository: BranchesRepository,
     private readonly access: AccessCache,
     private readonly audit: AuditService,
+    private readonly settings: BranchSettingsRepository,
   ) {}
 
   async list(
@@ -54,9 +57,15 @@ export class BranchesService {
     const { timings, ...rest } = dto;
     const row = await this.repository.create({
       ...rest,
-      timings: timings ? toJson(timings) : undefined,
+      timings: timings ? toJson(withStaffDefaults(timings)) : undefined,
       createdById: user.id,
     });
+    if (timings)
+      await this.settings.save(
+        row.id,
+        { 'attendance.lockTime': timings.attendanceLockAt },
+        user.id,
+      );
     const result = toBranchDto(row);
     this.audit.stage({
       action: 'branch.create',
@@ -89,9 +98,16 @@ export class BranchesService {
     const { timings, ...rest } = dto;
     const row = await this.repository.update(id, {
       ...rest,
-      ...(timings && { timings: toJson(timings) }),
+      ...(timings && { timings: toJson(withStaffDefaults(timings)) }),
       updatedById: user.id,
     });
+    // The attendance lock job reads this setting; keep it equal to the timing.
+    if (timings)
+      await this.settings.save(
+        id,
+        { 'attendance.lockTime': timings.attendanceLockAt },
+        user.id,
+      );
     const result = toBranchDto(row);
     this.audit.stage({
       action: 'branch.update',

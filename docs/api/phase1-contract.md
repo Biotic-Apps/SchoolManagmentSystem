@@ -79,9 +79,12 @@ School = { id, code, name, address, phone, email, website, logoUrl, status: "ACT
 | PATCH | `/branches/:id/settings` | `settings.edit` or principal of branch `{ key: value }` |
 ```ts
 Branch = { id, schoolId, schoolName, code, name, address, phone, email,
-           timings: { opensAt: "08:00", closesAt: "14:00", attendanceLockAt: "11:00" } | null,
+           timings: { opensAt: "08:00", closesAt: "14:00", attendanceLockAt: "11:00",
+                      staffArrivesAt: "07:30", staffLeavesAt: "14:00" } | null,
            workingDays: number[] /* 1=Mon..7=Sun */, principal: { id, name } | null, status, createdAt }
 ```
+Timings are 24-hour `HH:mm`. `opensAt`/`closesAt` are the students' day; `staffArrivesAt`/`staffLeavesAt` are the teachers' day. On create/update the two staff fields are optional: `staffArrivesAt` defaults to 30 minutes before `opensAt` (never before `00:00`), `staffLeavesAt` defaults to `closesAt`. Validation (400 `VALIDATION_FAILED`, details strings): `staffArrivesAt must be at or before opensAt`, `staffLeavesAt must be at or after closesAt`. Sending `timings` also saves the branch setting `attendance.lockTime = timings.attendanceLockAt`. Rows saved before these fields existed were back-filled by migration `20261008160000_branch_staff_timings` (same defaults).
+
 Default settings keys: `attendance.lockTime "11:00"`, `diary.moderation false`, `diary.closingTime "15:00"`, `messaging.officeHours {from:"08:00",to:"16:00"}`, `approval.limits {}`.
 
 ## 6. Users (staff/admin accounts) and role assignments

@@ -1,6 +1,12 @@
 import { toIsoDate } from "@/lib/dates";
 
-export const DEFAULT_TIMINGS = { opensAt: "08:00", closesAt: "14:00", attendanceLockAt: "10:00" };
+export const DEFAULT_TIMINGS = {
+  opensAt: "08:00",
+  closesAt: "14:00",
+  attendanceLockAt: "10:00",
+  staffArrivesAt: "07:30",
+  staffLeavesAt: "14:00",
+};
 export const DEFAULT_WORKING_DAYS = [1, 2, 3, 4, 5, 6];
 
 const KARACHI = "Asia/Karachi";

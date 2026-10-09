@@ -19,6 +19,8 @@ internal fun BranchTimingsCard(branch: Branch, modifier: Modifier = Modifier) {
         SectionHeader(title = stringResource(R.string.org_branch_timings))
         KeyValueRow(stringResource(R.string.org_branch_opens), formatTime(branch.timings?.opensAt))
         KeyValueRow(stringResource(R.string.org_branch_closes), formatTime(branch.timings?.closesAt))
+        KeyValueRow(stringResource(R.string.org_branch_staff_arrive), formatTime(branch.timings?.staffArrivesAt))
+        KeyValueRow(stringResource(R.string.org_branch_staff_leave), formatTime(branch.timings?.staffLeavesAt))
         KeyValueRow(stringResource(R.string.org_branch_attendance_lock), formatTime(branch.timings?.attendanceLockAt))
         KeyValueRow(
             stringResource(R.string.org_branch_working_days),

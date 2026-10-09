@@ -29,9 +29,11 @@ export function BranchStep() {
       </FormPanel>
       <FormPanel title="Timings & working days" description="Used for attendance, the timetable and the diary.">
         <div className="grid gap-4 sm:grid-cols-3">
-          <TimeField name="branch.opensAt" label="Opens at" required />
-          <TimeField name="branch.closesAt" label="Closes at" required />
+          <TimeField name="branch.opensAt" label="School opens" required hint="Students arrive" />
+          <TimeField name="branch.closesAt" label="School closes" required hint="Students leave" />
           <TimeField name="branch.attendanceLockAt" label="Attendance locks at" required hint="Teachers mark attendance before this" />
+          <TimeField name="branch.staffArrivesAt" label="Teachers arrive" required hint="At or before school opens" />
+          <TimeField name="branch.staffLeavesAt" label="Teachers leave" required hint="At or after school closes" />
         </div>
         <WeekdaysField name="branch.workingDays" label="Working days" required />
       </FormPanel>

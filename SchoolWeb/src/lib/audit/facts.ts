@@ -28,7 +28,11 @@ function timingsFact(row: Row): AuditChange | null {
   const timings = row.timings as Row | null | undefined;
   if (!timings || typeof timings.opensAt !== "string" || typeof timings.closesAt !== "string") return null;
   const lock = typeof timings.attendanceLockAt === "string" ? ` · attendance closes ${formatTime(timings.attendanceLockAt)}` : "";
-  return { key: "timings", label: "Timings", from: null, to: `${formatTimeRange(timings.opensAt, timings.closesAt)}${lock}` };
+  const staff =
+    typeof timings.staffArrivesAt === "string" && typeof timings.staffLeavesAt === "string"
+      ? ` · teachers ${formatTimeRange(timings.staffArrivesAt, timings.staffLeavesAt)}`
+      : "";
+  return { key: "timings", label: "Timings", from: null, to: `${formatTimeRange(timings.opensAt, timings.closesAt)}${lock}${staff}` };
 }
 
 /** Readable facts about a record snapshot: blanks, ids, defaults and sentence fields are left out. */

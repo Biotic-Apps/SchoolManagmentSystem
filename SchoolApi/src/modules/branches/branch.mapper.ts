@@ -1,5 +1,6 @@
 import type { BranchDto, BranchTimingsDto } from './dto/branch.dto';
 import type { BranchRow } from './branches.repository';
+import { withStaffDefaults } from './timings/branch-timings';
 
 export function toBranchDto(row: BranchRow): BranchDto {
   return {
@@ -11,7 +12,9 @@ export function toBranchDto(row: BranchRow): BranchDto {
     address: row.address,
     phone: row.phone,
     email: row.email,
-    timings: (row.timings as BranchTimingsDto | null) ?? null,
+    timings: row.timings
+      ? withStaffDefaults(row.timings as unknown as BranchTimingsDto)
+      : null,
     workingDays: row.workingDays,
     principal: row.principal,
     status: row.status,

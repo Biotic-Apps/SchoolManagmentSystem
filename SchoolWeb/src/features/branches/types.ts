@@ -1,9 +1,13 @@
 import type { RecordStatus } from "@/config/options";
 
 export interface BranchTimings {
+  /** Students' day (24-hour HH:mm). */
   opensAt: string;
   closesAt: string;
   attendanceLockAt: string;
+  /** Teachers' day: arrive at or before opensAt, leave at or after closesAt. */
+  staffArrivesAt: string;
+  staffLeavesAt: string;
 }
 
 export interface Branch {

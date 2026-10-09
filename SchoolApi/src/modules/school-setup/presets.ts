@@ -42,7 +42,13 @@ export function sectionNames(count: number): string[] {
 export const SETUP_DEFAULTS = {
   branchName: 'Main Branch',
   branchCode: 'MAIN',
-  timings: { opensAt: '08:00', closesAt: '14:00', attendanceLockAt: '10:00' },
+  timings: {
+    opensAt: '08:00',
+    closesAt: '14:00',
+    attendanceLockAt: '10:00',
+    staffArrivesAt: '07:30',
+    staffLeavesAt: '14:00',
+  },
   workingDays: [1, 2, 3, 4, 5, 6],
   classesPreset: 'STANDARD' as ClassesPreset,
   subjectsPreset: 'STANDARD' as SubjectsPreset,

@@ -59,7 +59,13 @@ export function toSetupInput(values: SetupFormValues): SchoolSetupInput {
       phone: blankToUndefined(branch.phone),
       email: blankToUndefined(branch.email),
       address: blankToUndefined(branch.address),
-      timings: { opensAt: branch.opensAt, closesAt: branch.closesAt, attendanceLockAt: branch.attendanceLockAt },
+      timings: {
+        opensAt: branch.opensAt,
+        closesAt: branch.closesAt,
+        attendanceLockAt: branch.attendanceLockAt,
+        staffArrivesAt: branch.staffArrivesAt,
+        staffLeavesAt: branch.staffLeavesAt,
+      },
       workingDays: branch.workingDays,
     },
     principal: {

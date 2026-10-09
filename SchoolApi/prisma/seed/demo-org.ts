@@ -4,6 +4,8 @@ const TIMINGS = {
   opensAt: '08:00',
   closesAt: '14:00',
   attendanceLockAt: '11:00',
+  staffArrivesAt: '07:30',
+  staffLeavesAt: '14:00',
 };
 
 export async function seedOrganisation(prisma: SeedClient) {

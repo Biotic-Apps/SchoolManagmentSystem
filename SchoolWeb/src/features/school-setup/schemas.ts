@@ -8,6 +8,7 @@ import {
   requiredText,
   timeOfDay,
 } from "@/lib/validation";
+import { checkBranchTimings } from "@/features/branches/timing-rules";
 
 const code = z
   .string()
@@ -39,13 +40,11 @@ const branchStep = z
     opensAt: timeOfDay,
     closesAt: timeOfDay,
     attendanceLockAt: timeOfDay,
+    staffArrivesAt: timeOfDay,
+    staffLeavesAt: timeOfDay,
     workingDays: z.array(z.number().int().min(1).max(7)).min(1, "Pick at least one working day"),
   })
-  .refine((v) => v.closesAt > v.opensAt, { path: ["closesAt"], message: "Closing time must be after opening time" })
-  .refine((v) => v.attendanceLockAt >= v.opensAt && v.attendanceLockAt <= v.closesAt, {
-    path: ["attendanceLockAt"],
-    message: "Attendance lock must fall within school hours",
-  });
+  .superRefine(checkBranchTimings);
 
 const principalStep = z
   .object({

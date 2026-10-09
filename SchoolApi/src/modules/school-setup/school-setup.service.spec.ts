@@ -181,6 +181,8 @@ describe('SchoolSetupService', () => {
           opensAt: '08:00',
           closesAt: '14:00',
           attendanceLockAt: '10:00',
+          staffArrivesAt: '07:30',
+          staffLeavesAt: '14:00',
         },
         workingDays: [1, 2, 3, 4, 5, 6],
       }),

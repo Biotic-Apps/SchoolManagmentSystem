@@ -1,3 +1,5 @@
+import type { BranchTimings } from "@/features/branches/types";
+
 export type Preset = "STANDARD" | "NONE";
 
 /** POST /schools/setup body (docs/api/school-setup-contract.md §1). */
@@ -17,7 +19,7 @@ export interface SchoolSetupInput {
     address?: string;
     phone?: string;
     email?: string;
-    timings: { opensAt: string; closesAt: string; attendanceLockAt: string };
+    timings: BranchTimings;
     workingDays: number[];
   };
   principal: { name: string; email?: string; phone?: string; password?: string };

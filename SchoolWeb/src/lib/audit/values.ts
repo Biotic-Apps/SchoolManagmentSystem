@@ -7,6 +7,8 @@ const LABELS: Record<string, string> = {
   opensAt: "Opens at",
   closesAt: "Closes at",
   attendanceLockAt: "Attendance locks at",
+  staffArrivesAt: "Teachers arrive",
+  staffLeavesAt: "Teachers leave",
   workingDays: "Working days",
   schoolName: "School",
   principal: "Principal",

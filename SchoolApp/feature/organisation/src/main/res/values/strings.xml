@@ -8,8 +8,10 @@
     <string name="org_branch_phone">Phone</string>
     <string name="org_branch_email">Email</string>
     <string name="org_branch_timings">Timings</string>
-    <string name="org_branch_opens">Opens at</string>
-    <string name="org_branch_closes">Closes at</string>
+    <string name="org_branch_opens">School opens</string>
+    <string name="org_branch_closes">School closes</string>
+    <string name="org_branch_staff_arrive">Teachers arrive</string>
+    <string name="org_branch_staff_leave">Teachers leave</string>
     <string name="org_branch_attendance_lock">Attendance locks at</string>
     <string name="org_branch_working_days">Working days</string>
     <string name="org_branch_settings">Branch settings</string>

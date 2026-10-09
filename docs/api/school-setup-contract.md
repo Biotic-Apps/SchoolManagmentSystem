@@ -15,7 +15,8 @@ Request:
     "name": "Main Branch",            // optional, default "Main Branch"
     "code": "MAIN",                   // optional, default "MAIN"
     "address": "?", "phone": "?", "email": "?",
-    "timings": { "opensAt": "08:00", "closesAt": "14:00", "attendanceLockAt": "10:00" },  // optional, these defaults
+    "timings": { "opensAt": "08:00", "closesAt": "14:00", "attendanceLockAt": "10:00",
+                 "staffArrivesAt": "07:30", "staffLeavesAt": "14:00" },  // optional, these defaults; staff times optional inside (arrive = opensAt − 30 min, leave = closesAt; arrive ≤ opensAt, leave ≥ closesAt)
     "workingDays": [1,2,3,4,5,6]       // optional, default Mon–Sat
   },
   "principal": { "name": "Ayesha Khan", "email": "?", "phone": "?", "password": "?" },  // email or phone required; no password → temporary one generated

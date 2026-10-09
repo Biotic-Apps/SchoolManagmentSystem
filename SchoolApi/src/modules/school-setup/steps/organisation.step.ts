@@ -6,6 +6,7 @@ import { BranchSettingsRepository } from '../../branches/settings/branch-setting
 import { SettingsRepository } from '../../settings/settings.repository';
 import { SCHOOL_SETTING_DEFAULTS } from '../../settings/school-settings.mapper';
 import { SchoolsRepository } from '../../schools/schools.repository';
+import { withStaffDefaults } from '../../branches/timings/branch-timings';
 import type { SchoolSetupDto } from '../dto/school-setup.dto';
 import { SETUP_DEFAULTS } from '../presets';
 import { onUnique, schoolCodeTaken } from '../setup-errors';
@@ -39,7 +40,7 @@ export class OrganisationStep {
     });
 
     const input = dto.branch ?? {};
-    const timings = input.timings ?? SETUP_DEFAULTS.timings;
+    const timings = withStaffDefaults(input.timings ?? SETUP_DEFAULTS.timings);
     const branch = await this.branches.create(
       {
         schoolId: school.id,

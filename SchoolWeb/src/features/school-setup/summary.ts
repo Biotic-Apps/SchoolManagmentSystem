@@ -42,6 +42,7 @@ export function branchRows({ branch }: SetupFormValues): SummaryRow[] {
   return [
     { label: "Name", value: `${branch.name} (${branch.code.toUpperCase()})` },
     { label: "School hours", value: formatTimeRange(branch.opensAt, branch.closesAt) },
+    { label: "Teacher hours", value: formatTimeRange(branch.staffArrivesAt, branch.staffLeavesAt) },
     { label: "Attendance locks", value: formatTime(branch.attendanceLockAt) },
     { label: "Working days", value: weekdayLabels(branch.workingDays) },
   ];
