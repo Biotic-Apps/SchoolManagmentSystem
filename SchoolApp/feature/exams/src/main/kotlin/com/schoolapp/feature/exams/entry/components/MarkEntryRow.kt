@@ -1,6 +1,6 @@
 package com.schoolapp.feature.exams.entry.components
 
-import androidx.compose.foundation.BorderStroke
+import com.schoolapp.core.designsystem.component.AppCard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,7 +13,6 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -51,17 +50,12 @@ internal fun MarkEntryRow(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
-    val highlight = when {
-        row.error != null -> AppColors.ErrorContainer to AppColors.Error
-        row.isPending -> AppColors.WarningContainer to AppColors.Warning
-        else -> AppColors.Surface to AppColors.Border
+    val tone = when {
+        row.error != null -> StatusTone.Error
+        row.isPending -> StatusTone.Warning
+        else -> null
     }
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        color = highlight.first,
-        border = BorderStroke(1.dp, highlight.second),
-    ) {
+    AppCard(modifier.fillMaxWidth(), tone = tone, contentPadding = 0.dp) {
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(

@@ -1,6 +1,7 @@
 package com.schoolapp.feature.health.components
 
-import androidx.compose.foundation.BorderStroke
+import com.schoolapp.core.designsystem.component.StatusTone
+import com.schoolapp.core.designsystem.component.AppCard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,12 +28,7 @@ import com.schoolapp.feature.health.R
 /** Error-toned alert listing every allergy with severity and reaction; shown first on the health card. */
 @Composable
 internal fun AllergyAlertCard(allergies: List<Allergy>, modifier: Modifier = Modifier) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        color = AppColors.ErrorContainer,
-        border = BorderStroke(1.dp, AppColors.Error.copy(alpha = 0.4f)),
-    ) {
+    AppCard(modifier.fillMaxWidth(), tone = StatusTone.Error, contentPadding = 0.dp) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Outlined.WarningAmber, contentDescription = null, tint = AppColors.Error, modifier = Modifier.size(24.dp))

@@ -20,6 +20,7 @@ fun ErrorState(
         message = message,
         icon = Icons.Outlined.ErrorOutline,
         modifier = modifier,
+        tone = StatusTone.Error,
         action = onRetry?.let { retry ->
             { SecondaryButton(text = stringResource(R.string.ds_retry), onClick = retry) }
         },

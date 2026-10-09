@@ -1,5 +1,6 @@
 package com.schoolapp.feature.auth
 
+import com.schoolapp.core.designsystem.motion.StepContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -34,6 +35,9 @@ import com.schoolapp.feature.auth.emailcode.components.EmailSignInForm
 
 private val TwoPaneMinWidth = 840.dp
 
+/** Which form the sign-in column shows; order drives the slide direction between them. */
+private enum class LoginPane { PASSWORD, EMAIL_CODE, TWO_FACTOR }
+
 @Composable
 fun LoginScreen(
     state: LoginUiState,
@@ -59,10 +63,17 @@ fun LoginScreen(
                         verticalArrangement = Arrangement.spacedBy(24.dp),
                     ) {
                         if (!twoPane) LoginHeader(brand)
-                        when {
-                            state.step == LoginStep.TWO_FACTOR -> TwoFactorForm(state, actions)
-                            emailCode.active -> EmailSignInForm(emailCode, emailCodeActions)
-                            else -> LoginForm(state, actions)
+                        val step = when {
+                            state.step == LoginStep.TWO_FACTOR -> LoginPane.TWO_FACTOR
+                            emailCode.active -> LoginPane.EMAIL_CODE
+                            else -> LoginPane.PASSWORD
+                        }
+                        StepContent(step = step, order = { it.ordinal }) { pane ->
+                            when (pane) {
+                                LoginPane.TWO_FACTOR -> TwoFactorForm(state, actions)
+                                LoginPane.EMAIL_CODE -> EmailSignInForm(emailCode, emailCodeActions)
+                                LoginPane.PASSWORD -> LoginForm(state, actions)
+                            }
                         }
                     }
                 }

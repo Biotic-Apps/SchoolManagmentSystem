@@ -1,5 +1,9 @@
 package com.schoolapp.feature.dashboard.components
 
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import com.schoolapp.core.designsystem.motion.EntranceGate
+import com.schoolapp.core.designsystem.motion.gatedEntrance
+import com.schoolapp.core.designsystem.motion.rememberEntranceGate
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -39,6 +43,7 @@ internal fun SupervisorGrid(
     canOpenMenu: (String) -> Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val gate = rememberEntranceGate()
     Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 150.dp),
@@ -47,17 +52,18 @@ internal fun SupervisorGrid(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            fullWidth("header") { SummaryHeader(state.userName, state.scopeName) }
+            fullWidth("header", gate, 0) { SummaryHeader(state.userName, state.scopeName) }
             state.setup?.let { setup ->
-                fullWidth("setup") { SetupChecklistCard(setup, onOpenMenu, onOpen, canOpenMenu) }
+                fullWidth("setup", gate, 1) { SetupChecklistCard(setup, onOpenMenu, onOpen, canOpenMenu) }
             }
             if (state.showsToday) {
-                fullWidth("today-title") {
+                fullWidth("today-title", gate, 2) {
                     SectionHeader(title = stringResource(R.string.dashboard_today_title), subtitle = formatDate(state.date))
                 }
-                state.pendingError?.let { error -> fullWidth("today-error") { InlineMessage(appErrorMessage(error), StatusTone.Error) } }
-                items(state.tiles, key = { "pending-${it.key}" }) { tile ->
+                state.pendingError?.let { error -> fullWidth("today-error", gate, 2) { InlineMessage(appErrorMessage(error), StatusTone.Error) } }
+                itemsIndexed(state.tiles, key = { _, tile -> "pending-${tile.key}" }) { index, tile ->
                     StatCard(
+                        modifier = Modifier.animateItem().gatedEntrance(gate, TILE_ORDER + index),
                         label = tile.labelRes?.let { stringResource(it) } ?: humanizeKey(tile.key),
                         value = tile.count.toString(),
                         icon = tile.icon,
@@ -67,15 +73,16 @@ internal fun SupervisorGrid(
                 }
             }
             state.finance?.let { finance ->
-                fullWidth("finance") { FinanceCard(finance, onClick = financeAction(onOpenMenu, canOpenMenu)) }
+                fullWidth("finance", gate, TILE_ORDER + state.tiles.size) { FinanceCard(finance, onClick = financeAction(onOpenMenu, canOpenMenu)) }
             }
             if (state.showsToday) {
-                fullWidth("overview-title") { SectionHeader(title = stringResource(R.string.dashboard_overview_title)) }
+                fullWidth("overview-title", gate, STAGGER_END) { SectionHeader(title = stringResource(R.string.dashboard_overview_title)) }
             }
-            state.summaryError?.let { error -> fullWidth("summary-error") { InlineMessage(appErrorMessage(error), StatusTone.Error) } }
+            state.summaryError?.let { error -> fullWidth("summary-error", gate, STAGGER_END) { InlineMessage(appErrorMessage(error), StatusTone.Error) } }
             items(state.metrics, key = { "metric-${it.key}" }) { metric ->
                 val presentation = presentationFor(metric.key)
                 StatCard(
+                    modifier = Modifier.animateItem().gatedEntrance(gate, STAGGER_END),
                     label = presentation.labelRes?.let { stringResource(it) } ?: humanizeKey(metric.key),
                     value = metric.count.toString(),
                     icon = presentation.icon,
@@ -91,6 +98,11 @@ internal fun SupervisorGrid(
 internal fun financeAction(onOpenMenu: (String) -> Unit, canOpenMenu: (String) -> Boolean): (() -> Unit)? =
     if (canOpenMenu(MenuIds.FEES)) ({ onOpenMenu(MenuIds.FEES) }) else null
 
-private fun LazyGridScope.fullWidth(key: String, content: @Composable () -> Unit) {
-    item(key = key, span = { GridItemSpan(maxLineSpan) }) { content() }
+private fun LazyGridScope.fullWidth(key: String, gate: EntranceGate, order: Int, content: @Composable () -> Unit) {
+    item(key = key, span = { GridItemSpan(maxLineSpan) }) {
+        Box(Modifier.animateItem().gatedEntrance(gate, order)) { content() }
+    }
 }
+
+private const val TILE_ORDER = 3
+private const val STAGGER_END = 8

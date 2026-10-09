@@ -1,6 +1,7 @@
 package com.schoolapp.feature.pickup.components
 
-import androidx.compose.foundation.BorderStroke
+import com.schoolapp.core.designsystem.component.StatusTone
+import com.schoolapp.core.designsystem.component.AppCard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,7 +11,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,12 +26,7 @@ import com.schoolapp.feature.pickup.R
 /** Prominent error state when the gate tried to hand a student to an unauthorized person. */
 @Composable
 internal fun PickupBlockedCard(pickerName: String, onChooseAnother: () -> Unit, modifier: Modifier = Modifier) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        color = AppColors.ErrorContainer,
-        border = BorderStroke(1.dp, AppColors.Error),
-    ) {
+    AppCard(modifier.fillMaxWidth(), tone = StatusTone.Error, contentPadding = 0.dp) {
         Column(
             modifier = Modifier.padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,

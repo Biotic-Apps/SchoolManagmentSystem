@@ -1,5 +1,6 @@
 package com.schoolapp.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
@@ -14,7 +16,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.schoolapp.AppUiState
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.motion.ScreenTransitions
 import com.schoolapp.core.designsystem.theme.AppColors
+import com.schoolapp.core.designsystem.theme.AppTheme
 import com.schoolapp.core.navigation.ForcedPasswordChangeDestination
 import com.schoolapp.core.navigation.ShellDestination
 import com.schoolapp.feature.auth.navigation.AuthGraph
@@ -38,6 +42,7 @@ fun AppNavHost(
         return
     }
     val navController = rememberNavController()
+    val reduced = AppTheme.reducedMotion
     val target: Any = when (uiState) {
         AppUiState.SignedIn -> ShellDestination
         AppUiState.PasswordChangeRequired -> ForcedPasswordChangeDestination
@@ -47,6 +52,10 @@ fun AppNavHost(
         navController = navController,
         startDestination = target,
         modifier = modifier.background(AppColors.Background),
+        enterTransition = { if (isSessionSwitch()) ScreenTransitions.peerEnter(reduced) else ScreenTransitions.forwardEnter(reduced) },
+        exitTransition = { if (isSessionSwitch()) ScreenTransitions.peerExit() else ScreenTransitions.forwardExit(reduced) },
+        popEnterTransition = { ScreenTransitions.backEnter(reduced) },
+        popExitTransition = { ScreenTransitions.backExit(reduced) },
     ) {
         authGraph(navController)
         composable<ForcedPasswordChangeDestination> { ForcedChangePasswordRoute(onSignOut = onSignOut) }
@@ -61,3 +70,9 @@ fun AppNavHost(
         }
     }
 }
+
+/** Signing in/out or the forced password change swaps the whole app, so it fades through instead of sliding. */
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.isSessionSwitch(): Boolean =
+    listOf(initialState, targetState).any { entry ->
+        entry.destination.hasRoute(ShellDestination::class) || entry.destination.hasRoute(ForcedPasswordChangeDestination::class)
+    }

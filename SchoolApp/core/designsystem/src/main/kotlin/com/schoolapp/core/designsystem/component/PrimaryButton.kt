@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.schoolapp.core.designsystem.motion.pressScale
 import com.schoolapp.core.designsystem.theme.AppColors
 
 @Composable
@@ -29,11 +30,11 @@ fun PrimaryButton(
     val pressed by interaction.collectIsPressedAsState()
     Button(
         onClick = onClick,
-        modifier = modifier.heightIn(min = 52.dp),
+        modifier = modifier.heightIn(min = 48.dp).pressScale(interaction, enabled && !loading),
         interactionSource = interaction,
         enabled = enabled && !loading,
         shape = MaterialTheme.shapes.small,
-        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = if (pressed) AppColors.PrimaryPressed else AppColors.Primary,
             contentColor = AppColors.OnPrimary,

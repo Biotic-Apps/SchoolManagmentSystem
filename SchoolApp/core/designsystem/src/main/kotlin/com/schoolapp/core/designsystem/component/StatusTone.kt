@@ -19,3 +19,6 @@ internal fun StatusTone.colors(): StatusColors = with(AppTheme.extendedColors) {
         StatusTone.Neutral -> StatusColors(AppColors.TextSecondary, AppColors.Background)
     }
 }
+
+/** Brand tint (teal on mint) for neutral icon tiles, so plain metrics still carry the app's colour. */
+internal fun primaryTileColors(): StatusColors = StatusColors(AppColors.Primary, AppColors.Selected)

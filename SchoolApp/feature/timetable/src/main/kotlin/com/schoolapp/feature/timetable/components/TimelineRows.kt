@@ -1,5 +1,6 @@
 package com.schoolapp.feature.timetable.components
 
+import com.schoolapp.core.designsystem.component.AppCard
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,13 +45,7 @@ internal fun periodCaption(row: ScheduleRow): String {
 @Composable
 private fun LessonCard(row: ScheduleRow, marker: RowMarker?, onOpen: (ScheduleRow) -> Unit, modifier: Modifier) {
     val isNow = marker == RowMarker.NOW
-    Surface(
-        onClick = { onOpen(row) },
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        color = if (isNow) AppColors.Selected else AppColors.Surface,
-        border = BorderStroke(if (isNow) 2.dp else 1.dp, if (isNow) AppColors.Primary else AppColors.Border),
-    ) {
+    AppCard(modifier.fillMaxWidth(), onClick = { onOpen(row) }, selected = isNow, contentPadding = 0.dp) {
         Row(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(periodCaption(row), style = MaterialTheme.typography.labelMedium, color = AppColors.TextSecondary)
