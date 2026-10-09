@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type { Leave, StaffLeaveInput, StudentLeaveInput } from "./types";
@@ -22,6 +22,7 @@ export function useLeaveList(params: Query & { scope: "mine" | "review" }, enabl
   return useQuery({
     queryKey: leaveKeys.list(params),
     queryFn: async () => (await http.get<Leave[]>("/leave", params)).data,
+    placeholderData: keepPreviousData,
     enabled,
   });
 }

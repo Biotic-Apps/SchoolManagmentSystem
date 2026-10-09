@@ -26,7 +26,7 @@ export function FormField({ id, label, error, hint, required, className, childre
       </Label>
       {children}
       {error?.message ? (
-        <p id={errorId(id)} role="alert" className="text-caption text-error">
+        <p id={errorId(id)} role="alert" className="animate-fade-in text-caption text-error">
           {error.message}
         </p>
       ) : (

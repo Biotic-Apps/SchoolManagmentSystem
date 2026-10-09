@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { http } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type { Permission, Role, RoleInput } from "./types";
 
@@ -26,8 +27,11 @@ export function useRoles() {
 
 export function useSaveRole() {
   return useApiMutation({
-    mutationFn: ({ id, input }: { id?: string; input: RoleInput }) =>
-      id ? http.patch<Role>(`/roles/${id}`, input) : http.post<Role>("/roles", input),
+    mutationFn: withRowFlash(
+      ({ id, input }: { id?: string; input: RoleInput }) =>
+        id ? http.patch<Role>(`/roles/${id}`, input) : http.post<Role>("/roles", input),
+      (result, vars) => vars.id ?? result.data.id,
+    ),
     invalidate: [roleKeys.all],
     success: (_, vars) => (vars.id ? "Role updated" : "Role created"),
     toastError: false,

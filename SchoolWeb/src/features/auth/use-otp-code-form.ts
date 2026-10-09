@@ -13,7 +13,7 @@ export function useOtpCodeForm(email: string, onChallenge: (challengeId: string)
   const form = useForm<OtpCodeValues>({ resolver: zodResolver(otpCodeSchema), defaultValues: { code: "" } });
 
   const submit = form.handleSubmit(({ code }) =>
-    mutation.mutate(
+    mutation.isPending ? undefined : mutation.mutate(
       { email, code: code.replace(/\s/g, "") },
       { onSuccess: (challenge) => challenge && onChallenge(challenge.challengeId) },
     ),

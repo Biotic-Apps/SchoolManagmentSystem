@@ -2,6 +2,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { Option } from "@/components/shared/OptionSelect";
 import { OPTIONS_PAGE } from "@/config/options";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type { School, SchoolInput, StatusAction } from "./types";
 
@@ -40,7 +41,7 @@ export function saveSchool({ id, input }: { id?: string; input: SchoolInput }) {
 
 export function useSaveSchool() {
   return useApiMutation({
-    mutationFn: saveSchool,
+    mutationFn: withRowFlash(saveSchool, (result, vars) => vars.id ?? result.data.id),
     invalidate: [schoolKeys.all],
     success: (_, vars) => (vars.id ? "School updated" : "School created"),
     toastError: false,

@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { classKeys } from "./api";
 import type { Subject, SubjectInput } from "./types";
@@ -20,8 +21,11 @@ export function useSubjects(params: Query, enabled = true) {
 
 export function useSaveSubject() {
   return useApiMutation({
-    mutationFn: ({ id, input }: { id?: string; input: SubjectInput }) =>
-      id ? http.patch<Subject>(`/subjects/${id}`, input) : http.post<Subject>("/subjects", input),
+    mutationFn: withRowFlash(
+      ({ id, input }: { id?: string; input: SubjectInput }) =>
+        id ? http.patch<Subject>(`/subjects/${id}`, input) : http.post<Subject>("/subjects", input),
+      (result, vars) => vars.id ?? result.data.id,
+    ),
     invalidate: [subjectKeys.all, classKeys.all],
     success: (_, vars) => (vars.id ? "Subject updated" : "Subject created"),
     toastError: false,

@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { expenseKeys } from "./keys";
 import type { Expense, ExpenseInput, ExpensePaymentInput } from "./types";
@@ -17,7 +18,10 @@ export function useExpenses(params: Query, enabled = true) {
 
 export function useCreateExpense() {
   return useApiMutation({
-    mutationFn: async (input: ExpenseInput) => (await http.post<Expense>("/expenses", input)).data,
+    mutationFn: withRowFlash(
+      async (input: ExpenseInput) => (await http.post<Expense>("/expenses", input)).data,
+      (expense) => expense.id,
+    ),
     invalidate: INVALIDATE,
     success: "Expense saved as draft",
     toastError: false,

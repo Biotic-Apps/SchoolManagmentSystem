@@ -1,20 +1,43 @@
 /*
  * Motion system — one scale, one set of curves, used by every component.
- *   instant 100ms · quick 180ms · standard 280ms · slow 450ms
- *   exits run ~0.7x the matching entry.
- * Reduced motion: --motion-shift drops to 0, so every move/scale becomes a plain fade.
+ *   instant 100ms · quick 160ms · standard 220ms · slow 360ms
+ *   exits run ~0.7x the matching entry (quick / instant).
+ * Reduced motion: --motion-shift drops to 0, so every move/scale keyframe becomes a plain fade,
+ * the stagger collapses, and transitions become (near) instant.
+ *
+ * Utilities (Tailwind v4, use as classes):
+ *   animate-page-in       main content: fade + 6px rise over 200ms (header/sidebar stay put)
+ *   animate-rise-in       generic entry: fade + 6px rise (standard)
+ *   animate-fade-in / animate-fade-out
+ *   animate-dialog-in / animate-dialog-out   modal: fade + scale 0.98 -> 1 (no bounce, no slide)
+ *   animate-pop-in / animate-pop-out         menus, popovers, tooltips: fade + 4px move.
+ *       Side-aware on its own: Radix sets data-side="top|bottom|left|right" on the content and the
+ *       move comes from the trigger's direction (bottom: from above, top: from below, ...).
+ *       Without data-side it drops 4px from above. Pair with origin-(--radix-*-content-transform-origin).
+ *   popMotion (styles.ts)  data-[state=open]:animate-pop-in data-[state=closed]:animate-pop-out
+ *   animate-sheet-in-right / -out-right / -in-left / -out-left
+ *   animate-toast-in       toast: fade + small rise
+ *   animate-row-flash      saved/updated table row: soft --selected tint fading out over 1.2s (no blinking).
+ *                          Re-trigger by remounting (change the row key) or toggling the class.
+ *   animate-shimmer        skeleton shimmer
+ *   stagger                first-load stagger for a grid/list's direct children; whole run < 400ms.
+ *                          CSS animations only run on mount, so a refetch that keeps the same nodes
+ *                          does not replay it. Don't use it on tables / paginated or filtered lists.
+ *   ease-standard / ease-decelerate / ease-accelerate   timing-function utilities
+ * Tokens: --dur-instant --dur-quick --dur-standard --dur-slow, --motion-ease-*, --motion-shift.
  */
 
 :root {
   --motion-shift: 1;
   --dur-instant: 100ms;
-  --dur-quick: 180ms;
-  --dur-standard: 280ms;
-  --dur-slow: 450ms;
+  --dur-quick: 160ms;
+  --dur-standard: 220ms;
+  --dur-slow: 360ms;
+  --dur-page: 200ms;
   --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --motion-ease-decelerate: cubic-bezier(0, 0, 0, 1);
   --motion-ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
-  --stagger-step: 35ms;
+  --stagger-step: 24ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -29,10 +52,10 @@
   --ease-decelerate: var(--motion-ease-decelerate);
   --ease-accelerate: var(--motion-ease-accelerate);
 
-  --animate-page-in: rise-in var(--dur-standard) var(--motion-ease-decelerate);
+  --animate-page-in: page-in var(--dur-page) var(--motion-ease-decelerate);
   --animate-rise-in: rise-in var(--dur-standard) var(--motion-ease-decelerate) backwards;
   --animate-fade-in: fade-in var(--dur-quick) var(--motion-ease-decelerate);
-  --animate-fade-out: fade-out 130ms var(--motion-ease-accelerate) forwards;
+  --animate-fade-out: fade-out 120ms var(--motion-ease-accelerate) forwards;
   --animate-dialog-in: dialog-in var(--dur-standard) var(--motion-ease-decelerate);
   --animate-dialog-out: dialog-out var(--dur-quick) var(--motion-ease-accelerate) forwards;
   --animate-sheet-in-right: sheet-in-right var(--dur-standard) var(--motion-ease-decelerate);
@@ -42,6 +65,7 @@
   --animate-pop-in: pop-in var(--dur-quick) var(--motion-ease-decelerate);
   --animate-pop-out: pop-out var(--dur-instant) var(--motion-ease-accelerate) forwards;
   --animate-toast-in: toast-in var(--dur-standard) var(--motion-ease-decelerate);
+  --animate-row-flash: row-flash 1.2s var(--motion-ease-standard);
   --animate-shimmer: shimmer 1.4s linear infinite;
 }
 
@@ -51,11 +75,14 @@
 @keyframes fade-out {
   to { opacity: 0; }
 }
+@keyframes page-in {
+  from { opacity: 0; transform: translate3d(0, calc(6px * var(--motion-shift)), 0); }
+}
 @keyframes rise-in {
-  from { opacity: 0; transform: translate3d(0, calc(8px * var(--motion-shift)), 0); }
+  from { opacity: 0; transform: translate3d(0, calc(6px * var(--motion-shift)), 0); }
 }
 @keyframes dialog-in {
-  from { opacity: 0; transform: translate3d(0, calc(6px * var(--motion-shift)), 0) scale(calc(1 - 0.03 * var(--motion-shift))); }
+  from { opacity: 0; transform: scale(calc(1 - 0.02 * var(--motion-shift))); }
 }
 @keyframes dialog-out {
   to { opacity: 0; transform: scale(calc(1 - 0.02 * var(--motion-shift))); }
@@ -74,22 +101,42 @@
 @keyframes sheet-out-left {
   to { opacity: 0; transform: translate3d(calc(-100% * var(--motion-shift)), 0, 0); }
 }
+/* --pop-x / --pop-y are set per Radix data-side below; the default is "drop from above". */
 @keyframes pop-in {
-  from { opacity: 0; transform: translate3d(0, calc(-4px * var(--motion-shift)), 0) scale(calc(1 - 0.04 * var(--motion-shift))); }
+  from {
+    opacity: 0;
+    transform: translate3d(calc(var(--pop-x, 0px) * var(--motion-shift)), calc(var(--pop-y, -4px) * var(--motion-shift)), 0);
+  }
 }
 @keyframes pop-out {
-  to { opacity: 0; transform: scale(calc(1 - 0.03 * var(--motion-shift))); }
+  to {
+    opacity: 0;
+    transform: translate3d(calc(var(--pop-x, 0px) * 0.5 * var(--motion-shift)), calc(var(--pop-y, -4px) * 0.5 * var(--motion-shift)), 0);
+  }
 }
 @keyframes toast-in {
-  from { opacity: 0; transform: translate3d(0, calc(12px * var(--motion-shift)), 0) scale(calc(1 - 0.03 * var(--motion-shift))); }
+  from { opacity: 0; transform: translate3d(0, calc(8px * var(--motion-shift)), 0); }
+}
+/* No `to` frame: the row eases back to its own background (hover/striping/selection keep working). */
+@keyframes row-flash {
+  from { background-color: var(--selected); }
+  35% { background-color: var(--selected); }
 }
 @keyframes shimmer {
   from { background-position: 150% 0; }
   to { background-position: -50% 0; }
 }
 
+/* Radix floating content enters from the trigger's side. */
+@layer base {
+  [data-side="bottom"] { --pop-x: 0px; --pop-y: -4px; }
+  [data-side="top"] { --pop-x: 0px; --pop-y: 4px; }
+  [data-side="left"] { --pop-x: 4px; --pop-y: 0px; }
+  [data-side="right"] { --pop-x: -4px; --pop-y: 0px; }
+}
 
-/* First-load stagger for a grid/list: direct children rise in one after another (capped at 8). */
+/* First-load stagger for a grid/list: direct children rise in one after another.
+   Capped at the 7th child: 220ms + 6 x 24ms = 364ms for the whole run. */
 @utility stagger {
   & > * {
     animation: rise-in var(--dur-standard) var(--motion-ease-decelerate) backwards;
@@ -99,8 +146,7 @@
   & > :nth-child(4) { animation-delay: calc(var(--stagger-step) * 3); }
   & > :nth-child(5) { animation-delay: calc(var(--stagger-step) * 4); }
   & > :nth-child(6) { animation-delay: calc(var(--stagger-step) * 5); }
-  & > :nth-child(7) { animation-delay: calc(var(--stagger-step) * 6); }
-  & > :nth-child(n + 8) { animation-delay: calc(var(--stagger-step) * 7); }
+  & > :nth-child(n + 7) { animation-delay: calc(var(--stagger-step) * 6); }
 }
 
 /* <details> open/close animates its height where the browser supports it (progressive enhancement). */
@@ -118,9 +164,21 @@
   details[open]::details-content {
     block-size: auto;
   }
-  @media (prefers-reduced-motion: reduce) {
-    details::details-content {
-      transition: none;
-    }
+}
+
+/* Reduced motion: keyframes already fade instead of move (--motion-shift: 0). Transitions (hover lifts,
+   presses, chevrons, slides) become instant; 1ms rather than 0 so transitionend listeners still fire. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  ::before,
+  ::after {
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+  }
+  details::details-content {
+    transition: none;
   }
 }

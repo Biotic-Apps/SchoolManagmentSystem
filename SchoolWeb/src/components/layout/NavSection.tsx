@@ -28,24 +28,32 @@ export function NavSection({ group, activeId, open, onToggle, onNavigate }: NavS
         aria-controls={bodyId}
         onClick={onToggle}
         className={cn(
-          "flex items-center justify-between rounded-md px-3 pb-1.5 pt-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-fg-muted/80 transition-colors hover:text-fg",
+          "flex items-center justify-between rounded-md px-3 pb-1.5 pt-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-fg-muted/80 transition-colors duration-(--dur-quick) hover:text-fg",
           focusRing,
         )}
       >
         {group.label}
         <ChevronDown
           aria-hidden
-          className={cn("size-3.5 transition-transform duration-180 ease-standard", !open && "-rotate-90")}
+          className={cn(
+            "size-3.5 transition-transform duration-(--dur-quick) ease-standard motion-reduce:transition-none",
+            !open && "-rotate-90",
+          )}
         />
       </button>
       <div
         id={bodyId}
         className={cn(
-          "grid transition-[grid-template-rows,opacity] duration-280 ease-standard motion-reduce:transition-none",
+          "grid transition-[grid-template-rows,opacity] duration-(--dur-standard) ease-standard motion-reduce:transition-none",
           open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
         )}
       >
-        <div className="flex min-h-0 flex-col gap-0.5 overflow-hidden" inert={!open}>
+        {/* -mx-3/px-3 + clip margin keep the active edge marker and focus rings visible while the
+            fold still clips during the height transition; inert keeps folded links out of tab order. */}
+        <div
+          className="-mx-3 flex min-h-0 flex-col gap-0.5 overflow-clip px-3 [overflow-clip-margin:4px]"
+          inert={!open}
+        >
           {links}
         </div>
       </div>

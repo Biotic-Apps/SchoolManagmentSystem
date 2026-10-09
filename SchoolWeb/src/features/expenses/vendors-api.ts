@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { expenseKeys } from "./keys";
 import type { Vendor, VendorInput } from "./types";
@@ -16,7 +17,10 @@ export function useVendors(params: Query = {}, enabled = true) {
 /** A global admin names the school; scoped users may leave it out. */
 export function useCreateVendor(schoolId: string | null = null) {
   return useApiMutation({
-    mutationFn: async (input: VendorInput) => (await http.post<Vendor>("/vendors", schoolId ? { ...input, schoolId } : input)).data,
+    mutationFn: withRowFlash(
+      async (input: VendorInput) => (await http.post<Vendor>("/vendors", schoolId ? { ...input, schoolId } : input)).data,
+      (vendor) => vendor.id,
+    ),
     invalidate: [expenseKeys.all],
     success: (vendor) => `${vendor.name} added`,
     toastError: false,

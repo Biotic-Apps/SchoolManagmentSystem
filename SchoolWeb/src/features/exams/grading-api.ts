@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { examsKeys } from "./keys";
 import type { GradingScheme, GradingSchemeInput } from "./types";
@@ -10,6 +11,7 @@ export function useGradingSchemes(params: Query, enabled = true) {
   return useQuery({
     queryKey: examsKeys.schemes(params),
     queryFn: async () => (await http.get<GradingScheme[]>("/grading-schemes", params)).data ?? [],
+    placeholderData: keepPreviousData,
     enabled,
   });
 }
@@ -17,10 +19,13 @@ export function useGradingSchemes(params: Query, enabled = true) {
 /** PATCH is refused (409) once an exam using the scheme is RESULTS_APPROVED. */
 export function useSaveGradingScheme() {
   return useApiMutation({
-    mutationFn: async ({ id, input }: { id?: string; input: GradingSchemeInput }) =>
-      id
-        ? (await http.patch<GradingScheme>(`/grading-schemes/${id}`, input)).data
-        : (await http.post<GradingScheme>("/grading-schemes", input)).data,
+    mutationFn: withRowFlash(
+      async ({ id, input }: { id?: string; input: GradingSchemeInput }) =>
+        id
+          ? (await http.patch<GradingScheme>(`/grading-schemes/${id}`, input)).data
+          : (await http.post<GradingScheme>("/grading-schemes", input)).data,
+      (row, vars) => vars.id ?? row.id,
+    ),
     invalidate: [SCHEMES_KEY],
     success: (_, vars) => (vars.id ? "Grading scheme updated" : "Grading scheme created"),
     toastError: false,

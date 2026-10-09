@@ -55,7 +55,7 @@ export function useBellEditor(branchId: string, bell: BellSchedule | null) {
     },
     generate: (index: number, settings: BellSettings) =>
       form.setValue(`schedules.${index}.rows`, generateBell(settings), { shouldDirty: true, shouldValidate: true }),
-    submit: form.handleSubmit((values) => send(values, false)),
+    submit: form.handleSubmit((values) => (save.isPending ? undefined : send(values, false))),
     confirmDrop: () => void send(form.getValues(), true),
     inUse,
     closeInUse: () => setInUse(null),

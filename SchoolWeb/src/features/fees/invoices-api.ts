@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { feesKeys } from "./keys";
 import type { Invoice } from "./types";
@@ -60,7 +61,10 @@ export function useIssueInvoices() {
 
 export function useCreateInvoice() {
   return useApiMutation({
-    mutationFn: async (input: AdHocInvoiceInput) => (await http.post<Invoice>("/invoices", input)).data,
+    mutationFn: withRowFlash(
+      async (input: AdHocInvoiceInput) => (await http.post<Invoice>("/invoices", input)).data,
+      (invoice) => invoice.id,
+    ),
     invalidate: [feesKeys.all],
     success: "Draft invoice created",
     toastError: false,

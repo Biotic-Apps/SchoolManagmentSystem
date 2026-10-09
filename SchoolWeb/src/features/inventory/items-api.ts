@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { inventoryKeys } from "./keys";
 import type { InventoryItem, InventoryItemInput } from "./types";
@@ -21,7 +22,10 @@ export function useItemCatalog(branchId: string | null) {
 
 export function useCreateItem() {
   return useApiMutation({
-    mutationFn: async (input: InventoryItemInput) => (await http.post<InventoryItem>("/inventory/items", input)).data,
+    mutationFn: withRowFlash(
+      async (input: InventoryItemInput) => (await http.post<InventoryItem>("/inventory/items", input)).data,
+      (item) => item.id,
+    ),
     invalidate: [inventoryKeys.all],
     success: (item) => `${item.name} added`,
     toastError: false,

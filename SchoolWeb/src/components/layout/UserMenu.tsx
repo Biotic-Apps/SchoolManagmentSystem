@@ -27,7 +27,7 @@ export function UserMenu({ name, email, onSignOut }: UserMenuProps) {
       <DropdownMenuTrigger
         aria-label="Account menu"
         className={cn(
-          "group flex items-center gap-2 rounded-full p-0.5 transition-colors duration-180 hover:bg-background md:pr-2.5 data-[state=open]:bg-background",
+          "group flex items-center gap-2 rounded-full p-0.5 transition-colors duration-(--dur-quick) hover:bg-background md:pr-2.5 data-[state=open]:bg-background",
           focusRing,
         )}
       >
@@ -37,7 +37,7 @@ export function UserMenu({ name, email, onSignOut }: UserMenuProps) {
         <span className="hidden max-w-36 truncate text-label font-medium text-fg md:block">{name}</span>
         <ChevronDown
           aria-hidden
-          className="hidden size-4 text-fg-muted transition-transform duration-180 group-data-[state=open]:rotate-180 md:block"
+          className="hidden size-4 text-fg-muted transition-transform duration-(--dur-quick) ease-standard group-data-[state=open]:rotate-180 md:block"
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-56">

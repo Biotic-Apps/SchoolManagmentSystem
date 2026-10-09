@@ -47,7 +47,7 @@ export function TileSelectField({ name, label, groups, hint, className }: TileSe
             </div>
             <TileSelectGroup id={id} label={label} groups={groups} value={value} onChange={field.onChange} />
             {error?.message ? (
-              <p id={errorId(id)} role="alert" className="text-caption text-error">
+              <p id={errorId(id)} role="alert" className="animate-fade-in text-caption text-error">
                 {error.message}
               </p>
             ) : (

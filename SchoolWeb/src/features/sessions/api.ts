@@ -1,7 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { Option } from "@/components/shared/OptionSelect";
 import { OPTIONS_PAGE } from "@/config/options";
 import { http } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type {
   AcademicSession,
@@ -43,8 +44,11 @@ export function useSessionOptions(branchId: string | null) {
 
 export function useSaveAcademicSession() {
   return useApiMutation({
-    mutationFn: ({ id, input }: { id?: string; input: AcademicSessionInput }) =>
-      id ? http.patch<AcademicSession>(`/sessions/${id}`, input) : http.post<AcademicSession>("/sessions", input),
+    mutationFn: withRowFlash(
+      ({ id, input }: { id?: string; input: AcademicSessionInput }) =>
+        id ? http.patch<AcademicSession>(`/sessions/${id}`, input) : http.post<AcademicSession>("/sessions", input),
+      (result, vars) => vars.id ?? result.data.id,
+    ),
     invalidate: [sessionKeys.all],
     success: (_, vars) => (vars.id ? "Session updated" : "Session created as draft"),
     toastError: false,
@@ -69,8 +73,11 @@ export function useTerms(sessionId: string | null) {
 
 export function useSaveTerm(sessionId: string) {
   return useApiMutation({
-    mutationFn: ({ id, input }: { id?: string; input: TermInput }) =>
-      id ? http.patch<Term>(`/terms/${id}`, input) : http.post<Term>(`/sessions/${sessionId}/terms`, input),
+    mutationFn: withRowFlash(
+      ({ id, input }: { id?: string; input: TermInput }) =>
+        id ? http.patch<Term>(`/terms/${id}`, input) : http.post<Term>(`/sessions/${sessionId}/terms`, input),
+      (result, vars) => vars.id ?? result.data.id,
+    ),
     invalidate: [sessionKeys.terms(sessionId), sessionKeys.all],
     success: (_, vars) => (vars.id ? "Term updated" : "Term added"),
     toastError: false,
@@ -89,6 +96,7 @@ export function useCalendarEvents(branchId: string | null, from: string, to: str
   return useQuery({
     queryKey: sessionKeys.calendarRange(branchId, from, to),
     queryFn: async () => (await http.get<CalendarEvent[]>("/calendar", { branchId, from, to })).data,
+    placeholderData: keepPreviousData,
     enabled: !!branchId,
   });
 }
@@ -104,8 +112,11 @@ export function useStudentCalendar(studentId: string | null) {
 
 export function useSaveCalendarEvent() {
   return useApiMutation({
-    mutationFn: ({ id, input }: { id?: string; input: CalendarEventInput }) =>
-      id ? http.patch<CalendarEvent>(`/calendar/${id}`, input) : http.post<CalendarEvent>("/calendar", input),
+    mutationFn: withRowFlash(
+      ({ id, input }: { id?: string; input: CalendarEventInput }) =>
+        id ? http.patch<CalendarEvent>(`/calendar/${id}`, input) : http.post<CalendarEvent>("/calendar", input),
+      (result, vars) => vars.id ?? result.data.id,
+    ),
     invalidate: [sessionKeys.calendar],
     success: (_, vars) => (vars.id ? "Event updated" : "Event added"),
     toastError: false,

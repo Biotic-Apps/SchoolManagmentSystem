@@ -152,6 +152,7 @@ export function useCompleteMeeting(id: string) {
 export function useFollowUps(params: Query) {
   return useQuery({
     queryKey: meetingKeys.followUps(params),
+    placeholderData: keepPreviousData,
     queryFn: async () => (await http.get<FollowUp[]>("/follow-ups", params)).data,
   });
 }

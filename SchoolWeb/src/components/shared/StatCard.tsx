@@ -14,12 +14,12 @@ interface StatCardProps {
   icon?: LucideIcon;
   tone?: IconTileTone;
   loading?: boolean;
-  /** Hover lift, for tiles wrapped in a link. */
+  /** Hover lift — only for tiles wrapped in a link/button. */
   interactive?: boolean;
   className?: string;
 }
 
-/** KPI tile: icon tile + label, a large value that counts up, and an optional secondary line. */
+/** KPI tile: icon tile + label, a large value (eases only when it changes), and an optional secondary line. */
 export function StatCard({ label, value, hint, icon, tone = "primary", loading, interactive, className }: StatCardProps) {
   return (
     <Card interactive={interactive} className={cn("flex h-full flex-col gap-4 p-5", className)}>

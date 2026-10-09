@@ -2,6 +2,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { Option } from "@/components/shared/OptionSelect";
 import { OPTIONS_PAGE } from "@/config/options";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type {
   AssignmentInput,
@@ -57,7 +58,10 @@ export function useStaffMember(id: string | null) {
 
 export function useCreateStaff() {
   return useApiMutation({
-    mutationFn: async (input: StaffInput) => (await http.post<CreatedStaff>("/staff", input)).data,
+    mutationFn: withRowFlash(
+      async (input: StaffInput) => (await http.post<CreatedStaff>("/staff", input)).data,
+      (created) => created.staff.id,
+    ),
     invalidate: INVALIDATE,
     success: (created) => `${created.staff.name} added`,
     toastError: false,
@@ -66,7 +70,7 @@ export function useCreateStaff() {
 
 export function useUpdateStaff(id: string) {
   return useApiMutation({
-    mutationFn: (input: StaffUpdate) => http.patch<StaffDetail>(`/staff/${id}`, input),
+    mutationFn: withRowFlash((input: StaffUpdate) => http.patch<StaffDetail>(`/staff/${id}`, input), () => id),
     invalidate: [staffKeys.all],
     success: "Staff details saved",
     toastError: false,

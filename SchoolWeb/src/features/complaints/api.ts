@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type { Complaint, ComplaintInput, ComplaintUpdateInput } from "./types";
 
@@ -38,7 +39,10 @@ export function useComplaint(id: string | null) {
 
 export function useCreateComplaint() {
   return useApiMutation({
-    mutationFn: async (input: ComplaintInput) => (await http.post<Complaint>("/complaints", input)).data,
+    mutationFn: withRowFlash(
+      async (input: ComplaintInput) => (await http.post<Complaint>("/complaints", input)).data,
+      (complaint) => complaint.id,
+    ),
     invalidate: INVALIDATE,
     success: (created) => `Complaint ${created.ticketNo} filed`,
     toastError: false,

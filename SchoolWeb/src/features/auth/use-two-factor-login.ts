@@ -14,7 +14,7 @@ export function useTwoFactorLogin(challengeId: string) {
   const mode = useWatch({ control: form.control, name: "mode" });
 
   const submit = form.handleSubmit(({ mode: kind, code }) =>
-    mutation.mutate({ challengeId, code: kind === "totp" ? code.replace(/\s/g, "") : code.trim() }),
+    mutation.isPending ? undefined : mutation.mutate({ challengeId, code: kind === "totp" ? code.replace(/\s/g, "") : code.trim() }),
   );
 
   const toggleMode = () => {

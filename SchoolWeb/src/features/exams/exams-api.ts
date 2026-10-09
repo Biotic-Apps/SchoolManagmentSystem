@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { examsKeys } from "./keys";
 import type { CompletenessRow, Exam, ExamInput, ExamStatusInput, SchedulePaperInput } from "./types";
@@ -25,8 +26,11 @@ export function useExam(id: string | null) {
 
 export function useSaveExam() {
   return useApiMutation({
-    mutationFn: async ({ id, input }: { id?: string; input: ExamInput }) =>
-      id ? (await http.patch<Exam>(`/exams/${id}`, input)).data : (await http.post<Exam>("/exams", input)).data,
+    mutationFn: withRowFlash(
+      async ({ id, input }: { id?: string; input: ExamInput }) =>
+        id ? (await http.patch<Exam>(`/exams/${id}`, input)).data : (await http.post<Exam>("/exams", input)).data,
+      (row, vars) => vars.id ?? row.id,
+    ),
     invalidate: ALL,
     success: (_, vars) => (vars.id ? "Exam updated" : "Exam created"),
     toastError: false,

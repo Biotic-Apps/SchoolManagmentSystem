@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { inventoryKeys } from "./keys";
 import type { PurchaseOrderInput, PurchaseRequest, PurchaseRequestInput, ReceiveInput } from "./types";
@@ -17,8 +18,11 @@ export function usePurchaseRequests(params: Query, enabled = true) {
 
 export function useCreatePurchaseRequest() {
   return useApiMutation({
-    mutationFn: async (input: PurchaseRequestInput) =>
-      (await http.post<PurchaseRequest>("/purchase-requests", input)).data,
+    mutationFn: withRowFlash(
+      async (input: PurchaseRequestInput) =>
+        (await http.post<PurchaseRequest>("/purchase-requests", input)).data,
+      (request) => request.id,
+    ),
     invalidate: INVALIDATE,
     success: "Purchase request sent for approval",
     toastError: false,

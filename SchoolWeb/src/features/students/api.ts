@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type { ParentLogin } from "@/features/guardians/types";
 import type {
@@ -49,8 +50,11 @@ export function useEnrollments(id: string | null) {
 
 export function useRegisterStudent() {
   return useApiMutation({
-    mutationFn: async (input: RegisterStudentInput) =>
-      (await http.post<StudentDetail & { parentLogins: ParentLogin[] }>("/students", input)).data,
+    mutationFn: withRowFlash(
+      async (input: RegisterStudentInput) =>
+        (await http.post<StudentDetail & { parentLogins: ParentLogin[] }>("/students", input)).data,
+      (student) => student.id,
+    ),
     invalidate: INVALIDATE,
     success: (student) => `${student.name} registered (${student.admissionNo})`,
     toastError: false,
@@ -59,7 +63,7 @@ export function useRegisterStudent() {
 
 export function useUpdateStudent(id: string) {
   return useApiMutation({
-    mutationFn: (input: StudentUpdate) => http.patch<StudentDetail>(`/students/${id}`, input),
+    mutationFn: withRowFlash((input: StudentUpdate) => http.patch<StudentDetail>(`/students/${id}`, input), () => id),
     invalidate: [studentKeys.all],
     success: "Student updated",
     toastError: false,

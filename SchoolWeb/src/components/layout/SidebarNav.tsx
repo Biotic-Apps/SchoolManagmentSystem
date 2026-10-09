@@ -41,7 +41,9 @@ export function SidebarNav({ items, activeId, onNavigate }: SidebarNavProps) {
     return (
       <>
         {search}
-        <nav aria-label="Main" className="flex flex-col gap-0.5">
+        {/* Same <nav> node as the menu below, so the results fade in once when searching starts
+            and simply update per keystroke (no per-item stagger). Keeps the input mounted too. */}
+        <nav aria-label="Main" className="flex animate-fade-in flex-col gap-0.5">
           {matches.map((item) => (
             <SidebarNavLink
               key={item.id}

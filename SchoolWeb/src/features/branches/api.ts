@@ -1,6 +1,7 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { OPTIONS_PAGE } from "@/config/options";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { useCan } from "@/features/auth/use-can";
 import { useAssignedBranches } from "./use-assigned-branches";
@@ -45,8 +46,11 @@ export function useBranch(id: string | null) {
 
 export function useSaveBranch() {
   return useApiMutation({
-    mutationFn: ({ id, input }: { id?: string; input: BranchInput }) =>
-      id ? http.patch<Branch>(`/branches/${id}`, input) : http.post<Branch>("/branches", input),
+    mutationFn: withRowFlash(
+      ({ id, input }: { id?: string; input: BranchInput }) =>
+        id ? http.patch<Branch>(`/branches/${id}`, input) : http.post<Branch>("/branches", input),
+      (result, vars) => vars.id ?? result.data.id,
+    ),
     invalidate: [branchKeys.all],
     success: (_, vars) => (vars.id ? "Branch updated" : "Branch created"),
     toastError: false,

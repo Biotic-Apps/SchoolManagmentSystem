@@ -27,7 +27,7 @@ export function useDeleteSchool(school: School, onDeleted: (school: School) => v
   }, [state, school, queryClient, onDeleted]);
 
   const submit = () => {
-    if (confirmText.trim() !== school.code) return;
+    if (request.isPending || confirmText.trim() !== school.code) return;
     // A retry after a failure must not read the old run's state.
     setRequested(false);
     queryClient.removeQueries({ queryKey: deletionKeys.status(school.id) });

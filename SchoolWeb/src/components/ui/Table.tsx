@@ -23,7 +23,7 @@ export function TableBody({ className, ...props }: HTMLAttributes<HTMLTableSecti
 }
 
 export function TableRow({ className, ...props }: HTMLAttributes<HTMLTableRowElement>) {
-  return <tr className={cn("border-b border-border/70 transition-colors duration-100 hover:bg-[#f3faf8]", className)} {...props} />;
+  return <tr className={cn("border-b border-border/70 transition-colors duration-(--dur-instant) ease-standard hover:bg-[#f3faf8]", className)} {...props} />;
 }
 
 export function TableHead({ className, ...props }: ThHTMLAttributes<HTMLTableCellElement>) {

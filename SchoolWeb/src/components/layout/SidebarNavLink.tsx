@@ -17,7 +17,7 @@ export function SidebarNavLink({ item: { route, label, icon: Icon }, active, onN
       onClick={onNavigate}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "group/nav relative flex items-center gap-3 rounded-lg px-3 py-2 text-label font-medium transition-colors duration-180",
+        "group/nav relative flex items-center gap-3 rounded-lg px-3 py-2 text-label font-medium transition-colors duration-(--dur-quick)",
         active ? "bg-selected font-semibold text-on-selected" : "text-fg-muted hover:bg-background hover:text-fg",
         focusRing,
       )}
@@ -25,13 +25,13 @@ export function SidebarNavLink({ item: { route, label, icon: Icon }, active, onN
       <span
         aria-hidden
         className={cn(
-          "absolute inset-y-1.5 -left-3 w-[3px] rounded-r-full bg-primary transition-[opacity,scale] duration-280 ease-standard",
+          "absolute inset-y-1.5 -left-3 w-[3px] rounded-r-full bg-primary transition-[opacity,scale] duration-(--dur-standard) ease-standard motion-reduce:transition-none",
           active ? "scale-y-100 opacity-100" : "scale-y-50 opacity-0",
         )}
       />
       <Icon
         className={cn(
-          "size-[18px] shrink-0 transition-colors duration-180",
+          "size-[18px] shrink-0 transition-colors duration-(--dur-quick)",
           active ? "text-primary" : "text-fg-muted/80 group-hover/nav:text-fg",
         )}
       />

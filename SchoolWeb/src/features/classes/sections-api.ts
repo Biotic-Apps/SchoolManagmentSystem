@@ -1,6 +1,7 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { Option } from "@/components/shared/OptionSelect";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type { Section, SectionCreateInput, SectionUpdateInput } from "./types";
 
@@ -22,8 +23,11 @@ type SaveSectionVars = { id: string; input: SectionUpdateInput } | { id?: undefi
 
 export function useSaveSection() {
   return useApiMutation({
-    mutationFn: ({ id, input }: SaveSectionVars) =>
-      id ? http.patch<Section>(`/sections/${id}`, input) : http.post<Section>("/sections", input),
+    mutationFn: withRowFlash(
+      ({ id, input }: SaveSectionVars) =>
+        id ? http.patch<Section>(`/sections/${id}`, input) : http.post<Section>("/sections", input),
+      (result, vars) => vars.id ?? result.data.id,
+    ),
     invalidate: [sectionKeys.all, ["dashboard"]],
     success: (_, vars) => (vars.id ? "Section updated" : "Section created"),
     toastError: false,

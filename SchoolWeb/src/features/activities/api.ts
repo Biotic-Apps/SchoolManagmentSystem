@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type {
   Activity,
@@ -38,8 +39,11 @@ export function useActivity(id: string | null) {
 
 export function useSaveActivity() {
   return useApiMutation({
-    mutationFn: async ({ id, input }: { id?: string; input: ActivityInput }) =>
-      (id ? await http.patch<Activity>(`/activities/${id}`, input) : await http.post<Activity>("/activities", input)).data,
+    mutationFn: withRowFlash(
+      async ({ id, input }: { id?: string; input: ActivityInput }) =>
+        (id ? await http.patch<Activity>(`/activities/${id}`, input) : await http.post<Activity>("/activities", input)).data,
+      (row, vars) => vars.id ?? row.id,
+    ),
     invalidate: [activityKeys.all],
     success: (_, vars) => (vars.id ? "Activity updated" : "Activity proposed"),
     toastError: false,

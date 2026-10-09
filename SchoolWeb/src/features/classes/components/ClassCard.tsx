@@ -39,7 +39,19 @@ export function ClassCard({ item, branchId, sessionId, onOpen }: ClassCardProps)
     >
       <header className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 flex-col">
-          <h3 className="truncate text-card-title font-semibold text-fg">{item.name}</h3>
+          <h3 className="truncate text-card-title font-semibold text-fg">
+            {/* Keyboard route to the same action as clicking the card (the card holds links, so it can't be a button). */}
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onOpen();
+              }}
+              className="max-w-full truncate rounded-sm text-left outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            >
+              {item.name}
+            </button>
+          </h3>
           <p className="text-caption text-fg-muted">
             {countLabel(item.studentCount, "student")} · {countLabel(item.sections.length, "section")}
             {item.status !== "ACTIVE" && " · Archived"}

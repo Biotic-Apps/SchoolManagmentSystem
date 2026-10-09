@@ -1,6 +1,6 @@
 "use client";
 
-import type { FormEventHandler, ReactNode } from "react";
+import type { FormEvent, FormEventHandler, ReactNode } from "react";
 import { FormProvider, type FieldValues, type UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/Button";
 import {
@@ -57,8 +57,17 @@ export function FormDialog<T extends FieldValues>({
   size = "md",
   children,
 }: FormDialogProps<T>) {
+  // Ignore a second Enter / click while the first save is still running.
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    if (submitting) {
+      event.preventDefault();
+      return;
+    }
+    onSubmit(event);
+  };
+
   const body = (
-    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
       <FormAlert message={error} />
       {children}
       <DialogFooter>

@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type { Notice, NoticeInput, NoticeReads } from "./types";
 
@@ -37,8 +38,11 @@ export function useNoticeReads(id: string | null) {
 
 export function useSaveNotice() {
   return useApiMutation({
-    mutationFn: async ({ id, input }: { id?: string; input: NoticeInput }) =>
-      (id ? await http.patch<Notice>(`/notices/${id}`, input) : await http.post<Notice>("/notices", input)).data,
+    mutationFn: withRowFlash(
+      async ({ id, input }: { id?: string; input: NoticeInput }) =>
+        (id ? await http.patch<Notice>(`/notices/${id}`, input) : await http.post<Notice>("/notices", input)).data,
+      (row, vars) => vars.id ?? row.id,
+    ),
     invalidate: [noticeKeys.all],
     toastError: false,
   });

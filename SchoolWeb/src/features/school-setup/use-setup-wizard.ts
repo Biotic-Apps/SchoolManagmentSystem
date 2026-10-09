@@ -79,6 +79,7 @@ export function useSetupWizard() {
   // Enter on any field moves on; on the review step it creates the school.
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (setup.isPending) return;
     if (step < REVIEW) return void goTo(step + 1);
     void form.handleSubmit(create, (errors) => {
       const steps = errorPaths(errors).map(stepForField).filter((index) => index >= 0);

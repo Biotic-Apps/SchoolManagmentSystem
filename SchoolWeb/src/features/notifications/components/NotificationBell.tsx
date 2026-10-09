@@ -25,7 +25,12 @@ export function NotificationBell() {
         <Button variant="ghost" size="icon" aria-label={label} className="relative">
           <Bell />
           {bell.count > 0 && (
-            <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold leading-none text-on-primary">
+            // Keyed by the count: a new number fades in softly instead of snapping.
+            <span
+              key={bell.badge}
+              aria-hidden
+              className="absolute right-1 top-1 grid h-4 min-w-4 animate-fade-in place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold leading-none text-on-primary"
+            >
               {bell.badge}
             </span>
           )}
@@ -46,7 +51,7 @@ export function NotificationBell() {
           {bell.error && <ErrorState error={bell.error} onRetry={bell.retry} className="py-6" />}
           {bell.items?.length === 0 && <EmptyState icon={BellOff} title="You're all caught up" className="py-8" />}
           {bell.items?.map((item) => (
-            <NotificationItem key={item.id} item={item} onSelect={bell.onItemSelect} />
+            <NotificationItem key={item.id} item={item} onSelect={bell.onItemSelect} fresh={bell.isFresh(item)} />
           ))}
         </div>
       </DropdownMenuContent>

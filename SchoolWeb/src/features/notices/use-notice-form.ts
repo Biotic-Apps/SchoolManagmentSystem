@@ -32,6 +32,7 @@ export function useNoticeForm(notice: Notice | null, branchId: string | null, on
   });
 
   const submitWith = (andPublish: boolean) => {
+    if (server.submitting) return;
     publishAfterSave.current = andPublish;
     setLastAction(andPublish ? "publish" : "draft");
     void server.submit();

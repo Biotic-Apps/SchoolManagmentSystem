@@ -27,7 +27,7 @@ export function useLoginForm() {
   const [challengeId, setChallengeId] = useState<string | null>(null);
 
   const submit = form.handleSubmit((values) =>
-    mutation.mutate(values, { onSuccess: (challenge) => setChallengeId(challenge?.challengeId ?? null) }),
+    mutation.isPending ? undefined : mutation.mutate(values, { onSuccess: (challenge) => setChallengeId(challenge?.challengeId ?? null) }),
   );
 
   const backToPassword = () => {

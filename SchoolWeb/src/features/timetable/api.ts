@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http } from "@/lib/http";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type { OverrideInput, Period, TeacherSlot, Timetable, TimetableOverride } from "./types";
@@ -59,6 +59,7 @@ export function useOverrides(branchId: string | null, date: string) {
     queryKey: timetableKeys.overrides(branchId ?? "", date),
     queryFn: async () =>
       (await http.get<TimetableOverride[]>("/timetable-overrides", { branchId, date, pageSize: 100 })).data,
+    placeholderData: keepPreviousData,
     enabled: !!branchId,
   });
 }

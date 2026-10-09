@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, request, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { inventoryKeys } from "./keys";
 import type { Asset, AssetInput } from "./types";
@@ -16,12 +17,15 @@ export function useAssets(params: Query, enabled = true) {
 /** The contract scopes the create by `?branchId=` like the list. */
 export function useSaveAsset(branchId: string, assetId: string | null) {
   return useApiMutation({
-    mutationFn: async (input: AssetInput) => {
-      const result = assetId
-        ? await http.patch<Asset>(`/assets/${assetId}`, input)
-        : await request<Asset>("/assets", { method: "POST", body: input, query: { branchId } });
-      return result.data;
-    },
+    mutationFn: withRowFlash(
+      async (input: AssetInput) => {
+        const result = assetId
+          ? await http.patch<Asset>(`/assets/${assetId}`, input)
+          : await request<Asset>("/assets", { method: "POST", body: input, query: { branchId } });
+        return result.data;
+      },
+      (asset) => assetId ?? asset.id,
+    ),
     invalidate: [inventoryKeys.all],
     success: assetId ? "Asset updated" : "Asset added",
     toastError: false,

@@ -3,7 +3,7 @@ import { cn } from "@/lib/cn";
 import { cardInteractive, cardSelected, cardSurface } from "./styles";
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  /** Hover lift + teal border tint, for cards that open something. */
+  /** Hover lift + teal border tint — only for cards that are (or wrap) a link/button. */
   interactive?: boolean;
   /** Mint fill with a teal border. */
   selected?: boolean;

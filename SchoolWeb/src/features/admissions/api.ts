@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type {
   Application,
@@ -35,8 +36,11 @@ export function useEnquiries(params: Query, enabled = true) {
 
 export function useSaveEnquiry() {
   return useApiMutation({
-    mutationFn: ({ id, input }: { id?: string; input: EnquiryInput | EnquiryUpdate }) =>
-      id ? http.patch<Enquiry>(`/admissions/enquiries/${id}`, input) : http.post<Enquiry>("/admissions/enquiries", input),
+    mutationFn: withRowFlash(
+      ({ id, input }: { id?: string; input: EnquiryInput | EnquiryUpdate }) =>
+        id ? http.patch<Enquiry>(`/admissions/enquiries/${id}`, input) : http.post<Enquiry>("/admissions/enquiries", input),
+      (result, vars) => vars.id ?? result.data.id,
+    ),
     invalidate: INVALIDATE,
     success: (_, vars) => (vars.id ? "Enquiry updated" : "Enquiry added"),
     toastError: false,
@@ -70,11 +74,14 @@ export function useApplication(id: string | null) {
 
 export function useSaveApplication() {
   return useApiMutation({
-    mutationFn: async ({ id, input }: { id?: string; input: ApplicationInput }) =>
-      (id
-        ? await http.patch<Application>(`/admissions/applications/${id}`, input)
-        : await http.post<Application>("/admissions/applications", input)
-      ).data,
+    mutationFn: withRowFlash(
+      async ({ id, input }: { id?: string; input: ApplicationInput }) =>
+        (id
+          ? await http.patch<Application>(`/admissions/applications/${id}`, input)
+          : await http.post<Application>("/admissions/applications", input)
+        ).data,
+      (row, vars) => vars.id ?? row.id,
+    ),
     invalidate: INVALIDATE,
     success: (_, vars) => (vars.id ? "Application updated" : "Application submitted"),
     toastError: false,

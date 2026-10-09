@@ -2,6 +2,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { Option } from "@/components/shared/OptionSelect";
 import { OPTIONS_PAGE } from "@/config/options";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type { Room, RoomInput } from "./types";
 
@@ -27,8 +28,11 @@ export function useRoomOptions(branchId: string | null) {
 
 export function useSaveRoom() {
   return useApiMutation({
-    mutationFn: ({ id, input }: { id?: string; input: RoomInput }) =>
-      id ? http.patch<Room>(`/rooms/${id}`, input) : http.post<Room>("/rooms", input),
+    mutationFn: withRowFlash(
+      ({ id, input }: { id?: string; input: RoomInput }) =>
+        id ? http.patch<Room>(`/rooms/${id}`, input) : http.post<Room>("/rooms", input),
+      (result, vars) => vars.id ?? result.data.id,
+    ),
     // Section rows show room names.
     invalidate: [roomKeys.all, ["sections"]],
     success: (_, vars) => (vars.id ? "Room updated" : "Room added"),

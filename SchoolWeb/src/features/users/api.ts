@@ -2,6 +2,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { Option } from "@/components/shared/OptionSelect";
 import { OPTIONS_PAGE } from "@/config/options";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type { AssignmentInput, CreatedUser, CreateUserInput, UpdateUserInput, UserDetail, UserSummary } from "./types";
 
@@ -40,7 +41,10 @@ export function useUserOptions(role: string, enabled = true) {
 
 export function useCreateUser() {
   return useApiMutation({
-    mutationFn: async (input: CreateUserInput) => (await http.post<CreatedUser>("/users", input)).data,
+    mutationFn: withRowFlash(
+      async (input: CreateUserInput) => (await http.post<CreatedUser>("/users", input)).data,
+      (user) => user.id,
+    ),
     invalidate: [userKeys.all],
     success: "User created",
     toastError: false,
@@ -49,7 +53,7 @@ export function useCreateUser() {
 
 export function useUpdateUser(id: string) {
   return useApiMutation({
-    mutationFn: (input: UpdateUserInput) => http.patch<UserDetail>(`/users/${id}`, input),
+    mutationFn: withRowFlash((input: UpdateUserInput) => http.patch<UserDetail>(`/users/${id}`, input), () => id),
     invalidate: [userKeys.all],
     success: "User updated",
     toastError: false,

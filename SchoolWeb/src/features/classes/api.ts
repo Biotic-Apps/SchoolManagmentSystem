@@ -2,6 +2,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { Option } from "@/components/shared/OptionSelect";
 import { OPTIONS_PAGE } from "@/config/options";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type { SchoolClass, SchoolClassInput, Subject } from "./types";
 
@@ -28,8 +29,11 @@ export function useClassOptions(schoolId: string | null) {
 
 export function useSaveClass() {
   return useApiMutation({
-    mutationFn: ({ id, input }: { id?: string; input: SchoolClassInput }) =>
-      id ? http.patch<SchoolClass>(`/classes/${id}`, input) : http.post<SchoolClass>("/classes", input),
+    mutationFn: withRowFlash(
+      ({ id, input }: { id?: string; input: SchoolClassInput }) =>
+        id ? http.patch<SchoolClass>(`/classes/${id}`, input) : http.post<SchoolClass>("/classes", input),
+      (result, vars) => vars.id ?? result.data.id,
+    ),
     invalidate: [classKeys.all],
     success: (_, vars) => (vars.id ? "Class updated" : "Class created"),
     toastError: false,

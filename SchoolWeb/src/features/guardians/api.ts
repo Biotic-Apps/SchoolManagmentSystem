@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type { GuardianInput } from "@/features/people/types";
 import type { AddedGuardianLink, Guardian, GuardianDetail, LinkGuardianInput } from "./types";
@@ -31,7 +32,7 @@ export function useGuardian(id: string | null) {
 
 export function useUpdateGuardian(id: string) {
   return useApiMutation({
-    mutationFn: (input: Partial<GuardianInput>) => http.patch<Guardian>(`/guardians/${id}`, input),
+    mutationFn: withRowFlash((input: Partial<GuardianInput>) => http.patch<Guardian>(`/guardians/${id}`, input), () => id),
     invalidate: INVALIDATE,
     success: "Guardian updated",
     toastError: false,
