@@ -21,4 +21,14 @@ data class Payslip(
     val status: String?,
     val pdfUrl: String?,
     val currency: String,
-)
+    val breakdown: PayBreakdown = PayBreakdown(),
+) {
+    val earnings: List<PayslipLineItem> get() = breakdown.earnings
+    val deductionItems: List<PayslipLineItem> get() = breakdown.deductionItems
+    val totalEarningsMinor: Long get() = breakdown.totalEarningsMinor
+    val totalDeductionsMinor: Long get() = breakdown.totalDeductionsMinor
+    val overtimeMinutes: Int get() = breakdown.overtimeMinutes
+    val overtimeMinor: Long get() = breakdown.overtimeMinor
+    val attendance: PayAttendance? get() = breakdown.attendance
+    val overtime: PayOvertime? get() = breakdown.overtime
+}

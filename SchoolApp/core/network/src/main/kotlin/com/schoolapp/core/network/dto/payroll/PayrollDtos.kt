@@ -9,7 +9,7 @@ data class PayItemDto(val name: String = "", val amountMinor: Long = 0)
 @Serializable
 data class PayslipDto(
     val month: String = "",
-    val staff: IdNameDto? = null,
+    val staff: PayslipStaffDto? = null,
     val name: String? = null,
     val designation: String? = null,
     val basicMinor: Long = 0,
@@ -20,13 +20,18 @@ data class PayslipDto(
     val unpaidLeaveDays: Double = 0.0,
     val leaveDeductionMinor: Long = 0,
     val adjustmentsMinor: Long = 0,
+    val overtimeMinutes: Int = 0,
+    val overtimeMinor: Long = 0,
+    val grossMinor: Long? = null,
     val netMinor: Long = 0,
     val paidMinor: Long = 0,
     val balanceMinor: Long = 0,
     val status: String? = null,
+    val pdf: PayslipPdfDto? = null,
     val pdfUrl: String? = null,
     val fileUrl: String? = null,
     val currency: String? = null,
+    val breakdown: PayBreakdownDto? = null,
 )
 
 @Serializable
@@ -40,10 +45,14 @@ data class PayrollLineDto(
     val unpaidLeaveDays: Double = 0.0,
     val leaveDeductionMinor: Long = 0,
     val adjustmentsMinor: Long = 0,
+    val overtimeMinutes: Int = 0,
+    val overtimeMinor: Long = 0,
+    val grossMinor: Long? = null,
     val netMinor: Long = 0,
     val paidMinor: Long = 0,
     val balanceMinor: Long = 0,
     val status: String? = null,
+    val breakdown: PayBreakdownDto? = null,
 )
 
 @Serializable

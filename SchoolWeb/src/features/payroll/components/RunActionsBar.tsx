@@ -1,4 +1,4 @@
-import { Calculator, CheckCheck, Lock, Send } from "lucide-react";
+import { Calculator, CheckCheck, Lock, Printer, Send } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import type { RunActionsState } from "../use-run-actions";
 
@@ -9,6 +9,12 @@ export function RunActionsBar({ actions }: { actions: RunActionsState }) {
         <Button variant="secondary" loading={actions.calculating} onClick={actions.startCalculation}>
           <Calculator />
           {actions.calculateLabel}
+        </Button>
+      )}
+      {actions.canPrint && (
+        <Button variant="secondary" loading={actions.printing} onClick={actions.printAll}>
+          <Printer />
+          Print all payslips
         </Button>
       )}
       {actions.canReview && (

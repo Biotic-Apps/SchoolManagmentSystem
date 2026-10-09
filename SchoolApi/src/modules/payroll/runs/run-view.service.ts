@@ -30,7 +30,7 @@ export class RunViewService {
     if (runs.length === 0) return [];
     const runIds = runs.map((r) => r.id);
     const approvalIds = runs.flatMap((r) => currentApprovalId(r) ?? []);
-    const [lines, branches, approvals] = await Promise.all([
+    const [lines, branches, approvals, pendingOvertime] = await Promise.all([
       this.prisma.payrollLine.findMany({
         where: { runId: { in: runIds } },
         include: LINE_INCLUDE,
@@ -43,6 +43,14 @@ export class RunViewService {
       this.prisma.approvalRequest.findMany({
         where: { id: { in: approvalIds } },
         select: { id: true, status: true },
+      }),
+      this.prisma.payrollOvertime.groupBy({
+        by: ['branchId', 'month'],
+        where: {
+          status: 'PENDING',
+          OR: runs.map((r) => ({ branchId: r.branchId, month: r.month })),
+        },
+        _count: { _all: true },
       }),
     ]);
     const names = await this.people.names(
@@ -64,6 +72,10 @@ export class RunViewService {
         branchName: branchName.get(run.branchId) ?? '',
         names,
         approval: (approvalId && approval.get(approvalId)) || null,
+        pendingOvertimeCount:
+          pendingOvertime.find(
+            (p) => p.branchId === run.branchId && p.month === run.month,
+          )?._count._all ?? 0,
       });
     });
   }

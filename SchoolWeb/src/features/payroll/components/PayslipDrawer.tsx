@@ -1,10 +1,8 @@
 "use client";
 
-import { FileText } from "lucide-react";
 import { DetailDrawer } from "@/components/shared/DetailDrawer";
-import { EmptyState } from "@/components/shared/EmptyState";
-import { ErrorState } from "@/components/shared/ErrorState";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { DownloadButton } from "@/components/shared/DownloadButton";
+import { InlineNotice } from "@/components/shared/InlineNotice";
 import { formatPeriod } from "@/lib/period";
 import { useStaffPayslip } from "../payslip-api";
 import type { PayrollLine } from "../types";
@@ -13,22 +11,36 @@ import { PayslipView } from "./PayslipView";
 interface PayslipDrawerProps {
   line: PayrollLine | null;
   month: string;
+  /** PDF payslips exist once the run is approved. */
+  approved: boolean;
   onClose: () => void;
 }
 
-export function PayslipDrawer({ line, month, onClose }: PayslipDrawerProps) {
-  const query = useStaffPayslip(line?.staffId ?? null, month);
+/** Breakdown of one run line; the PDF download appears after approval. */
+export function PayslipDrawer({ line, month, approved, onClose }: PayslipDrawerProps) {
+  const slip = useStaffPayslip(approved ? (line?.staffId ?? null) : null, month);
+  const pdfUrl = slip.data?.pdfUrl ?? null;
   return (
     <DetailDrawer
       open={!!line}
       onOpenChange={(open) => !open && onClose()}
-      title={line ? `Payslip · ${line.name}` : "Payslip"}
+      title={line ? `Salary breakdown · ${line.name}` : "Salary breakdown"}
       description={formatPeriod(month)}
     >
-      {query.isLoading && <Skeleton className="h-64 w-full" />}
-      {!!query.error && <ErrorState error={query.error} onRetry={() => query.refetch()} />}
-      {query.data === null && <EmptyState icon={FileText} title="No payslip for this month" />}
-      {query.data && <PayslipView payslip={query.data} showName={false} />}
+      {line && (
+        <PayslipView
+          line={line}
+          month={month}
+          showName={false}
+          actions={
+            approved ? (
+              <DownloadButton url={pdfUrl} label={slip.isLoading || slip.data?.pdfStatus === "PENDING" ? "Preparing payslip PDF" : "Download payslip PDF"} />
+            ) : (
+              <InlineNotice>The payslip PDF is made when this payroll is approved. Use “Print all payslips” for a draft copy.</InlineNotice>
+            )
+          }
+        />
+      )}
     </DetailDrawer>
   );
 }

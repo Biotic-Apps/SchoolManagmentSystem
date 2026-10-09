@@ -21,21 +21,26 @@ export function StructureFormDialog({ staffId, staffName, current, onClose }: St
     <FormDialog
       open
       onOpenChange={(open) => !open && onClose()}
-      title={`Salary structure · ${staffName}`}
-      submitLabel="Save structure"
+      title={`Salary · ${staffName}`}
+      submitLabel="Save salary"
       submitting={submitting}
       onSubmit={submit}
       form={form}
       error={formError}
       size="lg"
     >
-      <InlineNotice>History is kept; the new structure applies from the chosen month.</InlineNotice>
+      <InlineNotice>Earlier salaries are kept. The new salary applies from the chosen month. Absences, lates and overtime are worked out from attendance each month.</InlineNotice>
       <div className="grid gap-4 sm:grid-cols-2">
         <MonthField name="effectiveFrom" label="Effective from" required />
         <MoneyField name="basic" label="Basic salary" required />
       </div>
       <SalaryItemsFields name="allowances" title="Allowances" itemLabel="Allowance" placeholder="e.g. House rent" rows={allowances} />
       <SalaryItemsFields name="deductions" title="Deductions" itemLabel="Deduction" placeholder="e.g. Provident fund" rows={deductions} />
+      <MoneyField
+        name="overtimeRate"
+        label="Overtime pay per hour (optional)"
+        hint="Leave empty to use the school rule in Pay rules (basic ÷ working hours × multiplier)."
+      />
     </FormDialog>
   );
 }

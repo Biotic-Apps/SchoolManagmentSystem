@@ -16,10 +16,10 @@ export const DESIGNATIONS = [
 
 export const DESIGNATION_OPTIONS: Option[] = DESIGNATIONS.map((id) => ({ id, name: humanize(id) }));
 
-/** Known codes are humanized; legacy free-text designations are shown as stored. */
+/** Codes (incl. PRINCIPAL from payroll) are humanized; legacy free-text designations are shown as stored. */
 export function designationLabel(value: string | null | undefined): string {
   if (!value) return "";
-  return (DESIGNATIONS as readonly string[]).includes(value) ? humanize(value) : value;
+  return (DESIGNATIONS as readonly string[]).includes(value) || /^[A-Z_]+$/.test(value) ? humanize(value) : value;
 }
 
 export const STAFF_STATUSES: StaffStatus[] = ["ACTIVE", "ON_LEAVE", "RESIGNED", "TERMINATED"];

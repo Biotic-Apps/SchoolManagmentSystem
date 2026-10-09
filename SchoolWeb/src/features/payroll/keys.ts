@@ -9,4 +9,7 @@ export const payrollKeys = {
   adjustments: (params: Query) => ["payroll", "adjustments", params] as const,
   payslip: (staffId: string | null, month: string) => ["payroll", "payslip", staffId, month] as const,
   myPayslip: (month: string) => ["payroll", "payslip", "me", month] as const,
+  settings: (branchId: string | null) => ["payroll", "settings", branchId] as const,
+  overtime: (branchId: string | null, month: string) => ["payroll", "overtime", branchId, month] as const,
+  staff: (branchId: string | null, designation: string | undefined) => ["payroll", "staff", branchId, designation] as const,
 };

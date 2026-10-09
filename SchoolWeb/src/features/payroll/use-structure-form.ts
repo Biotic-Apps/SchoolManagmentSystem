@@ -15,6 +15,7 @@ function defaults(current: SalaryStructure | null): StructureValues {
     basic: toMoneyText(current?.basicMinor),
     allowances: toRows(current?.allowances),
     deductions: toRows(current?.deductions),
+    overtimeRate: current?.overtimeRateMinor ? toMoneyText(current.overtimeRateMinor) : "",
   };
 }
 

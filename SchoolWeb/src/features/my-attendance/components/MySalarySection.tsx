@@ -1,6 +1,7 @@
 "use client";
 
 import { WalletCards } from "lucide-react";
+import { DownloadButton } from "@/components/shared/DownloadButton";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { PeriodStepper } from "@/components/shared/PeriodStepper";
@@ -30,12 +31,17 @@ export function MySalarySection() {
           <EmptyState
             icon={WalletCards}
             title="No payslip for this month"
-            description="Your payslip appears here once the month's payroll is calculated."
+            description="Your payslip appears here once the school approves this month's payroll. Try the previous month."
           />
         )}
         {mine.payslip && (
           <CardContent>
-            <PayslipView payslip={mine.payslip} showName={false} />
+            <PayslipView
+              line={mine.payslip}
+              month={mine.payslip.month}
+              showName={false}
+              actions={<DownloadButton url={mine.payslip.pdfUrl} label="Download payslip PDF" />}
+            />
           </CardContent>
         )}
       </Card>

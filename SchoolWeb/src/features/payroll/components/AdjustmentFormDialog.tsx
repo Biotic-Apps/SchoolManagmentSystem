@@ -30,14 +30,17 @@ export function AdjustmentFormDialog({ month, staffId, staffOptions, onClose }: 
       form={form}
       error={formError}
     >
-      <InlineNotice>Adjustments are approved together with the month&apos;s payroll run.</InlineNotice>
+      <InlineNotice>
+        Bonus and arrears are added to pay. Deductions, fines and advance or loan recoveries are taken off. They show on the payslip
+        and are applied when the month&apos;s payroll is approved.
+      </InlineNotice>
       <SelectField name="staffId" label="Staff member" options={staffOptions} placeholder="Select staff member" required />
       <div className="grid gap-4 sm:grid-cols-2">
         <MonthField name="month" label="Month" required />
         <SelectField name="kind" label="Kind" options={ADJUSTMENT_KIND_OPTIONS} placeholder="Select kind" required />
       </div>
       <MoneyField name="amount" label="Amount" required />
-      <TextareaField name="reason" label="Reason" required placeholder="e.g. Eid bonus" />
+      <TextareaField name="reason" label="Reason" required placeholder="e.g. Eid bonus, loan instalment 2 of 5" />
     </FormDialog>
   );
 }

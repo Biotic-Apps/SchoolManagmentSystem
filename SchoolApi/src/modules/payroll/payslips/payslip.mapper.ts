@@ -2,6 +2,7 @@ import type { Prisma } from '../../../generated/prisma/client';
 import { formatDate } from '../../../core/common/dates';
 import { parseLineDetail } from '../calculation/line-detail';
 import { adjustmentSign } from '../calculation/payroll-calc';
+import { buildBreakdown } from './breakdown';
 import type { PayslipDto, PayslipPdfDto } from './dto/payslip.dto';
 
 export const PAYSLIP_INCLUDE = {
@@ -43,6 +44,8 @@ export function toPayslipDto(
     basicMinor: Number(line.basicMinor),
     allowances: detail.allowances,
     deductions: detail.deductions,
+    allowancesMinor: Number(line.allowancesMinor),
+    deductionsMinor: Number(line.deductionsMinor),
     grossMinor: Number(line.basicMinor + line.allowancesMinor),
     workingDays: line.workingDays,
     unpaidLeaveDays: Number(line.unpaidLeaveDays),
@@ -53,6 +56,10 @@ export function toPayslipDto(
       signedMinor: Number(adjustmentSign(a.kind)) * a.amountMinor,
       reason: a.reason,
     })),
+    adjustmentsMinor: Number(line.adjustmentsMinor),
+    overtimeMinutes: line.overtimeMinutes,
+    overtimeMinor: Number(line.overtimeMinor),
+    breakdown: buildBreakdown(line, detail),
     netMinor: Number(line.netMinor),
     paidMinor: Number(line.paidMinor),
     balanceMinor: Number(line.netMinor - line.paidMinor),

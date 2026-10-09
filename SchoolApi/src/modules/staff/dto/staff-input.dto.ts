@@ -72,9 +72,10 @@ export class UpdateStaffDto {
   @MaxLength(30)
   employeeNo?: string;
 
+  // PRINCIPAL: a principal's payroll record (created from Salary & Payroll) stays editable.
   @IsOptional()
-  @IsIn(DESIGNATIONS)
-  designation?: Designation;
+  @IsIn([...DESIGNATIONS, 'PRINCIPAL'])
+  designation?: Designation | 'PRINCIPAL';
 
   @IsOptionalDateOnly()
   joinDate?: string;

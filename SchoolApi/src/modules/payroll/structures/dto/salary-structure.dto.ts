@@ -61,6 +61,16 @@ export class PutSalaryStructureDto {
   @IsString()
   @MaxLength(500)
   reason?: string;
+
+  @ApiPropertyOptional({
+    nullable: true,
+    description: 'Fixed overtime pay per hour; empty = school rule',
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(Number.MAX_SAFE_INTEGER)
+  overtimeRateMinor?: number | null;
 }
 
 export class SalaryStructureDto {
@@ -77,6 +87,8 @@ export class SalaryStructureDto {
   deductionsMinor!: number;
   @ApiProperty({ description: 'basic + allowances' })
   grossMinor!: number;
+  @ApiPropertyOptional({ nullable: true })
+  overtimeRateMinor!: number | null;
   reason!: string | null;
   createdBy!: IdNameDto | null;
   createdAt!: string;

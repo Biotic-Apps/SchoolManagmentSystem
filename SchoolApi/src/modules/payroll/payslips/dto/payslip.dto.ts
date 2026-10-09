@@ -25,8 +25,60 @@ export class PayslipStaffDto {
   employeeNo!: string | null;
 }
 
+export class BreakdownItemDto {
+  label!: string;
+  @ApiPropertyOptional({ nullable: true, description: 'How it was worked out' })
+  note!: string | null;
+  amountMinor!: number;
+}
+
+export class AttendanceSummaryDto {
+  calendarDays!: number;
+  payDays!: number;
+  present!: number;
+  late!: number;
+  absent!: number;
+  halfDays!: number;
+  paidLeave!: number;
+  unpaidLeave!: number;
+  unmarked!: number;
+  @ApiProperty({ enum: ['GROSS', 'BASIC'] })
+  perDayBase!: string;
+  perDayMinor!: number;
+  absenceHalfDays!: number;
+  absenceDeductionMinor!: number;
+  latesPerDeduction!: number;
+  lateDeductionDays!: number;
+  lateHalfDays!: number;
+  lateDeductionMinor!: number;
+}
+
+export class OvertimeSummaryDto {
+  minutes!: number;
+  hourlyRateMinor!: number;
+  @ApiPropertyOptional({ nullable: true })
+  multiplier!: number | null;
+  dailyHours!: number;
+  amountMinor!: number;
+  entryIds!: string[];
+  pendingMinutes!: number;
+}
+
+export class PayBreakdownDto {
+  @ApiProperty({ type: [BreakdownItemDto] })
+  earnings!: BreakdownItemDto[];
+  @ApiProperty({ type: [BreakdownItemDto] })
+  deductions!: BreakdownItemDto[];
+  totalEarningsMinor!: number;
+  totalDeductionsMinor!: number;
+  @ApiPropertyOptional({ type: AttendanceSummaryDto, nullable: true })
+  attendance!: AttendanceSummaryDto | null;
+  @ApiPropertyOptional({ type: OvertimeSummaryDto, nullable: true })
+  overtime!: OvertimeSummaryDto | null;
+}
+
 export class PayslipAdjustmentDto {
-  @ApiProperty({ enum: ['BONUS', 'DEDUCTION', 'ADVANCE', 'ARREAR'] })
+  @ApiProperty({ enum: ['BONUS', 'DEDUCTION', 'ADVANCE', 'ARREAR', 'FINE'] })
   kind!: string;
   amountMinor!: number;
   @ApiProperty({ description: 'Effect on net pay' })
@@ -51,12 +103,20 @@ export class PayslipDto {
   allowances!: PayComponentDto[];
   @ApiProperty({ type: [PayComponentDto] })
   deductions!: PayComponentDto[];
+  allowancesMinor!: number;
+  deductionsMinor!: number;
   grossMinor!: number;
   workingDays!: number;
   unpaidLeaveDays!: number;
   leaveDeductionMinor!: number;
   @ApiProperty({ type: [PayslipAdjustmentDto] })
   adjustments!: PayslipAdjustmentDto[];
+  @ApiProperty({ description: 'Signed sum of adjustments' })
+  adjustmentsMinor!: number;
+  overtimeMinutes!: number;
+  overtimeMinor!: number;
+  @ApiProperty({ type: PayBreakdownDto })
+  breakdown!: PayBreakdownDto;
   netMinor!: number;
   paidMinor!: number;
   balanceMinor!: number;

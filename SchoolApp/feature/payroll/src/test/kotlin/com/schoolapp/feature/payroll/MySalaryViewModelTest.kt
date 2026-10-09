@@ -29,6 +29,9 @@ class MySalaryViewModelTest {
         assertTrue(state.secure)
         assertEquals(YearMonth.of(2026, 10), state.month)
         assertEquals("2026-10", state.payslip?.month)
+        assertEquals(3, state.payslip?.earnings?.size)
+        assertEquals(27, state.payslip?.attendance?.payDays)
+        assertEquals(180, state.payslip?.overtimeMinutes)
         assertEquals(listOf("2026-10"), repository.payslipCalls)
     }
 

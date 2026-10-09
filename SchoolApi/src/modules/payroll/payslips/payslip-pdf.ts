@@ -1,6 +1,7 @@
 import { PdfBuilder } from '../../generated-docs/pdf-builder';
 import { formatMinor } from '../../finance-core/money';
-import type { PayslipDto } from './dto/payslip.dto';
+import { hoursText } from './breakdown';
+import type { BreakdownItemDto, PayslipDto } from './dto/payslip.dto';
 
 export interface PayslipHeader {
   schoolName: string;
@@ -10,73 +11,91 @@ export interface PayslipHeader {
 
 const money = (value: number) => formatMinor(BigInt(value));
 
-/** A4 salary slip. Payment status is not printed (it changes after issue). */
-export function renderPayslip(
+const COLUMNS = [
+  { header: 'Item', weight: 1.6 },
+  { header: 'How it was worked out', weight: 3.4 },
+  { header: 'Amount', weight: 1.2, align: 'right' as const },
+];
+
+const rows = (items: BreakdownItemDto[], label: string, total: number) => [
+  ...items.map((i) => [i.label, i.note ?? '', money(i.amountMinor)]),
+  [label, '', money(total)],
+];
+
+function attendanceFields(slip: PayslipDto): [string, string][] {
+  const a = slip.breakdown.attendance;
+  if (!a) {
+    return [
+      ['Working days', String(slip.workingDays)],
+      ['Unpaid leave days', slip.unpaidLeaveDays.toFixed(1)],
+    ];
+  }
+  return [
+    ['Working days', String(a.payDays)],
+    ['Present', String(a.present)],
+    ['Late', String(a.late)],
+    ['Absent', String(a.absent)],
+    ['Half days', String(a.halfDays)],
+    ['Paid leave', String(a.paidLeave)],
+    ['Unpaid leave', String(a.unpaidLeave)],
+    ['Overtime (approved)', hoursText(slip.overtimeMinutes)],
+  ];
+}
+
+/** Draws one payslip on the current page. Payment status is not printed (it changes after issue). */
+function drawPayslip(
+  pdf: PdfBuilder,
   slip: PayslipDto,
   header: PayslipHeader,
-): Promise<Buffer> {
-  const pdf = new PdfBuilder()
+  draft = false,
+) {
+  const b = slip.breakdown;
+  if (draft) pdf.watermark('DRAFT - NOT APPROVED');
+  pdf
     .header(header.schoolName, header.branchLine, `Payslip — ${slip.month}`)
     .fields([
       ['Name', slip.staff.name],
       ['Employee no.', slip.staff.employeeNo ?? '-'],
-      ['Designation', slip.staff.designation],
+      ['Designation', slip.staff.designation.replace(/_/g, ' ')],
       ['Month', slip.month],
-      ['Working days', String(slip.workingDays)],
-      ['Unpaid leave days', slip.unpaidLeaveDays.toFixed(1)],
-    ]);
-
-  const earnings: string[][] = [
-    ['Basic salary', money(slip.basicMinor)],
-    ...slip.allowances.map((a) => [a.name, money(a.amountMinor)]),
-    ...slip.adjustments
-      .filter((a) => a.signedMinor > 0)
-      .map((a) => [
-        `${a.kind.toLowerCase()}: ${a.reason}`,
-        money(a.amountMinor),
-      ]),
-  ];
-  const deductions: string[][] = [
-    ...slip.deductions.map((d) => [d.name, money(d.amountMinor)]),
-    ...(slip.leaveDeductionMinor > 0
-      ? [['Unpaid leave', money(slip.leaveDeductionMinor)]]
-      : []),
-    ...slip.adjustments
-      .filter((a) => a.signedMinor < 0)
-      .map((a) => [
-        `${a.kind.toLowerCase()}: ${a.reason}`,
-        money(a.amountMinor),
-      ]),
-  ];
-  const columns = [
-    { header: 'Item', weight: 3 },
-    { header: 'Amount', weight: 1, align: 'right' as const },
-  ];
-  const total = (rows: string[][], label: string, sum: number) => [
-    ...rows,
-    [label, money(sum)],
-  ];
-  const sum = (rows: { signedMinor: number }[]) =>
-    rows.reduce((acc, r) => acc + Math.abs(r.signedMinor), 0);
-  const earned =
-    slip.grossMinor + sum(slip.adjustments.filter((a) => a.signedMinor > 0));
-  const deducted =
-    slip.deductions.reduce((acc, d) => acc + d.amountMinor, 0) +
-    slip.leaveDeductionMinor +
-    sum(slip.adjustments.filter((a) => a.signedMinor < 0));
-
-  pdf
+      ...attendanceFields(slip),
+    ])
     .heading('Earnings')
-    .table(columns, total(earnings, 'Total earnings', earned), {
+    .table(COLUMNS, rows(b.earnings, 'Total earnings', b.totalEarningsMinor), {
       boldLastRow: true,
     })
     .heading('Deductions')
-    .table(columns, total(deductions, 'Total deductions', deducted), {
-      boldLastRow: true,
-    })
+    .table(
+      COLUMNS,
+      rows(b.deductions, 'Total deductions', b.totalDeductionsMinor),
+      { boldLastRow: true },
+    )
     .heading(`Net pay: ${money(slip.netMinor)}`)
     .footer(
       `Computer-generated payslip, version ${header.version}. No signature required.`,
     );
+}
+
+/** A4 salary slip of one staff member. */
+export function renderPayslip(
+  slip: PayslipDto,
+  header: PayslipHeader,
+): Promise<Buffer> {
+  const pdf = new PdfBuilder();
+  drawPayslip(pdf, slip, header);
+  return pdf.toBuffer();
+}
+
+/** All payslips of a run, one per page (bulk print); unapproved runs print as drafts. */
+export function renderPayslips(
+  slips: PayslipDto[],
+  header: PayslipHeader,
+  draft: boolean,
+): Promise<Buffer> {
+  const pdf = new PdfBuilder();
+  slips.forEach((slip, index) => {
+    if (index > 0) pdf.doc.addPage();
+    drawPayslip(pdf, slip, header, draft);
+  });
   return pdf.toBuffer();
 }

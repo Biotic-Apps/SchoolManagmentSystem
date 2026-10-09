@@ -28,11 +28,38 @@ describe('payroll calculation', () => {
     expect(line.netMinor).toBe(3_550_000n);
   });
 
-  it('deducts unpaid leave pro rata on basic over working days', () => {
-    // 2 full days of 20: 3,000,000 × 4 / 40 = 300,000
+  it('deducts unpaid days pro rata on gross over working days by default', () => {
+    // 2 full days of 20: 3,700,000 × 4 / 40 = 370,000
     const line = calculateLine({ ...base, unpaidHalfDays: 4 });
+    expect(line.perDayMinor).toBe(185_000n);
+    expect(line.absenceDeductionMinor).toBe(370_000n);
+    expect(line.leaveDeductionMinor).toBe(370_000n);
+    expect(line.netMinor).toBe(3_180_000n);
+  });
+
+  it('can deduct on basic only', () => {
+    // 3,000,000 × 4 / 40 = 300,000
+    const line = calculateLine({
+      ...base,
+      unpaidHalfDays: 4,
+      perDayBase: 'BASIC',
+    });
     expect(line.leaveDeductionMinor).toBe(300_000n);
     expect(line.netMinor).toBe(3_250_000n);
+  });
+
+  it('adds the late rule and overtime to the line', () => {
+    // 1 absent day + 1 late day of 20 on gross: 185,000 each; overtime +60,000
+    const line = calculateLine({
+      ...base,
+      unpaidHalfDays: 2,
+      lateHalfDays: 2,
+      overtimeMinor: 60_000n,
+    });
+    expect(line.absenceDeductionMinor).toBe(185_000n);
+    expect(line.lateDeductionMinor).toBe(185_000n);
+    expect(line.overtimeMinor).toBe(60_000n);
+    expect(line.netMinor).toBe(3_550_000n - 370_000n + 60_000n);
   });
 
   it('counts a half day as half of a day', () => {
@@ -59,6 +86,7 @@ describe('payroll calculation', () => {
     expect(adjustmentSign('ARREAR')).toBe(1n);
     expect(adjustmentSign('DEDUCTION')).toBe(-1n);
     expect(adjustmentSign('ADVANCE')).toBe(-1n);
+    expect(adjustmentSign('FINE')).toBe(-1n);
     const line = calculateLine({
       ...base,
       adjustments: [

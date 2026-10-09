@@ -26,6 +26,8 @@ export function toSalaryStructureDto(
     allowancesMinor: Number(allowancesMinor),
     deductionsMinor: Number(deductionsMinor),
     grossMinor: Number(row.basicMinor + allowancesMinor),
+    overtimeRateMinor:
+      row.overtimeRateMinor === null ? null : Number(row.overtimeRateMinor),
     reason: row.reason,
     createdBy: name ? { id: row.createdById, name } : null,
     createdAt: row.createdAt.toISOString(),

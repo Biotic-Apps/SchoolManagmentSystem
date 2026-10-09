@@ -17,6 +17,7 @@ enum PayrollAdjustmentKind {
   DEDUCTION
   ADVANCE
   ARREAR
+  FINE
 
   @@map("payroll_adjustment_kind")
 }
@@ -38,17 +39,19 @@ enum PayrollLineStatus {
 }
 
 model SalaryStructure {
-  id            String   @id @default(uuid(7)) @db.Uuid
-  schoolId      String   @map("school_id") @db.Uuid
-  branchId      String   @map("branch_id") @db.Uuid
-  staffId       String   @map("staff_id") @db.Uuid
-  effectiveFrom String   @map("effective_from") @db.VarChar(7)
-  basicMinor    BigInt   @map("basic_minor")
-  allowances    Json
-  deductions    Json
-  reason        String?
-  createdById   String   @map("created_by_id") @db.Uuid
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  id                String   @id @default(uuid(7)) @db.Uuid
+  schoolId          String   @map("school_id") @db.Uuid
+  branchId          String   @map("branch_id") @db.Uuid
+  staffId           String   @map("staff_id") @db.Uuid
+  effectiveFrom     String   @map("effective_from") @db.VarChar(7)
+  basicMinor        BigInt   @map("basic_minor")
+  allowances        Json
+  deductions        Json
+  reason            String?
+  // Fixed overtime pay per hour; null = school rule (basic ÷ hours × multiplier).
+  overtimeRateMinor BigInt?  @map("overtime_rate_minor")
+  createdById       String   @map("created_by_id") @db.Uuid
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
 
   staff Staff @relation("StaffSalaryStructures", fields: [staffId], references: [id], onDelete: Restrict)
 
@@ -124,6 +127,8 @@ model PayrollLine {
   unpaidLeaveDays     Decimal           @map("unpaid_leave_days") @db.Decimal(5, 1)
   leaveDeductionMinor BigInt            @map("leave_deduction_minor")
   adjustmentsMinor    BigInt            @map("adjustments_minor")
+  overtimeMinutes     Int               @default(0) @map("overtime_minutes")
+  overtimeMinor       BigInt            @default(0) @map("overtime_minor")
   netMinor            BigInt            @map("net_minor")
   paidMinor           BigInt            @default(0) @map("paid_minor")
   status              PayrollLineStatus @default(UNPAID)
@@ -161,4 +166,73 @@ model PayrollPayment {
   @@index([runId])
   @@index([lineId])
   @@map("payroll_payments")
+}
+
+enum PayrollOvertimeSource {
+  ATTENDANCE
+  MANUAL
+
+  @@map("payroll_overtime_source")
+}
+
+enum PayrollOvertimeStatus {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@map("payroll_overtime_status")
+}
+
+/**
+ * School-wide payroll rules (one row per school; defaults when missing).
+ */
+model PayrollSettings {
+  schoolId             String   @id @map("school_id") @db.Uuid
+  // CALENDAR = school working days of the month; FIXED = fixedWorkingDays.
+  workingDaysMode      String   @default("CALENDAR") @map("working_days_mode")
+  fixedWorkingDays     Int      @default(26) @map("fixed_working_days")
+  // Salary a day is worth: GROSS (basic + allowances) or BASIC.
+  perDayBase           String   @default("GROSS") @map("per_day_base")
+  // Every N late marks cost lateDeductionDays; 0 = lates never deduct.
+  latesPerDeduction    Int      @default(3) @map("lates_per_deduction")
+  lateDeductionDays    Decimal  @default(1) @map("late_deduction_days") @db.Decimal(3, 1)
+  overtimeEnabled      Boolean  @default(true) @map("overtime_enabled")
+  overtimeMultiplier   Decimal  @default(1.5) @map("overtime_multiplier") @db.Decimal(4, 2)
+  // Minutes after the staff leave time before overtime starts counting.
+  overtimeGraceMinutes Int      @default(15) @map("overtime_grace_minutes")
+  // Paid hours a day; null = branch staff arrive → leave time.
+  dailyHours           Decimal? @map("daily_hours") @db.Decimal(4, 2)
+  updatedById          String?  @map("updated_by_id") @db.Uuid
+  updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("payroll_settings")
+}
+
+/**
+ * Extra hours worked; only APPROVED entries are paid.
+ */
+model PayrollOvertime {
+  id           String                @id @default(uuid(7)) @db.Uuid
+  schoolId     String                @map("school_id") @db.Uuid
+  branchId     String                @map("branch_id") @db.Uuid
+  staffId      String                @map("staff_id") @db.Uuid
+  month        String                @db.VarChar(7)
+  date         DateTime              @db.Date
+  minutes      Int
+  source       PayrollOvertimeSource
+  status       PayrollOvertimeStatus @default(PENDING)
+  reason       String?
+  runId        String?               @map("run_id") @db.Uuid
+  createdById  String?               @map("created_by_id") @db.Uuid
+  decidedById  String?               @map("decided_by_id") @db.Uuid
+  decidedAt    DateTime?             @map("decided_at") @db.Timestamptz(3)
+  decisionNote String?               @map("decision_note")
+  createdAt    DateTime              @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime              @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  staff Staff @relation("StaffPayrollOvertime", fields: [staffId], references: [id], onDelete: Restrict)
+
+  @@unique([staffId, date, source])
+  @@index([branchId, month])
+  @@map("payroll_overtime")
 }

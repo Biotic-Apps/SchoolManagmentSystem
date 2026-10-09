@@ -16,8 +16,8 @@ internal fun PayslipDto.toModel(): Payslip {
     val deductionItems = deductions.map { PayItem(it.name, it.amountMinor) }
     return Payslip(
         month = month,
-        staffName = staff?.name ?: name.orEmpty(),
-        designation = designation,
+        staffName = staff?.name?.takeIf { it.isNotBlank() } ?: name.orEmpty(),
+        designation = staff?.designation ?: designation,
         basicMinor = basicMinor,
         allowances = allowanceItems,
         deductions = deductionItems,
@@ -30,8 +30,9 @@ internal fun PayslipDto.toModel(): Payslip {
         paidMinor = paidMinor,
         balanceMinor = balanceMinor,
         status = status,
-        pdfUrl = pdfUrl ?: fileUrl,
+        pdfUrl = pdf?.fileUrl ?: pdfUrl ?: fileUrl,
         currency = currency ?: DEFAULT_CURRENCY,
+        breakdown = breakdown.toModel(overtimeMinutes, overtimeMinor),
     )
 }
 
@@ -49,6 +50,7 @@ private fun PayrollLineDto.toModel() = PayrollLine(
     paidMinor = paidMinor,
     balanceMinor = balanceMinor,
     status = status,
+    breakdown = breakdown.toModel(overtimeMinutes, overtimeMinor),
 )
 
 /** Totals fall back to the sum of the lines when the list endpoint leaves them out. */

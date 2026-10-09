@@ -30,10 +30,16 @@ export function RunOverview({ run, lines }: { run: PayrollRun; lines: PayrollLin
         <JobProgressNotice
           jobId={actions.jobId}
           label="Calculating salaries"
-          doneLabel="Salaries calculated. Check the lines, then mark the run as reviewed."
+          doneLabel="Salaries calculated from salary structures, attendance, approved leave, overtime and adjustments. Check the lines, then mark the run as reviewed."
           invalidate={[payrollKeys.all]}
         />
         {actions.awaitingApproval && <InlineNotice tone="warning">Waiting for approval. Payments open once the run is approved.</InlineNotice>}
+        {!!run.pendingOvertimeCount && (
+          <InlineNotice tone="warning">
+            {run.pendingOvertimeCount} overtime {run.pendingOvertimeCount === 1 ? "entry is" : "entries are"} waiting for approval and not paid
+            yet. Approve them in the Overtime tab, then recalculate.
+          </InlineNotice>
+        )}
         {actions.canClose && !actions.closeEnabled && (
           <InlineNotice>The run can be closed once every salary is fully paid.</InlineNotice>
         )}

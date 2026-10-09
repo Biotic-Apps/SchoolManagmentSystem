@@ -5,6 +5,8 @@ import type {
 } from '../../../generated/prisma/client';
 import type { IdNameDto } from '../../../core/common/dto/id-name.dto';
 import { sumMinor } from '../../finance-core/money';
+import { parseLineDetail } from '../calculation/line-detail';
+import { buildBreakdown } from '../payslips/breakdown';
 import type { PayrollLineDto, PayrollRunDto } from './dto/run.dto';
 
 export const LINE_INCLUDE = {
@@ -21,6 +23,7 @@ export interface RunContext {
   branchName: string;
   names: ReadonlyMap<string, string>;
   approval: { id: string; status: ApprovalStatus } | null;
+  pendingOvertimeCount: number;
 }
 
 export function toLineDto(line: LineRow): PayrollLineDto {
@@ -37,6 +40,10 @@ export function toLineDto(line: LineRow): PayrollLineDto {
     unpaidLeaveDays: Number(line.unpaidLeaveDays),
     leaveDeductionMinor: Number(line.leaveDeductionMinor),
     adjustmentsMinor: Number(line.adjustmentsMinor),
+    overtimeMinutes: line.overtimeMinutes,
+    overtimeMinor: Number(line.overtimeMinor),
+    grossMinor: Number(line.basicMinor + line.allowancesMinor),
+    breakdown: buildBreakdown(line, parseLineDetail(line.detail)),
     netMinor: Number(line.netMinor),
     paidMinor: Number(line.paidMinor),
     balanceMinor: Number(line.netMinor - line.paidMinor),
@@ -76,6 +83,7 @@ export function toRunDto(
       paidMinor: Number(paid),
       balanceMinor: Number(net - paid),
     },
+    pendingOvertimeCount: context.pendingOvertimeCount,
     lines: run.lines.map(toLineDto),
     version: run.version,
     createdAt: run.createdAt.toISOString(),

@@ -1,3 +1,4 @@
+import { formatMoney } from "@/lib/format";
 import { formatPeriod } from "@/lib/period";
 import { structureTotals } from "../normalize";
 import type { SalaryStructure } from "../types";
@@ -24,7 +25,11 @@ export function StructureSummary({ structure }: { structure: SalaryStructure }) 
         title="Deductions"
         rows={[...itemRows(structure.deductions), { label: "Total deductions", amountMinor: totals.deductions, total: true }]}
       />
-      <AmountList rows={[{ label: "Net salary", amountMinor: totals.net, total: true }]} />
+      <AmountList rows={[{ label: "Net salary (before attendance and overtime)", amountMinor: totals.net, total: true }]} />
+      <p className="text-label text-fg-muted">
+        Overtime:{" "}
+        {structure.overtimeRateMinor ? `fixed ${formatMoney(structure.overtimeRateMinor)} an hour` : "paid by the school rule in Pay rules"}
+      </p>
     </div>
   );
 }

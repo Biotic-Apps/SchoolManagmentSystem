@@ -6,13 +6,13 @@ import { useDialogState } from "@/lib/use-dialog-state";
 import { adjustmentColumns } from "./adjustment-columns";
 import { usePayrollAdjustments } from "./adjustments-api";
 
-/** Bonuses, deductions, advances and arrears for a month, optionally for one staff member. */
+/** Bonuses, arrears, deductions, fines and advance recoveries of a branch month, optionally for one staff member. */
 export function useAdjustmentsTab(branchId: string | null) {
   const can = useCan();
   const [month, setMonth] = useState(currentPeriod());
   const [staffId, setStaffId] = useState<string | undefined>(undefined);
   const staff = useStaffOptions(branchId);
-  const query = usePayrollAdjustments({ month, staffId });
+  const query = usePayrollAdjustments({ branchId, month, staffId });
   const create = useDialogState<true>();
 
   const columns = useMemo(() => {

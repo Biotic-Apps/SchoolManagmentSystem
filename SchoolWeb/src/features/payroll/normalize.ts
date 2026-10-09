@@ -1,4 +1,4 @@
-import type { PayrollLine, Payslip, SalaryStructure, SalaryStructureHistory } from "./types";
+import type { PayBreakdown, PayrollLine, Payslip, SalaryStructure, SalaryStructureHistory } from "./types";
 
 type Loose = Record<string, unknown>;
 
@@ -16,27 +16,51 @@ export function listFrom<T>(value: unknown): T[] {
 const num = (value: unknown): number => (typeof value === "number" ? value : 0);
 const text = (value: unknown): string | null => (typeof value === "string" && value ? value : null);
 
-/** Payslip as a flat line (+ month, pdfUrl/fileUrl) or nested `{ payslip, pdfUrl }`. */
+const sumAmounts = (value: unknown): number =>
+  Array.isArray(value) ? value.reduce((total: number, item) => total + (isRecord(item) ? num(item.amountMinor) : 0), 0) : 0;
+
+/** Breakdown as sent by the API; older lines have none (null). */
+function toBreakdown(value: unknown): PayBreakdown | null {
+  if (!isRecord(value) || !Array.isArray(value.earnings)) return null;
+  return value as unknown as PayBreakdown;
+}
+
+/**
+ * GET /payslips/:staffId|me → `{ staff: { id, name, designation }, month, …, breakdown, pdf: { fileUrl } }`.
+ * Flat line shapes (staffId/name at the top) are read too.
+ */
 export function toPayslip(raw: unknown): Payslip | null {
   if (!isRecord(raw)) return null;
-  const line = isRecord(raw.payslip) ? raw.payslip : isRecord(raw.line) ? raw.line : raw;
-  if (!text(line.staffId) && !text(line.name)) return null;
+  const staff = isRecord(raw.staff) ? raw.staff : {};
+  const pdf = isRecord(raw.pdf) ? raw.pdf : {};
+  const staffId = text(staff.id) ?? text(raw.staffId);
+  const name = text(staff.name) ?? text(raw.name);
+  if (!staffId && !name) return null;
+  const basic = num(raw.basicMinor);
+  const allowances = typeof raw.allowancesMinor === "number" ? raw.allowancesMinor : sumAmounts(raw.allowances);
   return {
-    staffId: text(line.staffId) ?? "",
-    name: text(line.name) ?? "",
-    designation: text(line.designation),
-    basicMinor: num(line.basicMinor),
-    allowancesMinor: num(line.allowancesMinor),
-    deductionsMinor: num(line.deductionsMinor),
-    unpaidLeaveDays: num(line.unpaidLeaveDays),
-    leaveDeductionMinor: num(line.leaveDeductionMinor),
-    adjustmentsMinor: num(line.adjustmentsMinor),
-    netMinor: num(line.netMinor),
-    paidMinor: num(line.paidMinor),
-    balanceMinor: num(line.balanceMinor),
-    status: text(line.status) ?? "",
-    month: text(line.month) ?? text(raw.month),
-    pdfUrl: text(raw.pdfUrl) ?? text(raw.fileUrl) ?? text(line.pdfUrl) ?? text(line.fileUrl),
+    staffId: staffId ?? "",
+    name: name ?? "",
+    designation: text(staff.designation) ?? text(raw.designation),
+    employeeNo: text(staff.employeeNo),
+    basicMinor: basic,
+    allowancesMinor: allowances,
+    deductionsMinor: typeof raw.deductionsMinor === "number" ? raw.deductionsMinor : sumAmounts(raw.deductions),
+    grossMinor: num(raw.grossMinor) || basic + allowances,
+    workingDays: num(raw.workingDays),
+    unpaidLeaveDays: num(raw.unpaidLeaveDays),
+    leaveDeductionMinor: num(raw.leaveDeductionMinor),
+    adjustmentsMinor: num(raw.adjustmentsMinor),
+    overtimeMinutes: num(raw.overtimeMinutes),
+    overtimeMinor: num(raw.overtimeMinor),
+    breakdown: toBreakdown(raw.breakdown),
+    netMinor: num(raw.netMinor),
+    paidMinor: num(raw.paidMinor),
+    balanceMinor: num(raw.balanceMinor),
+    status: text(raw.status) ?? "",
+    month: text(raw.month),
+    pdfUrl: text(pdf.fileUrl) ?? text(raw.pdfUrl) ?? text(raw.fileUrl),
+    pdfStatus: text(pdf.status),
   };
 }
 

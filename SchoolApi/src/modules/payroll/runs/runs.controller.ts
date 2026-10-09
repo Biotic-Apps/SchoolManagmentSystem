@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Post,
   Query,
+  StreamableFile,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../../core/common/decorators/current-user.decorator';
@@ -22,6 +23,7 @@ import type { Scope } from '../../../core/rbac/scope/scope';
 import { PayrollApproveService } from '../approval/payroll-approve.service';
 import { CreatePayrollPaymentDto } from '../payments/dto/payroll-payment.dto';
 import { PayrollPaymentsService } from '../payments/payroll-payments.service';
+import { RunPayslipsService } from '../payslips/run-payslips.service';
 import {
   CreateRunDto,
   PayrollJobDto,
@@ -40,6 +42,7 @@ export class RunsController {
     private readonly workflow: RunWorkflowService,
     private readonly approval: PayrollApproveService,
     private readonly payments: PayrollPaymentsService,
+    private readonly slips: RunPayslipsService,
   ) {}
 
   @Post()
@@ -71,6 +74,21 @@ export class RunsController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<PayrollRunDto> {
     return this.runs.get(scope, id);
+  }
+
+  /** Every payslip of the run in one PDF (drafts are watermarked). */
+  @Get(':id/payslips-pdf')
+  @RequirePermission('payroll.view')
+  async payslipsPdf(
+    @CurrentScope() scope: Scope,
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<StreamableFile> {
+    const file = await this.slips.pdf(scope, id);
+    return new StreamableFile(file.buffer, {
+      type: 'application/pdf',
+      length: file.buffer.length,
+      disposition: `attachment; filename="${file.fileName}"`,
+    });
   }
 
   /** Queues `payroll.calculate`; poll `GET /jobs/:id`. */

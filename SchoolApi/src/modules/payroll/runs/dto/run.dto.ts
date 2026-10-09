@@ -7,6 +7,7 @@ import {
 } from '../../../../generated/prisma/client';
 import { IdNameDto } from '../../../../core/common/dto/id-name.dto';
 import { PaginationQueryDto } from '../../../../core/common/pagination/pagination-query.dto';
+import { PayBreakdownDto } from '../../payslips/dto/payslip.dto';
 import { PERIOD_PATTERN } from '../../structures/dto/salary-structure.dto';
 
 export class CreateRunDto {
@@ -46,6 +47,12 @@ export class PayrollLineDto {
   leaveDeductionMinor!: number;
   @ApiProperty({ description: 'Signed sum of adjustments' })
   adjustmentsMinor!: number;
+  overtimeMinutes!: number;
+  overtimeMinor!: number;
+  @ApiProperty({ description: 'basic + allowances' })
+  grossMinor!: number;
+  @ApiProperty({ type: PayBreakdownDto })
+  breakdown!: PayBreakdownDto;
   netMinor!: number;
   paidMinor!: number;
   balanceMinor!: number;
@@ -85,6 +92,10 @@ export class PayrollRunDto {
   @ApiPropertyOptional({ type: RunApprovalDto, nullable: true })
   approval!: RunApprovalDto | null;
   totals!: PayrollTotalsDto;
+  @ApiProperty({
+    description: 'Overtime entries of the month waiting for approval',
+  })
+  pendingOvertimeCount!: number;
   @ApiProperty({ type: [PayrollLineDto] })
   lines!: PayrollLineDto[];
   version!: number;

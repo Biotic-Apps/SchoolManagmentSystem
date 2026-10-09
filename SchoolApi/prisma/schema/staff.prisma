@@ -59,6 +59,7 @@ model Staff {
   salaryStructures SalaryStructure[]    @relation("StaffSalaryStructures")
   payrollAdjusts   PayrollAdjustment[]  @relation("StaffPayrollAdjustments")
   payrollLines     PayrollLine[]        @relation("StaffPayrollLines")
+  payrollOvertime  PayrollOvertime[]    @relation("StaffPayrollOvertime")
 
   @@unique([schoolId, employeeNo])
   @@index([branchId, status])

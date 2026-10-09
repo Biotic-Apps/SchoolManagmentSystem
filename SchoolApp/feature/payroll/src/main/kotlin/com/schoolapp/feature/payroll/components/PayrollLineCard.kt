@@ -12,17 +12,26 @@ import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.model.payroll.PayrollLine
 import com.schoolapp.feature.payroll.R
 
-/** A staff member's line in a run: name, designation, unpaid leave, then net / paid / balance. */
+/** A staff member's line in a run: name, designation, unpaid leave, overtime, deductions, then net / paid / balance. */
 @Composable
 internal fun PayrollLineCard(line: PayrollLine, modifier: Modifier = Modifier) {
     AppCard(modifier.fillMaxWidth()) {
         Text(line.name, style = MaterialTheme.typography.titleMedium, color = AppColors.TextPrimary)
         val supporting = listOfNotNull(
-            line.designation,
+            designationLabel(line.designation),
+            line.breakdown.overtimeMinutes.takeIf { it > 0 }?.let { stringResource(R.string.payroll_overtime_value, formatHours(it)) },
             line.unpaidLeaveDays.takeIf { it > 0 }?.let { stringResource(R.string.payroll_unpaid_leave_value, formatDays(it)) },
         )
         if (supporting.isNotEmpty()) {
             Text(supporting.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)
+        }
+        val breakdown = line.breakdown
+        if (breakdown.deductionItems.isNotEmpty() && breakdown.totalDeductionsMinor != 0L) {
+            MoneyRow(
+                stringResource(R.string.payroll_total_deductions), -breakdown.totalDeductionsMinor,
+                supporting = breakdown.deductionItems.joinToString(", ") { it.label },
+                amountColor = AppColors.Error,
+            )
         }
         MoneyRow(stringResource(R.string.payroll_net), line.netMinor, emphasized = true)
         MoneyRow(stringResource(R.string.payroll_paid), line.paidMinor)

@@ -9,7 +9,7 @@ import { useDialogState } from "@/lib/use-dialog-state";
 import { payrollKeys } from "./keys";
 import { lineColumns } from "./line-columns";
 import { runTotals } from "./normalize";
-import { CALCULATED_STATUSES, PAYABLE_STATUSES } from "./options";
+import { PAYABLE_STATUSES, STAFF_TYPE_OPTIONS } from "./options";
 import { useCreatePayrollRun, usePayrollRun, usePayrollRuns } from "./runs-api";
 import type { PayrollLine } from "./types";
 
@@ -22,7 +22,17 @@ export function useRunsTab(branchId: string | null) {
   const listed = runs.data?.find((item) => item.month === month) ?? runs.data?.[0] ?? null;
   const detail = usePayrollRun(listed?.id ?? null);
   const run = detail.data ?? listed;
-  const lines = useMemo(() => run?.lines ?? [], [run]);
+  const allLines = useMemo(() => run?.lines ?? [], [run]);
+  const [staffType, setStaffType] = useState<string | undefined>(undefined);
+  const lines = useMemo(
+    () => (staffType ? allLines.filter((line) => line.designation === staffType) : allLines),
+    [allLines, staffType],
+  );
+  // Only offer staff types present in this run.
+  const staffTypeOptions = useMemo(
+    () => STAFF_TYPE_OPTIONS.filter((option) => allLines.some((line) => line.designation === option.id)),
+    [allLines],
+  );
 
   const payment = useDialogState<PayrollLine>();
   const payslip = useDialogState<PayrollLine>();
@@ -43,10 +53,10 @@ export function useRunsTab(branchId: string | null) {
   };
 
   const canPay = can("payroll.edit") && !!run && PAYABLE_STATUSES.includes(run.status);
-  const hasPayslips = !!run && CALCULATED_STATUSES.includes(run.status);
+  const approved = !!run && ["APPROVED", "PARTIALLY_PAID", "PAID", "CLOSED"].includes(run.status);
   const columns = useMemo(
-    () => lineColumns({ canPay, hasPayslips, onPay: payment.show, onPayslip: payslip.show }),
-    [canPay, hasPayslips, payment.show, payslip.show],
+    () => lineColumns({ canPay, onPay: payment.show, onBreakdown: payslip.show }),
+    [canPay, payment.show, payslip.show],
   );
 
   return {
@@ -55,6 +65,11 @@ export function useRunsTab(branchId: string | null) {
     max: currentPeriod(),
     run,
     lines,
+    allLines,
+    staffType,
+    setStaffType,
+    staffTypeOptions,
+    approved,
     totals: runTotals(lines),
     loading: !branchId || runs.isLoading || (!!listed && detail.isLoading),
     error: runs.error ?? detail.error,

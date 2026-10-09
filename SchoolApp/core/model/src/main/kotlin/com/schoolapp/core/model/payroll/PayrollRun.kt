@@ -16,6 +16,7 @@ data class PayrollLine(
     val paidMinor: Long,
     val balanceMinor: Long,
     val status: String?,
+    val breakdown: PayBreakdown = PayBreakdown(),
 )
 
 data class PayrollRun(

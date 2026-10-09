@@ -75,6 +75,9 @@ export class SalaryStructureService {
         allowances: toJson(dto.allowances),
         deductions: toJson(dto.deductions),
         reason: dto.reason?.trim() || null,
+        overtimeRateMinor: dto.overtimeRateMinor
+          ? BigInt(dto.overtimeRateMinor)
+          : null,
         createdById: user.id,
       },
     });
@@ -90,6 +93,7 @@ export class SalaryStructureService {
         basicMinor: dto.basicMinor,
         allowances: dto.allowances,
         deductions: dto.deductions,
+        overtimeRateMinor: dto.overtimeRateMinor ?? null,
         reason: row.reason,
       },
     });

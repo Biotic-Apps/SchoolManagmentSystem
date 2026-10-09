@@ -39,7 +39,7 @@ export function AdjustmentsTab({ branchId }: { branchId: string | null }) {
         error={query.error}
         onRetry={() => query.refetch()}
         emptyTitle="No adjustments"
-        emptyDescription="Bonuses, deductions, advances and arrears for this month appear here."
+        emptyDescription="Nothing extra this month. Use Add adjustment for a bonus, arrears, a fine, a deduction or an advance / loan recovery."
       />
       {tab.create.open && (
         <AdjustmentFormDialog month={tab.month} staffId={tab.staffId} staffOptions={tab.staffOptions} onClose={tab.create.close} />

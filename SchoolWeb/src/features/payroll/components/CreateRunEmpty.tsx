@@ -18,7 +18,7 @@ export function CreateRunEmpty({ month, canCreate, creating, onCreate }: CreateR
         title={`No payroll run for ${formatPeriod(month)}`}
         description={
           canCreate
-            ? "Create the run, then calculate salaries from structures, unpaid leave and adjustments."
+            ? "Create the run, then calculate. Every staff member with a salary is included; absences, lates, approved overtime and adjustments are applied."
             : "The accountant creates the payroll run for each month."
         }
         action={

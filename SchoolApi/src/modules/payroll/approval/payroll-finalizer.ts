@@ -65,6 +65,17 @@ export class PayrollFinalizer {
       where: { id: { in: adjustmentIds }, status: 'PENDING' },
       data: { status: 'APPLIED', runId: run.id },
     });
+    // Paid overtime is tied to the run so it is never paid twice.
+    await tx.payrollOvertime.updateMany({
+      where: {
+        id: {
+          in: lines.flatMap(
+            (l) => parseLineDetail(l.detail).overtime?.entryIds ?? [],
+          ),
+        },
+      },
+      data: { runId: run.id },
+    });
     this.audit.stage({
       action: 'payroll.run_approved',
       entityType: 'PayrollRun',

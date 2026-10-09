@@ -9,14 +9,14 @@ import { SectionHeading } from "@/components/shared/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { designationLabel } from "@/features/staff/options";
-import type { StaffSummary } from "@/features/staff/types";
 import { structureHistoryColumns } from "../structure-columns";
+import type { PayrollStaffRow } from "../types";
 import { useStructureDetail } from "../use-structure-detail";
 import { StructureFormDialog } from "./StructureFormDialog";
 import { StructureSummary } from "./StructureSummary";
 
-export function StructureDrawer({ staff, onClose }: { staff: StaffSummary | null; onClose: () => void }) {
-  const detail = useStructureDetail(staff?.id ?? null);
+export function StructureDrawer({ staff, onClose }: { staff: PayrollStaffRow | null; onClose: () => void }) {
+  const detail = useStructureDetail(staff?.staffId ?? null);
   const { query, current } = detail;
 
   return (
@@ -30,7 +30,7 @@ export function StructureDrawer({ staff, onClose }: { staff: StaffSummary | null
         query.isSuccess && (
           <Button onClick={() => detail.edit.show(true)}>
             <Pencil />
-            Edit structure
+            {current ? "Change salary" : "Set salary"}
           </Button>
         )
       }
@@ -40,8 +40,8 @@ export function StructureDrawer({ staff, onClose }: { staff: StaffSummary | null
       {query.isSuccess && !current && (
         <EmptyState
           icon={WalletCards}
-          title="No salary structure yet"
-          description="Add basic salary, allowances and deductions before running payroll."
+          title="No salary set yet"
+          description="Set basic salary, allowances and deductions. Staff without a salary are left out of payroll."
         />
       )}
       {current && <StructureSummary structure={current} />}
@@ -52,7 +52,7 @@ export function StructureDrawer({ staff, onClose }: { staff: StaffSummary | null
         </section>
       )}
       {staff && detail.edit.open && (
-        <StructureFormDialog staffId={staff.id} staffName={staff.name} current={current} onClose={detail.edit.close} />
+        <StructureFormDialog staffId={staff.staffId} staffName={staff.name} current={current} onClose={detail.edit.close} />
       )}
     </DetailDrawer>
   );

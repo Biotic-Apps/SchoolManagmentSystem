@@ -5,37 +5,24 @@ import { RowActions } from "@/components/shared/RowActions";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { designationLabel } from "@/features/staff/options";
 import { cn } from "@/lib/cn";
-import { formatNumber } from "@/lib/format";
 import { NUMERIC_COLUMN } from "@/lib/table";
+import { hoursText } from "./options";
 import type { PayrollLine } from "./types";
 
 const MONEY = cn(NUMERIC_COLUMN, "whitespace-nowrap");
 
-type MoneyKey =
-  | "basicMinor"
-  | "allowancesMinor"
-  | "deductionsMinor"
-  | "leaveDeductionMinor"
-  | "adjustmentsMinor"
-  | "netMinor"
-  | "paidMinor"
-  | "balanceMinor";
-
-const money = (id: MoneyKey, header: string): DataTableColumn<PayrollLine> => ({
-  id,
-  header,
-  className: MONEY,
-  cell: (row) => <MoneyText amountMinor={row[id]} />,
-});
+const earnings = (row: PayrollLine) => row.breakdown?.totalEarningsMinor ?? row.grossMinor + Math.max(0, row.adjustmentsMinor);
+const deductions = (row: PayrollLine) =>
+  row.breakdown?.totalDeductionsMinor ?? row.deductionsMinor + row.leaveDeductionMinor + Math.max(0, -row.adjustmentsMinor);
 
 interface LineColumnOptions {
   canPay: boolean;
-  hasPayslips: boolean;
   onPay: (line: PayrollLine) => void;
-  onPayslip: (line: PayrollLine) => void;
+  onBreakdown: (line: PayrollLine) => void;
 }
 
-export function lineColumns({ canPay, hasPayslips, onPay, onPayslip }: LineColumnOptions): DataTableColumn<PayrollLine>[] {
+/** Run lines: gross, what was added and taken off, net and payment state. */
+export function lineColumns({ canPay, onPay, onBreakdown }: LineColumnOptions): DataTableColumn<PayrollLine>[] {
   return [
     {
       id: "staff",
@@ -48,15 +35,35 @@ export function lineColumns({ canPay, hasPayslips, onPay, onPayslip }: LineColum
         </span>
       ),
     },
-    money("basicMinor", "Basic"),
-    money("allowancesMinor", "Allowances"),
-    money("deductionsMinor", "Deductions"),
-    { id: "unpaidLeaveDays", header: "Unpaid leave days", className: NUMERIC_COLUMN, cell: (row) => formatNumber(row.unpaidLeaveDays) },
-    money("leaveDeductionMinor", "Leave deduction"),
-    money("adjustmentsMinor", "Adjustments"),
-    { ...money("netMinor", "Net"), cell: (row) => <MoneyText amountMinor={row.netMinor} className="font-semibold" /> },
-    money("paidMinor", "Paid"),
-    money("balanceMinor", "Balance"),
+    { id: "gross", header: "Gross", className: MONEY, cell: (row) => <MoneyText amountMinor={row.grossMinor} /> },
+    {
+      id: "overtime",
+      header: "Overtime",
+      className: MONEY,
+      cell: (row) =>
+        row.overtimeMinor > 0 ? (
+          <span className="flex flex-col items-end">
+            <MoneyText amountMinor={row.overtimeMinor} />
+            <span className="text-caption text-fg-muted">{hoursText(row.overtimeMinutes)}</span>
+          </span>
+        ) : (
+          <span className="text-fg-muted">—</span>
+        ),
+    },
+    { id: "earnings", header: "Total earnings", className: MONEY, cell: (row) => <MoneyText amountMinor={earnings(row)} /> },
+    {
+      id: "deductions",
+      header: "Deductions",
+      className: MONEY,
+      cell: (row) => (
+        <span className="flex flex-col items-end">
+          <MoneyText amountMinor={deductions(row)} className={deductions(row) > 0 ? "text-error" : undefined} />
+          {row.unpaidLeaveDays > 0 && <span className="text-caption text-fg-muted">{row.unpaidLeaveDays} unpaid days</span>}
+        </span>
+      ),
+    },
+    { id: "net", header: "Net", className: MONEY, cell: (row) => <MoneyText amountMinor={row.netMinor} className="font-semibold" /> },
+    { id: "balance", header: "To pay", className: MONEY, cell: (row) => <MoneyText amountMinor={row.balanceMinor} /> },
     { id: "status", header: "Status", className: "whitespace-nowrap", cell: (row) => <StatusBadge status={row.status} /> },
     {
       id: "actions",
@@ -66,7 +73,7 @@ export function lineColumns({ canPay, hasPayslips, onPay, onPayslip }: LineColum
         <RowActions
           label={`Actions for ${row.name}`}
           actions={[
-            { id: "payslip", label: "View payslip", icon: FileText, onSelect: () => onPayslip(row), hidden: !hasPayslips },
+            { id: "breakdown", label: "View breakdown", icon: FileText, onSelect: () => onBreakdown(row) },
             { id: "pay", label: "Record payment", icon: Wallet, onSelect: () => onPay(row), hidden: !canPay || row.balanceMinor <= 0 },
           ]}
         />
