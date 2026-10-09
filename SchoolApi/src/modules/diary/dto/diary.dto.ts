@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
   IsArray,
+  IsEnum,
   IsOptional,
   IsString,
   IsUUID,
@@ -19,6 +20,15 @@ export class DiaryQueryDto {
   @IsOptional()
   @IsUUID()
   sectionId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  branchId?: string;
+
+  /** e.g. SUBMITTED for the moderation queue; without dates it looks back the full range. */
+  @IsOptional()
+  @IsEnum(DiaryStatus)
+  status?: DiaryStatus;
 
   @IsOptionalDateOnly()
   date?: string;

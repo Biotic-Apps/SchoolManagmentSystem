@@ -43,13 +43,23 @@ export class DiaryService {
   ) {}
 
   async list(scope: Scope, query: DiaryQueryDto): Promise<DiaryEntryDto[]> {
-    const from = parseDate(query.date ?? query.from ?? formatDate(today()));
-    const to = parseDate(query.date ?? query.to ?? formatDate(from));
+    const noDates = !query.date && !query.from && !query.to;
+    // A status queue (moderation) without dates covers the whole allowed range.
+    const start =
+      noDates && query.status
+        ? new Date(today().getTime() - MAX_RANGE_DAYS * 86_400_000)
+        : today();
+    const from = parseDate(query.date ?? query.from ?? formatDate(start));
+    const to = parseDate(
+      query.date ?? query.to ?? formatDate(noDates ? today() : from),
+    );
     if (to < from) throw invalid('to must be on or after from');
     if ((to.getTime() - from.getTime()) / 86_400_000 > MAX_RANGE_DAYS)
       throw invalid(`Range is limited to ${MAX_RANGE_DAYS} days`);
     const where: Prisma.DiaryEntryWhereInput = {
       date: { gte: from, lte: to },
+      ...(query.status && { status: query.status }),
+      ...(query.branchId && { branchId: query.branchId }),
       AND: [await this.visible(scope, query.sectionId)],
     };
     const rows = await this.prisma.diaryEntry.findMany({
