@@ -42,6 +42,5 @@ admissions pipeline, certificate QR verification, data import, fee reminders tha
 27. Bulk / custom certificates
 
 ## Status
-- In progress 2026-10-09: P0 #1, #2 (challans), #6, plus fee-received alert (fees agent)
-- In progress 2026-10-09: #4, #2 (result cards, ID cards), #8 (results agent)
-- In progress 2026-10-09: parent password login by admission number with a printable login slip (guardians agent)
+- Done 2026-10-09 (commit 405f7f2): P0 #1, #2, #4, #5 (login slip), #6, #8, plus the fee-received alert and parent password login by admission number.
+- Next: P0 #3 (family-wise fees), #7 (SMS gateway on the school's phone), then P1.
