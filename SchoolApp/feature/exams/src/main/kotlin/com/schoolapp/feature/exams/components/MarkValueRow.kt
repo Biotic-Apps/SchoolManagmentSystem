@@ -1,13 +1,12 @@
 package com.schoolapp.feature.exams.components
 
-import androidx.compose.foundation.BorderStroke
+import com.schoolapp.core.designsystem.component.AppCard
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,12 +31,7 @@ internal fun MarkValueRow(
     modifier: Modifier = Modifier,
 ) {
     val pending = marks == null && !absent
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        color = if (pending) AppColors.WarningContainer else AppColors.Surface,
-        border = BorderStroke(1.dp, if (pending) AppColors.Warning else AppColors.Border),
-    ) {
+    AppCard(modifier.fillMaxWidth(), tone = StatusTone.Warning.takeIf { pending }, contentPadding = 0.dp) {
         Row(Modifier.padding(horizontal = 12.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(studentLabel(rollNo, name), style = MaterialTheme.typography.bodyLarge, color = AppColors.TextPrimary, modifier = Modifier.weight(1f))
             Spacer(Modifier.width(12.dp))

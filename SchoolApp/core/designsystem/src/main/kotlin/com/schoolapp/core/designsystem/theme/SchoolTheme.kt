@@ -11,6 +11,7 @@ fun SchoolTheme(content: @Composable () -> Unit) {
     CompositionLocalProvider(
         LocalExtendedColors provides AppExtendedColors,
         LocalSpacing provides Spacing(),
+        LocalReducedMotion provides rememberReducedMotion(),
     ) {
         MaterialTheme(
             colorScheme = AppColorScheme,
@@ -27,4 +28,7 @@ object AppTheme {
 
     val spacing: Spacing
         @Composable @ReadOnlyComposable get() = LocalSpacing.current
+
+    val reducedMotion: Boolean
+        @Composable @ReadOnlyComposable get() = LocalReducedMotion.current
 }
