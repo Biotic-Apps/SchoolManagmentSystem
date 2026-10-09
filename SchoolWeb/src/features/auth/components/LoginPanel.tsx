@@ -1,12 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { Mail } from "lucide-react";
 import { OrDivider } from "@/components/shared/OrDivider";
-import { SegmentedControl } from "@/components/shared/SegmentedControl";
 import { Button } from "@/components/ui/Button";
-import { LOGIN_ROLE_OPTIONS, type LoginRole } from "../login-role";
 import { useLoginForm } from "../use-login-form";
 import { AuthFooterLink } from "./AuthFooterLink";
 import { AuthLayout } from "./AuthLayout";
@@ -16,8 +13,6 @@ import { TwoFactorLoginForm } from "./TwoFactorLoginForm";
 
 export function LoginPanel() {
   const login = useLoginForm();
-  const params = useSearchParams();
-  const [role, setRole] = useState<LoginRole>(params.get("role") === "parent" ? "parent" : "staff");
   const [withCode, setWithCode] = useState(false);
   const [otpChallengeId, setOtpChallengeId] = useState<string | null>(null);
   const challengeId = login.challengeId ?? otpChallengeId;
@@ -45,38 +40,24 @@ export function LoginPanel() {
           variant="secondary"
           size="lg"
           className="w-full"
-          onClick={() => {
-            setRole("parent");
-            setWithCode(false);
-          }}
+          onClick={() => setWithCode(false)}
         >
-          Use admission number and password instead
+          Use username and password instead
         </Button>
       </AuthLayout>
     );
   }
   return (
     <AuthLayout
-      title="Sign in"
-      description={
-        role === "parent"
-          ? "Use the username and password on the login slip from your child’s school."
-          : "Use the account your school administrator created for you."
-      }
-      footer={role === "staff" && <AuthFooterLink href="/forgot-password">Forgot your password?</AuthFooterLink>}
+      title="Welcome back"
+      description="Sign in to your school account."
+      footer={<AuthFooterLink href="/forgot-password">Forgot your password?</AuthFooterLink>}
     >
-      <SegmentedControl
-        label="I am"
-        options={LOGIN_ROLE_OPTIONS}
-        value={role}
-        onChange={(value) => setRole(value as LoginRole)}
-        className="mb-6 w-full"
-      />
-      <LoginForm login={login} role={role} />
+      <LoginForm login={login} />
       <OrDivider />
       <Button variant="ghost" size="lg" className="w-full" onClick={() => setWithCode(true)}>
         <Mail />
-        {role === "parent" ? "Sign in with an email code instead" : "Parents: sign in with a code instead"}
+        Sign in with an email code
       </Button>
     </AuthLayout>
   );

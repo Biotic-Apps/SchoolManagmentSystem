@@ -5,21 +5,10 @@ import { FormField, errorId } from "@/components/shared/FormField";
 import { InlineNotice } from "@/components/shared/InlineNotice";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import type { LoginRole } from "../login-role";
 import type { useLoginForm } from "../use-login-form";
 
-const IDENTIFIER = {
-  staff: { label: "Email, phone or username", placeholder: "you@school.pk", hint: undefined },
-  parent: {
-    label: "Child’s admission no., phone or email",
-    placeholder: "e.g. BRIGHT-2026-0002",
-    hint: "On the login slip from the school.",
-  },
-} as const;
-
-export function LoginForm({ login, role }: { login: ReturnType<typeof useLoginForm>; role: LoginRole }) {
+export function LoginForm({ login }: { login: ReturnType<typeof useLoginForm> }) {
   const { register, errors, submit, submitting, serverError, notice } = login;
-  const identifier = IDENTIFIER[role];
 
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-5">
@@ -27,8 +16,7 @@ export function LoginForm({ login, role }: { login: ReturnType<typeof useLoginFo
       <FormAlert message={serverError} />
       <FormField
         id="identifier"
-        label={identifier.label}
-        hint={identifier.hint}
+        label="Username"
         error={errors.identifier}
       >
         <Input
@@ -36,19 +24,14 @@ export function LoginForm({ login, role }: { login: ReturnType<typeof useLoginFo
           autoComplete="username"
           autoCapitalize="none"
           spellCheck={false}
-          placeholder={identifier.placeholder}
+          placeholder="Email, phone or admission no."
           autoFocus
           aria-invalid={!!errors.identifier}
           aria-describedby={errors.identifier ? errorId("identifier") : undefined}
           {...register("identifier")}
         />
       </FormField>
-      <FormField
-        id="password"
-        label="Password"
-        hint={role === "parent" ? "Forgot your password? Ask the school office to reset it." : undefined}
-        error={errors.password}
-      >
+      <FormField id="password" label="Password" error={errors.password}>
         <Input
           id="password"
           type="password"
