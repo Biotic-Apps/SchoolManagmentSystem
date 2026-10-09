@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.CollapsingHeaderLayout
 import com.schoolapp.core.designsystem.component.ContentMaxWidth
 import com.schoolapp.core.designsystem.component.InlineMessage
+import com.schoolapp.core.designsystem.component.SegmentedChoice
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.ui.appErrorMessage

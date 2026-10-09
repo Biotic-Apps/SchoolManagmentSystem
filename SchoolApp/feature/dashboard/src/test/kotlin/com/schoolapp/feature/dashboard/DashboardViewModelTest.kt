@@ -3,17 +3,19 @@ package com.schoolapp.feature.dashboard
 import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.common.time.AppClock
+import com.schoolapp.core.data.fees.InvoicePdfDownloader
 import com.schoolapp.core.data.organisation.ScopedSections
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.model.ChildSummary
 import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.attendance.AttendanceStatus
 import com.schoolapp.core.model.attendance.RegisterStatus
-import com.schoolapp.core.model.dashboard.ChildToday
 import com.schoolapp.core.model.dashboard.DashboardMetric
 import com.schoolapp.core.model.dashboard.PendingDiarySlot
 import com.schoolapp.core.model.dashboard.SectionRegisterState
 import com.schoolapp.core.model.dashboard.TeacherToday
+import com.schoolapp.core.model.fees.PdfJob
+import com.schoolapp.core.model.fees.PdfJobState
 import com.schoolapp.core.model.notice.Notice
 import com.schoolapp.core.model.notice.NoticeStatus
 import com.schoolapp.core.model.organisation.Section
@@ -57,7 +59,7 @@ class DashboardViewModelTest {
         val scoped = ScopedSections(auth, organisationWith(sections))
         return DashboardViewModel(
             auth, repository, SupervisorLoader(repository, FinanceLoader(fees.repository), SetupChecklistLoader(setup)),
-            TeacherDayLoader(repository, periods, scoped, clock), FinanceLoader(fees.repository), clock,
+            TeacherDayLoader(repository, periods, scoped, clock), FinanceLoader(fees.repository), clock, InvoicePdfDownloader(fees.repository),
         )
     }
 
@@ -186,7 +188,7 @@ class DashboardViewModelTest {
         Notice(id, "Notice $id", "Body", NoticeStatus.PUBLISHED, pinned, null, null, null, null, isRead = false)
 
     private fun childToday(attendance: AttendanceStatus?, notices: List<Notice> = emptyList()) =
-        AppResult.Success(ChildToday(attendance, emptyList(), notices, consentsPending = 2, nextMeeting = null))
+        AppResult.Success(parentOverview(attendance = attendance, notices = notices, consentsPending = 2))
 
     @Test
     fun parent_home_reloads_when_the_active_child_changes() {
@@ -224,6 +226,26 @@ class DashboardViewModelTest {
         )
         val home = (viewModel(auth).uiState.value as DashboardUiState.Parent).home!!
         assertEquals(listOf("3", "1", "2"), home.notices.map { it.id })
+    }
+
+    @Test
+    fun challan_download_hands_the_signed_url_to_the_route_once() {
+        fees.pdfResult = AppResult.Success(PdfJob("j1", PdfJobState.READY, "https://files/challan.pdf"))
+        val vm = viewModel(FakeAuthRepository(TestSessions.session(RoleKey.PARENT)))
+        vm.downloadChallan("inv1")
+        assertEquals(listOf("inv1"), fees.pdfCalls)
+        assertEquals("https://files/challan.pdf", vm.challan.value.urlToOpen)
+        assertFalse(vm.challan.value.isDownloading)
+        vm.onChallanOpened()
+        assertNull(vm.challan.value.urlToOpen)
+    }
+
+    @Test
+    fun challan_failure_is_kept_for_the_inline_message() {
+        val vm = viewModel(FakeAuthRepository(TestSessions.session(RoleKey.PARENT)))
+        vm.downloadChallan("inv1")
+        assertEquals(AppError.Network, vm.challan.value.error)
+        assertNull(vm.challan.value.urlToOpen)
     }
 
     @Test

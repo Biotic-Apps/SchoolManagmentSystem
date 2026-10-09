@@ -3,6 +3,7 @@ package com.schoolapp.feature.dashboard
 import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.common.time.AppClock
+import com.schoolapp.core.data.fees.InvoicePdfDownloader
 import com.schoolapp.core.data.organisation.ScopedSections
 import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.dashboard.DashboardMetric
@@ -44,7 +45,7 @@ class SetupChecklistCardTest {
         val vm = DashboardViewModel(
             auth, repository, SupervisorLoader(repository, FinanceLoader(fees.repository), SetupChecklistLoader(setup)),
             TeacherDayLoader(repository, periods, ScopedSections(auth, organisationWith(emptyList())), clock),
-            FinanceLoader(fees.repository), clock,
+            FinanceLoader(fees.repository), clock, InvoicePdfDownloader(fees.repository),
         )
         return vm.uiState.value as DashboardUiState.Supervisor
     }

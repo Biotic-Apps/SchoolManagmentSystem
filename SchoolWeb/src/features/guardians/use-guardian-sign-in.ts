@@ -24,7 +24,15 @@ export function useGuardianSignIn(guardian: Guardian, child: SlipChild | null) {
   const login = detail.data?.login ?? null;
   const canManage = can("guardians.edit");
   const firstChild = detail.data?.children.find((c) => c.status === "VERIFIED" && c.admissionNo);
-  const slipChild = child ?? (firstChild ? { name: firstChild.name, admissionNo: firstChild.admissionNo! } : null);
+  const slipChild =
+    child ??
+    (firstChild
+      ? {
+          name: firstChild.name,
+          admissionNo: firstChild.admissionNo!,
+          classLabel: [firstChild.className, firstChild.sectionName].filter(Boolean).join(" - ") || null,
+        }
+      : null);
 
   const reveal = (title: string, ids: { email: string | null; phone: string | null }, password: string | null) => {
     confirm.close();

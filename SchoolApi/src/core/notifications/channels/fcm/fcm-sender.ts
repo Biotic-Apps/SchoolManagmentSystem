@@ -2,11 +2,18 @@ import type { ChannelMessage } from '../channel-message';
 import { FcmAccessToken } from './fcm-access-token';
 import type { FcmCredentials } from './fcm-credentials';
 
+/** FCM says this token will never work again (app removed, token rotated). */
+const DEAD_TOKEN = /UNREGISTERED|registration-token-not-registered/;
+
 /** FCM HTTP v1: one request per device token; fails if no token accepted it. */
 export class FcmSender {
   private readonly token: FcmAccessToken;
 
-  constructor(private readonly credentials: FcmCredentials) {
+  constructor(
+    private readonly credentials: FcmCredentials,
+    /** Called for tokens FCM reports as gone, so they can be deleted. */
+    private readonly onDeadToken?: (token: string) => Promise<void>,
+  ) {
     this.token = new FcmAccessToken(credentials);
   }
 
@@ -31,11 +38,22 @@ export class FcmSender {
               token,
               notification: { title: message.title, body: message.body },
               data,
+              android: { priority: 'HIGH' },
             },
           }),
-        }).then((r) => r.ok),
+        }).then((r) => this.outcome(token, r)),
       ),
     );
     if (!results.some(Boolean)) throw new Error('FCM rejected all tokens');
+  }
+
+  private async outcome(token: string, response: Response): Promise<boolean> {
+    if (response.ok) return true;
+    if (response.status === 404 || response.status === 400) {
+      const text = await response.text().catch(() => '');
+      if (response.status === 404 || DEAD_TOKEN.test(text))
+        await this.onDeadToken?.(token).catch(() => undefined);
+    }
+    return false;
   }
 }

@@ -1,3 +1,4 @@
+import type { AppConfigService } from '../../../config/app-config.service';
 import type { AuditService } from '../../../core/audit/audit.service';
 import type { PasswordHasher } from '../../../core/auth/password/password-hasher';
 import type { SessionsService } from '../../../core/auth/sessions/sessions.service';
@@ -53,6 +54,10 @@ function setup(row = guardianRow()) {
     sessions as unknown as SessionsService,
     notifications as unknown as NotificationService,
     audit as unknown as AuditService,
+    {
+      get: (key: string) =>
+        key === 'PUBLIC_WEB_URL' ? 'https://school.example.pk/' : [],
+    } as unknown as AppConfigService,
   );
   return { service, prisma, sessions, notifications, audit };
 }
@@ -123,6 +128,7 @@ describe('GuardianAccountService.sendSignIn', () => {
     expect(sent.userId).toBe('parent-1');
     expect(sent.body).toContain('Sign in with email code');
     expect(sent.body).toContain('ahmed@example.pk');
+    expect(sent.body).toContain('https://school.example.pk/login');
     expect(audit.stage).toHaveBeenCalledWith(
       expect.objectContaining({ action: 'guardian.account_send_sign_in' }),
     );

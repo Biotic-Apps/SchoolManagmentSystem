@@ -1,3 +1,5 @@
+import { AppConfigService } from '../../../config/app-config.service';
+import { loginPageUrl } from '../../../config/public-web-url';
 import { Injectable } from '@nestjs/common';
 import { AuditService } from '../../../core/audit/audit.service';
 import { PasswordHasher } from '../../../core/auth/password/password-hasher';
@@ -27,6 +29,7 @@ export class GuardianAccountService {
     private readonly sessions: SessionsService,
     private readonly notifications: NotificationService,
     private readonly audit: AuditService,
+    private readonly config: AppConfigService,
   ) {}
 
   async resetPassword(
@@ -76,12 +79,22 @@ export class GuardianAccountService {
     });
     if (!login || login.status !== 'ACTIVE')
       throw invalid('This parent login is not active');
-    const message = signInInstructions(guardian.name, login);
+    const message = signInInstructions(
+      guardian.name,
+      login,
+      loginPageUrl(this.config),
+    );
     const channels: GuardianSignInSentDto['channels'] = [];
     if (login.email) channels.push('EMAIL');
     if (login.phone) channels.push('SMS');
     for (const channel of channels) {
-      await this.notifications.sendDirect({ userId, channel, ...message });
+      const { extras, ...text } = message;
+      await this.notifications.sendDirect({
+        userId,
+        channel,
+        ...text,
+        ...(channel === 'EMAIL' ? { extras } : {}),
+      });
     }
     this.audit.stage({
       action: 'guardian.account_send_sign_in',

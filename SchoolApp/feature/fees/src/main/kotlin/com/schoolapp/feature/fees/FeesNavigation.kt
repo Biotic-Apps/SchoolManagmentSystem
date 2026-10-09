@@ -3,14 +3,11 @@ package com.schoolapp.feature.fees
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.schoolapp.core.navigation.InvoiceDetailDestination
 import com.schoolapp.feature.fees.invoice.InvoiceDetailRoute
 import com.schoolapp.feature.fees.proof.ProofUploadRoute
 import com.schoolapp.feature.fees.record.RecordPaymentRoute
 import kotlinx.serialization.Serializable
-
-/** Parent: one invoice with its lines, payments and receipts. */
-@Serializable
-internal data class InvoiceDetailDestination(val invoiceId: String)
 
 /** Parent: upload a bank/wallet payment proof against [invoiceId]. */
 @Serializable

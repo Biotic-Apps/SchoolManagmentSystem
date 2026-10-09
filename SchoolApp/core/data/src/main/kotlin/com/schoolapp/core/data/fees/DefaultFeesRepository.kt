@@ -17,6 +17,7 @@ import com.schoolapp.core.model.fees.RefundInput
 import com.schoolapp.core.model.fees.PaymentInput
 import com.schoolapp.core.model.fees.PaymentOutcome
 import com.schoolapp.core.model.fees.PaymentProof
+import com.schoolapp.core.model.fees.PdfJob
 import com.schoolapp.core.model.fees.ProofInput
 import com.schoolapp.core.model.fees.ProofStatus
 import com.schoolapp.core.network.ApiCaller
@@ -75,6 +76,11 @@ class DefaultFeesRepository @Inject constructor(
                 ?: AppResult.Failure(AppError.Server(HTTP_ACCEPTED, CODE_NOT_READY, null))
         }
     }
+
+    override suspend fun invoicePdf(invoiceId: String): AppResult<PdfJob> =
+        apiCaller.call { api.invoicePdf(invoiceId).data.toModel() }
+
+    override suspend fun pdfJob(jobId: String): AppResult<PdfJob> = apiCaller.call { api.job(jobId).data.toPdfJob() }
 
     override suspend fun submitProof(input: ProofInput): AppResult<PaymentProof> = apiCaller.call {
         api.submitProof(

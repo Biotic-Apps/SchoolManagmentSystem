@@ -87,7 +87,12 @@ export class SendNotificationProcessor
       userId: recipient.id,
       title: input.title,
       body: input.body,
-      data: { notificationId: row.id },
+      // Category + event ids let the app open the right screen on tap.
+      data: {
+        ...primitiveData(input.data),
+        category: input.category,
+        notificationId: row.id,
+      },
       email: recipient.email,
       phone: recipient.phone,
       deviceTokens: recipient.devices.map((device) => device.fcmToken),
@@ -104,4 +109,16 @@ export class SendNotificationProcessor
         );
     }
   }
+}
+
+/** FCM data values must be strings; nested objects are left out. */
+function primitiveData(
+  data: Record<string, unknown> | undefined,
+): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [key, value] of Object.entries(data ?? {})) {
+    if (['string', 'number', 'boolean'].includes(typeof value))
+      out[key] = String(value);
+  }
+  return out;
 }

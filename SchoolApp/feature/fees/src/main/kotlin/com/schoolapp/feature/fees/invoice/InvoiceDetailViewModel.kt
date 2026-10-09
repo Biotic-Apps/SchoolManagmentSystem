@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.fees.FeesRepository
+import com.schoolapp.core.data.fees.InvoicePdfDownloader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class InvoiceDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: FeesRepository,
+    private val challanPdf: InvoicePdfDownloader,
 ) : ViewModel() {
 
     private val invoiceId: String = checkNotNull(savedStateHandle["invoiceId"])
@@ -68,6 +70,21 @@ class InvoiceDetailViewModel @Inject constructor(
                 when (result) {
                     is AppResult.Success -> it.copy(isPayingOnline = false, urlToOpen = result.data)
                     is AppResult.Failure -> it.copy(isPayingOnline = false, payOnlineError = result.error)
+                }
+            }
+        }
+    }
+
+    /** Prepares the challan PDF (polling its job) and opens it. */
+    fun downloadChallan() {
+        if (_uiState.value.isDownloadingChallan) return
+        _uiState.update { it.copy(isDownloadingChallan = true, challanError = null) }
+        viewModelScope.launch {
+            val result = challanPdf(invoiceId)
+            _uiState.update {
+                when (result) {
+                    is AppResult.Success -> it.copy(isDownloadingChallan = false, urlToOpen = result.data)
+                    is AppResult.Failure -> it.copy(isDownloadingChallan = false, challanError = result.error)
                 }
             }
         }

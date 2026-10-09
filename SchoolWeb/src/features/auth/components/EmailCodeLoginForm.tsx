@@ -8,6 +8,7 @@ import { OtpEmailStep } from "./OtpEmailStep";
 export function EmailCodeLoginForm({ onChallenge }: { onChallenge: (challengeId: string) => void }) {
   const otp = useOtpLogin();
   const { email } = otp;
-  if (email) return <OtpCodeStep key={email} otp={{ ...otp, email }} onChallenge={onChallenge} />;
+  if (email)
+    return <OtpCodeStep key={email} otp={{ ...otp, email }} onChallenge={onChallenge} />;
   return <OtpEmailStep emailForm={otp.emailForm} />;
 }

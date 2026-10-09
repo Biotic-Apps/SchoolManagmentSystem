@@ -71,6 +71,35 @@ Providers to arrange before go-live (choices to confirm with the school):
 
 After the stack is up, test both channels from **Settings & Backups → Support → Send test message** (super admin).
 
+### Email (SMTP) step by step
+Parents' "Sign in with email code", password-reset emails and "Send sign-in steps" all go through SMTP. Every
+email has a branded HTML part (school name, the code in large digits with its expiry, a button where useful) and a
+plain-text part.
+
+```dotenv
+EMAIL_DRIVER=smtp
+SMTP_HOST=smtp.gmail.com          # or your provider's host
+SMTP_PORT=587                     # 587 = STARTTLS (SMTP_SECURE=false); 465 = implicit TLS (SMTP_SECURE=true)
+SMTP_SECURE=false
+SMTP_USER=office@yourschool.pk
+SMTP_PASSWORD=abcdefghijklmnop    # Gmail: a 16-character App password, not the normal password
+EMAIL_FROM=Bright Future School <office@yourschool.pk>
+PUBLIC_WEB_URL=https://portal.yourschool.pk   # sign-in page in emails, reset links and login slips
+```
+
+- **Gmail / Google Workspace**: turn on 2-Step Verification for the sending account, then Google Account →
+  Security → App passwords → create one for "Mail" and paste the 16 characters (no spaces) into `SMTP_PASSWORD`.
+  `EMAIL_FROM` must use that same address (Gmail rewrites any other). Gmail allows about 500 emails a day; use the
+  Workspace SMTP relay or a provider (Brevo, Mailgun, SES) for more.
+- **Any other provider**: use the host/port/user/password it gives you and add its SPF/DKIM records to your domain
+  so emails don't land in spam.
+- On start-up the API checks the SMTP login and logs either `SMTP connection verified` or `SMTP check failed …`
+  with the reason (wrong password, blocked port…). A bad setting never stops the API; emails just fail until fixed
+  (failed deliveries show under Settings → Support).
+- Then send yourself a test from **Settings → Support → Send test message** (channel Email).
+- `OTP_DEV_ECHO` is for a developer laptop only (with `EMAIL_DRIVER=log` the sign-in code is shown on the screen).
+  It must stay `false`/unset on a real server; the API refuses to start in production with it on.
+
 ## 4. First deploy
 ```bash
 sudo mkdir -p /opt/eschool && sudo chown deploy: /opt/eschool

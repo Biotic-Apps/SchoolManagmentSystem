@@ -1,3 +1,4 @@
+import type { EmailExtras } from './channels/channel-message';
 import type { NotificationChannel } from '../../generated/prisma/client';
 
 export const NOTIFICATION_JOBS = {
@@ -28,4 +29,6 @@ export interface DirectMessageInput {
   channel: Exclude<NotificationChannel, 'IN_APP'>;
   title: string;
   body: string;
+  /** EMAIL only: code / button shown in the HTML part. */
+  extras?: EmailExtras;
 }

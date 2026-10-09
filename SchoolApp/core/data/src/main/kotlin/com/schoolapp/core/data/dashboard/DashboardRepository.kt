@@ -1,8 +1,8 @@
 package com.schoolapp.core.data.dashboard
 
 import com.schoolapp.core.common.result.AppResult
-import com.schoolapp.core.model.dashboard.ChildToday
 import com.schoolapp.core.model.dashboard.DashboardMetric
+import com.schoolapp.core.model.dashboard.ParentOverview
 import com.schoolapp.core.model.dashboard.TeacherToday
 
 interface DashboardRepository {
@@ -13,5 +13,6 @@ interface DashboardRepository {
 
     suspend fun teacherToday(): AppResult<TeacherToday>
 
-    suspend fun childToday(studentId: String): AppResult<ChildToday>
+    /** Parent home for one linked child (`/parent/home`). */
+    suspend fun parentHome(studentId: String): AppResult<ParentOverview>
 }

@@ -55,6 +55,7 @@ internal fun InvoiceDetailRoute(
             onReceipt = viewModel::openReceipt,
             onUploadProof = { state.invoice?.let { onUploadProof(it.id) } },
             onPayOnline = viewModel::payOnline,
+            onDownloadChallan = viewModel::downloadChallan,
             modifier = Modifier.padding(padding),
         )
     }

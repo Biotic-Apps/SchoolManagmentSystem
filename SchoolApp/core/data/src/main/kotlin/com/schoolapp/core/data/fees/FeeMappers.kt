@@ -60,7 +60,7 @@ internal fun FeeSummaryDto.toModel() = FeeSummary(
     overdueMinor = overdueMinor,
     advanceMinor = advanceMinor,
     lastPayment = lastPayment?.let { LastPayment(it.amountMinor, it.paidOn, it.receiptNo) },
-    nextDue = nextDue?.let { NextDue(it.balanceMinor ?: it.amountMinor ?: 0, it.dueDate, it.invoiceNo) },
+    nextDue = nextDue?.let { NextDue(it.balanceMinor ?: it.amountMinor ?: 0, it.dueDate, it.invoiceNo, it.invoiceId) },
     currency = currency ?: DEFAULT_CURRENCY,
     proofUploadEnabled = proofUploadEnabled ?: proofUpload ?: true,
     onlineGatewayEnabled = onlineGatewayEnabled ?: (onlineGateway != null && onlineGateway != GATEWAY_NONE),

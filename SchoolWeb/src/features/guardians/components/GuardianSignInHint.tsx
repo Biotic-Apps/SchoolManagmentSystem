@@ -1,4 +1,4 @@
-import { loginPageUrl } from "../print-login-slip";
+import { loginPageUrl } from "../login-url";
 import type { GuardianLogin } from "../types";
 
 interface GuardianSignInHintProps {

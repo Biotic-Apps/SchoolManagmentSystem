@@ -32,7 +32,7 @@ export function useOtpLoginMutation() {
 
 /** Always `ok` (no enumeration); a code is only sent to parent accounts. */
 export function requestLoginCode(email: string) {
-  return http.post<{ ok: boolean; resendAfterSeconds: number }>("/auth/otp/request", { email });
+  return http.post<{ ok: boolean; resendAfterSeconds: number; devCode?: string }>("/auth/otp/request", { email });
 }
 
 export function useVerifyTwoFactorMutation() {

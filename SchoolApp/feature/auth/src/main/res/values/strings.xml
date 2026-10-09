@@ -2,7 +2,11 @@
     <string name="auth_title">eSchool</string>
     <string name="auth_subtitle">Sign in to continue</string>
     <string name="auth_identifier_label">Email, phone or admission number</string>
-    <string name="auth_identifier_hint">Parents can also use their child\'s admission number, e.g. SMS-2026-0002</string>
+    <string name="auth_identifier_label_staff">Email, phone or username</string>
+    <string name="auth_identifier_label_parent">Child\'s admission no., phone or email</string>
+    <string name="auth_audience_staff">Staff</string>
+    <string name="auth_audience_parent">Parent</string>
+    <string name="auth_parent_password_help">Forgot password? Ask the school office.</string>
     <string name="auth_password_label">Password</string>
     <string name="auth_sign_in">Sign in</string>
     <string name="auth_error_required">This field is required</string>

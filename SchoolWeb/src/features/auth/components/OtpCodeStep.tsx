@@ -20,9 +20,16 @@ export function OtpCodeStep({ otp, onChallenge }: OtpCodeStepProps) {
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-5">
       <p className="text-label text-fg-muted">
-        If <span className="font-medium text-fg">{otp.email}</span> belongs to a parent account, a 6-digit code is on
-        its way by email. It expires in 5 minutes. Not there? Check your spam folder.
+        If <span className="font-medium text-fg">{otp.email}</span> is on a parent account at the school, we have
+        emailed it a 6-digit code that works for 5 minutes. Nothing after a minute? Check spam, or ask the school
+        office which email they have for you.
       </p>
+      {otp.devCode && (
+        <InlineNotice tone="warning">
+          <strong>Dev mode:</strong> your code is <span className="font-mono font-semibold">{otp.devCode}</span>{" "}
+          (emails are only logged on this server).
+        </InlineNotice>
+      )}
       {otp.resent && !otp.resendError && <InlineNotice>A new code was requested. Earlier codes no longer work.</InlineNotice>}
       <FormAlert message={serverError ?? otp.resendError} />
       <FormField id="code" label="Code from the email" error={errors.code}>

@@ -2,6 +2,7 @@ package com.schoolapp.feature.fees
 
 import androidx.lifecycle.SavedStateHandle
 import com.schoolapp.core.common.result.AppResult
+import com.schoolapp.core.data.fees.InvoicePdfDownloader
 import com.schoolapp.core.testing.FakeAuthRepository
 import com.schoolapp.core.testing.MainDispatcherRule
 import com.schoolapp.feature.fees.invoice.InvoiceDetailViewModel
@@ -71,7 +72,7 @@ class ParentFeesViewModelTest {
     @Test
     fun paid_invoice_offers_no_payment_actions_and_receipt_not_ready_is_reported() {
         repository.summaries = mapOf("c2" to FeesFixtures.summary(online = true))
-        val vm = InvoiceDetailViewModel(SavedStateHandle(mapOf("invoiceId" to "i3")), repository)
+        val vm = InvoiceDetailViewModel(SavedStateHandle(mapOf("invoiceId" to "i3")), repository, InvoicePdfDownloader(repository))
         assertFalse(vm.uiState.value.canPayOnline)
         assertFalse(vm.uiState.value.canUploadProof)
         vm.openReceipt("pay-1")
@@ -80,6 +81,6 @@ class ParentFeesViewModelTest {
 
     private fun invoiceViewModel(online: Boolean): InvoiceDetailViewModel {
         repository.summaries = mapOf("c1" to FeesFixtures.summary(online = online))
-        return InvoiceDetailViewModel(SavedStateHandle(mapOf("invoiceId" to "i1")), repository)
+        return InvoiceDetailViewModel(SavedStateHandle(mapOf("invoiceId" to "i1")), repository, InvoicePdfDownloader(repository))
     }
 }

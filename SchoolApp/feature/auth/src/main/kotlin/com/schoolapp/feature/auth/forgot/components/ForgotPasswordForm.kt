@@ -43,7 +43,6 @@ internal fun ForgotPasswordForm(
             onValueChange = onIdentifierChange,
             label = stringResource(R.string.auth_identifier_label),
             errorText = state.identifierError?.let { stringResource(it.messageRes()) },
-            supportingText = stringResource(R.string.auth_identifier_hint),
             enabled = !state.isSubmitting,
             kind = FieldKind.Username,
             imeAction = ImeAction.Done,

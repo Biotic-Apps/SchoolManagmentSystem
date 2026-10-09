@@ -17,6 +17,8 @@ import { ParentEmailService } from './parent-email.service';
 export interface OtpRequestResult {
   ok: true;
   resendAfterSeconds: number;
+  /** Local development only (OTP_DEV_ECHO with the log email driver). */
+  devCode?: string;
 }
 
 const RESULT: OtpRequestResult = {
@@ -62,7 +64,16 @@ export class OtpRequestService {
     }
     // The stored address (not the typed one) receives the code.
     this.mailer.send(user.id, user.email, code);
-    return RESULT;
+    return this.echoesCode() ? { ...RESULT, devCode: code } : RESULT;
+  }
+
+  /** Never in production; only when emails are just logged and the flag is on. */
+  private echoesCode(): boolean {
+    return (
+      !this.config.isProduction &&
+      this.config.get('EMAIL_DRIVER') === 'log' &&
+      this.config.get('OTP_DEV_ECHO')
+    );
   }
 
   private async inCooldown(email: string): Promise<boolean> {

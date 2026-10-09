@@ -5,7 +5,7 @@ import { NoticesFeedCard } from "@/features/notices/components/NoticesFeedCard";
 import { SetupChecklistCard } from "@/features/school-setup/components/SetupChecklistCard";
 import { useDashboard } from "../use-dashboard";
 import { AttendanceTodayCard } from "./AttendanceTodayCard";
-import { ChildTodayPanel } from "./ChildTodayPanel";
+import { ParentHomePanel } from "./parent/ParentHomePanel";
 import { DashboardScopeBar } from "./DashboardScopeBar";
 import { PendingPanel } from "./PendingPanel";
 import { SummaryStats } from "./SummaryStats";
@@ -19,7 +19,7 @@ export function DashboardPage() {
     <>
       <PageHeader title={dashboard.title} description={`Welcome, ${dashboard.greetingName}`} />
       {isParent ? (
-        <ChildTodayPanel />
+        <ParentHomePanel />
       ) : (
         <>
           <DashboardScopeBar scope={dashboard.scope} />

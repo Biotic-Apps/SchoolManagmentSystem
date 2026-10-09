@@ -6,8 +6,10 @@ import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.common.time.AppClock
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.data.dashboard.DashboardRepository
+import com.schoolapp.core.data.fees.InvoicePdfDownloader
 import com.schoolapp.core.model.SessionContext
 import com.schoolapp.feature.dashboard.finance.FinanceLoader
+import com.schoolapp.feature.dashboard.parent.ChallanState
 import com.schoolapp.feature.dashboard.parent.ParentHome
 import com.schoolapp.feature.dashboard.supervisor.SupervisorLoader
 import com.schoolapp.feature.dashboard.teacher.TeacherDayLoader
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,10 +33,16 @@ class DashboardViewModel @Inject constructor(
     private val teacherDayLoader: TeacherDayLoader,
     private val financeLoader: FinanceLoader,
     private val clock: AppClock,
+    private val challanPdf: InvoicePdfDownloader,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
+
+    private val _challan = MutableStateFlow(ChallanState())
+
+    /** Parent fee tile download; kept apart from [uiState] so reloads do not reset it. */
+    val challan: StateFlow<ChallanState> = _challan.asStateFlow()
 
     private var session: SessionContext? = null
     private var loadJob: Job? = null
@@ -52,6 +61,20 @@ class DashboardViewModel @Inject constructor(
     fun refresh() {
         session?.let { start(it, refreshing = true) }
     }
+
+    /** Prepares the challan PDF of [invoiceId] (polling its job off the main thread) for the route to open. */
+    fun downloadChallan(invoiceId: String) {
+        if (_challan.value.isDownloading) return
+        _challan.value = ChallanState(isDownloading = true)
+        viewModelScope.launch {
+            _challan.value = when (val result = challanPdf(invoiceId)) {
+                is AppResult.Success -> ChallanState(urlToOpen = result.data)
+                is AppResult.Failure -> ChallanState(error = result.error)
+            }
+        }
+    }
+
+    fun onChallanOpened() = _challan.update { it.copy(urlToOpen = null) }
 
     private fun start(session: SessionContext, refreshing: Boolean) {
         loadJob?.cancel()
@@ -90,8 +113,8 @@ class DashboardViewModel @Inject constructor(
             isLoading = kept == null,
             isRefreshing = refreshing && kept != null,
         )
-        _uiState.value = when (val result = dashboardRepository.childToday(child.id)) {
-            is AppResult.Success -> DashboardUiState.Parent(child = child, home = ParentHome.from(result.data))
+        _uiState.value = when (val result = dashboardRepository.parentHome(child.id)) {
+            is AppResult.Success -> DashboardUiState.Parent(child = child, home = ParentHome.from(result.data, clock.now()))
             is AppResult.Failure -> DashboardUiState.Parent(child = child, home = kept, error = result.error)
         }
     }

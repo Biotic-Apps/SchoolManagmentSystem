@@ -9,6 +9,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.model.RoleRef
 import com.schoolapp.core.navigation.MessageThreadDestination
+import com.schoolapp.core.navigation.NewThreadDestination
 import com.schoolapp.feature.messages.threads.ThreadsScreen
 import com.schoolapp.feature.messages.threads.ThreadsViewModel
 

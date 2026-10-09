@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CreditCard
+import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.UploadFile
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,6 +20,7 @@ import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.SecondaryButton
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.ui.appErrorMessage
+import com.schoolapp.core.ui.fileJobMessage
 import com.schoolapp.feature.fees.R
 import com.schoolapp.feature.fees.invoice.components.InvoiceBreakdownCard
 import com.schoolapp.feature.fees.invoice.components.InvoiceHeaderCard
@@ -32,6 +34,7 @@ internal fun InvoiceDetailScreen(
     onUploadProof: () -> Unit,
     onPayOnline: () -> Unit,
     modifier: Modifier = Modifier,
+    onDownloadChallan: () -> Unit = {},
 ) {
     val invoice = state.invoice
     when {
@@ -40,28 +43,34 @@ internal fun InvoiceDetailScreen(
         else -> ScreenColumn(modifier) {
             item(key = "header") { InvoiceHeaderCard(invoice) }
             item(key = "breakdown") { InvoiceBreakdownCard(invoice) }
-            if (state.canUploadProof || state.canPayOnline) {
-                item(key = "actions") {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        if (state.canPayOnline) {
-                            PrimaryButton(
-                                text = stringResource(R.string.fees_pay_online),
-                                onClick = onPayOnline,
-                                modifier = Modifier.fillMaxWidth(),
-                                loading = state.isPayingOnline,
-                                leadingIcon = Icons.Outlined.CreditCard,
-                            )
-                        }
-                        state.payOnlineError?.let { InlineMessage(payOnlineMessage(it), StatusTone.Error) }
-                        if (state.canUploadProof) {
-                            SecondaryButton(
-                                text = stringResource(R.string.fees_upload_proof),
-                                onClick = onUploadProof,
-                                modifier = Modifier.fillMaxWidth(),
-                                leadingIcon = Icons.Outlined.UploadFile,
-                            )
-                        }
+            item(key = "actions") {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (state.canPayOnline) {
+                        PrimaryButton(
+                            text = stringResource(R.string.fees_pay_online),
+                            onClick = onPayOnline,
+                            modifier = Modifier.fillMaxWidth(),
+                            loading = state.isPayingOnline,
+                            leadingIcon = Icons.Outlined.CreditCard,
+                        )
                     }
+                    state.payOnlineError?.let { InlineMessage(payOnlineMessage(it), StatusTone.Error) }
+                    if (state.canUploadProof) {
+                        SecondaryButton(
+                            text = stringResource(R.string.fees_upload_proof),
+                            onClick = onUploadProof,
+                            modifier = Modifier.fillMaxWidth(),
+                            leadingIcon = Icons.Outlined.UploadFile,
+                        )
+                    }
+                    SecondaryButton(
+                        text = stringResource(R.string.fees_download_challan),
+                        onClick = onDownloadChallan,
+                        modifier = Modifier.fillMaxWidth(),
+                        loading = state.isDownloadingChallan,
+                        leadingIcon = Icons.Outlined.FileDownload,
+                    )
+                    state.challanError?.let { InlineMessage(fileJobMessage(it), StatusTone.Error) }
                 }
             }
             item(key = "payments") {

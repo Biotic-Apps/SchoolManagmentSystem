@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, CalendarRange, IdCard, Plus } from "lucide-react";
+import { Building2, CalendarRange, IdCard, KeyRound, Plus } from "lucide-react";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { AcademicScopeBar } from "@/features/classes/components/AcademicScopeBar";
+import { PrintLoginSlipsDialog } from "@/features/guardians/components/PrintLoginSlipsDialog";
 import { useStudentsPage } from "../use-students-page";
 import { PrintIdCardsDialog } from "./PrintIdCardsDialog";
 import { RegisterStudentDialog } from "./RegisterStudentDialog";
@@ -27,6 +28,12 @@ export function StudentsPage() {
         description="Enrolled students per branch session, and transfers between branches."
         actions={
           <>
+            {page.canPrintSlips && (
+              <Button variant="secondary" onClick={() => page.printSlips.show(true)}>
+                <KeyRound />
+                Parent login slips
+              </Button>
+            )}
             {page.canPrintCards && (
               <Button variant="secondary" onClick={() => page.printCards.show(true)}>
                 <IdCard />
@@ -89,6 +96,15 @@ export function StudentsPage() {
           classes={scope.classes.options}
           classId={scope.classId}
           onClose={page.printCards.close}
+        />
+      )}
+      {page.printSlips.open && branchId && sessionId && (
+        <PrintLoginSlipsDialog
+          branchId={branchId}
+          sessionId={sessionId}
+          classes={scope.classes.options}
+          classId={scope.classId}
+          onClose={page.printSlips.close}
         />
       )}
       {page.register.open && branchId && sessionId && (

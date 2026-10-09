@@ -1,8 +1,8 @@
 package com.schoolapp.core.data.dashboard
 
 import com.schoolapp.core.common.result.AppResult
-import com.schoolapp.core.model.dashboard.ChildToday
 import com.schoolapp.core.model.dashboard.DashboardMetric
+import com.schoolapp.core.model.dashboard.ParentOverview
 import com.schoolapp.core.model.dashboard.TeacherToday
 import com.schoolapp.core.network.ApiCaller
 import com.schoolapp.core.network.api.DashboardApi
@@ -27,8 +27,8 @@ class DefaultDashboardRepository @Inject constructor(
     override suspend fun teacherToday(): AppResult<TeacherToday> =
         apiCaller.call { api.teacherToday().data.toModel() }
 
-    override suspend fun childToday(studentId: String): AppResult<ChildToday> =
-        apiCaller.call { api.childToday(studentId).data.toModel() }
+    override suspend fun parentHome(studentId: String): AppResult<ParentOverview> =
+        apiCaller.call { api.parentHome(studentId).data.toModel() }
 }
 
 /** Keeps numeric entries only, in server order; unknown future keys pass through. */

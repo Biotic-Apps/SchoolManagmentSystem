@@ -134,4 +134,11 @@ export class NotificationsRepository {
       update: { userId, platform, lastSeenAt: new Date() },
     });
   }
+
+  /** Only the signed-in user's own device row. */
+  removeDevice(userId: string, token: string) {
+    return this.prisma.userDevice.deleteMany({
+      where: { userId, fcmToken: token },
+    });
+  }
 }

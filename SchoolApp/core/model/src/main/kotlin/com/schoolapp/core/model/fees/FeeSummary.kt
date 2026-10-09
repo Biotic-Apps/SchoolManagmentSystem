@@ -2,7 +2,8 @@ package com.schoolapp.core.model.fees
 
 data class LastPayment(val amountMinor: Long, val paidOn: String?, val receiptNo: String?)
 
-data class NextDue(val amountMinor: Long, val dueDate: String?, val invoiceNo: String?)
+/** [invoiceId] is set by servers that include it (parent home), so the invoice can be opened directly. */
+data class NextDue(val amountMinor: Long, val dueDate: String?, val invoiceNo: String?, val invoiceId: String? = null)
 
 /**
  * `GET /students/:id/fee-summary`. [proofUploadEnabled] / [onlineGatewayEnabled] mirror the branch

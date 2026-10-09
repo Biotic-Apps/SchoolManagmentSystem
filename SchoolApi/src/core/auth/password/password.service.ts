@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { publicWebUrl } from '../../../config/public-web-url';
 import { AppConfigService } from '../../../config/app-config.service';
 import { AuditService } from '../../audit/audit.service';
 import { invalid } from '../../common/errors/errors';
@@ -51,11 +52,19 @@ export class PasswordService {
     if (!this.config.isProduction) {
       this.logger.log(`[dev] password reset token for ${user.id}: ${token}`);
     }
+    const web = publicWebUrl(this.config);
+    const link = web ? `${web}/reset-password?token=${token}` : null;
     await this.notifications.sendDirect({
       userId: user.id,
       channel: user.email ? 'EMAIL' : 'SMS',
       title: 'Reset your eSchool password',
-      body: `Use this code to reset your password (valid ${RESET_TTL_MINUTES} minutes): ${token}`,
+      body:
+        `Use this code to reset your password (valid ${RESET_TTL_MINUTES} minutes): ${token}` +
+        (link && user.email ? `\n\nOr open this link: ${link}` : '') +
+        "\n\nIf you didn't ask for this, ignore this message; your password stays the same.",
+      extras: link
+        ? { action: { label: 'Choose a new password', url: link } }
+        : undefined,
     });
   }
 

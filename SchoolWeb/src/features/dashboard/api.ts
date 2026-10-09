@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http } from "@/lib/http";
 import type { ScopeValue } from "@/lib/scope";
-import type { ChildToday, DashboardSummary, PendingCounts, TeacherToday } from "./types";
+import type { DashboardSummary, ParentHome, PendingCounts, TeacherToday } from "./types";
 
 export function useDashboardSummary(scope: ScopeValue, enabled: boolean) {
   return useQuery({
@@ -29,10 +29,10 @@ export function useTeacherToday(enabled: boolean) {
   });
 }
 
-export function useChildToday(studentId: string | null) {
+export function useParentHome(studentId: string | null) {
   return useQuery({
-    queryKey: ["dashboard", "child-today", studentId],
-    queryFn: async () => (await http.get<ChildToday>("/dashboard/child-today", { studentId })).data,
+    queryKey: ["dashboard", "parent-home", studentId],
+    queryFn: async () => (await http.get<ParentHome>("/parent/home", { studentId })).data,
     enabled: !!studentId,
   });
 }

@@ -76,6 +76,6 @@ import { StudentLedgerService } from './student-fees/student-ledger.service';
     DueRemindersService,
     DueRemindersProcessor,
   ],
-  exports: [InvoiceReader, FeeAccessService],
+  exports: [InvoiceReader, FeeAccessService, FeeSummaryService],
 })
 export class FeesModule {}

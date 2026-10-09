@@ -12,6 +12,7 @@ import com.schoolapp.core.model.fees.RefundInput
 import com.schoolapp.core.model.fees.PaymentInput
 import com.schoolapp.core.model.fees.PaymentOutcome
 import com.schoolapp.core.model.fees.PaymentProof
+import com.schoolapp.core.model.fees.PdfJob
 import com.schoolapp.core.model.fees.ProofInput
 import com.schoolapp.core.model.fees.ProofStatus
 import kotlinx.coroutines.flow.Flow
@@ -29,6 +30,12 @@ interface FeesRepository {
 
     /** Signed url of the receipt PDF of a payment. */
     suspend fun receiptUrl(paymentId: String): AppResult<String>
+
+    /** Starts (or reuses) the challan PDF of an invoice (`GET /invoices/:id/pdf`). */
+    suspend fun invoicePdf(invoiceId: String): AppResult<PdfJob>
+
+    /** Current state of a PDF job (`GET /jobs/:id`). */
+    suspend fun pdfJob(jobId: String): AppResult<PdfJob>
 
     suspend fun submitProof(input: ProofInput): AppResult<PaymentProof>
 

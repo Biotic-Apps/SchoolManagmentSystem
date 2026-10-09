@@ -63,10 +63,70 @@ export interface TeacherToday {
   assignedComplaints: number;
 }
 
-export interface ChildToday {
-  attendance: { status: string } | null;
+export interface ParentHomeChild {
+  id: string;
+  name: string;
+  photoUrl: string | null;
+  admissionNo: string;
+  className: string | null;
+  sectionName: string | null;
+  rollNo: number | null;
+  branchName: string | null;
+  branchPhone: string | null;
+  classTeacher: { name: string; userId: string | null } | null;
+}
+
+export interface MonthAttendance {
+  month: string;
+  present: number;
+  absent: number;
+  late: number;
+  leave: number;
+  halfDay: number;
+  percent: number | null;
+}
+
+export interface ParentHomeFees {
+  totalDueMinor: number;
+  overdueMinor: number;
+  currency: string;
+  nextDue: { invoiceId: string; invoiceNo: string; dueDate: string; balanceMinor: number } | null;
+  lastPayment: { amountMinor: number; paidOn: string; receiptNo?: string } | null;
+  onlineGatewayEnabled: boolean;
+  proofUploadEnabled: boolean;
+}
+
+export interface LatestResult {
+  examId: string;
+  examName: string;
+  percent: number;
+  grade: string;
+  position: number | null;
+  passed: boolean;
+  publishedAt: string | null;
+}
+
+export interface ParentHomeEvent {
+  id: string;
+  kind: "ACTIVITY" | "EVENT" | "HOLIDAY" | "VACATION" | "DEADLINE";
+  title: string;
+  startDate: string;
+  endDate: string | null;
+}
+
+export type ParentPeriod = TeacherSlot & { staff?: { id: string; name: string } };
+
+/** GET /parent/home?studentId= — the parent dashboard of one verified child. */
+export interface ParentHome {
+  child: ParentHomeChild;
+  attendance: { today: string; month: MonthAttendance };
+  fees: ParentHomeFees | null;
+  latestResult: LatestResult | null;
+  homework: { dueCount: number; nextDueDate: string | null };
+  todayPeriods: ParentPeriod[];
   diary: DiaryEntry[];
   notices: Notice[];
+  meetings: Meeting[];
+  events: ParentHomeEvent[];
   consentsPending: number;
-  nextMeeting: Meeting | null;
 }

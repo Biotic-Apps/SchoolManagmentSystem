@@ -1,6 +1,7 @@
 package com.schoolapp.core.designsystem.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +22,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.theme.AppColors
 
-/** KPI tile: tone icon tile, the number (animates when it changes), then its label. Tappable tiles show a chevron. */
+/**
+ * KPI tile: tone icon tile, the number (animates when it changes), then its label. Tappable tiles show a chevron.
+ * [footer] holds an optional status chip or action under the supporting line.
+ */
 @Composable
 fun StatCard(
     label: String,
@@ -31,6 +35,7 @@ fun StatCard(
     tone: StatusTone = StatusTone.Neutral,
     supporting: String? = null,
     onClick: (() -> Unit)? = null,
+    footer: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
     AppCard(modifier = modifier, onClick = onClick, verticalSpacing = 4.dp) {
         if (icon != null || onClick != null) {
@@ -58,6 +63,10 @@ fun StatCard(
         )
         if (supporting != null) {
             Text(supporting, style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)
+        }
+        if (footer != null) {
+            Spacer(Modifier.height(4.dp))
+            footer()
         }
     }
 }

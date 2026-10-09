@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.RoleRef
-import com.schoolapp.feature.meetings.navigation.BookMeetingDestination
+import com.schoolapp.core.navigation.BookMeetingDestination
 import com.schoolapp.feature.meetings.navigation.MeetingDetailDestination
 import com.schoolapp.feature.meetings.parent.ParentMeetingsRoute
 import com.schoolapp.feature.meetings.staff.StaffMeetingsRoute

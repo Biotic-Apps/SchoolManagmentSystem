@@ -40,4 +40,6 @@ export class OtpRequestResultDto {
   ok!: true;
   /** Seconds before another code can be requested for this email. */
   resendAfterSeconds!: number;
+  /** Local development only (OTP_DEV_ECHO=true with EMAIL_DRIVER=log); never in production. */
+  devCode?: string;
 }

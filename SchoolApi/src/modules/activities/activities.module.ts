@@ -23,5 +23,6 @@ import { ParticipantsService } from './participants/participants.service';
     ParticipantsService,
     MyActivitiesService,
   ],
+  exports: [MyActivitiesService],
 })
 export class ActivitiesModule {}

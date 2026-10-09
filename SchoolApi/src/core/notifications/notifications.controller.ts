@@ -17,7 +17,10 @@ import { ApiData, ApiPage } from '../common/swagger/api-data.decorator';
 import type { AuthUser } from '../common/types/auth-user';
 import { NotificationDto } from './dto/notification.dto';
 import { NotificationQueryDto } from './dto/notification-query.dto';
-import { RegisterDeviceDto } from './dto/register-device.dto';
+import {
+  RegisterDeviceDto,
+  UnregisterDeviceDto,
+} from './dto/register-device.dto';
 import { NotificationInboxService } from './notification-inbox.service';
 
 @ApiTags('notifications')
@@ -68,6 +71,18 @@ export class NotificationsController {
     @Body() body: RegisterDeviceDto,
   ): Promise<OkDto> {
     await this.inbox.registerDevice(user.id, body.token, body.platform);
+    return OK;
+  }
+
+  /** Call on sign-out so the device stops receiving this user's pushes. */
+  @Post('devices/unregister')
+  @HttpCode(200)
+  @ApiData(OkDto)
+  async unregisterDevice(
+    @CurrentUser() user: AuthUser,
+    @Body() body: UnregisterDeviceDto,
+  ): Promise<OkDto> {
+    await this.inbox.unregisterDevice(user.id, body.token);
     return OK;
   }
 }

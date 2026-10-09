@@ -58,6 +58,8 @@ export const envSchema = z
       .default('development'),
     PORT: z.coerce.number().int().min(1).max(65535).default(3000),
     APP_URL: z.url().default('http://localhost:3000'),
+    /** Public address of the school web app (parents' sign-in page, login slips, emails). */
+    PUBLIC_WEB_URL: z.url().optional(),
     APP_TIMEZONE: z
       .string()
       .default('Asia/Karachi')
@@ -130,6 +132,11 @@ export const envSchema = z
     SMTP_PASSWORD: z.string().min(1).optional(),
     /** `eSchool <no-reply@school.pk>`; school fromName replaces the display name. */
     EMAIL_FROM: z.string().min(3).optional(),
+    /**
+     * Local development only: with EMAIL_DRIVER=log the sign-in code is also
+     * returned by POST /auth/otp/request. Refused in production.
+     */
+    OTP_DEV_ECHO: booleanString.default(false),
     /** log (default), twilio, or http (any local SMS gateway). */
     SMS_DRIVER: z.enum(['log', 'twilio', 'http']).default('log'),
     TWILIO_ACCOUNT_SID: z.string().min(1).optional(),
@@ -189,6 +196,14 @@ export const envSchema = z
           });
         }
       }
+    }
+
+    if (env.OTP_DEV_ECHO) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['OTP_DEV_ECHO'],
+        message: 'must be false in production (it reveals sign-in codes)',
+      });
     }
 
     if (!env.BACKUP_ENCRYPTION_KEY) {

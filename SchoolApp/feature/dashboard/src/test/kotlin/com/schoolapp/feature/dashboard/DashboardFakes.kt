@@ -7,10 +7,11 @@ import com.schoolapp.core.data.fees.FeesRepository
 import com.schoolapp.core.data.organisation.OrganisationRepository
 import com.schoolapp.core.data.setup.SetupRepository
 import com.schoolapp.core.data.timetable.TimetableRepository
-import com.schoolapp.core.model.dashboard.ChildToday
 import com.schoolapp.core.model.dashboard.DashboardMetric
+import com.schoolapp.core.model.dashboard.ParentOverview
 import com.schoolapp.core.model.dashboard.TeacherToday
 import com.schoolapp.core.model.fees.FinanceOverview
+import com.schoolapp.core.model.fees.PdfJob
 import com.schoolapp.core.model.organisation.Section
 import com.schoolapp.core.model.setup.SetupChecklist
 import com.schoolapp.core.model.timetable.SectionTimetable
@@ -21,7 +22,7 @@ class FakeDashboardRepository : DashboardRepository {
     var summaryResult: AppResult<List<DashboardMetric>> = AppResult.Success(emptyList())
     var pendingResult: AppResult<List<DashboardMetric>> = AppResult.Success(emptyList())
     var teacherResult: AppResult<TeacherToday> = AppResult.Failure(AppError.Network)
-    val childResults = mutableMapOf<String, AppResult<ChildToday>>()
+    val childResults = mutableMapOf<String, AppResult<ParentOverview>>()
     val pendingCalls = mutableListOf<Pair<String?, String>>()
     val childCalls = mutableListOf<String>()
     var summaryCalls = 0
@@ -38,7 +39,7 @@ class FakeDashboardRepository : DashboardRepository {
 
     override suspend fun teacherToday(): AppResult<TeacherToday> = teacherResult
 
-    override suspend fun childToday(studentId: String): AppResult<ChildToday> {
+    override suspend fun parentHome(studentId: String): AppResult<ParentOverview> {
         childCalls += studentId
         return childResults[studentId] ?: AppResult.Failure(AppError.Network)
     }
@@ -78,9 +79,11 @@ fun organisationWith(sections: List<Section>): OrganisationRepository = Proxy.ne
     }
 } as OrganisationRepository
 
-/** Fees stub answering only `financeOverview` (suspend calls arrive with a trailing continuation). */
+/** Fees stub answering only `financeOverview` and `invoicePdf` (suspend calls arrive with a trailing continuation). */
 class FakeFinanceFees {
     var result: AppResult<FinanceOverview> = AppResult.Failure(AppError.Network)
+    var pdfResult: AppResult<PdfJob> = AppResult.Failure(AppError.Network)
+    val pdfCalls = mutableListOf<String>()
     val calls = mutableListOf<Pair<String?, String?>>()
 
     val repository: FeesRepository = Proxy.newProxyInstance(
@@ -90,6 +93,10 @@ class FakeFinanceFees {
             "financeOverview" -> {
                 calls += args[0] as String? to args[1] as String?
                 result
+            }
+            "invoicePdf" -> {
+                pdfCalls += args[0] as String
+                pdfResult
             }
             else -> error("not used: ${method.name}")
         }

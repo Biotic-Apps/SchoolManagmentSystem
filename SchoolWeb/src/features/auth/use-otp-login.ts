@@ -12,6 +12,8 @@ import { useResendCountdown } from "./use-resend-countdown";
  */
 export function useOtpLogin() {
   const [email, setEmail] = useState<string | null>(null);
+  /** Only from a local development API (OTP_DEV_ECHO); never in production. */
+  const [devCode, setDevCode] = useState<string | null>(null);
   const countdown = useResendCountdown();
   const emailForm = useServerForm<OtpEmailValues, Awaited<ReturnType<typeof requestLoginCode>>>({
     schema: otpEmailSchema,
@@ -19,17 +21,22 @@ export function useOtpLogin() {
     onSubmit: ({ email: value }) => requestLoginCode(value),
     onSuccess: (result, values) => {
       setEmail(values.email.trim().toLowerCase());
+      setDevCode(result.data.devCode ?? null);
       countdown.start(result.data.resendAfterSeconds);
     },
   });
   const resend = useMutation({
     mutationFn: (value: string) => requestLoginCode(value),
-    onSuccess: (result) => countdown.start(result.data.resendAfterSeconds),
+    onSuccess: (result) => {
+      setDevCode(result.data.devCode ?? null);
+      countdown.start(result.data.resendAfterSeconds);
+    },
   });
 
   return {
     emailForm,
     email,
+    devCode,
     secondsLeft: countdown.secondsLeft,
     resend: () => email && resend.mutate(email),
     resending: resend.isPending,
@@ -37,6 +44,7 @@ export function useOtpLogin() {
     resendError: resend.error ? errorMessage(resend.error) : null,
     changeEmail: () => {
       setEmail(null);
+      setDevCode(null);
       resend.reset();
     },
   };

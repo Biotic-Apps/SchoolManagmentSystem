@@ -102,4 +102,7 @@ export interface ParentLogin {
 export interface SlipChild {
   name: string;
   admissionNo: string;
+  /** "Class 5 - A" when known. */
+  classLabel?: string | null;
+  photoUrl?: string | null;
 }

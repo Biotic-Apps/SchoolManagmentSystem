@@ -23,6 +23,8 @@ data class InvoiceDetailUiState(
     val receiptProblem: ReceiptProblem? = null,
     val isPayingOnline: Boolean = false,
     val payOnlineError: AppError? = null,
+    val isDownloadingChallan: Boolean = false,
+    val challanError: AppError? = null,
     /** One-shot: the route opens it in a viewer/browser and clears it. */
     val urlToOpen: String? = null,
 ) {

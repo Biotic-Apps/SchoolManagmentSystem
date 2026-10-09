@@ -29,6 +29,9 @@ class NotificationsViewModel @Inject constructor(
 
     fun refresh() = load(refreshing = true)
 
+    /** Back on screen: fetch new items in the background, keeping the list (no spinner). */
+    fun reloadQuietly() = load(refreshing = false, quiet = true)
+
     fun onUnreadOnlyChange(unreadOnly: Boolean) {
         if (unreadOnly == _uiState.value.unreadOnly) return
         _uiState.update { it.copy(unreadOnly = unreadOnly) }
@@ -66,15 +69,15 @@ class NotificationsViewModel @Inject constructor(
         s.copy(items = s.items.map { if (it.id == id) it.copy(isRead = read) else it }, actionError = null)
     }
 
-    private fun load(refreshing: Boolean) {
+    private fun load(refreshing: Boolean, quiet: Boolean = false) {
         loadJob?.cancel()
-        _uiState.update { it.copy(isLoading = !refreshing, isRefreshing = refreshing, error = null) }
+        if (!quiet) _uiState.update { it.copy(isLoading = !refreshing, isRefreshing = refreshing, error = null) }
         loadJob = viewModelScope.launch {
             val result = repository.notifications(_uiState.value.unreadOnly)
             _uiState.update {
                 when (result) {
                     is AppResult.Success -> it.copy(isLoading = false, isRefreshing = false, items = result.data)
-                    is AppResult.Failure -> it.copy(isLoading = false, isRefreshing = false, error = result.error)
+                    is AppResult.Failure -> if (quiet) it else it.copy(isLoading = false, isRefreshing = false, error = result.error)
                 }
             }
         }

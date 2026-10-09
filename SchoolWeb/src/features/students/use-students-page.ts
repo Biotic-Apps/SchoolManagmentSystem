@@ -14,6 +14,7 @@ export function useStudentsPage() {
   const [tab, setTab] = useState<StudentsTabId>("students");
   const register = useDialogState<true>();
   const printCards = useDialogState<true>();
+  const printSlips = useDialogState<true>();
 
   return {
     scope,
@@ -27,5 +28,7 @@ export function useStudentsPage() {
     register,
     canPrintCards: can("students.edit") && !!scope.sessionId,
     printCards,
+    canPrintSlips: can("guardians.edit") && can("users.edit") && !!scope.sessionId,
+    printSlips,
   };
 }

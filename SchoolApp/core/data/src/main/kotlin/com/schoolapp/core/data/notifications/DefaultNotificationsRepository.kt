@@ -56,6 +56,6 @@ class DefaultNotificationsRepository @Inject constructor(
         AppNotification(id, category, title, body, isRead = readAt != null, createdAt = createdAt)
 
     private companion object {
-        const val POLL_INTERVAL_MS = 60_000L
+        const val POLL_INTERVAL_MS = 30_000L
     }
 }

@@ -33,9 +33,10 @@ export function smtpTransport(env: SmtpEnv): Transporter {
 export class SmtpEmailSender implements EmailSender {
   constructor(
     private readonly env: SmtpEnv,
-    private readonly transport: Pick<Transporter, 'sendMail'> = smtpTransport(
-      env,
-    ),
+    private readonly transport: Pick<
+      Transporter,
+      'sendMail' | 'verify'
+    > = smtpTransport(env),
   ) {}
 
   async send(email: OutgoingEmail): Promise<void> {
@@ -45,12 +46,25 @@ export class SmtpEmailSender implements EmailSender {
         to: email.to,
         subject: email.subject,
         text: email.text,
+        ...(email.html ? { html: email.html } : {}),
       });
     } catch (error) {
-      throw providerError(`SMTP: ${errorText(error)}`, [
-        this.env.SMTP_PASSWORD,
-        this.env.SMTP_USER,
-      ]);
+      throw this.sanitised(error);
     }
+  }
+
+  async verify(): Promise<void> {
+    try {
+      await this.transport.verify();
+    } catch (error) {
+      throw this.sanitised(error);
+    }
+  }
+
+  private sanitised(error: unknown): Error {
+    return providerError(`SMTP: ${errorText(error)}`, [
+      this.env.SMTP_PASSWORD,
+      this.env.SMTP_USER,
+    ]);
   }
 }

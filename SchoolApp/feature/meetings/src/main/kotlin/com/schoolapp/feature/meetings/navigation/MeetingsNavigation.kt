@@ -3,13 +3,10 @@ package com.schoolapp.feature.meetings.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.schoolapp.core.navigation.BookMeetingDestination
 import com.schoolapp.feature.meetings.book.BookMeetingRoute
 import com.schoolapp.feature.meetings.detail.MeetingDetailRoute
 import kotlinx.serialization.Serializable
-
-/** Parent: pick an open slot for the active child. */
-@Serializable
-internal data object BookMeetingDestination
 
 /** Staff: one meeting; [box] (`UPCOMING`/`PAST`) is where it was listed, since there is no single-meeting endpoint. */
 @Serializable

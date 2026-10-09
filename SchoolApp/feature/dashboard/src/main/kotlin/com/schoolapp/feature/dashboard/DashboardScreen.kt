@@ -12,7 +12,9 @@ import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.dashboard.DashboardMetric
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.dashboard.components.FinanceCard
-import com.schoolapp.feature.dashboard.components.ParentHomeContent
+import com.schoolapp.feature.dashboard.parent.ChallanState
+import com.schoolapp.feature.dashboard.parent.components.ParentChallan
+import com.schoolapp.feature.dashboard.parent.components.ParentHomeContent
 import com.schoolapp.feature.dashboard.components.financeAction
 import com.schoolapp.feature.dashboard.components.SupervisorGrid
 import com.schoolapp.feature.dashboard.components.TeacherTodayContent
@@ -27,6 +29,8 @@ fun DashboardScreen(
     modifier: Modifier = Modifier,
     onOpen: (Any) -> Unit = {},
     canOpenMenu: (String) -> Boolean = { true },
+    challan: ChallanState = ChallanState(),
+    onDownloadChallan: (String) -> Unit = {},
 ) {
     when (state) {
         DashboardUiState.Loading -> LoadingState(modifier)
@@ -46,7 +50,7 @@ fun DashboardScreen(
             TeacherTodayContent(state, onOpenMenu, onOpen, canOpenMenu)
         }
         is DashboardUiState.Parent -> RefreshBox(state.isRefreshing, onRefresh, modifier) {
-            ParentHomeContent(state, onRefresh, onOpenMenu, onOpen, canOpenMenu)
+            ParentHomeContent(state, onRefresh, onOpenMenu, onOpen, canOpenMenu, ParentChallan(challan, onDownloadChallan))
         }
     }
 }

@@ -117,6 +117,13 @@ describe('validateEnv', () => {
     expect(validateEnv(productionEnv).NODE_ENV).toBe('production');
   });
 
+  it('refuses OTP_DEV_ECHO in production and defaults it off', () => {
+    expect(() =>
+      validateEnv({ ...productionEnv, OTP_DEV_ECHO: 'true' }),
+    ).toThrow(/OTP_DEV_ECHO/);
+    expect(validateEnv(productionEnv).OTP_DEV_ECHO).toBe(false);
+  });
+
   it('requires BACKUP_ENCRYPTION_KEY in production', () => {
     const env: Record<string, string> = { ...productionEnv };
     delete env.BACKUP_ENCRYPTION_KEY;

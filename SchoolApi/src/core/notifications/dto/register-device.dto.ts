@@ -9,3 +9,10 @@ export class RegisterDeviceDto {
   @IsIn(['WEB', 'ANDROID'])
   platform!: 'WEB' | 'ANDROID';
 }
+
+export class UnregisterDeviceDto {
+  @IsString()
+  @MinLength(10)
+  @MaxLength(4096)
+  token!: string;
+}

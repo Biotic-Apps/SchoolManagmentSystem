@@ -52,4 +52,9 @@ export class NotificationInboxService {
   ) {
     await this.repository.upsertDevice(userId, token, platform);
   }
+
+  /** Sign-out: this device stops getting the user's pushes. */
+  async unregisterDevice(userId: string, token: string): Promise<void> {
+    await this.repository.removeDevice(userId, token);
+  }
 }

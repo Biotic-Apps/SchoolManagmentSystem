@@ -35,6 +35,7 @@ export class LoginCodeMailer {
         email,
         title: LOGIN_CODE_SUBJECT,
         body: loginCodeBody(code),
+        extras: { code, codeNote: `Valid for ${MINUTES} minutes` },
       })
       .catch((error: unknown) => {
         const reason = error instanceof Error ? error.message : String(error);

@@ -1,18 +1,11 @@
 package com.schoolapp.core.data.dashboard
 
 import com.schoolapp.core.data.common.sectionLabel
-import com.schoolapp.core.data.diary.toModel
-import com.schoolapp.core.data.meetings.toModel
-import com.schoolapp.core.data.notices.ordered
-import com.schoolapp.core.data.notices.toModel
 import com.schoolapp.core.data.timetable.toModel
-import com.schoolapp.core.model.attendance.AttendanceStatus
 import com.schoolapp.core.model.attendance.RegisterStatus
-import com.schoolapp.core.model.dashboard.ChildToday
 import com.schoolapp.core.model.dashboard.PendingDiarySlot
 import com.schoolapp.core.model.dashboard.SectionRegisterState
 import com.schoolapp.core.model.dashboard.TeacherToday
-import com.schoolapp.core.network.dto.dashboard.ChildTodayDto
 import com.schoolapp.core.network.dto.dashboard.DiaryPendingDto
 import com.schoolapp.core.network.dto.dashboard.RegisterStateDto
 import com.schoolapp.core.network.dto.dashboard.TeacherTodayDto
@@ -39,11 +32,3 @@ internal fun DiaryPendingDto.toModel(): PendingDiarySlot? {
         subjectName = subjectName ?: subject?.name,
     )
 }
-
-internal fun ChildTodayDto.toModel() = ChildToday(
-    attendance = AttendanceStatus.fromKey(attendance?.status),
-    diary = diary.map { it.toModel() },
-    notices = notices.map { it.toModel() }.ordered(),
-    consentsPending = consentsPending,
-    nextMeeting = nextMeeting?.toModel(),
-)

@@ -18,6 +18,8 @@
     <string name="role_accountant">Accountant</string>
     <string name="role_parent">Parent</string>
     <string name="ui_no_app">No app found to open this.</string>
+    <string name="ui_file_not_ready">The file is still being prepared. Please try again in a minute.</string>
+    <string name="ui_file_failed">The file could not be created. Please try again later.</string>
     <string name="ui_attachments">Attachments</string>
     <string name="ui_attach">Attach file</string>
     <string name="ui_uploading">Uploading attachment…</string>

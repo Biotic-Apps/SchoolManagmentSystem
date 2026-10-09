@@ -15,6 +15,7 @@ interface Options {
   parent?: boolean;
   lastIssuedAt?: Date | null;
   required?: boolean;
+  config?: { production: boolean; driver: string; echo: boolean };
 }
 
 function setup(options: Options = {}) {
@@ -42,9 +43,22 @@ function setup(options: Options = {}) {
     {
       isEnabled: jest.fn().mockResolvedValue(false),
     } as unknown as TwoFactorLoginService,
-    { isProduction: true } as unknown as AppConfigService,
+    configOf(options.config),
   );
   return { service, repository, mailer, emails };
+}
+
+function configOf(
+  c = { production: true, driver: 'smtp', echo: false },
+): AppConfigService {
+  const env: Record<string, unknown> = {
+    EMAIL_DRIVER: c.driver,
+    OTP_DEV_ECHO: c.echo,
+  };
+  return {
+    isProduction: c.production,
+    get: (key: string) => env[key],
+  } as unknown as AppConfigService;
 }
 
 describe('OtpRequestService', () => {
@@ -95,5 +109,32 @@ describe('OtpRequestService', () => {
     });
     await service.request(EMAIL);
     expect(mailer.send).toHaveBeenCalledTimes(1);
+  });
+
+  it('never returns the code in production, even with OTP_DEV_ECHO and the log driver', async () => {
+    const { service } = setup({
+      config: { production: true, driver: 'log', echo: true },
+    });
+    const result = await service.request(EMAIL);
+    expect(result).toEqual(OK);
+    expect(result).not.toHaveProperty('devCode');
+  });
+
+  it('does not echo with real email (smtp) or without the flag', async () => {
+    for (const config of [
+      { production: false, driver: 'smtp', echo: true },
+      { production: false, driver: 'log', echo: false },
+    ]) {
+      const result = await setup({ config }).service.request(EMAIL);
+      expect(result).not.toHaveProperty('devCode');
+    }
+  });
+
+  it('echoes the emailed code in local development when asked to', async () => {
+    const { service, mailer } = setup({
+      config: { production: false, driver: 'log', echo: true },
+    });
+    const result = await service.request(EMAIL);
+    expect(result.devCode).toBe(mailer.send.mock.calls[0][2]);
   });
 });

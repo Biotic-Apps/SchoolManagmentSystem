@@ -17,6 +17,7 @@ import com.schoolapp.core.model.fees.Payment
 import com.schoolapp.core.model.fees.PaymentInput
 import com.schoolapp.core.model.fees.PaymentOutcome
 import com.schoolapp.core.model.fees.PaymentProof
+import com.schoolapp.core.model.fees.PdfJob
 import com.schoolapp.core.model.fees.ProofInput
 import com.schoolapp.core.model.fees.ProofStatus
 import com.schoolapp.core.model.fees.RefundInput
@@ -53,6 +54,10 @@ class FakeFeesRepository : FeesRepository {
             ?: AppResult.Failure(AppError.Server(404, "NOT_FOUND", null))
 
     override suspend fun receiptUrl(paymentId: String): AppResult<String> = AppResult.Failure(AppError.Server(202, "FILE_NOT_READY", null))
+
+    override suspend fun invoicePdf(invoiceId: String): AppResult<PdfJob> = AppResult.Failure(AppError.Network)
+
+    override suspend fun pdfJob(jobId: String): AppResult<PdfJob> = AppResult.Failure(AppError.Network)
 
     override suspend fun submitProof(input: ProofInput): AppResult<PaymentProof> = AppResult.Failure(AppError.Unknown())
 

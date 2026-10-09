@@ -165,6 +165,7 @@
     <string name="fees_amount">Amount</string>
     <string name="fees_cashier">Received by</string>
     <string name="fees_download_receipt">Download receipt</string>
+    <string name="fees_download_challan">Download challan</string>
     <string name="fees_refund">Refund</string>
     <string name="fees_reverse_payment">Reverse payment</string>
     <string name="fees_payment_reversal_state">This payment is reversed or waiting for reversal approval.</string>

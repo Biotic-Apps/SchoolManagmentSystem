@@ -3,7 +3,8 @@ import { http } from "@/lib/http";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type { AppNotification } from "./types";
 
-const POLL_MS = 60_000;
+/** Unread badge refresh; there is no push channel to the browser yet. */
+const POLL_MS = 20_000;
 const RECENT_COUNT = 10;
 
 export const notificationKeys = {
@@ -26,6 +27,8 @@ export function useRecentNotifications(enabled: boolean) {
   return useQuery({
     queryKey: notificationKeys.recent,
     queryFn: async () => (await http.get<AppNotification[]>("/notifications", { page: 1, pageSize: RECENT_COUNT })).data,
+    // While the list is open, new items appear without closing it.
+    refetchInterval: POLL_MS,
     enabled,
   });
 }

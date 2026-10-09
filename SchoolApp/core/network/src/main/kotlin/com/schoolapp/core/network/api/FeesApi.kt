@@ -14,6 +14,8 @@ import com.schoolapp.core.network.dto.fees.FeeSummaryDto
 import com.schoolapp.core.network.dto.fees.FileUrlDto
 import com.schoolapp.core.network.dto.fees.FinanceDashboardDto
 import com.schoolapp.core.network.dto.fees.InvoiceDto
+import com.schoolapp.core.network.dto.fees.JobStatusDto
+import com.schoolapp.core.network.dto.fees.PdfJobDto
 import com.schoolapp.core.network.dto.fees.OnlineInitiateBodyDto
 import com.schoolapp.core.network.dto.fees.OnlineInitiateDto
 import com.schoolapp.core.network.dto.fees.PaymentBodyDto
@@ -44,6 +46,13 @@ interface FeesApi {
 
     @GET("invoices/{id}")
     suspend fun invoice(@Path("id") id: String): ApiEnvelope<InvoiceDto>
+
+    /** Starts (or reuses) the invoice challan PDF; poll [job] until it has a file url. */
+    @GET("invoices/{id}/pdf")
+    suspend fun invoicePdf(@Path("id") invoiceId: String): ApiEnvelope<PdfJobDto>
+
+    @GET("jobs/{id}")
+    suspend fun job(@Path("id") jobId: String): ApiEnvelope<JobStatusDto>
 
     @GET("payments/{id}/receipt")
     suspend fun receipt(@Path("id") paymentId: String): ApiEnvelope<FileUrlDto>

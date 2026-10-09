@@ -8,6 +8,7 @@ import type { Scope } from '../../../core/rbac/scope/scope';
 import { DiaryService } from '../../diary/diary.service';
 import { StudentPlacementService } from '../../school-day/student-placement.service';
 import type { ChildTodayDto } from '../dto/daily-dashboard.dto';
+import { noticeQuery, toMeetingBrief, toNoticeBrief } from './briefs';
 
 /** Parent home for one verified child. */
 @Injectable()
@@ -39,21 +40,7 @@ export class ChildTodayService {
           sectionId: child.sectionId,
           date: formatDate(day),
         }),
-        this.prisma.noticeRecipient.findMany({
-          where: {
-            userId: user.id,
-            notice: {
-              status: 'PUBLISHED',
-              OR: [{ expiresOn: null }, { expiresOn: { gte: day } }],
-            },
-          },
-          include: { notice: true },
-          orderBy: [
-            { notice: { pinned: 'desc' } },
-            { notice: { publishedAt: 'desc' } },
-          ],
-          take: 5,
-        }),
+        this.prisma.noticeRecipient.findMany(noticeQuery(user.id, day)),
         this.prisma.activityConsent.count({
           where: {
             studentId,
@@ -71,31 +58,9 @@ export class ChildTodayService {
     return {
       attendance: { status: entry?.status ?? 'UNMARKED' },
       diary,
-      notices: notices.map((r) => ({
-        id: r.notice.id,
-        title: r.notice.title,
-        body: r.notice.body,
-        pinned: r.notice.pinned,
-        publishedAt: r.notice.publishedAt?.toISOString() ?? null,
-        read: r.readAt !== null,
-      })),
+      notices: notices.map(toNoticeBrief),
       consentsPending,
-      nextMeeting: meeting
-        ? {
-            id: meeting.id,
-            date: formatDate(meeting.date),
-            startTime: meeting.startTime,
-            endTime: meeting.endTime,
-            mode: meeting.mode,
-            location: meeting.location,
-            agenda: meeting.agenda,
-            status: meeting.status,
-            staff: {
-              userId: meeting.staffUser.id,
-              name: meeting.staffUser.name,
-            },
-          }
-        : null,
+      nextMeeting: meeting ? toMeetingBrief(meeting) : null,
     };
   }
 }

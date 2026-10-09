@@ -1,6 +1,6 @@
 package com.schoolapp.core.network.api
 
-import com.schoolapp.core.network.dto.dashboard.ChildTodayDto
+import com.schoolapp.core.network.dto.dashboard.ParentHomeDto
 import com.schoolapp.core.network.dto.dashboard.TeacherTodayDto
 import com.schoolapp.core.network.model.ApiEnvelope
 import kotlinx.serialization.json.JsonObject
@@ -23,6 +23,7 @@ interface DashboardApi {
     @GET("dashboard/teacher-today")
     suspend fun teacherToday(): ApiEnvelope<TeacherTodayDto>
 
-    @GET("dashboard/child-today")
-    suspend fun childToday(@Query("studentId") studentId: String): ApiEnvelope<ChildTodayDto>
+    /** Everything the parent home shows for one child. */
+    @GET("parent/home")
+    suspend fun parentHome(@Query("studentId") studentId: String): ApiEnvelope<ParentHomeDto>
 }

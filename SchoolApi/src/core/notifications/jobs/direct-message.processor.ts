@@ -32,6 +32,7 @@ export class DirectMessageProcessor
         userId: input.userId,
         title: input.title,
         body: input.body,
+        extras: input.extras,
         email: input.to.email,
         phone: input.to.phone,
       });
@@ -44,6 +45,7 @@ export class DirectMessageProcessor
       userId: recipient.id,
       title: input.title,
       body: input.body,
+      extras: input.extras,
       email: recipient.email,
       phone: recipient.phone,
       deviceTokens: recipient.devices.map((device) => device.fcmToken),

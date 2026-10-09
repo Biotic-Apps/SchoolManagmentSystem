@@ -27,8 +27,8 @@ import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.SectionHeader
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.designsystem.theme.AppColors
+import com.schoolapp.core.navigation.InvoiceDetailDestination
 import com.schoolapp.core.ui.appErrorMessage
-import com.schoolapp.feature.fees.InvoiceDetailDestination
 import com.schoolapp.feature.fees.R
 import com.schoolapp.feature.fees.parent.components.FeeSummaryCard
 import com.schoolapp.feature.fees.parent.components.InvoiceRow

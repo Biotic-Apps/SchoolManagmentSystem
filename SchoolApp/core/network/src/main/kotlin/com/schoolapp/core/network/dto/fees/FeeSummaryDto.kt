@@ -11,6 +11,7 @@ data class NextDueDto(
     val amountMinor: Long? = null,
     val dueDate: String? = null,
     val invoiceNo: String? = null,
+    val invoiceId: String? = null,
 )
 
 /** [proofUpload] / [onlineGateway] are optional extras mirroring the branch fee settings. */
