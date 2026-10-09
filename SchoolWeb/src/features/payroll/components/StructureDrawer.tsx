@@ -8,6 +8,7 @@ import { ErrorState } from "@/components/shared/ErrorState";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useSession } from "@/features/auth/session-context";
 import { designationLabel } from "@/features/staff/options";
 import { structureHistoryColumns } from "../structure-columns";
 import type { PayrollStaffRow } from "../types";
@@ -15,9 +16,20 @@ import { useStructureDetail } from "../use-structure-detail";
 import { StructureFormDialog } from "./StructureFormDialog";
 import { StructureSummary } from "./StructureSummary";
 
-export function StructureDrawer({ staff, onClose }: { staff: PayrollStaffRow | null; onClose: () => void }) {
+export function StructureDrawer({
+  staff,
+  onClose,
+}: {
+  staff: PayrollStaffRow | null;
+  onClose: () => void;
+}) {
   const detail = useStructureDetail(staff?.staffId ?? null);
   const { query, current } = detail;
+  // A principal opening the principal's row is looking at their own pay, which only someone else may set.
+  const isOwn =
+    useSession().session?.activeRole === "PRINCIPAL" &&
+    staff?.designation === "PRINCIPAL";
+  const canEdit = detail.canEdit && !isOwn;
 
   return (
     <DetailDrawer
@@ -26,7 +38,7 @@ export function StructureDrawer({ staff, onClose }: { staff: PayrollStaffRow | n
       title={staff ? `Salary · ${staff.name}` : "Salary"}
       description={staff && designationLabel(staff.designation)}
       actions={
-        detail.canEdit &&
+        canEdit &&
         query.isSuccess && (
           <Button onClick={() => detail.edit.show(true)}>
             <Pencil />
@@ -36,15 +48,19 @@ export function StructureDrawer({ staff, onClose }: { staff: PayrollStaffRow | n
       }
     >
       {query.isLoading && <Skeleton className="h-64 w-full" />}
-      {!!query.error && <ErrorState error={query.error} onRetry={() => query.refetch()} />}
+      {!!query.error && (
+        <ErrorState error={query.error} onRetry={() => query.refetch()} />
+      )}
       {query.isSuccess && !current && (
         <EmptyState
           icon={WalletCards}
           title="No salary set yet"
           description={
-            detail.canEdit
-              ? "Press Set salary above to add basic salary, allowances and deductions. Staff without a salary are left out of payroll."
-              : "Staff without a salary are left out of payroll. Salaries are set by the principal, coordinator, accountant or super admin; ask them to set it."
+            isOwn
+              ? "This is your own salary. For fairness, the super admin sets it; ask them to add it."
+              : canEdit
+                ? "Press Set salary above to add basic salary, allowances and deductions. Staff without a salary are left out of payroll."
+                : "Staff without a salary are left out of payroll. Salaries are set by the principal, coordinator, accountant or super admin; ask them to set it."
           }
         />
       )}
@@ -52,11 +68,20 @@ export function StructureDrawer({ staff, onClose }: { staff: PayrollStaffRow | n
       {detail.history.length > 0 && (
         <section className="flex flex-col gap-3">
           <SectionHeading title="Earlier structures" />
-          <DataTable columns={structureHistoryColumns} rows={detail.history} getRowId={(row) => row.id ?? row.effectiveFrom} />
+          <DataTable
+            columns={structureHistoryColumns}
+            rows={detail.history}
+            getRowId={(row) => row.id ?? row.effectiveFrom}
+          />
         </section>
       )}
       {staff && detail.edit.open && (
-        <StructureFormDialog staffId={staff.staffId} staffName={staff.name} current={current} onClose={detail.edit.close} />
+        <StructureFormDialog
+          staffId={staff.staffId}
+          staffName={staff.name}
+          current={current}
+          onClose={detail.edit.close}
+        />
       )}
     </DetailDrawer>
   );
