@@ -41,7 +41,11 @@ export function StructureDrawer({ staff, onClose }: { staff: PayrollStaffRow | n
         <EmptyState
           icon={WalletCards}
           title="No salary set yet"
-          description="Set basic salary, allowances and deductions. Staff without a salary are left out of payroll."
+          description={
+            detail.canEdit
+              ? "Press Set salary above to add basic salary, allowances and deductions. Staff without a salary are left out of payroll."
+              : "Staff without a salary are left out of payroll. Salaries are set by the accountant or the super admin; ask them to set it."
+          }
         />
       )}
       {current && <StructureSummary structure={current} />}
