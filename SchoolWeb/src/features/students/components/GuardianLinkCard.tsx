@@ -22,7 +22,7 @@ export function GuardianLinkCard({ link, linkName, child, onRemove }: GuardianLi
   const contact = [guardian.phone, guardian.email].filter(Boolean).join(" · ");
 
   return (
-    <li className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4">
+    <li className="flex flex-col gap-3 rounded-card border border-border bg-surface shadow-card p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 flex-col gap-1">
           <span className="flex flex-wrap items-center gap-2">

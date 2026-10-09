@@ -51,7 +51,7 @@ export function SegmentedControl({ id, label, options, value, onChange, disabled
             onClick={() => onChange(option.id)}
             onKeyDown={(event) => onKeyDown(event, index)}
             className={cn(
-              "min-w-11 flex-auto whitespace-nowrap rounded-[6px] px-3 text-label font-medium tabular-nums transition-colors disabled:opacity-60",
+              "min-w-11 flex-auto whitespace-nowrap rounded-lg px-3 text-label font-medium tabular-nums transition-colors duration-180 disabled:opacity-60",
               selected ? "bg-primary text-on-primary" : "text-fg-muted hover:bg-selected hover:text-fg",
               focusRing,
             )}

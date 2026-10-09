@@ -37,7 +37,7 @@ function moveFocus(event: KeyboardEvent<HTMLTableElement>) {
 /** Days as columns, periods as rows ("Period 1 · 8:00 – 8:40 AM"); break rows are shaded and span the week. */
 export function WeekGrid({ caption, days, rows, renderCell, onCellClick, info, marks }: WeekGridProps) {
   return (
-    <div className="overflow-x-auto rounded-card border border-border bg-surface">
+    <div className="overflow-x-auto rounded-card border border-border bg-surface shadow-card">
       <table className="w-full min-w-[720px] table-fixed border-collapse text-label" onKeyDown={onCellClick ? moveFocus : undefined}>
         <caption className="sr-only">{caption}</caption>
         <thead>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { cardInteractive, cardSurface } from "@/components/ui/styles";
 import { cn } from "@/lib/cn";
 import { formatNumber } from "@/lib/format";
 import { classSetupHref } from "../links";
@@ -30,7 +31,9 @@ export function ClassCard({ item, branchId, sessionId, onOpen }: ClassCardProps)
     <article
       onClick={onOpen}
       className={cn(
-        "flex w-full cursor-pointer flex-col gap-3 rounded-card border border-border bg-surface p-4 transition-colors hover:border-primary/50",
+        "flex w-full cursor-pointer flex-col gap-3 p-4",
+        cardSurface,
+        cardInteractive,
         item.status !== "ACTIVE" && "opacity-70",
       )}
     >

@@ -26,7 +26,7 @@ export function SkillGridTable({ grid, editor, editable }: SkillGridTableProps) 
   }
 
   return (
-    <div className="overflow-x-auto rounded-card border border-border bg-surface">
+    <div className="overflow-x-auto rounded-card border border-border bg-surface shadow-card">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">

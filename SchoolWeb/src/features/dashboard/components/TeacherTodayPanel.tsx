@@ -2,7 +2,7 @@
 
 import { ErrorState } from "@/components/shared/ErrorState";
 import { Card } from "@/components/ui/Card";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { SkeletonCard } from "@/components/shared/SkeletonCard";
 import { useTeacherTodayPanel } from "../use-teacher-today";
 import { CountLinkCard } from "./CountLinkCard";
 import { TeacherDiariesCard } from "./TeacherDiariesCard";
@@ -13,7 +13,14 @@ export function TeacherTodayPanel() {
   const today = useTeacherTodayPanel();
   const { query, links } = today;
 
-  if (query.isLoading) return <Skeleton className="h-64 w-full rounded-card" />;
+  if (query.isLoading) {
+    return (
+      <div role="status" aria-label="Loading today" className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <SkeletonCard lines={3} />
+        <SkeletonCard lines={3} />
+      </div>
+    );
+  }
   if (query.error) {
     return (
       <Card>
@@ -24,13 +31,13 @@ export function TeacherTodayPanel() {
 
   return (
     <section aria-label="Today" className="flex flex-col gap-4">
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {links.messages && <CountLinkCard label="Unread messages" count={today.unreadMessages} href={links.messages} />}
         {links.complaints && (
           <CountLinkCard label="Complaints assigned to you" count={today.assignedComplaints} href={links.complaints} />
         )}
       </div>
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="stagger grid grid-cols-1 gap-4 lg:grid-cols-2">
         <TeacherPeriodsCard periods={today.periods} href={links.timetable} />
         {/* The stacked cards share the height of the periods card next to them. */}
         <div className="flex flex-col gap-4 [&>*]:flex-1">

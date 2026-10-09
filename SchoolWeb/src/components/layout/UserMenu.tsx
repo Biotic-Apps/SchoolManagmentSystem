@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CircleUser, LogOut } from "lucide-react";
+import { ChevronDown, CircleUser, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,16 +27,28 @@ export function UserMenu({ name, email, onSignOut }: UserMenuProps) {
       <DropdownMenuTrigger
         aria-label="Account menu"
         className={cn(
-          "grid size-10 place-items-center rounded-full bg-selected text-label font-semibold text-on-selected",
+          "group flex items-center gap-2 rounded-full p-0.5 transition-colors duration-180 hover:bg-background md:pr-2.5 data-[state=open]:bg-background",
           focusRing,
         )}
       >
-        {initials(name)}
+        <span className="grid size-9 place-items-center rounded-full bg-[linear-gradient(140deg,#e6f5f2,#cdeae4)] text-label font-semibold text-on-selected ring-1 ring-inset ring-primary/15">
+          {initials(name)}
+        </span>
+        <span className="hidden max-w-36 truncate text-label font-medium text-fg md:block">{name}</span>
+        <ChevronDown
+          aria-hidden
+          className="hidden size-4 text-fg-muted transition-transform duration-180 group-data-[state=open]:rotate-180 md:block"
+        />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-56">
-        <DropdownMenuLabel className="flex flex-col gap-0.5">
-          <span className="text-label font-medium text-fg">{name}</span>
-          {email && <span>{email}</span>}
+        <DropdownMenuLabel className="flex items-center gap-3">
+          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-selected text-label font-semibold text-on-selected">
+            {initials(name)}
+          </span>
+          <span className="flex min-w-0 flex-col gap-0.5">
+            <span className="truncate text-label font-medium text-fg">{name}</span>
+            {email && <span className="truncate">{email}</span>}
+          </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>

@@ -36,7 +36,7 @@ export function BellGenerator({ dayName, initial, onGenerate }: BellGeneratorPro
     );
 
   return (
-    <div className="flex flex-col gap-4 rounded-card border border-border bg-surface p-4">
+    <div className="flex flex-col gap-4 rounded-card border border-border bg-surface shadow-card p-4">
       <p className="text-label text-fg-muted">Fill {dayName} with evenly spaced periods. You can adjust any row afterwards.</p>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <div className="flex flex-col gap-1.5">

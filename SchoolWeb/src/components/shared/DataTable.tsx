@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/Table";
+import { cardSurface } from "@/components/ui/styles";
 import { cn } from "@/lib/cn";
 import { EmptyState } from "./EmptyState";
 import { ErrorState } from "./ErrorState";
@@ -49,7 +50,7 @@ export function DataTable<T>({
   const isEmpty = !loading && !failed && (!rows || rows.length === 0);
 
   return (
-    <div className="overflow-hidden rounded-card border border-border bg-surface">
+    <div className={cn(cardSurface, "overflow-hidden")}>
       <Table wrapperClassName={cn(stickyHeader && "max-h-[calc(100dvh-16rem)] min-h-40 overflow-y-auto")}>
         <TableHeader className={cn(stickyHeader && "sticky top-0 z-10 shadow-[inset_0_-1px_0_var(--border)]")}>
           <TableRow className="hover:bg-transparent">
@@ -60,13 +61,13 @@ export function DataTable<T>({
             ))}
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className={cn(!loading && "stagger")}>
           {loading &&
             Array.from({ length: skeletonRows }, (_, index) => (
               <TableRow key={`skeleton-${index}`}>
                 {columns.map((column) => (
                   <TableCell key={column.id}>
-                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-3/4 max-w-48" />
                   </TableCell>
                 ))}
               </TableRow>
@@ -77,7 +78,7 @@ export function DataTable<T>({
               <TableRow
                 key={getRowId(row)}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
-                className={cn(onRowClick && "cursor-pointer")}
+                className={cn(onRowClick && "cursor-pointer hover:bg-selected/60 active:bg-selected")}
               >
                 {columns.map((column) => (
                   <TableCell key={column.id} className={cn(column.className)}>

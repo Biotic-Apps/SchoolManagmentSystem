@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./styles/motion.css";
 
 :root {
   --primary: #0b7f74;
@@ -58,8 +59,18 @@
   --text-caption: 13px;
   --text-caption--line-height: 18px;
 
-  --radius-input: 8px;
-  --radius-card: 12px;
+  --radius-input: 10px;
+  --radius-card: 14px;
+  --radius-tile: 12px;
+
+  /* Soft, teal-tinted elevation. Cards barely lift; overlays float. */
+  --shadow-xs: 0 1px 2px rgb(16 42 40 / 0.05);
+  --shadow-sm: 0 1px 2px rgb(16 42 40 / 0.04), 0 2px 6px -2px rgb(16 42 40 / 0.06);
+  --shadow-md: 0 6px 16px -6px rgb(16 42 40 / 0.12);
+  --shadow-lg: 0 16px 40px -12px rgb(16 42 40 / 0.2), 0 2px 6px rgb(16 42 40 / 0.05);
+  --shadow-card: 0 1px 2px rgb(16 42 40 / 0.04);
+  --shadow-raised: 0 8px 20px -10px rgb(11 127 116 / 0.28), 0 1px 2px rgb(16 42 40 / 0.04);
+  --shadow-overlay: 0 24px 56px -16px rgb(16 42 40 / 0.28), 0 2px 8px rgb(16 42 40 / 0.06);
 }
 
 @layer base {
@@ -70,6 +81,17 @@
   body {
     background: var(--background);
     color: var(--text-primary);
+  }
+
+  /* A grid without explicit columns gets one shrinkable column, so long nowrap text can't widen the page on phones.
+     Any grid-cols-* utility (utilities layer) still wins. */
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  ::selection {
+    background: var(--selected);
+    color: var(--on-selected);
   }
 
   *,

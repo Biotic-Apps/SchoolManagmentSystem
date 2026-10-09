@@ -46,7 +46,7 @@ export function SubjectMatrix({ focusClass }: { focusClass: number | null }) {
   };
 
   return (
-    <div className="flex flex-col gap-3 rounded-card border border-border bg-surface p-3 sm:p-4">
+    <div className="flex flex-col gap-3 rounded-card border border-border bg-surface shadow-card p-3 sm:p-4">
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-label font-semibold text-fg">Subjects per class</span>
         {LEVEL_PRESETS.filter((preset) => included.some(({ row: item }) => item.level === preset.key)).map((preset) => (

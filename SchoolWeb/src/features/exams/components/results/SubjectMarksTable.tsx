@@ -9,7 +9,7 @@ import { PassBadge } from "./PassBadge";
 /** Per-subject marks of one result with the total row. */
 export function SubjectMarksTable({ result }: { result: StudentResult }) {
   return (
-    <div className="overflow-hidden rounded-card border border-border bg-surface">
+    <div className="overflow-hidden rounded-card border border-border bg-surface shadow-card">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">

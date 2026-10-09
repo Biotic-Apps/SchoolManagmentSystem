@@ -21,14 +21,15 @@ export const SheetContent = forwardRef<
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          "fixed inset-y-0 right-0 z-50 flex w-full max-w-xl flex-col border-l border-border bg-surface outline-none",
+          "fixed inset-y-0 right-0 z-50 flex w-full max-w-xl flex-col overflow-hidden border-l border-border bg-surface shadow-overlay outline-none sm:rounded-l-[18px]",
+          "data-[state=open]:animate-sheet-in-right data-[state=closed]:animate-sheet-out-right",
           className,
         )}
         {...props}
       >
         {children}
         <DialogPrimitive.Close
-          className={cn("absolute right-4 top-5 rounded-md p-1 text-fg-muted hover:bg-selected hover:text-fg", focusRing)}
+          className={cn("absolute right-4 top-5 rounded-lg p-1.5 text-fg-muted transition-colors hover:bg-selected hover:text-fg", focusRing)}
         >
           <X className="size-4" />
           <span className="sr-only">Close</span>

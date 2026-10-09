@@ -1,3 +1,4 @@
+import { ClipboardCheck } from "lucide-react";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import type { TeacherRegister } from "../types";
 import { TodayCard } from "./TodayCard";
@@ -6,7 +7,7 @@ type RegisterRow = TeacherRegister & { label: string };
 
 export function TeacherRegistersCard({ registers, href }: { registers: RegisterRow[]; href: string | null }) {
   return (
-    <TodayCard title="Attendance registers" href={href} linkLabel="Attendance">
+    <TodayCard title="Attendance registers" icon={ClipboardCheck} href={href} linkLabel="Attendance">
       {registers.length === 0 ? (
         <p className="text-label text-fg-muted">No registers for you today.</p>
       ) : (

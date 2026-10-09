@@ -8,5 +8,9 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, label }: StatusBadgeProps) {
-  return <Badge tone={statusTone(status)}>{label ?? humanize(status)}</Badge>;
+  return (
+    <Badge tone={statusTone(status)} dot>
+      {label ?? humanize(status)}
+    </Badge>
+  );
 }

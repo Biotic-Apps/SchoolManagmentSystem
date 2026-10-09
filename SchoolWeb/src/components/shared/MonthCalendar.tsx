@@ -53,7 +53,7 @@ export function MonthCalendar({ month, onMonthChange, items, onItemClick }: Mont
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-7 overflow-hidden rounded-card border border-border bg-surface">
+      <div className="grid grid-cols-7 overflow-hidden rounded-card border border-border bg-surface shadow-card">
         {WEEKDAYS.map((day) => (
           <div key={day} className="border-b border-border px-2 py-2 text-center text-caption font-medium text-fg-muted">
             {day}

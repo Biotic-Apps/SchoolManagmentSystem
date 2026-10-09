@@ -2,33 +2,41 @@ import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Card } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { cn } from "@/lib/cn";
 import { EMPTY_VALUE } from "@/lib/format";
+import { AnimatedNumber } from "./AnimatedNumber";
+import { IconTile, type IconTileTone } from "./IconTile";
 
 interface StatCardProps {
   label: string;
   value?: ReactNode;
-  hint?: string;
+  hint?: ReactNode;
   icon?: LucideIcon;
+  tone?: IconTileTone;
   loading?: boolean;
+  /** Hover lift, for tiles wrapped in a link. */
+  interactive?: boolean;
+  className?: string;
 }
 
-export function StatCard({ label, value, hint, icon: Icon, loading }: StatCardProps) {
+/** KPI tile: icon tile + label, a large value that counts up, and an optional secondary line. */
+export function StatCard({ label, value, hint, icon, tone = "primary", loading, interactive, className }: StatCardProps) {
   return (
-    <Card className="flex h-full flex-col gap-3 p-5">
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-label text-fg-muted">{label}</span>
-        {Icon && (
-          <span className="grid size-9 place-items-center rounded-input bg-selected text-on-selected">
-            <Icon className="size-4" />
+    <Card interactive={interactive} className={cn("flex h-full flex-col gap-4 p-5", className)}>
+      <div className="flex items-center gap-3">
+        {icon && <IconTile icon={icon} tone={tone} />}
+        <span className="min-w-0 text-label font-medium text-fg-muted">{label}</span>
+      </div>
+      <div className="flex flex-col gap-1">
+        {loading ? (
+          <Skeleton className="h-9 w-20" />
+        ) : (
+          <span className="text-[30px] font-semibold leading-9 tracking-[-0.02em] text-fg tabular-nums">
+            {value === undefined || value === null ? EMPTY_VALUE : <AnimatedNumber value={value} />}
           </span>
         )}
+        {hint && <span className="text-caption text-fg-muted">{hint}</span>}
       </div>
-      {loading ? (
-        <Skeleton className="h-8 w-24" />
-      ) : (
-        <span className="text-page-title font-semibold text-fg">{value ?? EMPTY_VALUE}</span>
-      )}
-      {hint && <span className="text-caption text-fg-muted">{hint}</span>}
     </Card>
   );
 }

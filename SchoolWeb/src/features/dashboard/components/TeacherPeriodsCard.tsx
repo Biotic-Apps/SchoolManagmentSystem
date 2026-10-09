@@ -1,3 +1,4 @@
+import { Clock } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import type { TeacherSlot } from "@/features/timetable/types";
 import { formatTimeRange } from "@/lib/time";
@@ -5,7 +6,7 @@ import { TodayCard } from "./TodayCard";
 
 export function TeacherPeriodsCard({ periods, href }: { periods: TeacherSlot[]; href: string | null }) {
   return (
-    <TodayCard title="Today's periods" href={href} linkLabel="Timetable">
+    <TodayCard title="Today's periods" icon={Clock} href={href} linkLabel="Timetable">
       {periods.length === 0 ? (
         <p className="text-label text-fg-muted">No periods scheduled today.</p>
       ) : (

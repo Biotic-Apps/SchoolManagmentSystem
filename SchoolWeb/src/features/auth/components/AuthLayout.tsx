@@ -22,10 +22,10 @@ export function AuthLayout({ title, description, footer, children }: AuthLayoutP
   return (
     <main
       style={brandStyle(branding?.primaryColor)}
-      className="flex min-h-dvh flex-col items-center justify-center bg-background px-4 py-10"
+      className="flex min-h-dvh flex-col items-center justify-center bg-background bg-[radial-gradient(900px_520px_at_50%_-8%,#dcf1ec,transparent_65%)] px-4 py-10"
     >
-      <div className="flex w-full max-w-[420px] flex-col items-center gap-6">
-        <Card className="w-full overflow-hidden shadow-sm">
+      <div className="flex w-full max-w-[420px] animate-page-in flex-col items-center gap-6">
+        <Card className="w-full overflow-hidden rounded-[18px] shadow-lg">
           <div aria-hidden className="h-1 bg-primary" />
           <div className="flex flex-col items-center gap-3 px-6 pt-8 text-center sm:px-8">
             <BrandLogo logoUrl={branding?.logoUrl} size="lg" />

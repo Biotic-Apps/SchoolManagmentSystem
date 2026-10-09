@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { focusRing } from "@/components/ui/styles";
+import { AnimatedNumber } from "@/components/shared/AnimatedNumber";
+import { IconTile } from "@/components/shared/IconTile";
+import { cardInteractive, cardSurface, focusRing } from "@/components/ui/styles";
 import { cn } from "@/lib/cn";
-import { formatNumber } from "@/lib/format";
+import { EMPTY_VALUE } from "@/lib/format";
 import type { PendingDefinition } from "../pending-definitions";
 
 const TONES = {
-  warning: { chip: "bg-warning-soft text-warning", count: "text-warning" },
-  error: { chip: "bg-error-soft text-error", count: "text-error" },
-  idle: { chip: "bg-selected text-on-selected", count: "text-fg" },
-};
+  warning: { tile: "warning", count: "text-warning" },
+  error: { tile: "error", count: "text-error" },
+  idle: { tile: "neutral", count: "text-fg" },
+} as const;
 
 interface PendingTileProps {
   tile: PendingDefinition & { count: number | undefined; href: string };
@@ -24,18 +26,20 @@ export function PendingTile({ tile, loading }: PendingTileProps) {
     <Link
       href={tile.href}
       className={cn(
-        "flex items-center gap-3 rounded-card border border-border bg-surface p-4 transition-colors hover:bg-selected/60",
+        "flex items-center gap-3 p-4",
+        cardSurface,
+        cardInteractive,
         focusRing,
       )}
     >
-      <span className={cn("grid size-9 shrink-0 place-items-center rounded-input", tone.chip)}>
-        <Icon className="size-4" />
-      </span>
+      <IconTile icon={Icon} tone={tone.tile} />
       <span className="flex min-w-0 flex-col">
         {loading ? (
           <Skeleton className="h-6 w-10" />
         ) : (
-          <span className={cn("text-card-title font-semibold tabular-nums", tone.count)}>{formatNumber(tile.count)}</span>
+          <span className={cn("text-[22px] font-semibold leading-7 tabular-nums", tone.count)}>
+            <AnimatedNumber value={tile.count ?? EMPTY_VALUE} />
+          </span>
         )}
         <span className="line-clamp-2 text-caption leading-snug text-fg-muted">{tile.label}</span>
       </span>

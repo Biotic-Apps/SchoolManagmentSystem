@@ -15,7 +15,7 @@ import { WizardFooter } from "./WizardFooter";
 
 // Wide dialog on desktop, full-screen sheet on phones; header and footer stay put, the body scrolls.
 const SHELL =
-  "max-w-[920px] max-h-[calc(100dvh-48px)] gap-0 overflow-hidden p-0 " +
+  "max-w-[920px] max-h-[calc(100dvh-48px)] gap-0 overflow-hidden p-0 sm:p-0 " +
   "max-sm:left-0 max-sm:top-0 max-sm:h-dvh max-sm:max-h-dvh max-sm:w-screen max-sm:max-w-none " +
   "max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-none max-sm:border-0";
 const PAD = "px-4 sm:px-8";

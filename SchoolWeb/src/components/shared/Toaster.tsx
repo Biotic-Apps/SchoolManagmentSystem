@@ -6,9 +6,9 @@ import { cn } from "@/lib/cn";
 import { dismissToast, getServerToasts, getToasts, subscribeToasts, type ToastTone } from "@/lib/toast";
 
 const TONE_CLASS: Record<ToastTone, string> = {
-  success: "border-success/30 bg-success-soft text-success",
-  error: "border-error/30 bg-error-soft text-error",
-  info: "border-info/30 bg-info-soft text-info",
+  success: "bg-success-soft text-success",
+  error: "bg-error-soft text-error",
+  info: "bg-info-soft text-info",
 };
 
 const TONE_ICON = { success: CircleCheck, error: CircleAlert, info: Info };
@@ -28,17 +28,18 @@ export function Toaster() {
             key={item.id}
             role={item.tone === "error" ? "alert" : "status"}
             className={cn(
-              "pointer-events-auto flex w-full items-start gap-2 rounded-input border px-3 py-2.5 text-label shadow-sm",
-              TONE_CLASS[item.tone],
+              "pointer-events-auto flex w-full animate-toast-in items-start gap-3 rounded-card border border-border bg-surface p-3 text-label text-fg shadow-overlay",
             )}
           >
-            <Icon className="mt-0.5 size-4 shrink-0" />
-            <span className="flex-1">{item.message}</span>
+            <span className={cn("grid size-7 shrink-0 place-items-center rounded-lg", TONE_CLASS[item.tone])}>
+              <Icon className="size-4" />
+            </span>
+            <span className="flex-1 self-center">{item.message}</span>
             <button
               type="button"
               aria-label="Dismiss"
               onClick={() => dismissToast(item.id)}
-              className="rounded p-0.5 opacity-70 hover:opacity-100"
+              className="rounded-md p-1 text-fg-muted transition-colors hover:bg-background hover:text-fg"
             >
               <X className="size-4" />
             </button>

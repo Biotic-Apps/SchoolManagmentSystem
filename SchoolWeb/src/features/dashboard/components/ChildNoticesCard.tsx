@@ -1,10 +1,11 @@
+import { Megaphone } from "lucide-react";
 import type { Notice } from "@/features/notices/types";
 import { formatDate } from "@/lib/format";
 import { TodayCard } from "./TodayCard";
 
 export function ChildNoticesCard({ notices, href }: { notices: Notice[]; href: string | null }) {
   return (
-    <TodayCard title="Notices" href={href} linkLabel="All notices">
+    <TodayCard title="Notices" icon={Megaphone} href={href} linkLabel="All notices">
       {notices.length === 0 ? (
         <p className="text-label text-fg-muted">No new notices.</p>
       ) : (

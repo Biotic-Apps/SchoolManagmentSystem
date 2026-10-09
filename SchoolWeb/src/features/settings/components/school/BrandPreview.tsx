@@ -25,14 +25,14 @@ export function BrandPreview({ color, passes, name, logoUrl, className }: BrandP
       </CardHeader>
       <CardContent className="flex flex-col gap-4" style={brandStyle(color)}>
         <div aria-hidden className="rounded-card bg-background p-4">
-          <div className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4">
+          <div className="flex flex-col gap-3 rounded-card border border-border bg-surface shadow-card p-4">
             <BrandMark name={name} logoUrl={logoUrl} subtitle="Sign in to continue" />
             <div className="h-9 rounded-input border border-border bg-surface" />
             <div className="h-9 rounded-input border border-border bg-surface" />
             <span className={cn(PILL, "h-9 justify-center bg-primary text-on-primary")}>Sign in</span>
           </div>
         </div>
-        <div aria-hidden className="flex flex-col gap-3 rounded-card border border-border bg-surface p-3">
+        <div aria-hidden className="flex flex-col gap-3 rounded-card border border-border bg-surface shadow-card p-3">
           <BrandMark name={name} logoUrl={logoUrl} />
           <div className="flex flex-wrap items-center gap-2">
             <span className={cn(PILL, "bg-primary/10 text-primary")}>Dashboard</span>

@@ -21,7 +21,7 @@ export function LessonsPanel({ builder }: { builder: TimetableBuilder }) {
   const done = lessons.filter((lesson) => lesson.periodsPerWeek && lesson.placed >= lesson.periodsPerWeek).length;
 
   return (
-    <details open className="group rounded-card border border-border bg-surface lg:sticky lg:top-4">
+    <details open className="group rounded-card border border-border bg-surface shadow-card lg:sticky lg:top-4">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-4 py-3 lg:cursor-default">
         <span className="text-label font-semibold text-fg">
           Lessons <span className="font-normal text-fg-muted">· {done}/{lessons.length} complete</span>

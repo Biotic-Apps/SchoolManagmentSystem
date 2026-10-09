@@ -13,6 +13,7 @@ export function ErrorState({ error, onRetry, className }: ErrorStateProps) {
   return (
     <EmptyState
       icon={CircleAlert}
+      tone="error"
       title="Couldn't load this"
       description={errorMessage(error)}
       className={className}

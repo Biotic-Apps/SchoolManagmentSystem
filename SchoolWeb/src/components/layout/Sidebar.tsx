@@ -13,7 +13,7 @@ export function Sidebar({ items, activeId }: SidebarProps) {
       <div className="flex h-16 shrink-0 items-center border-b border-border px-5">
         <AppLogo subtitle="School Management" />
       </div>
-      <div className="flex-1 overflow-y-auto px-3 py-4">
+      <div className="flex-1 overflow-y-auto px-3 pb-6 pt-3 [scrollbar-width:thin]">
         <SidebarNav items={items} activeId={activeId} />
       </div>
     </aside>

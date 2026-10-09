@@ -4,6 +4,7 @@ import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef } from "re
 import * as MenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { overlaySurface, popMotion } from "./styles";
 
 export const DropdownMenu = MenuPrimitive.Root;
 export const DropdownMenuTrigger = MenuPrimitive.Trigger;
@@ -11,7 +12,7 @@ export const DropdownMenuGroup = MenuPrimitive.Group;
 export const DropdownMenuRadioGroup = MenuPrimitive.RadioGroup;
 
 const itemBase =
-  "relative flex cursor-pointer select-none items-center gap-2 rounded-md px-3 py-2 text-label text-fg outline-none " +
+  "relative flex cursor-pointer select-none items-center gap-2 rounded-lg px-3 py-2 transition-colors duration-100 text-label text-fg outline-none " +
   "data-[highlighted]:bg-selected data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-4 [&_svg]:text-fg-muted";
 
 export const DropdownMenuContent = forwardRef<
@@ -24,7 +25,12 @@ export const DropdownMenuContent = forwardRef<
         ref={ref}
         sideOffset={sideOffset}
         align={align}
-        className={cn("z-50 min-w-48 rounded-input border border-border bg-surface p-1 shadow-sm", className)}
+        className={cn(
+          "z-50 min-w-48 origin-(--radix-dropdown-menu-content-transform-origin) p-1.5",
+          overlaySurface,
+          popMotion,
+          className,
+        )}
         {...props}
       />
     </MenuPrimitive.Portal>
@@ -63,5 +69,5 @@ export const DropdownMenuSeparator = forwardRef<
   ComponentRef<typeof MenuPrimitive.Separator>,
   ComponentPropsWithoutRef<typeof MenuPrimitive.Separator>
 >(function DropdownMenuSeparator({ className, ...props }, ref) {
-  return <MenuPrimitive.Separator ref={ref} className={cn("my-1 h-px bg-border", className)} {...props} />;
+  return <MenuPrimitive.Separator ref={ref} className={cn("-mx-1.5 my-1.5 h-px bg-border", className)} {...props} />;
 });

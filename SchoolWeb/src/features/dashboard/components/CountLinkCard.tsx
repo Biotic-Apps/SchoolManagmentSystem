@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { CountBadge } from "@/components/shared/CountBadge";
-import { focusRing } from "@/components/ui/styles";
+import { cardInteractive, cardSurface, focusRing } from "@/components/ui/styles";
 import { cn } from "@/lib/cn";
 
 /** One-line card: label, count pill and a link to the screen. */
@@ -10,7 +10,9 @@ export function CountLinkCard({ label, count, href }: { label: string; count: nu
     <Link
       href={href}
       className={cn(
-        "flex h-full items-center justify-between gap-3 rounded-card border border-border bg-surface px-5 py-4 transition-colors hover:bg-selected/60",
+        "flex h-full items-center justify-between gap-3 px-5 py-4",
+        cardSurface,
+        cardInteractive,
         focusRing,
       )}
     >

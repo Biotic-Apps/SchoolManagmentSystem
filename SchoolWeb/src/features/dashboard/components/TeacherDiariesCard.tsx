@@ -1,3 +1,4 @@
+import { NotebookPen } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { TodayCard } from "./TodayCard";
 
@@ -9,7 +10,7 @@ interface DiaryRow {
 
 export function TeacherDiariesCard({ diaries, href }: { diaries: DiaryRow[]; href: string | null }) {
   return (
-    <TodayCard title="Diaries to write" href={href} linkLabel="Diary">
+    <TodayCard title="Diaries to write" icon={NotebookPen} href={href} linkLabel="Diary">
       {diaries.length === 0 ? (
         <p className="text-label text-fg-muted">All of today&apos;s diaries are done.</p>
       ) : (

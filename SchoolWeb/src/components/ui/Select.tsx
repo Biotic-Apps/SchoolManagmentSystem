@@ -4,7 +4,7 @@ import { forwardRef, type ComponentPropsWithoutRef, type ComponentRef, type Reac
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { fieldBase } from "./styles";
+import { fieldBase, overlaySurface, popMotion } from "./styles";
 
 export const Select = SelectPrimitive.Root;
 export const SelectValue = SelectPrimitive.Value;
@@ -17,12 +17,12 @@ export const SelectTrigger = forwardRef<
   return (
     <SelectPrimitive.Trigger
       ref={ref}
-      className={cn(fieldBase, "flex h-11 items-center justify-between gap-2 text-left data-[placeholder]:text-fg-muted", className)}
+      className={cn(fieldBase, "group/select flex h-11 items-center justify-between gap-2 text-left data-[placeholder]:text-fg-muted", className)}
       {...props}
     >
       <span className="truncate">{children}</span>
       <SelectPrimitive.Icon asChild>
-        <ChevronDown className="size-4 shrink-0 text-fg-muted" />
+        <ChevronDown className="size-4 shrink-0 text-fg-muted transition-transform duration-180 ease-standard group-data-[state=open]/select:rotate-180" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
@@ -39,7 +39,9 @@ export const SelectContent = forwardRef<
         position={position}
         sideOffset={4}
         className={cn(
-          "z-50 max-h-72 min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-input border border-border bg-surface p-1 shadow-sm",
+          "z-50 max-h-72 min-w-[var(--radix-select-trigger-width)] origin-(--radix-select-content-transform-origin) overflow-hidden p-1.5",
+          overlaySurface,
+          popMotion,
           className,
         )}
         {...props}
@@ -61,7 +63,7 @@ export const SelectItem = forwardRef<
     <SelectPrimitive.Item
       ref={ref}
       className={cn(
-        "relative flex cursor-pointer select-none items-center rounded-md py-2 pl-3 pr-8 text-label text-fg outline-none",
+        "relative flex cursor-pointer select-none items-center rounded-lg py-2 pl-3 pr-8 transition-colors duration-100 text-label text-fg outline-none",
         "data-[highlighted]:bg-selected data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className,
       )}

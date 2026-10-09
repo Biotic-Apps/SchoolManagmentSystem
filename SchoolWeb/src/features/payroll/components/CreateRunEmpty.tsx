@@ -12,7 +12,7 @@ interface CreateRunEmptyProps {
 
 export function CreateRunEmpty({ month, canCreate, creating, onCreate }: CreateRunEmptyProps) {
   return (
-    <div className="rounded-card border border-border bg-surface">
+    <div className="rounded-card border border-border bg-surface shadow-card">
       <EmptyState
         icon={Banknote}
         title={`No payroll run for ${formatPeriod(month)}`}

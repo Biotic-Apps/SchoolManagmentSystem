@@ -1,7 +1,10 @@
-import Link from "next/link";
+"use client";
+
+import { GROUPED_MENU_MIN, groupNav } from "@/config/nav-groups";
 import type { NavItem } from "@/config/navigation";
-import { cn } from "@/lib/cn";
-import { focusRing } from "@/components/ui/styles";
+import { NavSection } from "./NavSection";
+import { SidebarNavLink } from "./SidebarNavLink";
+import { useNavCollapse } from "./use-nav-collapse";
 
 interface SidebarNavProps {
   items: NavItem[];
@@ -10,26 +13,31 @@ interface SidebarNavProps {
 }
 
 export function SidebarNav({ items, activeId, onNavigate }: SidebarNavProps) {
+  const { collapsed, toggle } = useNavCollapse();
+
+  if (items.length < GROUPED_MENU_MIN) {
+    return (
+      <nav aria-label="Main" className="flex flex-col gap-0.5">
+        {items.map((item) => (
+          <SidebarNavLink key={item.id} item={item} active={item.id === activeId} onNavigate={onNavigate} />
+        ))}
+      </nav>
+    );
+  }
+
   return (
-    <nav aria-label="Main" className="flex flex-col gap-0.5">
-      {items.map(({ id, label, route, icon: Icon }) => {
-        const active = id === activeId;
+    <nav aria-label="Main" className="flex flex-col">
+      {groupNav(items).map((group) => {
+        const holdsActive = group.items.some((item) => item.id === activeId);
         return (
-          <Link
-            key={id}
-            href={route}
-            onClick={onNavigate}
-            aria-current={active ? "page" : undefined}
-            className={cn(
-              "relative flex items-center gap-3 rounded-input px-3 py-2.5 text-label font-medium transition-colors",
-              active ? "bg-selected font-semibold text-on-selected" : "text-fg-muted hover:bg-background hover:text-fg",
-              focusRing,
-            )}
-          >
-            {active && <span aria-hidden className="absolute inset-y-2 left-0 w-[3px] rounded-full bg-primary" />}
-            <Icon className={cn("size-[18px] shrink-0", active && "text-primary")} />
-            <span className="leading-snug">{label}</span>
-          </Link>
+          <NavSection
+            key={group.id}
+            group={group}
+            activeId={activeId}
+            open={holdsActive || !collapsed.includes(group.id)}
+            onToggle={() => toggle(group.id)}
+            onNavigate={onNavigate}
+          />
         );
       })}
     </nav>

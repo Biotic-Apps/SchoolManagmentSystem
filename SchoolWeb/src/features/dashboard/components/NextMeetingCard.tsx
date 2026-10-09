@@ -1,3 +1,4 @@
+import { CalendarClock } from "lucide-react";
 import type { Meeting } from "@/features/meetings/types";
 import { formatDate, humanize } from "@/lib/format";
 import { formatTime } from "@/lib/time";
@@ -5,7 +6,7 @@ import { TodayCard } from "./TodayCard";
 
 export function NextMeetingCard({ meeting, href }: { meeting: Meeting | null; href: string | null }) {
   return (
-    <TodayCard title="Next meeting" href={href} linkLabel="Meetings">
+    <TodayCard title="Next meeting" icon={CalendarClock} href={href} linkLabel="Meetings">
       {meeting ? (
         <div className="flex flex-col gap-1">
           <span className="text-label font-semibold text-fg">
