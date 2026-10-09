@@ -55,8 +55,10 @@ const PROBES: Record<string, Probe> = {
   'GET /inventory/movements': { url: q('/inventory/movements'), own: 403 },
   'GET /invoices': { url: q('/invoices') },
   'GET /meetings': { url: q('/meetings') },
+  'GET /meetings/teachers': { url: q('/meetings/teachers') },
   'GET /messages/recipients': { url: q('/messages/recipients') },
   'GET /messages/threads': { url: q('/messages/threads') },
+  'GET /parent/home': { url: q('/parent/home') },
   'GET /payment-proofs': { url: q('/payment-proofs') },
   'GET /payments': { url: q('/payments') },
   // Refund lists are staff-only (parents see refunds on the ledger).

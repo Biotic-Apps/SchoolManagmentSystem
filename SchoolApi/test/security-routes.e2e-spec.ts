@@ -37,6 +37,7 @@ const AUTHENTICATED_ONLY: Record<string, string> = {
   'POST /complaints/:id/reopen': 'ComplaintActions: complainant only',
   'POST /complaints/:id/updates': 'ComplaintActions.assertParty',
   'POST /devices': 'caller own device token',
+  'POST /devices/unregister': 'caller own device token (deleteMany by userId)',
   'POST /documents':
     'DocumentsService: <module>.edit on owner + scope, file owned by caller',
   'POST /documents/:id/reject':
