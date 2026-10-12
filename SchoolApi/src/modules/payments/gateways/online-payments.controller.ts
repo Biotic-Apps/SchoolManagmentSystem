@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Headers,
   HttpCode,
   Param,
@@ -17,6 +18,7 @@ import {
   GatewayCallbackResultDto,
   InitiateOnlineDto,
   InitiateOnlineResultDto,
+  OnlinePaymentStatusDto,
 } from './dto/online-payment.dto';
 import { OnlinePaymentsService } from './online-payments.service';
 
@@ -53,5 +55,29 @@ export class OnlinePaymentsController {
       body,
       query,
     });
+  }
+
+  /** Check the status of an online payment attempt. */
+  @Get(':id/status')
+  @ApiBearerAuth()
+  @RequirePermission('fees.view')
+  @ApiData(OnlinePaymentStatusDto)
+  getStatus(
+    @CurrentScope() scope: Scope,
+    @Param('id') id: string,
+  ): Promise<OnlinePaymentStatusDto> {
+    return this.online.getStatus(scope, id);
+  }
+
+  /** List online payment attempts for a given invoice. */
+  @Get('invoice/:invoiceId')
+  @ApiBearerAuth()
+  @RequirePermission('fees.view')
+  @ApiData(OnlinePaymentStatusDto, { isArray: true })
+  listForInvoice(
+    @CurrentScope() scope: Scope,
+    @Param('invoiceId') invoiceId: string,
+  ): Promise<OnlinePaymentStatusDto[]> {
+    return this.online.listForInvoice(scope, invoiceId);
   }
 }

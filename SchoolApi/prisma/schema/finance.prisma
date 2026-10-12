@@ -195,11 +195,12 @@ model Invoice {
   createdAt        DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt        DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  student     Student             @relation("StudentInvoices", fields: [studentId], references: [id], onDelete: Restrict)
-  lines       InvoiceLine[]
-  concessions InvoiceConcession[]
-  allocations PaymentAllocation[]
-  proofs      PaymentProof[]
+  student        Student             @relation("StudentInvoices", fields: [studentId], references: [id], onDelete: Restrict)
+  lines          InvoiceLine[]
+  concessions    InvoiceConcession[]
+  allocations    PaymentAllocation[]
+  proofs         PaymentProof[]
+  onlinePayments OnlinePayment[]
 
   @@unique([studentId, period], map: "invoices_one_generated_per_period", where: raw("source = 'GENERATED'::invoice_source AND status <> 'CANCELLED'::invoice_status"))
   @@index([branchId, status, dueDate])
