@@ -10,7 +10,7 @@ export class RedisCacheStore extends CacheStore implements OnModuleDestroy {
 
   constructor(redisUrl: string) {
     super();
-    this.redis = new Redis(redisUrl, { lazyConnect: true });
+    this.redis = new Redis(redisUrl, { lazyConnect: true, connectTimeout: 10_000, family: 0 });
   }
 
   async get<T>(key: string): Promise<T | undefined> {

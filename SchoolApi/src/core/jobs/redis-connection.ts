@@ -12,5 +12,7 @@ export function redisOptionsFromUrl(redisUrl: string): RedisOptions {
     db: Number.isInteger(db) ? db : 0,
     tls: url.protocol === 'rediss:' ? {} : undefined,
     maxRetriesPerRequest: null,
+    connectTimeout: 10_000,
+    family: 0,
   };
 }
