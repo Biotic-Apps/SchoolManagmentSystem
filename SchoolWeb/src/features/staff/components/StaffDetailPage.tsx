@@ -15,6 +15,7 @@ import { ResetPasswordDialog } from "./ResetPasswordDialog";
 import { StaffActions } from "./StaffActions";
 import { StaffHeader } from "./StaffHeader";
 import { StaffStatusDialog } from "./StaffStatusDialog";
+import { StaffIdCardPanel } from "./StaffIdCardPanel";
 import { WorkloadTab } from "./WorkloadTab";
 
 export function StaffDetailPage({ staffId }: { staffId: string }) {
@@ -50,6 +51,7 @@ export function StaffDetailPage({ staffId }: { staffId: string }) {
           <TabsTrigger value="assignments">Assignments</TabsTrigger>
           <TabsTrigger value="workload">Workload</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
+          <TabsTrigger value="id-card">ID card</TabsTrigger>
         </TabsList>
         <TabsContent value="profile">
           <ProfileTab staff={staff} />
@@ -62,6 +64,9 @@ export function StaffDetailPage({ staffId }: { staffId: string }) {
         </TabsContent>
         <TabsContent value="documents">
           <DocumentsPanel ownerType="STAFF" ownerId={staff.id} />
+        </TabsContent>
+        <TabsContent value="id-card">
+          <StaffIdCardPanel staffId={staff.id} canGenerate={page.canEdit} />
         </TabsContent>
       </Tabs>
       {page.edit.open && <EditStaffDialog staff={staff} onClose={page.edit.close} />}

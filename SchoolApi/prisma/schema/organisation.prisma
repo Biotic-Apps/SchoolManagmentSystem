@@ -62,6 +62,7 @@ model School {
   bookLists             BookList[]
   syllabusPlans         SyllabusPlan[]
   settings              SchoolSetting?
+  staffIdCards          StaffIdCard[]
 
   @@index([logoFileId])
   @@map("schools")

@@ -23,6 +23,7 @@ export function useStaffPage() {
   const list = useListState<{ designation?: string; status?: string }>({ designation: undefined, status: undefined });
   const query = useStaffList({ ...list.params, branchId: picker.branchId }, !!picker.branchId);
   const create = useDialogState<true>();
+  const printCards = useDialogState<true>();
   const [revealed, setRevealed] = useState<Revealed | null>(null);
   const columns = useMemo(() => staffColumns(), []);
 
@@ -54,7 +55,9 @@ export function useStaffPage() {
     designationOptions: DESIGNATION_OPTIONS,
     statusOptions: STAFF_STATUS_OPTIONS,
     canAdd: can("staff.add") && !!picker.branchId,
+    canPrintCards: can("staff.edit") && !!picker.branchId,
     create,
+    printCards,
     onCreated,
     onRowClick: (row: StaffSummary) => openStaff(row.id),
     revealed,

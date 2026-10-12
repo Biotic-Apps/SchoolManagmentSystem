@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { IdCard, Plus } from "lucide-react";
 import { DataTable } from "@/components/shared/DataTable";
 import { FilterBar } from "@/components/shared/FilterBar";
 import { FilterSelect } from "@/components/shared/FilterSelect";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { BranchPickerSelect } from "@/features/branches/components/BranchPickerSelect";
 import { useStaffPage } from "../use-staff-page";
 import { AddStaffDialog } from "./AddStaffDialog";
+import { PrintStaffIdCardsDialog } from "./PrintStaffIdCardsDialog";
 
 export function StaffPage() {
   const page = useStaffPage();
@@ -23,6 +24,12 @@ export function StaffPage() {
         actions={
           <>
             <BranchPickerSelect picker={picker} />
+            {page.canPrintCards && (
+              <Button variant="secondary" onClick={() => page.printCards.show(true)}>
+                <IdCard />
+                Print ID cards
+              </Button>
+            )}
             {page.canAdd && (
               <Button onClick={() => page.create.show(true)}>
                 <Plus />
@@ -66,6 +73,9 @@ export function StaffPage() {
       />
       {page.create.open && picker.branchId && (
         <AddStaffDialog branchId={picker.branchId} onClose={page.create.close} onCreated={page.onCreated} />
+      )}
+      {page.printCards.open && picker.branchId && (
+        <PrintStaffIdCardsDialog branchId={picker.branchId} onClose={page.printCards.close} />
       )}
       <SecretRevealDialog
         secret={page.revealed?.password ?? null}

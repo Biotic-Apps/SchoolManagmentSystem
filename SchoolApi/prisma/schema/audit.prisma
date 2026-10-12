@@ -232,6 +232,7 @@ model File {
   staffPhotos   Staff[]    @relation("StaffPhoto")
   documents     Document[] @relation("DocumentFile")
   idCards       IdCard[]   @relation("IdCardFile")
+  staffIdCards  StaffIdCard[] @relation("StaffIdCardFile")
 
   @@index([schoolId])
   @@index([uploadedById])

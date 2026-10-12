@@ -9,6 +9,11 @@ import { AllocationService } from './allocation/allocation.service';
 import { TeachingStaffService } from './allocation/teaching-staff.service';
 import { AssignmentEnder } from './assignments/assignment-ender';
 import { StaffAssignmentsService } from './assignments/staff-assignments.service';
+import { StaffIdCardBulkModule } from './id-card/bulk/staff-id-card-bulk.module';
+import { StaffIdCardContentLoader } from './id-card/staff-id-card-content.loader';
+import { StaffIdCardController } from './id-card/staff-id-card.controller';
+import { StaffIdCardProcessor } from './id-card/staff-id-card.processor';
+import { StaffIdCardService } from './id-card/staff-id-card.service';
 import { ExpireAssignmentsProcessor } from './jobs/expire-assignments.processor';
 import { SectionStaffController } from './section-staff.controller';
 import { StaffAccessService } from './staff-access.service';
@@ -21,12 +26,13 @@ import { StaffStatusService } from './staff-status.service';
 import { WorkloadService } from './workload.service';
 
 @Module({
-  imports: [DocumentsModule, UsersModule],
+  imports: [DocumentsModule, UsersModule, StaffIdCardBulkModule],
   controllers: [
     StaffController,
     StaffAccountController,
     SectionStaffController,
     AllocationController,
+    StaffIdCardController,
   ],
   providers: [
     StaffRepository,
@@ -43,6 +49,9 @@ import { WorkloadService } from './workload.service';
     AllocationTarget,
     AllocationService,
     TeachingStaffService,
+    StaffIdCardService,
+    StaffIdCardProcessor,
+    StaffIdCardContentLoader,
   ],
   exports: [StaffRepository, AssignmentEnder, AllocationService],
 })
