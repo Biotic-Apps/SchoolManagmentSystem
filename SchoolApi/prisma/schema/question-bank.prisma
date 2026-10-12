@@ -1,0 +1,75 @@
+// Question Bank & Paper Generator — teachers build question banks per subject,
+// then auto-generate exam papers.
+
+enum QuestionType {
+  MCQ
+  SHORT
+  LONG
+  TRUE_FALSE
+  FILL_BLANK
+
+  @@map("question_type")
+}
+
+enum DifficultyLevel {
+  EASY
+  MEDIUM
+  HARD
+
+  @@map("difficulty_level")
+}
+
+enum ExamPaperStatus {
+  DRAFT
+  PUBLISHED
+
+  @@map("exam_paper_status")
+}
+
+model Question {
+  id              String          @id @default(uuid(7)) @db.Uuid
+  schoolId        String          @map("school_id") @db.Uuid
+  subjectId       String          @map("subject_id") @db.Uuid
+  classId         String          @map("class_id") @db.Uuid
+  chapterName     String          @map("chapter_name")
+  questionType    QuestionType    @map("question_type")
+  difficultyLevel DifficultyLevel @map("difficulty_level")
+  marks           Int
+  questionText    String          @map("question_text")
+  options         Json?           @db.JsonB
+  correctAnswer   String          @map("correct_answer")
+  status          RecordStatus    @default(ACTIVE)
+  createdById     String          @map("created_by_id") @db.Uuid
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school  School      @relation(fields: [schoolId], references: [id])
+  subject Subject     @relation(fields: [subjectId], references: [id])
+  class   SchoolClass @relation(fields: [classId], references: [id])
+
+  @@index([schoolId, subjectId, classId, status])
+  @@index([schoolId, questionType, difficultyLevel])
+  @@map("questions")
+}
+
+model ExamPaper {
+  id          String          @id @default(uuid(7)) @db.Uuid
+  schoolId    String          @map("school_id") @db.Uuid
+  subjectId   String          @map("subject_id") @db.Uuid
+  classId     String          @map("class_id") @db.Uuid
+  title       String
+  totalMarks  Int             @map("total_marks")
+  duration    Int
+  sections    Json            @db.JsonB
+  status      ExamPaperStatus @default(DRAFT)
+  createdById String          @map("created_by_id") @db.Uuid
+  createdAt   DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school  School      @relation(fields: [schoolId], references: [id])
+  subject Subject     @relation(fields: [subjectId], references: [id])
+  class   SchoolClass @relation(fields: [classId], references: [id])
+
+  @@index([schoolId, subjectId, classId, status])
+  @@map("exam_papers")
+}

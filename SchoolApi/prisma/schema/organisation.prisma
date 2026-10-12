@@ -65,6 +65,8 @@ model School {
   staffIdCards          StaffIdCard[]
   hrLetterTemplates     HrLetterTemplate[]
   hrLetters             HrLetter[]
+  questions             Question[]
+  examPapers            ExamPaper[]
 
   @@index([logoFileId])
   @@map("schools")
@@ -230,6 +232,8 @@ model SchoolClass {
   admissionEnquiries    AdmissionEnquiry[]
   admissionApplications AdmissionApplication[]
   bookLists             BookList[]
+  questions             Question[]
+  examPapers            ExamPaper[]
 
   @@unique([schoolId, name])
   @@map("classes")
@@ -296,6 +300,8 @@ model Subject {
   bookListItems    BookListItem[]
   syllabusPlans    SyllabusPlan[]
   diaryEntries     DiaryEntry[]
+  questions        Question[]
+  examPapers       ExamPaper[]
 
   @@unique([schoolId, code])
   @@map("subjects")

@@ -3,6 +3,7 @@ import {
   Award,
   BadgeDollarSign,
   Banknote,
+  BookOpen,
   Building2,
   CalendarCheck,
   CalendarClock,
@@ -41,7 +42,7 @@ import type { RoleKey } from "./roles";
 export type NavId =
   | "dashboard" | "schools" | "branches" | "users" | "roles" | "sessions" | "classes"
   | "admissions" | "students" | "guardians" | "staff" | "timetable" | "diary"
-  | "activities" | "notices" | "attendance" | "exams" | "progress" | "fees" | "payroll"
+  | "activities" | "notices" | "attendance" | "exams" | "question_bank" | "progress" | "fees" | "payroll"
   | "expenses" | "inventory" | "accounts" | "health" | "pickup" | "messages" | "meetings" | "complaints"
   | "certificates" | "approvals" | "reports" | "my_salary" | "settings" | "profile";
 
@@ -75,6 +76,7 @@ export const NAV_CATALOGUE: readonly NavItem[] = [
   item("notices", "Notices", "notices.view", Megaphone),
   item("attendance", "Attendance & Leave", "attendance.view", CalendarCheck),
   item("exams", "Exams & Results", "exams.view", FileCheck),
+  item("question_bank", "Question Bank & Papers", "questions.view", BookOpen),
   item("progress", "Student Progress", "progress.view", TrendingUp),
   item("fees", "Fees & Dues", "fees.view", Wallet),
   item("payroll", "Salary & Payroll", "payroll.view", Banknote),
@@ -114,21 +116,21 @@ export const ROLE_MENUS: Record<RoleKey, readonly NavId[]> = {
   SUPER_ADMIN: [
     "dashboard", "schools", "branches", "users", "roles", "sessions", "classes", "students",
     "admissions", "guardians", "staff", "timetable", "diary", "activities", "notices",
-    "attendance", "exams", "fees", "payroll", "expenses", "inventory", "accounts", "health", "pickup",
+    "attendance", "exams", "question_bank", "fees", "payroll", "expenses", "inventory", "accounts", "health", "pickup",
     "complaints", "certificates", "approvals", "reports", "settings", "profile",
   ],
   PRINCIPAL: [
     "dashboard", "branches", "classes", "students", "admissions", "guardians", "staff", "timetable",
-    "attendance", "diary", "activities", "notices", "exams", "fees", "payroll",
+    "attendance", "diary", "activities", "notices", "exams", "question_bank", "fees", "payroll",
     "expenses", "inventory", "accounts", "health", "pickup", "messages", "meetings", "complaints",
     "certificates", "approvals", "reports", "settings", "profile",
   ],
   // Owner decision 2026-10-09: coordinators manage branch payroll too.
-  COORDINATOR: [...SUPERVISOR_MENU.slice(0, -2), "payroll", "my_salary", "profile"],
+  COORDINATOR: [...SUPERVISOR_MENU.slice(0, -2), "question_bank", "payroll", "my_salary", "profile"],
   HEAD_TEACHER: SUPERVISOR_MENU,
   TEACHER: [
     "dashboard", "classes", "timetable", "attendance", "diary", "activities", "exams",
-    "progress", "messages", "meetings", "complaints", "my_salary", "profile",
+    "question_bank", "progress", "messages", "meetings", "complaints", "my_salary", "profile",
   ],
   HELPER: ["dashboard", "classes", "attendance", "diary", "activities", "complaints", "my_salary", "profile"],
   ACCOUNTANT: [
