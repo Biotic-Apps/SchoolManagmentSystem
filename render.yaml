@@ -16,7 +16,7 @@ services:
     runtime: docker
     dockerfilePath: SchoolApi/Dockerfile
     dockerContext: SchoolApi
-    plan: starter
+    plan: free
     region: singapore
     healthCheckPath: /health
     envVars:
@@ -90,13 +90,14 @@ services:
     runtime: docker
     dockerfilePath: SchoolWeb/Dockerfile
     dockerContext: SchoolWeb
-    plan: starter
+    plan: free
     region: singapore
     healthCheckPath: /login
-    docker:
-      buildArgs:
-        NEXT_PUBLIC_API_URL: ${API_URL_PUBLIC}
     envVars:
+      # Build arg: compiled into the Next.js browser bundle at build time.
+      # Set this in the Render dashboard to the API's public URL (e.g. https://eschool-api.onrender.com/api/v1).
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
       - key: NODE_ENV
         value: production
       - key: PORT
@@ -108,12 +109,10 @@ services:
       # ── Set in Render dashboard ──
       - key: API_URL
         sync: false
-      - key: API_URL_PUBLIC
-        sync: false
 
 databases:
   - name: eschool-db
-    plan: starter
+    plan: basic_256mb
     databaseName: eschool
     user: eschool_app
     region: singapore
