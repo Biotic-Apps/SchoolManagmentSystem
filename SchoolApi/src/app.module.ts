@@ -52,6 +52,7 @@ import { FeesModule } from './modules/fees/fees.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { PayrollModule } from './modules/payroll/payroll.module';
 import { ExpensesModule } from './modules/expenses/expenses.module';
+import { IncomeModule } from './modules/income/income.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { CertificatesModule } from './modules/certificates/certificates.module';
 import { ReportsModule } from './modules/reports/reports.module';
@@ -116,6 +117,7 @@ import { ImportsModule } from './modules/imports/imports.module';
     PaymentsModule,
     PayrollModule,
     ExpensesModule,
+    IncomeModule,
     InventoryModule,
     CertificatesModule,
     ReportsModule,
