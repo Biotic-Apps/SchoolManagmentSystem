@@ -37,10 +37,23 @@ export function drawReportCard(
   c: ReportCardContent,
   footer: string,
 ): void {
+  // Header: use custom overrides if provided
+  const headerSchoolName =
+    c.customHeaderOverrides?.schoolName ?? c.schoolName;
+  const headerBranchLine = c.customHeaderOverrides
+    ? [
+        c.customHeaderOverrides.subtitle,
+        c.customHeaderOverrides.address,
+        c.customHeaderOverrides.phone,
+      ]
+        .filter(Boolean)
+        .join(' · ') || c.branchLine
+    : c.branchLine;
+
   pdf
     .header(
-      c.schoolName,
-      c.branchLine,
+      headerSchoolName,
+      headerBranchLine,
       `Report Card — ${c.examName} · ${c.sessionName}`,
     )
     .fields([
@@ -75,8 +88,11 @@ export function drawReportCard(
         ],
       ],
       { boldLastRow: true },
-    )
-    .table(
+    );
+
+  // Summary table: conditionally show position columns
+  if (c.showPosition) {
+    pdf.table(
       [
         { header: 'Percentage', align: 'center' },
         { header: 'Grade', align: 'center' },
@@ -98,7 +114,44 @@ export function drawReportCard(
       ],
       { boldLastRow: true },
     );
-  if (c.skills.length > 0) {
+  } else {
+    pdf.table(
+      [
+        { header: 'Percentage', align: 'center' },
+        { header: 'Grade', align: 'center' },
+        { header: 'Result', align: 'center' },
+      ],
+      [
+        [
+          `${c.percent.toFixed(2)}%`,
+          c.grade,
+          c.passed ? 'Passed' : 'Not passed',
+        ],
+      ],
+      { boldLastRow: true },
+    );
+  }
+
+  // Attendance summary
+  if (c.showAttendance && c.attendanceSummary) {
+    pdf.table(
+      [
+        { header: 'Days present', align: 'center' },
+        { header: 'Days absent', align: 'center' },
+        { header: 'Total days', align: 'center' },
+      ],
+      [
+        [
+          String(c.attendanceSummary.present),
+          String(c.attendanceSummary.absent),
+          String(c.attendanceSummary.total),
+        ],
+      ],
+    );
+  }
+
+  // Skills section
+  if (c.showSkills && c.skills.length > 0) {
     pdf.heading('Behaviour & skills').table(
       [
         { header: SKILL_DOMAIN_LABEL.AFFECTIVE, weight: 2.4 },
@@ -108,16 +161,29 @@ export function drawReportCard(
       ],
       skillRows(c.skills),
     );
-    if (c.scaleKey) {
+    if (c.showGradingScale && c.scaleKey) {
       pdf.doc.moveUp(0.4);
       pdf.paragraph(`Key: ${c.scaleKey}`, { size: 7.5 });
     }
   }
-  if (c.remarks || c.teacherRemark) {
+
+  // Remarks section
+  if (c.showRemarks && (c.remarks || c.teacherRemark)) {
     pdf.heading('Remarks');
     if (c.remarks) pdf.paragraph(c.remarks);
     if (c.teacherRemark) pdf.paragraph(`Class teacher: ${c.teacherRemark}`);
   }
-  signatureLines(pdf, ['Class teacher', 'Principal', 'Parent / guardian']);
+
+  // Custom footer text (before signatures)
+  if (c.customFooterText) {
+    pdf.paragraph(c.customFooterText, { size: 8 });
+  }
+
+  const signatures = c.customSignatures ?? [
+    'Class teacher',
+    'Principal',
+    'Parent / guardian',
+  ];
+  signatureLines(pdf, signatures);
   pageFooter(pdf, footer);
 }

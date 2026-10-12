@@ -44,6 +44,7 @@ export class ReportCardsService {
     result: ResultRef,
     ownerUserId: string,
     fresh = false,
+    templateId?: string,
   ): Promise<string> {
     const { documentId } = await this.documents.request(requester, {
       kind: 'REPORT_CARD',
@@ -66,8 +67,9 @@ export class ReportCardsService {
         studentId: result.studentId,
         version: document.version,
         documentId,
+        templateId: templateId ?? null,
       },
-      update: { documentId },
+      update: { documentId, templateId: templateId ?? undefined },
     });
     return documentId;
   }
@@ -82,6 +84,7 @@ export class ReportCardsService {
     scope: Scope,
     studentId: string,
     examId?: string,
+    templateId?: string,
   ): Promise<ReportCardViewDto> {
     await this.students.read(scope, studentId);
     const result = await this.prisma.examResult.findFirst({
@@ -106,6 +109,7 @@ export class ReportCardsService {
         result,
         document?.ownerUserId ?? user.id,
         outdated,
+        templateId,
       );
       document = await this.documents.latest('REPORT_CARD', result.id);
     }

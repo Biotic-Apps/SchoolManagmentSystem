@@ -75,6 +75,7 @@ export class ExamPrintService {
       sectionIds: targets.sectionIds,
       classIds: targets.classIds,
       subjectId: dto.kind === 'AWARD_LIST' ? dto.subjectId : undefined,
+      templateId: dto.kind === 'REPORT_CARDS' ? dto.templateId : undefined,
     };
     const jobId = await this.tasks.enqueue(user, {
       queue: QUEUES.DOCUMENTS,

@@ -1,4 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { PrismaService } from '../../../core/prisma/prisma.service';
 import {
   DocumentRendererRegistry,
   type DocumentRenderer,
@@ -17,6 +18,7 @@ export class ReportCardRenderer implements DocumentRenderer, OnModuleInit {
   constructor(
     private readonly registry: DocumentRendererRegistry,
     private readonly loader: ReportCardLoader,
+    private readonly prisma: PrismaService,
   ) {}
 
   onModuleInit(): void {
@@ -24,8 +26,17 @@ export class ReportCardRenderer implements DocumentRenderer, OnModuleInit {
   }
 
   async render(resultId: string, version: number): Promise<RenderedDocument> {
-    const content = await this.loader.load(resultId);
-    const pdf = new PdfBuilder();
+    // Look up the latest ReportCard for this result to get its templateId
+    const card = await this.prisma.reportCard.findFirst({
+      where: { resultId },
+      orderBy: { version: 'desc' },
+      select: { templateId: true },
+    });
+    const content = await this.loader.load(
+      resultId,
+      card?.templateId ?? undefined,
+    );
+    const pdf = new PdfBuilder({ landscape: content.landscape });
     drawReportCard(
       pdf,
       content,

@@ -5,6 +5,10 @@ export class ReportCardQueryDto {
   @IsOptional()
   @IsUUID()
   examId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  templateId?: string;
 }
 
 export class ReportCardViewDto {
@@ -14,4 +18,5 @@ export class ReportCardViewDto {
   fileUrl!: string | null;
   generatedAt!: string | null;
   version!: number;
+  templateId?: string;
 }

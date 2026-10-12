@@ -246,15 +246,51 @@ model ReportCard {
   resultId   String   @map("result_id") @db.Uuid
   examId     String   @map("exam_id") @db.Uuid
   studentId  String   @map("student_id") @db.Uuid
+  templateId String?  @map("template_id") @db.Uuid
   version    Int
   documentId String?  @map("document_id") @db.Uuid
   createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
 
-  result ExamResult @relation(fields: [resultId], references: [id], onDelete: Cascade)
+  result   ExamResult          @relation(fields: [resultId], references: [id], onDelete: Cascade)
+  template ReportCardTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
 
   @@unique([resultId, version])
   @@index([studentId, examId])
   @@map("report_cards")
+}
+
+// Customisable layout/content settings for report-card PDFs.
+model ReportCardTemplate {
+  id               String   @id @default(uuid(7)) @db.Uuid
+  schoolId         String   @map("school_id") @db.Uuid
+  branchId         String?  @map("branch_id") @db.Uuid
+  name             String
+  isDefault        Boolean  @default(false) @map("is_default")
+  // Portrait/landscape, paper size.
+  layout           Json     @default("{\"orientation\":\"portrait\",\"paperSize\":\"A4\"}")
+  // Overrides for the header block (logo toggle, custom school name, subtitle, address, phone).
+  header           Json     @default("{\"showLogo\":true}")
+  // Which sections to include.
+  showGradingScale Boolean  @default(true) @map("show_grading_scale")
+  showSkills       Boolean  @default(true) @map("show_skills")
+  showRemarks      Boolean  @default(true) @map("show_remarks")
+  showAttendance   Boolean  @default(false) @map("show_attendance")
+  showPosition     Boolean  @default(true) @map("show_position")
+  // Ordered labels for signature lines (JSON string[]).
+  signatures       Json     @default("[\"Class teacher\",\"Principal\",\"Parent / guardian\"]")
+  // Custom remark section labels (JSON string[]).
+  remarkLabels     Json?    @map("remark_labels")
+  // Free-text line at the bottom of the card.
+  footerText       String?  @map("footer_text")
+  createdById      String   @map("created_by_id") @db.Uuid
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  reportCards ReportCard[]
+
+  @@unique([branchId, name])
+  @@index([schoolId])
+  @@map("report_card_templates")
 }
 
 model ProgressNote {
