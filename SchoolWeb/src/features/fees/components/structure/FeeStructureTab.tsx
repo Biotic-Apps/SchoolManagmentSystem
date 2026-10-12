@@ -6,6 +6,7 @@ import { FeeHeadDialog } from "./FeeHeadDialog";
 import { FeeHeadsSection } from "./FeeHeadsSection";
 import { FeePlanDialog } from "./FeePlanDialog";
 import { FeePlansSection } from "./FeePlansSection";
+import { SiblingDiscountsSection } from "./SiblingDiscountsSection";
 
 interface FeeStructureTabProps {
   branchId: string | null;
@@ -21,6 +22,7 @@ export function FeeStructureTab({ branchId, schoolId }: FeeStructureTabProps) {
     <div className="flex flex-col gap-6">
       <FeeHeadsSection tab={tab} />
       <FeePlansSection tab={tab} />
+      <SiblingDiscountsSection schoolId={schoolId} />
       {tab.headDialog.open && <FeeHeadDialog schoolId={schoolId} onClose={tab.headDialog.close} />}
       {tab.planDialog.open && tab.sessionId && (
         <FeePlanDialog

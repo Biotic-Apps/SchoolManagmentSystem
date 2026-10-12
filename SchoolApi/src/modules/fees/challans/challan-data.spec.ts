@@ -29,6 +29,7 @@ const invoice: ChallanInvoice = {
     { head: 'Lab', amountMinor: 50_000n },
   ],
   concessionMinor: 150_000n,
+  siblingDiscountMinor: 0n,
   lateFeeMinor: 0n,
   totalMinor: 1_000_000n,
   paidMinor: 0n,

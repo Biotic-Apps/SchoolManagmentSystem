@@ -15,6 +15,8 @@ model SchoolSetting {
   notifications    Json     @default("{}")
   /// School-wide policies; branch settings still override per branch.
   policies         Json     @default("{}")
+  /// Print one combined challan per family (all siblings on one page).
+  familyChallanEnabled Boolean @default(false) @map("family_challan_enabled")
   updatedById      String?  @map("updated_by_id") @db.Uuid
   createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)

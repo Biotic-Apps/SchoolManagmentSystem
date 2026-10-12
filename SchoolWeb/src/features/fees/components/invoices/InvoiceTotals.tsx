@@ -11,6 +11,7 @@ interface TotalRow {
 export function InvoiceTotals({ invoice }: { invoice: Invoice }) {
   const rows: TotalRow[] = [
     ...(invoice.concessionMinor ? [{ label: "Concession", amountMinor: -invoice.concessionMinor }] : []),
+    ...(invoice.siblingDiscountMinor ? [{ label: "Sibling discount", amountMinor: -invoice.siblingDiscountMinor }] : []),
     ...(invoice.lateFeeMinor ? [{ label: "Late fee", amountMinor: invoice.lateFeeMinor }] : []),
     { label: "Total", amountMinor: invoice.totalMinor, strong: true },
     { label: "Paid", amountMinor: invoice.paidMinor },

@@ -26,6 +26,7 @@ const view = (invoiceNo: string) =>
       currency: 'PKR',
       lines: [{ head: 'Tuition', amountMinor: 500_000n }],
       concessionMinor: 0n,
+      siblingDiscountMinor: 0n,
       lateFeeMinor: 0n,
       totalMinor: 500_000n,
       paidMinor: 0n,

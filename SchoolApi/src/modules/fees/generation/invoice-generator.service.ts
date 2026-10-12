@@ -4,9 +4,10 @@ import { isPrismaKnownError } from '../../../core/common/errors/prisma-error.map
 import { PrismaService } from '../../../core/prisma/prisma.service';
 import type { NewInvoiceLine } from '../../finance-core/invoice-ledger.service';
 import { InvoiceLedgerService } from '../../finance-core/invoice-ledger.service';
+import { percentOf, sumMinor } from '../../finance-core/money';
 import { systemFeeHead } from '../../finance-core/system-fee-heads';
 import { ACTIVITY_REF, ActivityFeesService } from './activity-fees.service';
-import { applyConcessions } from './concession-math';
+import { applyConcessions, concessionTotal } from './concession-math';
 import { dueItems, invoiceDueDate } from './due-lines';
 import {
   GenerationContextService,
@@ -52,6 +53,16 @@ export class InvoiceGeneratorService {
       this.activities.chargesByStudent(input.branchId, period, pendingIds),
       this.context.headNames([...new Set(allItems.map((i) => i.feeHeadId))]),
     ]);
+    // Load sibling discount rules and indices for all pending students
+    const schoolId = pending.length > 0 ? pending[0].schoolId : null;
+    const [discountRules, siblingIndices] = await Promise.all([
+      schoolId
+        ? this.context.siblingDiscountRules(schoolId)
+        : Promise.resolve([]),
+      schoolId
+        ? this.context.siblingIndices(schoolId, pendingIds)
+        : Promise.resolve(new Map<string, number>()),
+    ]);
     const activityHead =
       charges.size > 0 && pending.length > 0
         ? await systemFeeHead(this.prisma, pending[0].schoolId, 'ACTIVITY')
@@ -92,6 +103,16 @@ export class InvoiceGeneratorService {
           value: c.value,
         })),
       );
+      // Compute sibling discount
+      const childIndex = siblingIndices.get(student.studentId) ?? 1;
+      const siblingPercent =
+        discountRules.find((r) => r.childIndex === childIndex)?.percentOff ?? 0;
+      const subtotalAfterConcession =
+        sumMinor(lines.map((l) => l.amountMinor)) - concessionTotal(applied);
+      const siblingDiscount =
+        siblingPercent > 0
+          ? percentOf(subtotalAfterConcession, siblingPercent)
+          : 0n;
       try {
         const invoice = await this.prisma.$transaction((tx) =>
           this.invoices.create(tx, {
@@ -106,6 +127,7 @@ export class InvoiceGeneratorService {
             dueDate: invoiceDueDate(items, period),
             lines,
             concessions: applied,
+            siblingDiscountMinor: siblingDiscount,
             planId: plan?.id ?? null,
             lateFeeRule: plan?.snapshot.lateFee ?? null,
             createdById: input.actorId,

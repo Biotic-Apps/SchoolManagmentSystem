@@ -45,6 +45,7 @@ export interface ChallanInvoice {
   currency: string;
   lines: { head: string; amountMinor: bigint }[];
   concessionMinor: bigint;
+  siblingDiscountMinor: bigint;
   lateFeeMinor: bigint;
   totalMinor: bigint;
   paidMinor: bigint;
@@ -73,6 +74,7 @@ export interface ChallanView {
   arrearsLabel: string;
   arrearsMinor: bigint;
   concessionMinor: bigint;
+  siblingDiscountMinor: bigint;
   lateFeeMinor: bigint;
   paidMinor: bigint;
   /** Due by the due date: this invoice's balance plus arrears. */
@@ -162,6 +164,7 @@ export function toChallanView(
       : 'Arrears / previous balance',
     arrearsMinor,
     concessionMinor: invoice.concessionMinor,
+    siblingDiscountMinor: invoice.siblingDiscountMinor,
     lateFeeMinor: invoice.lateFeeMinor,
     paidMinor: invoice.paidMinor,
     payableMinor,

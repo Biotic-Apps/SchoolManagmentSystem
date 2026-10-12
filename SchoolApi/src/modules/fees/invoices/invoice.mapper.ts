@@ -56,6 +56,7 @@ export function toInvoiceDto(
       amountMinor: Number(line.amountMinor),
     })),
     concessionMinor: Number(row.concessionMinor),
+    siblingDiscountMinor: Number(row.siblingDiscountMinor),
     lateFeeMinor: Number(row.lateFeeMinor),
     totalMinor: Number(row.totalMinor),
     paidMinor: Number(row.paidMinor),

@@ -3,6 +3,7 @@ import { ChallanBatchProcessor } from './challans/challan-batch.processor';
 import { ChallanBatchService } from './challans/challan-batch.service';
 import { ChallanPrintController } from './challans/challan-print.controller';
 import { ChallanSource } from './challans/challan-source.service';
+import { FamilyChallanService } from './challans/family-challan.service';
 import { ConcessionApprovalHandler } from './concessions/concession-approval.handler';
 import { ConcessionReader } from './concessions/concession-reader.service';
 import { ConcessionsController } from './concessions/concessions.controller';
@@ -33,6 +34,8 @@ import { FeePlanArchiveService } from './structure/fee-plan-archive.service';
 import { FeePlansService } from './structure/fee-plans.service';
 import { FeeSummaryService } from './student-fees/fee-summary.service';
 import { StudentFeesController } from './student-fees/student-fees.controller';
+import { SiblingDiscountsController } from './sibling-discounts/sibling-discounts.controller';
+import { SiblingDiscountsService } from './sibling-discounts/sibling-discounts.service';
 import { StudentLedgerService } from './student-fees/student-ledger.service';
 
 /** Phase 4 §B1/B2/B4/B5: fee structure, invoices, concessions, ledger views, dues. */
@@ -44,6 +47,7 @@ import { StudentLedgerService } from './student-fees/student-ledger.service';
     ConcessionsController,
     StudentFeesController,
     DuesController,
+    SiblingDiscountsController,
   ],
   providers: [
     FeeAccessService,
@@ -65,6 +69,7 @@ import { StudentLedgerService } from './student-fees/student-ledger.service';
     ChallanSource,
     ChallanBatchService,
     ChallanBatchProcessor,
+    FamilyChallanService,
     MarkOverdueProcessor,
     ConcessionReader,
     ConcessionsService,
@@ -75,6 +80,7 @@ import { StudentLedgerService } from './student-fees/student-ledger.service';
     DuesService,
     DueRemindersService,
     DueRemindersProcessor,
+    SiblingDiscountsService,
   ],
   exports: [InvoiceReader, FeeAccessService, FeeSummaryService],
 })

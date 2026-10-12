@@ -147,6 +147,70 @@ export class GenerationContextService {
     return new Set(rows.map((r) => `${r.invoice.studentId}:${r.feeHeadId}`));
   }
 
+  /** Active sibling discount rules for a school. */
+  async siblingDiscountRules(
+    schoolId: string,
+  ): Promise<{ childIndex: number; percentOff: number }[]> {
+    return this.prisma.siblingDiscount.findMany({
+      where: { schoolId, status: 'ACTIVE' },
+      select: { childIndex: true, percentOff: true },
+      orderBy: { childIndex: 'asc' },
+    });
+  }
+
+  /** Map each student to their 1-based child index among siblings in the school. */
+  async siblingIndices(
+    schoolId: string,
+    studentIds: string[],
+  ): Promise<Map<string, number>> {
+    if (studentIds.length === 0) return new Map();
+    const links = await this.prisma.studentGuardian.findMany({
+      where: {
+        studentId: { in: studentIds },
+        schoolId,
+        status: 'VERIFIED',
+      },
+      select: { studentId: true, guardianId: true },
+    });
+    // Group students by guardian
+    const guardianStudents = new Map<string, Set<string>>();
+    for (const link of links) {
+      const set = guardianStudents.get(link.guardianId) ?? new Set();
+      set.add(link.studentId);
+      guardianStudents.set(link.guardianId, set);
+    }
+    // For each student, find their largest sibling group
+    const studentGroup = new Map<string, Set<string>>();
+    for (const [, students] of guardianStudents) {
+      if (students.size < 2) continue;
+      for (const sid of students) {
+        const existing = studentGroup.get(sid);
+        if (!existing || students.size > existing.size)
+          studentGroup.set(sid, students);
+      }
+    }
+    // Assign indices by admission date order within each group
+    const indices = new Map<string, number>();
+    const processed = new Set<string>();
+    for (const [studentId, group] of studentGroup) {
+      if (processed.has(studentId)) continue;
+      const groupArr = [...group];
+      const students = await this.prisma.student.findMany({
+        where: { id: { in: groupArr }, schoolId, status: 'ACTIVE' },
+        select: { id: true, admissionDate: true },
+        orderBy: { admissionDate: 'asc' },
+      });
+      students.forEach((s, i) => {
+        indices.set(s.id, i + 1);
+        processed.add(s.id);
+      });
+    }
+    for (const sid of studentIds) {
+      if (!indices.has(sid)) indices.set(sid, 1);
+    }
+    return indices;
+  }
+
   async headNames(ids: string[]): Promise<Map<string, string>> {
     const rows = await this.prisma.feeHead.findMany({
       where: { id: { in: ids } },

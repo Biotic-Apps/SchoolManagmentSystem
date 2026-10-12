@@ -81,6 +81,7 @@ export interface Invoice {
   status: InvoiceStatus;
   lines: InvoiceLine[];
   concessionMinor: number;
+  siblingDiscountMinor: number;
   lateFeeMinor: number;
   totalMinor: number;
   paidMinor: number;
@@ -171,6 +172,14 @@ export interface DailyCollection {
   payments: Payment[];
   closed: boolean;
   closing?: { cashCountedMinor: number; differenceMinor: number; note: string | null; closedBy?: PersonRef; closedAt?: string } | null;
+}
+
+export interface SiblingDiscount {
+  id: string;
+  schoolId: string;
+  childIndex: number;
+  percentOff: number;
+  createdAt: string;
 }
 
 export interface FinanceDashboard {

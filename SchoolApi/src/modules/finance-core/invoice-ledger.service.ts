@@ -39,6 +39,7 @@ export interface NewInvoice {
   dueDate: Date;
   lines: NewInvoiceLine[];
   concessions?: NewInvoiceConcession[];
+  siblingDiscountMinor?: bigint;
   planId?: string | null;
   lateFeeRule?: { amountMinor: number; afterDays: number } | null;
   createdById?: string | null;
@@ -85,6 +86,7 @@ export class InvoiceLedgerService {
       throw new Error('Invoice lines must not be negative');
     }
     if (concession > subtotal) throw new Error('Concession exceeds subtotal');
+    const siblingDiscount = input.siblingDiscountMinor ?? 0n;
     const numberingPeriod =
       input.period ?? input.dueDate.toISOString().slice(0, 7);
     return tx.invoice.create({
@@ -105,7 +107,8 @@ export class InvoiceLedgerService {
         dueDate: input.dueDate,
         subtotalMinor: subtotal,
         concessionMinor: concession,
-        totalMinor: subtotal - concession,
+        siblingDiscountMinor: siblingDiscount,
+        totalMinor: subtotal - concession - siblingDiscount,
         planId: input.planId ?? null,
         lateFeeRule: input.lateFeeRule ?? undefined,
         createdById: input.createdById ?? null,

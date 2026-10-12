@@ -25,6 +25,7 @@ export function ParentInvoiceLines({ invoice, lines }: { invoice: Invoice; lines
           <Row key={line.id} label={line.description || line.feeHead?.name || "Fee"} amountMinor={line.amountMinor} currency={currency} />
         ))}
         {invoice.concessionMinor > 0 && <Row label="Concession" amountMinor={-invoice.concessionMinor} currency={currency} />}
+        {invoice.siblingDiscountMinor > 0 && <Row label="Sibling discount" amountMinor={-invoice.siblingDiscountMinor} currency={currency} />}
         {invoice.lateFeeMinor > 0 && <Row label="Late fee" amountMinor={invoice.lateFeeMinor} currency={currency} />}
         <Row label="Total" amountMinor={invoice.totalMinor} currency={currency} strong />
       </ul>

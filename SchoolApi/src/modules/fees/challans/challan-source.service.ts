@@ -195,6 +195,7 @@ export class ChallanSource {
           amountMinor: l.amountMinor,
         })),
         concessionMinor: row.concessionMinor,
+        siblingDiscountMinor: row.siblingDiscountMinor,
         lateFeeMinor: row.lateFeeMinor,
         totalMinor: row.totalMinor,
         paidMinor: row.paidMinor,

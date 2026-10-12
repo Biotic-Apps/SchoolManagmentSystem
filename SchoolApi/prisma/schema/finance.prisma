@@ -179,6 +179,7 @@ model Invoice {
   dueDate          DateTime      @map("due_date") @db.Date
   subtotalMinor    BigInt        @default(0) @map("subtotal_minor")
   concessionMinor  BigInt        @default(0) @map("concession_minor")
+  siblingDiscountMinor BigInt    @default(0) @map("sibling_discount_minor")
   lateFeeMinor     BigInt        @default(0) @map("late_fee_minor")
   totalMinor       BigInt        @default(0) @map("total_minor")
   paidMinor        BigInt        @default(0) @map("paid_minor")
@@ -392,6 +393,24 @@ model Refund {
   @@index([paymentId])
   @@index([branchId, status])
   @@map("refunds")
+}
+
+// Sibling discount rules per school: e.g. 2nd child 10%, 3rd child 20%.
+// childIndex 2 = second child, etc. Discount applies to each additional child.
+model SiblingDiscount {
+  id           String       @id @default(uuid(7)) @db.Uuid
+  schoolId     String       @map("school_id") @db.Uuid
+  childIndex   Int          @map("child_index")
+  /// Whole percent 1–100.
+  percentOff   Int          @map("percent_off")
+  status       RecordStatus @default(ACTIVE)
+  createdById  String?      @map("created_by_id") @db.Uuid
+  updatedById  String?      @map("updated_by_id") @db.Uuid
+  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@unique([schoolId, childIndex])
+  @@map("sibling_discounts")
 }
 
 model DailyCollection {

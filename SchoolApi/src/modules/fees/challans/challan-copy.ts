@@ -85,6 +85,8 @@ function feeRows(view: ChallanView, money: (v: bigint) => string): Row[] {
     rows.push([view.arrearsLabel, money(view.arrearsMinor)]);
   if (view.concessionMinor > 0n)
     rows.push(['Concession', `- ${money(view.concessionMinor)}`]);
+  if (view.siblingDiscountMinor > 0n)
+    rows.push(['Sibling discount', `- ${money(view.siblingDiscountMinor)}`]);
   if (view.lateFeeMinor > 0n) rows.push(['Late fee', money(view.lateFeeMinor)]);
   if (view.paidMinor > 0n)
     rows.push(['Already paid', `- ${money(view.paidMinor)}`]);

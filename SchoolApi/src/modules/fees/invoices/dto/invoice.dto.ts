@@ -38,6 +38,7 @@ export class InvoiceDto {
   status!: InvoiceStatus;
   lines!: InvoiceLineDto[];
   concessionMinor!: number;
+  siblingDiscountMinor!: number;
   lateFeeMinor!: number;
   totalMinor!: number;
   paidMinor!: number;

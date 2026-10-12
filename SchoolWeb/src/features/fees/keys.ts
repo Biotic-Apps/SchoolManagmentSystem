@@ -15,4 +15,5 @@ export const feesKeys = {
   dues: (params: Query) => ["fees", "dues", params] as const,
   collections: (branchId: string | null, date: string) => ["fees", "collections", branchId, date] as const,
   dashboard: (branchId: string | null, month: string) => ["fees", "dashboard", branchId, month] as const,
+  siblingDiscounts: (schoolId: string | null) => ["fees", "sibling-discounts", schoolId] as const,
 };
