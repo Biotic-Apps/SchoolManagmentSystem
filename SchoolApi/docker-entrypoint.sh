@@ -1,11 +1,11 @@
 #!/bin/sh
-echo "=== eSchool API entrypoint ==="
+set -e
 
-echo "--- Running Prisma migrations ---"
-npx prisma migrate deploy 2>&1 || echo "MIGRATE FAILED (continuing)"
+echo "Running Prisma migrations..."
+npx prisma migrate deploy
 
-echo "--- Seeding database ---"
-npm run db:seed 2>&1 || echo "SEED FAILED (continuing)"
+echo "Seeding database..."
+npm run db:seed
 
-echo "--- Starting API ---"
-exec node --max-old-space-size=400 dist/main.js
+echo "Starting API..."
+exec node dist/main.js
