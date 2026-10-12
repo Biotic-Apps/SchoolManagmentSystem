@@ -149,6 +149,8 @@ export const envSchema = z
     SMS_HTTP_BODY: z.string().min(1).optional(),
     /** Staging only: lets production run with the log email/SMS drivers. */
     ALLOW_LOG_CHANNELS: booleanString.default(false),
+    /** Staging only: lets production run with inline jobs and memory cache (no Redis). */
+    ALLOW_DEV_DRIVERS: booleanString.default(false),
     /** Country code for numbers written without one (E.164 normalisation). */
     DEFAULT_PHONE_COUNTRY: z
       .string()
@@ -240,19 +242,23 @@ export const envSchema = z
         message: 'must differ from JWT_ACCESS_SECRET',
       });
     }
-    if (env.JOBS_DRIVER === 'inline') {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['JOBS_DRIVER'],
-        message: 'inline jobs are not allowed in production',
-      });
-    }
-    if (env.CACHE_DRIVER === 'memory') {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['CACHE_DRIVER'],
-        message: 'memory cache is not allowed in production',
-      });
+    if (!env.ALLOW_DEV_DRIVERS) {
+      if (env.JOBS_DRIVER === 'inline') {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['JOBS_DRIVER'],
+          message:
+            'inline jobs are not allowed in production (set ALLOW_DEV_DRIVERS=true for staging)',
+        });
+      }
+      if (env.CACHE_DRIVER === 'memory') {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['CACHE_DRIVER'],
+          message:
+            'memory cache is not allowed in production (set ALLOW_DEV_DRIVERS=true for staging)',
+        });
+      }
     }
   });
 
