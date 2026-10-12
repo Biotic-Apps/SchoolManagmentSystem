@@ -11,6 +11,7 @@ import { ApplicationsRepository } from './applications.repository';
 import { ApplicationsService } from './applications.service';
 import { EnquiriesController } from './enquiries.controller';
 import { EnquiriesService } from './enquiries.service';
+import { PublicAdmissionsController } from './public-admissions.controller';
 import { WaitingListController } from './waiting-list.controller';
 
 @Module({
@@ -19,6 +20,7 @@ import { WaitingListController } from './waiting-list.controller';
     EnquiriesController,
     ApplicationsController,
     WaitingListController,
+    PublicAdmissionsController,
   ],
   providers: [
     ApplicationsRepository,
