@@ -1,6 +1,7 @@
 // Shared navigation contract — must stay identical to docs/navigation.md (ids, labels, permissions).
 import {
   Award,
+  BadgeDollarSign,
   Banknote,
   Building2,
   CalendarCheck,
@@ -41,7 +42,7 @@ export type NavId =
   | "dashboard" | "schools" | "branches" | "users" | "roles" | "sessions" | "classes"
   | "admissions" | "students" | "guardians" | "staff" | "timetable" | "diary"
   | "activities" | "notices" | "attendance" | "exams" | "progress" | "fees" | "payroll"
-  | "expenses" | "inventory" | "health" | "pickup" | "messages" | "meetings" | "complaints"
+  | "expenses" | "inventory" | "accounts" | "health" | "pickup" | "messages" | "meetings" | "complaints"
   | "certificates" | "approvals" | "reports" | "my_salary" | "settings" | "profile";
 
 export interface NavItem {
@@ -79,6 +80,7 @@ export const NAV_CATALOGUE: readonly NavItem[] = [
   item("payroll", "Salary & Payroll", "payroll.view", Banknote),
   item("expenses", "Expenses & Vendors", "expenses.view", Receipt),
   item("inventory", "Inventory & Purchasing", "inventory.view", Package),
+  item("accounts", "Accounts", "expenses.view", BadgeDollarSign),
   item("health", "Health & Safety", "health.view", HeartPulse),
   item("pickup", "Pickup & Departure", "pickup.view", DoorOpen),
   item("messages", "Messages", "messages.view", MessageSquare),
@@ -112,13 +114,13 @@ export const ROLE_MENUS: Record<RoleKey, readonly NavId[]> = {
   SUPER_ADMIN: [
     "dashboard", "schools", "branches", "users", "roles", "sessions", "classes", "students",
     "admissions", "guardians", "staff", "timetable", "diary", "activities", "notices",
-    "attendance", "exams", "fees", "payroll", "expenses", "inventory", "health", "pickup",
+    "attendance", "exams", "fees", "payroll", "expenses", "inventory", "accounts", "health", "pickup",
     "complaints", "certificates", "approvals", "reports", "settings", "profile",
   ],
   PRINCIPAL: [
     "dashboard", "branches", "classes", "students", "admissions", "guardians", "staff", "timetable",
     "attendance", "diary", "activities", "notices", "exams", "fees", "payroll",
-    "expenses", "inventory", "health", "pickup", "messages", "meetings", "complaints",
+    "expenses", "inventory", "accounts", "health", "pickup", "messages", "meetings", "complaints",
     "certificates", "approvals", "reports", "settings", "profile",
   ],
   // Owner decision 2026-10-09: coordinators manage branch payroll too.
@@ -130,7 +132,7 @@ export const ROLE_MENUS: Record<RoleKey, readonly NavId[]> = {
   ],
   HELPER: ["dashboard", "classes", "attendance", "diary", "activities", "complaints", "my_salary", "profile"],
   ACCOUNTANT: [
-    "dashboard", "students", "fees", "payroll", "expenses", "inventory", "complaints", "reports",
+    "dashboard", "students", "fees", "payroll", "expenses", "inventory", "accounts", "complaints", "reports",
     "my_salary", "profile",
   ],
   PARENT: [

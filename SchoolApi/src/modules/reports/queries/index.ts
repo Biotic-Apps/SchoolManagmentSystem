@@ -7,6 +7,7 @@ import { feesCollection } from './fees-collection';
 import { feesDefaulters } from './fees-defaulters';
 import { inventoryStock } from './inventory-stock';
 import { payrollSummary } from './payroll-summary';
+import { profitLoss } from './profit-loss';
 import type { ReportQuery } from './report-query';
 import { resultsAnalysis } from './results-analysis';
 
@@ -20,6 +21,7 @@ export const REPORT_QUERIES: Record<string, ReportQuery> = {
   'fees.defaulters': feesDefaulters,
   'payroll.summary': payrollSummary,
   'expenses.summary': expensesSummary,
+  'profit-loss': profitLoss,
   'inventory.stock': inventoryStock,
   'branch.comparison': branchComparison,
 };

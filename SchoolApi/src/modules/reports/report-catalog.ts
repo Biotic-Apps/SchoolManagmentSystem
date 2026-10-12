@@ -89,6 +89,13 @@ export const REPORTS: readonly ReportDefinition[] = [
     params: [BRANCH, ...RANGE],
   },
   {
+    key: 'profit-loss',
+    title: 'Profit & Loss',
+    description: 'Income vs expenses and payroll for a date range.',
+    permission: 'expenses.view',
+    params: [BRANCH, ...RANGE],
+  },
+  {
     key: 'inventory.stock',
     title: 'Inventory stock',
     description: 'Stock on hand against reorder levels.',
