@@ -3,6 +3,8 @@ import { CollectionsController } from './collections/collections.controller';
 import { CollectionsService } from './collections/collections.service';
 import { FinanceDashboardController } from './dashboard/finance-dashboard.controller';
 import { FinanceDashboardService } from './dashboard/finance-dashboard.service';
+import { EasypaisaGateway } from './gateways/easypaisa.gateway';
+import { JazzCashGateway } from './gateways/jazzcash.gateway';
 import { ManualGateway } from './gateways/manual.gateway';
 import { OnlinePaymentsController } from './gateways/online-payments.controller';
 import { OnlinePaymentsService } from './gateways/online-payments.service';
@@ -60,6 +62,8 @@ import { FinanceAccess } from './shared/finance-access';
     ProofVerifier,
     ProofReviewService,
     ManualGateway,
+    JazzCashGateway,
+    EasypaisaGateway,
     PaymentGatewayRegistry,
     OnlinePaymentsService,
     CollectionsService,

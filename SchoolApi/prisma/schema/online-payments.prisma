@@ -1,0 +1,43 @@
+// Phase 4 §B3 extension: online payment tracking via JazzCash / Easypaisa.
+
+enum OnlinePaymentGateway {
+  JAZZCASH
+  EASYPAISA
+
+  @@map("online_payment_gateway")
+}
+
+enum OnlinePaymentStatus {
+  INITIATED
+  SUCCESS
+  FAILED
+  EXPIRED
+
+  @@map("online_payment_status")
+}
+
+model OnlinePayment {
+  id              String               @id @default(uuid(7)) @db.Uuid
+  schoolId        String               @map("school_id") @db.Uuid
+  branchId        String               @map("branch_id") @db.Uuid
+  invoiceId       String               @map("invoice_id") @db.Uuid
+  gateway         OnlinePaymentGateway
+  amountMinor     BigInt               @map("amount_minor")
+  currency        String               @default("PKR") @db.Char(3)
+  status          OnlinePaymentStatus  @default(INITIATED)
+  gatewayRef      String?              @map("gateway_ref")
+  paymentId       String?              @map("payment_id") @db.Uuid
+  redirectUrl     String?              @map("redirect_url")
+  webhookPayload  Json?                @map("webhook_payload")
+  returnedAt      DateTime?            @map("returned_at") @db.Timestamptz(3)
+  createdAt       DateTime             @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime             @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+
+  @@index([invoiceId])
+  @@index([schoolId, status])
+  @@index([branchId, createdAt])
+  @@index([gatewayRef])
+  @@map("online_payments")
+}

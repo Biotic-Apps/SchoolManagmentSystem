@@ -30,6 +30,18 @@ describe('PaymentGatewayRegistry', () => {
     expect(registry.find('JAZZCASH')).toBeUndefined();
     expect(() => registry.get('JAZZCASH')).toThrow(AppError);
   });
+
+  it('registers optional gateways when provided', () => {
+    const jc = fake('JAZZCASH');
+    const ep = fake('EASYPAISA');
+    const registry = new PaymentGatewayRegistry(
+      new ManualGateway(),
+      jc as any,
+      ep as any,
+    );
+    expect(registry.find('JAZZCASH')?.key).toBe('JAZZCASH');
+    expect(registry.find('EASYPAISA')?.key).toBe('EASYPAISA');
+  });
 });
 
 describe('ManualGateway', () => {

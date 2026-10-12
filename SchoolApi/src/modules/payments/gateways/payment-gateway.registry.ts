@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { AppError } from '../../../core/common/errors/app-error';
 import { ErrorCode } from '../../../core/common/errors/error-code.enum';
+import { EasypaisaGateway } from './easypaisa.gateway';
+import { JazzCashGateway } from './jazzcash.gateway';
 import { ManualGateway } from './manual.gateway';
 import type { PaymentGateway } from './payment-gateway';
 
@@ -9,8 +11,14 @@ import type { PaymentGateway } from './payment-gateway';
 export class PaymentGatewayRegistry {
   private readonly gateways = new Map<string, PaymentGateway>();
 
-  constructor(manual: ManualGateway) {
+  constructor(
+    manual: ManualGateway,
+    @Optional() jazzcash?: JazzCashGateway,
+    @Optional() easypaisa?: EasypaisaGateway,
+  ) {
     this.register(manual);
+    if (jazzcash) this.register(jazzcash);
+    if (easypaisa) this.register(easypaisa);
   }
 
   register(gateway: PaymentGateway): void {
