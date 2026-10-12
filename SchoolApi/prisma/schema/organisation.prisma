@@ -65,6 +65,7 @@ model School {
   staffIdCards          StaffIdCard[]
   hrLetterTemplates     HrLetterTemplate[]
   hrLetters             HrLetter[]
+  qrScanLogs            QrScanLog[]
 
   @@index([logoFileId])
   @@map("schools")
