@@ -46,6 +46,7 @@ import { TimetableModule } from './modules/timetable/timetable.module';
 import { UsersModule } from './modules/users/users.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { GeneratedDocsModule } from './modules/generated-docs/generated-docs.module';
+import { HomeworkModule } from './modules/homework/homework.module';
 import { FinanceCoreModule } from './modules/finance-core/finance-core.module';
 import { ResultsModule } from './modules/results/results.module';
 import { FeesModule } from './modules/fees/fees.module';
@@ -104,6 +105,7 @@ import { SmsGatewayModule } from './modules/sms-gateway/sms-gateway.module';
     StaffAttendanceModule,
     LeaveModule,
     DiaryModule,
+    HomeworkModule,
     StudentHealthModule,
     PickupModule,
     ComplaintsModule,

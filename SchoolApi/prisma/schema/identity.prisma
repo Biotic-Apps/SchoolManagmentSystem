@@ -87,6 +87,8 @@ model User {
   twoFactor           UserTwoFactor?          @relation("UserTwoFactor")
   recoveryCodes       TwoFactorRecoveryCode[] @relation("UserRecoveryCodes")
   twoFactorChallenges TwoFactorChallenge[]    @relation("UserTwoFactorChallenges")
+  assignedHomework    Homework[]              @relation("HomeworkAssigner")
+  gradedSubmissions   HomeworkSubmission[]    @relation("HomeworkGrader")
 
   @@map("users")
 }

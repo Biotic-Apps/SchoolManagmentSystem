@@ -16,6 +16,7 @@ export const PERMISSION_MODULES = [
   'notices',
   'attendance',
   'exams',
+  'homework',
   'progress',
   'fees',
   'payroll',
