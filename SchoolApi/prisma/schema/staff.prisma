@@ -60,6 +60,7 @@ model Staff {
   payrollAdjusts   PayrollAdjustment[]  @relation("StaffPayrollAdjustments")
   payrollLines     PayrollLine[]        @relation("StaffPayrollLines")
   payrollOvertime  PayrollOvertime[]    @relation("StaffPayrollOvertime")
+  idCards          StaffIdCard[]
 
   @@unique([schoolId, employeeNo])
   @@index([branchId, status])
@@ -106,4 +107,27 @@ model StaffAssignment {
   @@index([responsibleStaffId])
   @@index([validUntil])
   @@map("staff_assignments")
+}
+
+model StaffIdCard {
+  id            String       @id @default(uuid(7)) @db.Uuid
+  schoolId      String       @map("school_id") @db.Uuid
+  staffId       String       @map("staff_id") @db.Uuid
+  version       Int
+  status        IdCardStatus @default(PENDING)
+  fileId        String?      @map("file_id") @db.Uuid
+  error         String?
+  requestedById String       @map("requested_by_id") @db.Uuid
+  generatedAt   DateTime?    @map("generated_at") @db.Timestamptz(3)
+  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school  School  @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  staff   Staff   @relation(fields: [staffId], references: [id], onDelete: Restrict)
+  file    File?   @relation("StaffIdCardFile", fields: [fileId], references: [id], onDelete: Restrict)
+
+  @@unique([staffId, version])
+  @@index([schoolId])
+  @@index([fileId])
+  @@map("staff_id_cards")
 }

@@ -139,3 +139,12 @@ export interface SectionStaff {
   subjectTeachers: { staff: PersonRef; subject: PersonRef; isSubstitute?: boolean }[];
   helpers: PersonRef[];
 }
+
+export type IdCardStatus = "PENDING" | "READY" | "FAILED";
+
+export interface StaffIdCard {
+  status: IdCardStatus;
+  fileUrl: string | null;
+  version: number;
+  generatedAt: string | null;
+}

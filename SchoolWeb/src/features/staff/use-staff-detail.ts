@@ -7,7 +7,7 @@ import { useStaffMember } from "./api";
 import { LEAVING_STATUSES } from "./options";
 import type { StaffSummary } from "./types";
 
-export type StaffTabId = "profile" | "assignments" | "workload" | "documents";
+export type StaffTabId = "profile" | "assignments" | "workload" | "documents" | "id-card";
 
 const PROBATION_ROLES = ["PRINCIPAL", "SUPER_ADMIN"];
 
