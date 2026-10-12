@@ -27,6 +27,7 @@ enum GeneratedDocumentKind {
   CERTIFICATE
   // 80 mm thermal-printer receipt of a payment (RECEIPT is the A4 two-copy one).
   RECEIPT_THERMAL
+  HR_LETTER
 
   @@map("generated_document_kind")
 }

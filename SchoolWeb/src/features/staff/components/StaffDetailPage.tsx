@@ -16,6 +16,7 @@ import { StaffActions } from "./StaffActions";
 import { StaffHeader } from "./StaffHeader";
 import { StaffStatusDialog } from "./StaffStatusDialog";
 import { StaffIdCardPanel } from "./StaffIdCardPanel";
+import { HrLettersTab } from "@/features/hr-letters/components/HrLettersTab";
 import { WorkloadTab } from "./WorkloadTab";
 
 export function StaffDetailPage({ staffId }: { staffId: string }) {
@@ -52,6 +53,7 @@ export function StaffDetailPage({ staffId }: { staffId: string }) {
           <TabsTrigger value="workload">Workload</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
           <TabsTrigger value="id-card">ID card</TabsTrigger>
+          <TabsTrigger value="hr-letters">HR Letters</TabsTrigger>
         </TabsList>
         <TabsContent value="profile">
           <ProfileTab staff={staff} />
@@ -67,6 +69,9 @@ export function StaffDetailPage({ staffId }: { staffId: string }) {
         </TabsContent>
         <TabsContent value="id-card">
           <StaffIdCardPanel staffId={staff.id} canGenerate={page.canEdit} />
+        </TabsContent>
+        <TabsContent value="hr-letters">
+          <HrLettersTab staffId={staff.id} canGenerate={page.canEdit} />
         </TabsContent>
       </Tabs>
       {page.edit.open && <EditStaffDialog staff={staff} onClose={page.edit.close} />}

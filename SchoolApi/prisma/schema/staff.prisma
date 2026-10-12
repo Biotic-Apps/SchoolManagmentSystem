@@ -61,6 +61,7 @@ model Staff {
   payrollLines     PayrollLine[]        @relation("StaffPayrollLines")
   payrollOvertime  PayrollOvertime[]    @relation("StaffPayrollOvertime")
   idCards          StaffIdCard[]
+  hrLetters        HrLetter[]         @relation("StaffHrLetters")
 
   @@unique([schoolId, employeeNo])
   @@index([branchId, status])
