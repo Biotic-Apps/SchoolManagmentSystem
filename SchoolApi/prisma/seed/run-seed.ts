@@ -30,7 +30,7 @@ export async function runSeed(prisma: SeedClient, options: SeedOptions): Promise
     email,
     name: 'Super Admin',
     password,
-    resetPassword: options.demo,
+    resetPassword: options.demo || !!options.adminPassword,
     mustChangePassword: !options.demo,
   });
   await ensureAssignment(prisma, { userId: admin.id, roleId: roles.SUPER_ADMIN, scopeType: 'GLOBAL' });

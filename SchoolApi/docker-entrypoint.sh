@@ -5,7 +5,7 @@ echo "Running Prisma migrations..."
 npx prisma migrate deploy
 
 echo "Seeding database..."
-npm run db:seed || echo "Seed skipped (may already exist)"
+npm run db:seed
 
 echo "Starting API..."
 exec node dist/main.js
