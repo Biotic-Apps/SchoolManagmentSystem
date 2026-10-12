@@ -1,8 +1,9 @@
 "use client";
 
 import { CalendarDays, ClipboardList, FileText } from "lucide-react";
-import { OptionSelect } from "@/components/shared/OptionSelect";
+import { OptionSelect, type Option } from "@/components/shared/OptionSelect";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useReportCardTemplates } from "../../report-card-templates/templates-api";
 import type { Exam } from "../../types";
 import { usePrintTab } from "../../use-print-tab";
 import { PrintActionCard } from "./PrintActionCard";
@@ -10,6 +11,11 @@ import { PrintActionCard } from "./PrintActionCard";
 /** Bulk PDFs of an exam: report cards, date sheet and blank award lists. */
 export function PrintTab({ exam }: { exam: Exam }) {
   const tab = usePrintTab(exam);
+  const templatesQuery = useReportCardTemplates({ branchId: exam.branchId });
+  const templateOptions: Option[] = [
+    { id: "", name: "Default template" },
+    ...(templatesQuery.data ?? []).map((t) => ({ id: t.id, name: t.name })),
+  ];
   if (tab.loading) return <Skeleton className="h-64 w-full" />;
   const noSchedule = tab.hasSchedule ? null : "Save the exam schedule first.";
 
@@ -22,12 +28,15 @@ export function PrintTab({ exam }: { exam: Exam }) {
         blocked={tab.hasResults ? null : "Compute results first."}
         pending={tab.cards.job.pending}
         jobId={tab.cards.job.jobId}
-        onPrint={() => tab.cards.job.start(tab.cards.target)}
+        onPrint={() => tab.cards.job.start(tab.cards.target, undefined, tab.cards.templateId || undefined)}
         jobLabel="Preparing report cards"
         downloadLabel="Download cards"
         unit="card"
       >
         <OptionSelect label="Print for" options={tab.sectionTargets} value={tab.cards.target} onChange={tab.cards.setTarget} />
+        {templateOptions.length > 1 && (
+          <OptionSelect label="Template" options={templateOptions} value={tab.cards.templateId} onChange={tab.cards.setTemplateId} />
+        )}
       </PrintActionCard>
       <PrintActionCard
         icon={CalendarDays}

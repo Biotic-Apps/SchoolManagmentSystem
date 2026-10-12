@@ -31,6 +31,25 @@ export interface ReportCardContent {
   teacherRemark: string | null;
   skills: StudentSkillDto[];
   scaleKey: string;
+
+  // Template settings (null = use defaults)
+  templateName: string | null;
+  showGradingScale: boolean;
+  showSkills: boolean;
+  showRemarks: boolean;
+  showAttendance: boolean;
+  showPosition: boolean;
+  landscape: boolean;
+  customSignatures: string[] | null;
+  customFooterText: string | null;
+  customHeaderOverrides: {
+    showLogo?: boolean;
+    schoolName?: string;
+    subtitle?: string;
+    address?: string;
+    phone?: string;
+  } | null;
+  attendanceSummary: { present: number; absent: number; total: number } | null;
 }
 
 /** Everything a report card prints, for one ExamResult. */
@@ -42,7 +61,10 @@ export class ReportCardLoader {
     private readonly skills: SkillCardReader,
   ) {}
 
-  async load(resultId: string): Promise<ReportCardContent> {
+  async load(
+    resultId: string,
+    templateId?: string,
+  ): Promise<ReportCardContent> {
     const result = await this.prisma.examResult.findUniqueOrThrow({
       where: { id: resultId },
       include: {
@@ -73,6 +95,22 @@ export class ReportCardLoader {
       this.skills.of(result.examId, result.studentId),
       this.skills.scaleKey(result.branchId),
     ]);
+
+    // Load template: explicit ID > branch default > school default
+    const template = await this.resolveTemplate(
+      templateId,
+      result.branchId,
+      result.schoolId,
+    );
+
+    // TODO: When template.showAttendance is true, load attendance summary
+    // from the attendance table. Skipped for now since attendance module
+    // integration is complex.
+    const attendanceSummary: ReportCardContent['attendanceSummary'] = null;
+
+    const layout = (template?.layout ?? {}) as Record<string, unknown>;
+    const header = (template?.header ?? {}) as Record<string, unknown>;
+
     return {
       schoolName: school.name,
       branchLine: [branch.name, branch.address, branch.phone]
@@ -97,6 +135,53 @@ export class ReportCardLoader {
       teacherRemark: result.teacherRemark,
       skills,
       scaleKey,
+
+      // Template fields
+      templateName: template?.name ?? null,
+      showGradingScale: template?.showGradingScale ?? true,
+      showSkills: template?.showSkills ?? true,
+      showRemarks: template?.showRemarks ?? true,
+      showAttendance: template?.showAttendance ?? false,
+      showPosition: template?.showPosition ?? true,
+      landscape: layout.orientation === 'landscape',
+      customSignatures: template
+        ? (template.signatures as string[])
+        : null,
+      customFooterText: template?.footerText ?? null,
+      customHeaderOverrides: template
+        ? {
+            showLogo: header.showLogo as boolean | undefined,
+            schoolName: header.schoolName as string | undefined,
+            subtitle: header.subtitle as string | undefined,
+            address: header.address as string | undefined,
+            phone: header.phone as string | undefined,
+          }
+        : null,
+      attendanceSummary,
     };
+  }
+
+  /** Resolve the template by explicit ID, branch default, or school default. */
+  private async resolveTemplate(
+    templateId: string | undefined,
+    branchId: string,
+    schoolId: string,
+  ) {
+    if (templateId) {
+      return this.prisma.reportCardTemplate.findFirst({
+        where: { id: templateId },
+      });
+    }
+    // Branch-level default
+    const branchDefault = await this.prisma.reportCardTemplate.findFirst({
+      where: { branchId, isDefault: true },
+      orderBy: { createdAt: 'desc' },
+    });
+    if (branchDefault) return branchDefault;
+    // School-level default (branchId null)
+    return this.prisma.reportCardTemplate.findFirst({
+      where: { schoolId, branchId: null, isDefault: true },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 }

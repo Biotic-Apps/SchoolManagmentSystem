@@ -25,4 +25,9 @@ export class ExamPrintDto {
   @IsOptional()
   @IsUUID()
   subjectId?: string;
+
+  /** REPORT_CARDS only: override the default template. */
+  @IsOptional()
+  @IsUUID()
+  templateId?: string;
 }

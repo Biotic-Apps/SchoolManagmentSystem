@@ -36,6 +36,8 @@ import { ExamPrintController } from './printing/exam-print.controller';
 import { ExamPrintProcessor } from './printing/exam-print.processor';
 import { ExamPrintService } from './printing/exam-print.service';
 import { PrintFileWriter } from './printing/print-file.writer';
+import { ReportCardTemplatesController } from './report-cards/report-card-templates.controller';
+import { ReportCardTemplatesService } from './report-cards/report-card-templates.service';
 import { ReportCardLoader } from './report-cards/report-card.loader';
 import { ReportCardRenderer } from './report-cards/report-card.renderer';
 import { ReportCardsService } from './report-cards/report-cards.service';
@@ -70,6 +72,7 @@ import { SkillsController } from './skills/skills.controller';
     PromotionsController,
     SkillsController,
     ExamPrintController,
+    ReportCardTemplatesController,
   ],
   providers: [
     LookupService,
@@ -98,6 +101,7 @@ import { SkillsController } from './skills/skills.controller';
     ResultPublishService,
     ResultsQueryService,
     ReportCardsService,
+    ReportCardTemplatesService,
     ReportCardRenderer,
     ProgressNoteAction,
     ProgressNotesService,

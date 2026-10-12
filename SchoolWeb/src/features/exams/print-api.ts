@@ -8,6 +8,8 @@ export interface ExamPrintInput {
   sectionId?: string;
   classId?: string;
   subjectId?: string;
+  /** REPORT_CARDS only: override the default template. */
+  templateId?: string;
 }
 
 /** Queues a bulk exam PDF; poll the returned job for its file. */

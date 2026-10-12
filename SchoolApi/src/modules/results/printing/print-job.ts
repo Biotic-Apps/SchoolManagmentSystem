@@ -18,6 +18,8 @@ export interface ExamPrintInput {
   classIds: string[];
   /** Award list for one paper instead of every subject. */
   subjectId?: string;
+  /** Report cards: override the default template for PDF rendering. */
+  templateId?: string;
 }
 
 /** What a composer hands back to the processor. */

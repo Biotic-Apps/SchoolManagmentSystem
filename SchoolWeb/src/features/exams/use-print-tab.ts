@@ -14,10 +14,15 @@ function usePrintJob(examId: string, kind: ExamPrintKind) {
   return {
     jobId,
     pending: print.isPending,
-    start: (target: string, subjectId?: string) => {
+    start: (target: string, subjectId?: string, templateId?: string) => {
       setJobId(null);
       print.mutate(
-        { kind, ...targetInput(target), subjectId: subjectId && subjectId !== ALL_SUBJECTS ? subjectId : undefined },
+        {
+          kind,
+          ...targetInput(target),
+          subjectId: subjectId && subjectId !== ALL_SUBJECTS ? subjectId : undefined,
+          templateId: templateId || undefined,
+        },
         { onSuccess: (data) => setJobId(data?.jobId ?? null) },
       );
     },
@@ -37,6 +42,7 @@ export function usePrintTab(exam: Exam) {
   }
 
   const [cardsTarget, setCardsTarget] = useState("all");
+  const [cardsTemplateId, setCardsTemplateId] = useState("");
   const [sheetTarget, setSheetTarget] = useState("all");
   const [awardTarget, setAwardTarget] = useState(sections[0] ? `section:${sections[0].id}` : "all");
   const [awardSubject, setAwardSubject] = useState(ALL_SUBJECTS);
@@ -54,7 +60,7 @@ export function usePrintTab(exam: Exam) {
       { id: ALL_SUBJECTS, name: "All subjects (one column each)" },
       ...[...subjects].map(([id, name]) => ({ id, name: `${name} only` })),
     ] as Option[],
-    cards: { target: cardsTarget, setTarget: setCardsTarget, job: cardsJob },
+    cards: { target: cardsTarget, setTarget: setCardsTarget, templateId: cardsTemplateId, setTemplateId: setCardsTemplateId, job: cardsJob },
     dateSheet: { target: sheetTarget, setTarget: setSheetTarget, job: sheetJob },
     award: {
       target: awardTarget,

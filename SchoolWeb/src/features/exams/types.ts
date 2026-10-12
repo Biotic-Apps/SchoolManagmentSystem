@@ -182,9 +182,12 @@ export interface StudentResultsHistory {
 }
 
 export interface ReportCard {
+  examId: string;
   status: "PENDING" | "READY" | "FAILED";
   fileUrl: string | null;
   generatedAt: string | null;
+  version: number;
+  templateId?: string | null;
 }
 
 export interface PromotionRow {

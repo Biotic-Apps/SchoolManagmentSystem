@@ -22,18 +22,34 @@ export class ReportCardsComposer {
   ): Promise<ComposedPdf> {
     const exam = await this.prisma.exam.findUniqueOrThrow({
       where: { id: input.examId },
-      select: { name: true, status: true },
+      select: { name: true, status: true, branchId: true, schoolId: true },
     });
     const results = await this.prisma.examResult.findMany({
       where: { examId: input.examId, sectionId: { in: input.sectionIds } },
       select: { id: true, studentId: true, sectionId: true },
     });
     const ordered = await this.inRosterOrder(input.sectionIds, results);
-    const pdf = new PdfBuilder();
+
+    // Resolve template for bulk printing: explicit > branch default > school default
+    const templateId =
+      input.templateId ??
+      (await this.resolveTemplateId(exam.branchId, exam.schoolId));
+
+    // Load the first result to determine landscape orientation from template
+    const firstContent = ordered.length
+      ? await this.loader.load(ordered[0].id, templateId ?? undefined)
+      : null;
+    const pdf = new PdfBuilder({
+      landscape: firstContent?.landscape ?? false,
+    });
     const stamp = `generated ${today()}`;
     for (const [index, result] of ordered.entries()) {
       if (index > 0) pdf.doc.addPage();
-      const content = await this.loader.load(result.id);
+      // Reuse firstContent for the first result, load fresh for the rest
+      const content =
+        index === 0 && firstContent
+          ? firstContent
+          : await this.loader.load(result.id, templateId ?? undefined);
       drawReportCard(pdf, content, `${content.schoolName} · ${stamp}`);
       if (exam.status !== 'PUBLISHED') pdf.watermark('PROVISIONAL');
       if (index % 5 === 4)
@@ -66,6 +82,25 @@ export class ReportCardsComposer {
           (sectionRank.get(b.sectionId) ?? 0) ||
         (rank.get(a.studentId) ?? 1e9) - (rank.get(b.studentId) ?? 1e9),
     );
+  }
+
+  /** Find the default template ID for the branch, falling back to school-level. */
+  private async resolveTemplateId(
+    branchId: string,
+    schoolId: string,
+  ): Promise<string | null> {
+    const branchDefault = await this.prisma.reportCardTemplate.findFirst({
+      where: { branchId, isDefault: true },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true },
+    });
+    if (branchDefault) return branchDefault.id;
+    const schoolDefault = await this.prisma.reportCardTemplate.findFirst({
+      where: { schoolId, branchId: null, isDefault: true },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true },
+    });
+    return schoolDefault?.id ?? null;
   }
 
   private async sectionLabel(sectionId: string): Promise<string> {
