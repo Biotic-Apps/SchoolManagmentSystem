@@ -40,6 +40,32 @@ export function useSaveNotificationSettings(schoolId: string) {
   });
 }
 
+// --- WhatsApp message log ---
+
+export interface WhatsAppMessage {
+  id: string;
+  schoolId: string;
+  to: string;
+  templateName: string;
+  status: string;
+  error: string | null;
+  sentAt: string | null;
+  createdAt: string;
+}
+
+export function useWhatsAppMessages(schoolId: string, params: { status?: string; page?: number; pageSize?: number }) {
+  return useQuery({
+    queryKey: settingsKeys.whatsappMessages({ schoolId, ...params }),
+    queryFn: async () =>
+      (
+        await http.get<{ data: WhatsAppMessage[]; meta: { total: number; page: number; pageSize: number } }>(
+          "/whatsapp/messages",
+          { schoolId, ...params },
+        )
+      ).data,
+  });
+}
+
 export function usePolicySettings(schoolId: string) {
   return useQuery({
     queryKey: settingsKeys.policies(schoolId),

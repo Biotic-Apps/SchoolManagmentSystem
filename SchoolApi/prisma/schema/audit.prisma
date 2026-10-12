@@ -49,6 +49,7 @@ enum NotificationChannel {
   PUSH
   EMAIL
   SMS
+  WHATSAPP
 
   @@map("notification_channel")
 }

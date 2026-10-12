@@ -1,0 +1,16 @@
+model WhatsappMessage {
+  id           String   @id @default(uuid(7)) @db.Uuid
+  schoolId     String   @map("school_id") @db.Uuid
+  to           String
+  templateName String   @map("template_name")
+  status       String   @default("PENDING")
+  error        String?
+  sentAt       DateTime? @map("sent_at") @db.Timestamptz(3)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+
+  @@index([schoolId, createdAt])
+  @@index([status, createdAt])
+  @@map("whatsapp_messages")
+}

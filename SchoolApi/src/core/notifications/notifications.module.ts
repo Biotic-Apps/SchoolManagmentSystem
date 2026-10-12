@@ -4,6 +4,7 @@ import { EmailChannel } from './channels/email.channel';
 import { PushChannel } from './channels/push.channel';
 import { SenderIdentityResolver } from './channels/sender-identity';
 import { SmsChannel } from './channels/sms.channel';
+import { WhatsAppChannel } from './channels/whatsapp.channel';
 import { DirectMessageProcessor } from './jobs/direct-message.processor';
 import { RecipientSwitches } from './jobs/recipient-switches';
 import { SendNotificationProcessor } from './jobs/send-notification.processor';
@@ -13,17 +14,25 @@ import { NotificationsController } from './notifications.controller';
 import { NotificationsRepository } from './notifications.repository';
 import { NotificationPreferencesController } from './preferences/notification-preferences.controller';
 import { NotificationPreferencesService } from './preferences/notification-preferences.service';
+import { WhatsAppController } from './whatsapp.controller';
+import { WhatsAppRepository } from './whatsapp.repository';
 
 @Global()
 @Module({
-  controllers: [NotificationsController, NotificationPreferencesController],
+  controllers: [
+    NotificationsController,
+    NotificationPreferencesController,
+    WhatsAppController,
+  ],
   providers: [
     SenderIdentityResolver,
     PushChannel,
     EmailChannel,
     SmsChannel,
+    WhatsAppChannel,
     ChannelRegistry,
     NotificationsRepository,
+    WhatsAppRepository,
     NotificationService,
     NotificationInboxService,
     RecipientSwitches,
@@ -31,6 +40,11 @@ import { NotificationPreferencesService } from './preferences/notification-prefe
     DirectMessageProcessor,
     NotificationPreferencesService,
   ],
-  exports: [NotificationService, ChannelRegistry, NotificationsRepository],
+  exports: [
+    NotificationService,
+    ChannelRegistry,
+    NotificationsRepository,
+    WhatsAppRepository,
+  ],
 })
 export class NotificationsModule {}

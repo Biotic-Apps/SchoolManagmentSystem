@@ -10,14 +10,15 @@ const COLUMNS: { channel: CategoryChannel; label: string }[] = [
   { channel: "inApp", label: "In-app" },
   { channel: "email", label: "Email" },
   { channel: "sms", label: "SMS" },
+  { channel: "whatsapp", label: "WhatsApp" },
   { channel: "push", label: "Push" },
 ];
 
 export function CategoryDefaultsTable() {
   const { control } = useFormContext<NotificationSettingsValues>();
   const { fields } = useFieldArray({ control, name: "categories" });
-  const [email, sms, push] = useWatch({ control, name: ["email.enabled", "sms.enabled", "push.enabled"] });
-  const channelOn: Record<CategoryChannel, boolean> = { inApp: true, email, sms, push };
+  const [email, sms, whatsapp, push] = useWatch({ control, name: ["email.enabled", "sms.enabled", "whatsapp.enabled", "push.enabled"] });
+  const channelOn: Record<CategoryChannel, boolean> = { inApp: true, email, sms, whatsapp, push };
 
   if (fields.length === 0) {
     return <p className="text-label text-fg-muted">No notification categories are set up for this school.</p>;

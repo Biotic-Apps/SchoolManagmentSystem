@@ -8,6 +8,7 @@ export interface ChannelSwitches {
   EMAIL: boolean;
   SMS: boolean;
   PUSH: boolean;
+  WHATSAPP: boolean;
   IN_APP: boolean;
 }
 
@@ -15,6 +16,7 @@ const ALL_ON: ChannelSwitches = {
   EMAIL: true,
   SMS: true,
   PUSH: true,
+  WHATSAPP: true,
   IN_APP: true,
 };
 
@@ -28,6 +30,7 @@ function forSchool(
     EMAIL: settings.email.enabled && (row?.email ?? true),
     SMS: settings.sms.enabled && (row?.sms ?? true),
     PUSH: settings.push.enabled && (row?.push ?? true),
+    WHATSAPP: (settings.whatsapp?.enabled ?? false) && (row?.whatsapp ?? true),
     IN_APP: row?.inApp ?? true,
   };
 }
@@ -50,6 +53,7 @@ export function effectiveSwitches(
             EMAIL: a.EMAIL || b.EMAIL,
             SMS: a.SMS || b.SMS,
             PUSH: a.PUSH || b.PUSH,
+            WHATSAPP: a.WHATSAPP || b.WHATSAPP,
             IN_APP: a.IN_APP || b.IN_APP,
           }));
   if (isCritical(category)) result.IN_APP = true;

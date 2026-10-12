@@ -67,6 +67,7 @@ model School {
   hrLetters             HrLetter[]
   qrScanLogs            QrScanLog[]
   smsOutbox             SmsOutbox[]
+  whatsappMessages      WhatsappMessage[]
 
   @@index([logoFileId])
   @@map("schools")
