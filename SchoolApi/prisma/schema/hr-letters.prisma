@@ -1,0 +1,60 @@
+// HR letters: experience, salary certificate, relieving and custom letters for staff.
+
+enum HrLetterType {
+  EXPERIENCE
+  SALARY_CERTIFICATE
+  RELIEVING
+  CUSTOM
+
+  @@map("hr_letter_type")
+}
+
+enum HrLetterTemplateStatus {
+  ACTIVE
+  ARCHIVED
+
+  @@map("hr_letter_template_status")
+}
+
+model HrLetterTemplate {
+  id           String                 @id @default(uuid(7)) @db.Uuid
+  schoolId     String                 @map("school_id") @db.Uuid
+  type         HrLetterType
+  title        String
+  bodyTemplate String                 @map("body_template") @db.Text
+  status       HrLetterTemplateStatus @default(ACTIVE)
+  createdById  String                 @map("created_by_id") @db.Uuid
+  createdAt    DateTime               @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime               @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school  School     @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  letters HrLetter[]
+
+  @@index([schoolId, type, status])
+  @@map("hr_letter_templates")
+}
+
+model HrLetter {
+  id         String       @id @default(uuid(7)) @db.Uuid
+  schoolId   String       @map("school_id") @db.Uuid
+  staffId    String       @map("staff_id") @db.Uuid
+  templateId String       @map("template_id") @db.Uuid
+  type       HrLetterType
+  subject    String
+  body       String       @db.Text
+  fileId     String?      @map("file_id") @db.Uuid
+  issuedAt   DateTime     @default(now()) @map("issued_at") @db.Timestamptz(3)
+  issuedById String       @map("issued_by_id") @db.Uuid
+  createdAt  DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  school   School           @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  staff    Staff            @relation("StaffHrLetters", fields: [staffId], references: [id], onDelete: Restrict)
+  template HrLetterTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  file     File?            @relation("HrLetterFile", fields: [fileId], references: [id], onDelete: Restrict)
+
+  @@index([staffId, type])
+  @@index([schoolId])
+  @@index([fileId])
+  @@map("hr_letters")
+}

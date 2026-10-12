@@ -63,6 +63,8 @@ model School {
   syllabusPlans         SyllabusPlan[]
   settings              SchoolSetting?
   staffIdCards          StaffIdCard[]
+  hrLetterTemplates     HrLetterTemplate[]
+  hrLetters             HrLetter[]
 
   @@index([logoFileId])
   @@map("schools")

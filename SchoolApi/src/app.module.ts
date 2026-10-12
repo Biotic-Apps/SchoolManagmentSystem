@@ -55,6 +55,7 @@ import { ExpensesModule } from './modules/expenses/expenses.module';
 import { IncomeModule } from './modules/income/income.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { CertificatesModule } from './modules/certificates/certificates.module';
+import { HrLettersModule } from './modules/hr-letters/hr-letters.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { SchoolSettingsCoreModule } from './core/school-settings/school-settings-core.module';
 import { SettingsModule } from './modules/settings/settings.module';
@@ -120,6 +121,7 @@ import { ImportsModule } from './modules/imports/imports.module';
     IncomeModule,
     InventoryModule,
     CertificatesModule,
+    HrLettersModule,
     ReportsModule,
     SchoolSettingsCoreModule,
     SettingsModule,
