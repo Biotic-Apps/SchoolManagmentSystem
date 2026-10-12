@@ -10,13 +10,16 @@ import { AssignmentFields } from "./AssignmentFields";
 export function AssignmentsBuilder({ options }: { options: AssignmentOptions }) {
   const { control, formState } = useFormContext<CreateUserValues>();
   const { fields, append, remove } = useFieldArray({ control, name: "assignments" });
-  const listError = formState.errors.assignments?.root?.message ?? formState.errors.assignments?.message;
+  const assignmentErrors = formState.errors.assignments;
+  const listError = assignmentErrors?.root?.message ?? assignmentErrors?.message;
 
   return (
     <fieldset className="flex flex-col gap-3">
       <legend className="mb-1 text-label font-medium text-fg">Roles and scope</legend>
-      {fields.map((field, index) => (
-        <div key={field.id} className="flex flex-col gap-2 rounded-input border border-border p-3">
+      {fields.map((field, index) => {
+        const rowHasError = !!(assignmentErrors as Record<string, unknown> | undefined)?.[index];
+        return (
+        <div key={field.id} className={`flex flex-col gap-2 rounded-input border p-3 ${rowHasError ? "border-error" : "border-border"}`}>
           <div className="flex items-center justify-between">
             <span className="text-caption font-medium text-fg-muted">Assignment {index + 1}</span>
             {fields.length > 1 && (
@@ -27,7 +30,8 @@ export function AssignmentsBuilder({ options }: { options: AssignmentOptions }) 
           </div>
           <AssignmentFields prefix={`assignments.${index}`} options={options} />
         </div>
-      ))}
+        );
+      })}
       {listError && (
         <p role="alert" className="text-caption text-error">
           {listError}

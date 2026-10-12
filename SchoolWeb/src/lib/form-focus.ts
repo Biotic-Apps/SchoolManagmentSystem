@@ -19,6 +19,7 @@ export function focusFirstInvalid(form: HTMLFormElement | null | undefined) {
     const target = candidates[0];
     if (!target || target.contains(document.activeElement)) return;
     const focusable = target.matches(FOCUSABLE) ? target : target.querySelector<HTMLElement>(FOCUSABLE);
+    focusable?.scrollIntoView({ behavior: "smooth", block: "center" });
     focusable?.focus();
   });
 }

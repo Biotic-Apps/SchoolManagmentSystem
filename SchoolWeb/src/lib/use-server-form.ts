@@ -47,7 +47,10 @@ export function useServerForm<T extends FieldValues, R = unknown>({
             focusFirstInvalid(formElement);
           }
         },
-        () => focusFirstInvalid(formElement),
+        () => {
+          setFormError("Some fields need attention. Check the highlighted fields.");
+          focusFirstInvalid(formElement);
+        },
       )(event)
       .finally(() => {
         inFlight.current = false;
