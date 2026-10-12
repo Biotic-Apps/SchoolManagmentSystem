@@ -26,7 +26,7 @@ export function useStaffAttendanceEditor(branchId: string, date: string) {
   const [edits, setEdits] = useState<Record<string, Patch>>({});
 
   const base: StaffRow[] = useMemo(() => {
-    if (savedEntries?.length) return savedEntries.map((entry) => ({ ...entry, name: entry.name ?? "Staff member" }));
+    if (savedEntries?.length) return savedEntries.map((entry) => ({ ...entry }));
     return (staff.data?.data ?? []).map((member) => ({
       staffId: member.id,
       name: member.name,

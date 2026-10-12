@@ -1,0 +1,120 @@
+# Render Blueprint — eSchool Management System
+# https://render.com/docs/blueprint-spec
+#
+# Deploy: connect this repo in Render → "New Blueprint Instance" → fill env groups → deploy.
+# The API and Web are separate Web Services; the database is a managed Render PostgreSQL instance.
+# Redis is a managed Render Redis instance.
+#
+# IMPORTANT: Create two env groups in the Render dashboard before deploying:
+#   1. "eschool-api-secrets"  — all API secrets (JWT, file-url, backup key, SMTP, SMS, etc.)
+#   2. "eschool-shared"       — DATABASE_URL, REDIS_URL (auto-filled by Render if using managed services)
+
+services:
+  # ── API (NestJS) ──────────────────────────────────────────────────
+  - type: web
+    name: eschool-api
+    runtime: docker
+    dockerfilePath: SchoolApi/Dockerfile
+    dockerContext: SchoolApi
+    plan: starter
+    region: singapore
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+      - key: APP_TIMEZONE
+        value: Asia/Karachi
+      - key: DEFAULT_PHONE_COUNTRY
+        value: "+92"
+      - key: THROTTLE_LIMIT
+        value: "300"
+      - key: AUTH_THROTTLE_LIMIT
+        value: "10"
+      - key: JOBS_DRIVER
+        value: bullmq
+      - key: CACHE_DRIVER
+        value: redis
+      - key: STORAGE_DRIVER
+        value: local
+      - key: TOTP_ISSUER
+        value: eSchool
+      - key: JWT_ACCESS_TTL
+        value: 15m
+      - key: REFRESH_TTL_DAYS
+        value: "30"
+      - key: BACKUP_RETENTION_DAILY
+        value: "30"
+      - key: BACKUP_RETENTION_MONTHLY
+        value: "12"
+      # ── Secrets: set these in the Render dashboard (never in this file) ──
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: PUBLIC_WEB_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: FILE_URL_SECRET
+        sync: false
+      - key: BACKUP_ENCRYPTION_KEY
+        sync: false
+      - key: EMAIL_DRIVER
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_SECURE
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: SMS_DRIVER
+        sync: false
+
+  # ── Web (Next.js) ─────────────────────────────────────────────────
+  - type: web
+    name: eschool-web
+    runtime: docker
+    dockerfilePath: SchoolWeb/Dockerfile
+    dockerContext: SchoolWeb
+    plan: starter
+    region: singapore
+    healthCheckPath: /login
+    docker:
+      buildArgs:
+        NEXT_PUBLIC_API_URL: ${API_URL_PUBLIC}
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+      - key: HOSTNAME
+        value: "0.0.0.0"
+      - key: REFRESH_TTL_DAYS
+        value: "30"
+      # ── Set in Render dashboard ──
+      - key: API_URL
+        sync: false
+      - key: API_URL_PUBLIC
+        sync: false
+
+databases:
+  - name: eschool-db
+    plan: starter
+    databaseName: eschool
+    user: eschool_app
+    region: singapore
+    postgresMajorVersion: "16"

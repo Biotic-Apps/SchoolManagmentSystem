@@ -4,6 +4,7 @@ import { formatDate, parseDate } from '../../core/common/dates';
 import { invalid, notFound } from '../../core/common/errors/errors';
 import type { AuthUser } from '../../core/common/types/auth-user';
 import { today } from '../../core/common/week';
+import { UrlSigner } from '../../core/files/url-signer';
 import { PrismaService } from '../../core/prisma/prisma.service';
 import type { Scope } from '../../core/rbac/scope/scope';
 import { tally } from '../attendance/attendance-tally';
@@ -24,6 +25,7 @@ export class StaffAttendanceService {
     private readonly people: SchoolPeopleService,
     private readonly workingDays: WorkingDayService,
     private readonly audit: AuditService,
+    private readonly signer: UrlSigner,
   ) {}
 
   async day(
@@ -44,8 +46,10 @@ export class StaffAttendanceService {
       entries: staff.map((s) => {
         const row = s.attendance[0];
         return {
-          staff: { id: s.id, name: s.name },
+          staffId: s.id,
+          name: s.name,
           designation: s.designation,
+          photoUrl: s.photoFileId ? this.signer.sign(s.photoFileId).url : null,
           status: row?.status ?? null,
           checkIn: row?.checkIn ?? null,
           checkOut: row?.checkOut ?? null,

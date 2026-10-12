@@ -30,3 +30,6 @@ SchoolApi/.pgdata-*/
 
 # Claude Code agent worktrees
 .claude/worktrees/
+
+# Agent build artifacts
+SchoolApi/.agent-dist-live/

@@ -44,7 +44,13 @@ export class PayrollApproveService {
     if (run.pendingApprovalIds.length > 0) {
       throw conflict('Payroll run is awaiting super admin approval');
     }
-    if (user.id === run.reviewedById || user.id === run.calculatedById) {
+    // Super admins may approve their own prepared run (they are often the only
+    // admin user). Their own salary line is still routed to another super admin
+    // via routeLines(), so self-pay is never silently approved.
+    if (
+      user.activeRole !== String(RoleKey.SUPER_ADMIN) &&
+      (user.id === run.reviewedById || user.id === run.calculatedById)
+    ) {
       throw forbidden('You cannot approve a payroll run you prepared');
     }
     const [lines, principalUserId] = await Promise.all([

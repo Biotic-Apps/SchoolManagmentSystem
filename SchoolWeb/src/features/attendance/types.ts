@@ -89,9 +89,9 @@ export interface UnmarkedSection {
 
 export interface StaffAttendanceEntry {
   staffId: string;
-  name?: string;
-  designation?: string | null;
-  photoUrl?: string | null;
+  name: string;
+  designation: string | null;
+  photoUrl: string | null;
   status: AttendanceStatus | null;
   checkIn: string | null;
   checkOut: string | null;

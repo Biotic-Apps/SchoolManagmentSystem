@@ -12,7 +12,6 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { AttendanceStatus } from '../../../generated/prisma/client';
-import { IdNameDto } from '../../../core/common/dto/id-name.dto';
 import {
   IsDateOnly,
   IsOptionalDateOnly,
@@ -73,8 +72,10 @@ export class MyStaffAttendanceQueryDto {
 }
 
 export class StaffAttendanceRowDto {
-  staff!: IdNameDto;
+  staffId!: string;
+  name!: string;
   designation!: string;
+  photoUrl!: string | null;
   @ApiProperty({ enum: AttendanceStatus, nullable: true })
   status!: AttendanceStatus | null;
   checkIn!: string | null;
