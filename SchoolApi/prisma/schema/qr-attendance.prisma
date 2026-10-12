@@ -1,0 +1,33 @@
+enum QrScanResult {
+  MARKED
+  ALREADY_MARKED
+  NOT_FOUND
+  OUTSIDE_HOURS
+
+  @@map("qr_scan_result")
+}
+
+enum QrResolvedType {
+  STUDENT
+  STAFF
+
+  @@map("qr_resolved_type")
+}
+
+model QrScanLog {
+  id           String         @id @default(uuid(7)) @db.Uuid
+  schoolId     String         @map("school_id") @db.Uuid
+  scannedById  String         @map("scanned_by_id") @db.Uuid
+  publicId     String         @map("public_id") @db.Uuid
+  resolvedType QrResolvedType? @map("resolved_type")
+  resolvedId   String?        @map("resolved_id") @db.Uuid
+  result       QrScanResult
+  scannedAt    DateTime       @default(now()) @map("scanned_at") @db.Timestamptz(3)
+
+  school    School @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  scannedBy User   @relation("QrScanUser", fields: [scannedById], references: [id], onDelete: Restrict)
+
+  @@index([schoolId, scannedAt])
+  @@index([publicId])
+  @@map("qr_scan_logs")
+}

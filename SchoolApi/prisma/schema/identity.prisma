@@ -73,6 +73,7 @@ model User {
   diaryEntries        DiaryEntry[]            @relation("DiaryAuthor")
   proposedActivities  Activity[]              @relation("ActivityProposer")
   notices             Notice[]                @relation("NoticeAuthor")
+  qrScans             QrScanLog[]             @relation("QrScanUser")
   threadMemberships   ThreadParticipant[]     @relation("ThreadParticipantUser")
   sentMessages        Message[]               @relation("MessageSender")
   complaintsFiled     Complaint[]             @relation("ComplaintComplainant")

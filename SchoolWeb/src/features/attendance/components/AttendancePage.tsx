@@ -1,6 +1,9 @@
 "use client";
 
+import Link from "next/link";
+import { QrCode } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { useAttendancePage } from "../use-attendance-page";
 import { BranchSummaryTab } from "./BranchSummaryTab";
@@ -17,6 +20,14 @@ export function AttendancePage() {
       <PageHeader
         title="Attendance & Leave"
         description="Daily registers per section, branch totals, staff attendance and leave requests."
+        actions={
+          <Button variant="secondary" size="sm" asChild>
+            <Link href="/attendance/qr-scan">
+              <QrCode className="size-4" />
+              QR Scanner
+            </Link>
+          </Button>
+        }
       />
       <Tabs value={page.tab} onValueChange={page.setTab}>
         <TabsList className="max-w-full overflow-x-auto">

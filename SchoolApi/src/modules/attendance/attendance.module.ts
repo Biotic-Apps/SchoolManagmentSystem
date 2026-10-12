@@ -4,6 +4,8 @@ import { AttendanceSummaryService } from './attendance-summary.service';
 import { CorrectionApprovalHandler } from './corrections/correction-approval.handler';
 import { CorrectionService } from './corrections/correction.service';
 import { AttendanceLockProcessor } from './jobs/attendance-lock.processor';
+import { QrScanController } from './qr/qr-scan.controller';
+import { QrScanService } from './qr/qr-scan.service';
 import { RegisterAccessService } from './register-access.service';
 import { RegisterSubmitAction } from './register-submit.action';
 import { RegisterViewService } from './register-view.service';
@@ -14,7 +16,7 @@ import { RegistersService } from './registers.service';
 import { StudentAttendanceService } from './student-attendance.service';
 
 @Module({
-  controllers: [RegistersController],
+  controllers: [RegistersController, QrScanController],
   providers: [
     RegistersRepository,
     RegisterAccessService,
@@ -28,6 +30,7 @@ import { StudentAttendanceService } from './student-attendance.service';
     StudentAttendanceService,
     AttendanceSummaryService,
     AttendanceLockProcessor,
+    QrScanService,
   ],
   exports: [AttendanceSummaryService],
 })
