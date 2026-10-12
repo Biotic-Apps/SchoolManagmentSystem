@@ -52,7 +52,7 @@ model Question {
   @@map("questions")
 }
 
-model ExamPaper {
+model GeneratedPaper {
   id          String          @id @default(uuid(7)) @db.Uuid
   schoolId    String          @map("school_id") @db.Uuid
   subjectId   String          @map("subject_id") @db.Uuid
@@ -71,5 +71,5 @@ model ExamPaper {
   class   SchoolClass @relation(fields: [classId], references: [id])
 
   @@index([schoolId, subjectId, classId, status])
-  @@map("exam_papers")
+  @@map("generated_papers")
 }

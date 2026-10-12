@@ -57,7 +57,7 @@ ALTER TABLE "questions"
     ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- CreateTable
-CREATE TABLE "exam_papers" (
+CREATE TABLE "generated_papers" (
     "id"            UUID         NOT NULL DEFAULT gen_random_uuid(),
     "school_id"     UUID         NOT NULL,
     "subject_id"    UUID         NOT NULL,
@@ -71,27 +71,27 @@ CREATE TABLE "exam_papers" (
     "created_at"    TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at"    TIMESTAMPTZ(3) NOT NULL,
 
-    CONSTRAINT "exam_papers_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "generated_papers_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE INDEX "exam_papers_school_id_subject_id_class_id_status_idx"
-    ON "exam_papers"("school_id", "subject_id", "class_id", "status");
+CREATE INDEX "generated_papers_school_id_subject_id_class_id_status_idx"
+    ON "generated_papers"("school_id", "subject_id", "class_id", "status");
 
 -- AddForeignKey
-ALTER TABLE "exam_papers"
-    ADD CONSTRAINT "exam_papers_school_id_fkey"
+ALTER TABLE "generated_papers"
+    ADD CONSTRAINT "generated_papers_school_id_fkey"
     FOREIGN KEY ("school_id") REFERENCES "schools"("id")
     ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "exam_papers"
-    ADD CONSTRAINT "exam_papers_subject_id_fkey"
+ALTER TABLE "generated_papers"
+    ADD CONSTRAINT "generated_papers_subject_id_fkey"
     FOREIGN KEY ("subject_id") REFERENCES "subjects"("id")
     ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "exam_papers"
-    ADD CONSTRAINT "exam_papers_class_id_fkey"
+ALTER TABLE "generated_papers"
+    ADD CONSTRAINT "generated_papers_class_id_fkey"
     FOREIGN KEY ("class_id") REFERENCES "classes"("id")
     ON DELETE RESTRICT ON UPDATE CASCADE;

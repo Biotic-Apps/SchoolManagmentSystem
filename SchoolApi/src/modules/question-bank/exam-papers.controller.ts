@@ -38,7 +38,7 @@ export class ExamPapersController {
   ) {}
 
   @Get()
-  @RequirePermission('exam-papers.view')
+  @RequirePermission('questions.view')
   @ApiPage(ExamPaperDto)
   list(
     @CurrentScope() scope: Scope,
@@ -48,7 +48,7 @@ export class ExamPapersController {
   }
 
   @Post('generate')
-  @RequirePermission('exam-papers.add')
+  @RequirePermission('questions.add')
   @ApiData(ExamPaperDto)
   generate(
     @CurrentUser() user: AuthUser,
@@ -59,7 +59,7 @@ export class ExamPapersController {
   }
 
   @Get(':id')
-  @RequirePermission('exam-papers.view')
+  @RequirePermission('questions.view')
   @ApiData(ExamPaperDto)
   get(
     @CurrentScope() scope: Scope,
@@ -69,7 +69,7 @@ export class ExamPapersController {
   }
 
   @Patch(':id')
-  @RequirePermission('exam-papers.add')
+  @RequirePermission('questions.add')
   @ApiData(ExamPaperDto)
   update(
     @CurrentScope() scope: Scope,
@@ -80,7 +80,7 @@ export class ExamPapersController {
   }
 
   @Get(':id/pdf')
-  @RequirePermission('exam-papers.view')
+  @RequirePermission('questions.view')
   async downloadPdf(
     @CurrentScope() scope: Scope,
     @Param('id', ParseUUIDPipe) id: string,

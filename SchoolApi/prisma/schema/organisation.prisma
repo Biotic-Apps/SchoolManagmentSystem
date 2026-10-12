@@ -69,7 +69,7 @@ model School {
   smsOutbox             SmsOutbox[]
   whatsappMessages      WhatsappMessage[]
   questions             Question[]
-  examPapers            ExamPaper[]
+  generatedPapers       GeneratedPaper[]
 
   @@index([logoFileId])
   @@map("schools")
@@ -236,7 +236,7 @@ model SchoolClass {
   admissionApplications AdmissionApplication[]
   bookLists             BookList[]
   questions             Question[]
-  examPapers            ExamPaper[]
+  generatedPapers       GeneratedPaper[]
 
   @@unique([schoolId, name])
   @@map("classes")
@@ -306,7 +306,7 @@ model Subject {
   diaryEntries     DiaryEntry[]
   homework         Homework[]        @relation("HomeworkSubject")
   questions        Question[]
-  examPapers       ExamPaper[]
+  generatedPapers  GeneratedPaper[]
 
   @@unique([schoolId, code])
   @@map("subjects")

@@ -18,7 +18,7 @@ export class ExamPaperPdfService {
   constructor(private readonly prisma: PrismaService) {}
 
   async generate(scope: Scope, paperId: string): Promise<Buffer> {
-    const paper = await this.prisma.examPaper.findUnique({
+    const paper = await this.prisma.generatedPaper.findUnique({
       where: { id: paperId },
       include: {
         subject: { select: { name: true } },
@@ -30,7 +30,7 @@ export class ExamPaperPdfService {
       throw notFound('Exam paper');
 
     // Fetch all questions referenced in sections
-    const sections = paper.sections as PaperSectionDto[];
+    const sections = paper.sections as unknown as PaperSectionDto[];
     const allQuestionIds = sections.flatMap((s) => s.questionIds);
     const questions = await this.prisma.question.findMany({
       where: { id: { in: allQuestionIds } },

@@ -31,7 +31,7 @@ export class ExamPapersService {
     scope: Scope,
     query: ExamPaperQueryDto,
   ): Promise<PageResult<ExamPaperDto>> {
-    const where: Prisma.ExamPaperWhereInput = {
+    const where: Prisma.GeneratedPaperWhereInput = {
       AND: [
         scope.schoolFilter(),
         {
@@ -43,7 +43,7 @@ export class ExamPapersService {
       ],
     };
     const [rows, total] = await Promise.all([
-      this.prisma.examPaper.findMany({
+      this.prisma.generatedPaper.findMany({
         where,
         include: {
           subject: { select: { id: true, name: true } },
@@ -52,13 +52,13 @@ export class ExamPapersService {
         orderBy: { createdAt: 'desc' },
         ...toSkipTake(query),
       }),
-      this.prisma.examPaper.count({ where }),
+      this.prisma.generatedPaper.count({ where }),
     ]);
     return toPageResult(rows.map(toExamPaperDto), total, query);
   }
 
   async get(scope: Scope, id: string): Promise<ExamPaperDto> {
-    const row = await this.prisma.examPaper.findUnique({
+    const row = await this.prisma.generatedPaper.findUnique({
       where: { id },
       include: {
         subject: { select: { id: true, name: true } },
@@ -106,7 +106,7 @@ export class ExamPapersService {
       });
     }
 
-    const row = await this.prisma.examPaper.create({
+    const row = await this.prisma.generatedPaper.create({
       data: {
         schoolId: dto.schoolId,
         subjectId: dto.subjectId,
@@ -130,13 +130,13 @@ export class ExamPapersService {
     id: string,
     dto: UpdateExamPaperDto,
   ): Promise<ExamPaperDto> {
-    const existing = await this.prisma.examPaper.findUnique({
+    const existing = await this.prisma.generatedPaper.findUnique({
       where: { id },
     });
     if (!existing || !scope.schoolIds.has(existing.schoolId))
       throw notFound('Exam paper');
 
-    const row = await this.prisma.examPaper.update({
+    const row = await this.prisma.generatedPaper.update({
       where: { id },
       data: {
         ...(dto.title !== undefined && { title: dto.title.trim() }),

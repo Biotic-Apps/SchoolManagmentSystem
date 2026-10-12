@@ -1,4 +1,4 @@
-import type { Question, ExamPaper } from '../../generated/prisma/client';
+import type { Question, GeneratedPaper } from '../../generated/prisma/client';
 import type { QuestionDto } from './dto/question.dto';
 import type { ExamPaperDto, PaperSectionDto } from './dto/exam-paper.dto';
 
@@ -7,7 +7,7 @@ type QuestionWithRefs = Question & {
   class?: { id: string; name: string } | null;
 };
 
-type ExamPaperWithRefs = ExamPaper & {
+type ExamPaperWithRefs = GeneratedPaper & {
   subject?: { id: string; name: string } | null;
   class?: { id: string; name: string } | null;
 };
@@ -43,7 +43,7 @@ export function toExamPaperDto(row: ExamPaperWithRefs): ExamPaperDto {
     title: row.title,
     totalMarks: row.totalMarks,
     duration: row.duration,
-    sections: row.sections as PaperSectionDto[],
+    sections: row.sections as unknown as PaperSectionDto[],
     status: row.status,
     createdById: row.createdById,
     createdAt: row.createdAt.toISOString(),
