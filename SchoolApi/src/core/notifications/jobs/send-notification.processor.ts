@@ -22,7 +22,8 @@ function channelsFor(
     (channel) =>
       (channel === 'PUSH' && recipient.devices.length > 0) ||
       (channel === 'EMAIL' && !!recipient.email) ||
-      (channel === 'SMS' && !!recipient.phone),
+      (channel === 'SMS' && !!recipient.phone) ||
+      (channel === 'WHATSAPP' && !!recipient.phone),
   );
 }
 

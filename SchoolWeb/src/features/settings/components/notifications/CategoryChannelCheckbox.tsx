@@ -4,7 +4,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { Checkbox } from "@/components/ui/Checkbox";
 import type { NotificationSettingsValues } from "../../notification-schemas";
 
-export type CategoryChannel = "inApp" | "email" | "sms" | "push";
+export type CategoryChannel = "inApp" | "email" | "sms" | "push" | "whatsapp";
 
 interface CategoryChannelCheckboxProps {
   index: number;

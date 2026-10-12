@@ -17,6 +17,7 @@ describe('channel switches', () => {
       EMAIL: true,
       SMS: true,
       PUSH: true,
+      WHATSAPP: true,
       IN_APP: true,
     });
     expect(
@@ -42,6 +43,7 @@ describe('channel switches', () => {
           email: false,
           sms: false,
           push: true,
+          whatsapp: false,
           inApp: false,
         },
       ],
@@ -68,6 +70,7 @@ describe('channel switches', () => {
           email: true,
           sms: true,
           push: true,
+          whatsapp: true,
           inApp: false,
         },
       ],

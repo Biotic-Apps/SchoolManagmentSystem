@@ -4,6 +4,7 @@ export const settingsKeys = {
   notifications: (schoolId: string) => ["settings", "notifications", schoolId] as const,
   policies: (schoolId: string) => ["settings", "policies", schoolId] as const,
   failedNotifications: (params: object) => ["settings", "support", "notifications", params] as const,
+  whatsappMessages: (params: object) => ["settings", "whatsapp", "messages", params] as const,
   jobs: (params: object) => ["settings", "support", "jobs", params] as const,
   health: ["settings", "support", "health"] as const,
   backups: ["settings", "backups"] as const,

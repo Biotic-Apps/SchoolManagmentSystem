@@ -7,7 +7,7 @@ import { TextField } from "@/components/shared/form/TextField";
 import { Card, CardContent } from "@/components/ui/Card";
 
 interface ChannelCardProps {
-  channel: "email" | "sms" | "push";
+  channel: "email" | "sms" | "push" | "whatsapp";
   icon: LucideIcon;
   title: string;
   description: string;

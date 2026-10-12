@@ -147,6 +147,16 @@ export const envSchema = z
     SMS_HTTP_HEADERS: jsonHeaders.optional(),
     /** Body template with {{to}}, {{message}}, {{senderId}}; unset = JSON body. */
     SMS_HTTP_BODY: z.string().min(1).optional(),
+    /** log (default), twilio, or http (any WhatsApp Business API gateway). */
+    WHATSAPP_DRIVER: z.enum(['log', 'twilio', 'http']).default('log'),
+    WHATSAPP_TWILIO_ACCOUNT_SID: z.string().min(1).optional(),
+    WHATSAPP_TWILIO_AUTH_TOKEN: z.string().min(1).optional(),
+    WHATSAPP_TWILIO_FROM: z.string().min(1).optional(),
+    WHATSAPP_HTTP_URL: z.url().optional(),
+    WHATSAPP_HTTP_METHOD: z.enum(['POST', 'PUT']).default('POST'),
+    WHATSAPP_HTTP_HEADERS: jsonHeaders.optional(),
+    /** Body template with {{to}}, {{message}}; unset = JSON body. */
+    WHATSAPP_HTTP_BODY: z.string().min(1).optional(),
     /** Staging only: lets production run with the log email/SMS drivers. */
     ALLOW_LOG_CHANNELS: booleanString.default(false),
     /** Staging only: lets production run with inline jobs and memory cache (no Redis). */
@@ -188,7 +198,7 @@ export const envSchema = z
     if (env.NODE_ENV !== 'production') return;
 
     if (!env.ALLOW_LOG_CHANNELS) {
-      for (const key of ['EMAIL_DRIVER', 'SMS_DRIVER'] as const) {
+      for (const key of ['EMAIL_DRIVER', 'SMS_DRIVER', 'WHATSAPP_DRIVER'] as const) {
         if (env[key] === 'log') {
           ctx.addIssue({
             code: 'custom',
@@ -274,20 +284,37 @@ type ChannelEnv = Pick<
   | 'TWILIO_AUTH_TOKEN'
   | 'TWILIO_FROM'
   | 'SMS_HTTP_URL'
+  | 'WHATSAPP_DRIVER'
+  | 'WHATSAPP_TWILIO_ACCOUNT_SID'
+  | 'WHATSAPP_TWILIO_AUTH_TOKEN'
+  | 'WHATSAPP_TWILIO_FROM'
+  | 'WHATSAPP_HTTP_URL'
 >;
 
-/** Settings each selected email/SMS driver needs: `[key, message]`. */
+/** Settings each selected email/SMS/WhatsApp driver needs: `[key, message]`. */
 function channelIssues(env: ChannelEnv): [keyof ChannelEnv, string][] {
   const required: Record<string, (keyof ChannelEnv)[]> = {
     smtp: ['SMTP_HOST', 'EMAIL_FROM'],
     twilio: ['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_FROM'],
     http: ['SMS_HTTP_URL'],
   };
+  const waRequired: Record<string, (keyof ChannelEnv)[]> = {
+    twilio: [
+      'WHATSAPP_TWILIO_ACCOUNT_SID',
+      'WHATSAPP_TWILIO_AUTH_TOKEN',
+      'WHATSAPP_TWILIO_FROM',
+    ],
+    http: ['WHATSAPP_HTTP_URL'],
+  };
   const issues: [keyof ChannelEnv, string][] = [];
   for (const driver of [env.EMAIL_DRIVER, env.SMS_DRIVER]) {
     for (const key of required[driver] ?? []) {
       if (!env[key]) issues.push([key, `required when driver is ${driver}`]);
     }
+  }
+  for (const key of waRequired[env.WHATSAPP_DRIVER] ?? []) {
+    if (!env[key])
+      issues.push([key, `required when WHATSAPP_DRIVER is ${env.WHATSAPP_DRIVER}`]);
   }
   return issues;
 }

@@ -27,6 +27,7 @@ export interface CategoryChannels {
   email: boolean;
   sms: boolean;
   push: boolean;
+  whatsapp: boolean;
   inApp: boolean;
 }
 
@@ -35,6 +36,7 @@ export interface NotificationSettings {
   email: { enabled: boolean; fromName: string | null };
   sms: { enabled: boolean; senderId: string | null };
   push: { enabled: boolean };
+  whatsapp: { enabled: boolean };
   categories: CategoryChannels[];
 }
 

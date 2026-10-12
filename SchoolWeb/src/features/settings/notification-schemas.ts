@@ -7,6 +7,7 @@ const category = z.object({
   email: z.boolean(),
   sms: z.boolean(),
   push: z.boolean(),
+  whatsapp: z.boolean(),
   inApp: z.boolean(),
 });
 
@@ -15,6 +16,7 @@ export const notificationSettingsSchema = z
     email: z.object({ enabled: z.boolean(), fromName: z.string().trim().max(60, "Use at most 60 characters") }),
     sms: z.object({ enabled: z.boolean(), senderId: z.string().trim().max(20, "Use at most 20 characters") }),
     push: z.object({ enabled: z.boolean() }),
+    whatsapp: z.object({ enabled: z.boolean() }),
     categories: z.array(category),
   })
   .superRefine((values, ctx) => {
@@ -42,6 +44,7 @@ function readCategories(raw: unknown): CategoryChannels[] {
       email: row.email === true,
       sms: row.sms === true,
       push: row.push === true,
+      whatsapp: row.whatsapp === true,
       inApp: row.inApp === true,
     }));
 }
@@ -51,6 +54,7 @@ export function notificationSettingsToValues(settings: NotificationSettings): No
     email: { enabled: settings.email?.enabled === true, fromName: settings.email?.fromName ?? "" },
     sms: { enabled: settings.sms?.enabled === true, senderId: settings.sms?.senderId ?? "" },
     push: { enabled: settings.push?.enabled === true },
+    whatsapp: { enabled: settings.whatsapp?.enabled === true },
     categories: readCategories(settings.categories),
   };
 }
@@ -60,6 +64,7 @@ export function toNotificationSettingsInput(values: NotificationSettingsValues):
     email: { enabled: values.email.enabled, fromName: blankToNull(values.email.fromName) },
     sms: { enabled: values.sms.enabled, senderId: blankToNull(values.sms.senderId) },
     push: { enabled: values.push.enabled },
+    whatsapp: { enabled: values.whatsapp.enabled },
     categories: values.categories,
   };
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Mail, MessageSquareText } from "lucide-react";
+import { Bell, Mail, MessageSquareText, Phone } from "lucide-react";
 import { FormProvider } from "react-hook-form";
 import { FormAlert } from "@/components/shared/FormAlert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -26,7 +26,7 @@ export function NotificationSettingsForm({ schoolId, settings, canEdit }: Notifi
         {!canEdit && <ReadOnlyNotice />}
         <FormAlert message={formError} />
         <fieldset disabled={!canEdit} className="flex min-w-0 flex-col gap-6">
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <ChannelCard
               channel="email"
               icon={Mail}
@@ -42,6 +42,13 @@ export function NotificationSettingsForm({ schoolId, settings, canEdit }: Notifi
               description="Short alerts to parents' and staff phones."
               switchLabel="Send by SMS"
               field={{ name: "sms.senderId", label: "Sender ID", maxLength: 20 }}
+            />
+            <ChannelCard
+              channel="whatsapp"
+              icon={Phone}
+              title="WhatsApp"
+              description="Alerts via WhatsApp Business API."
+              switchLabel="Send by WhatsApp"
             />
             <ChannelCard
               channel="push"
