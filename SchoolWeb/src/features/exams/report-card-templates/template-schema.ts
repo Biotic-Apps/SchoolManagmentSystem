@@ -4,28 +4,24 @@ import type { ReportCardTemplate, ReportCardTemplateInput } from "./types";
 export const templateSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
   branchId: z.string().uuid().optional().or(z.literal("")),
-  isDefault: z.boolean().default(false),
-  layout: z
-    .object({
-      orientation: z.enum(["portrait", "landscape"]).default("portrait"),
-      paperSize: z.string().default("A4"),
-    })
-    .default({}),
-  header: z
-    .object({
-      showLogo: z.boolean().default(true),
-      schoolName: z.string().max(200).optional().or(z.literal("")),
-      subtitle: z.string().max(300).optional().or(z.literal("")),
-      address: z.string().max(300).optional().or(z.literal("")),
-      phone: z.string().max(50).optional().or(z.literal("")),
-    })
-    .default({}),
-  showGradingScale: z.boolean().default(true),
-  showSkills: z.boolean().default(true),
-  showRemarks: z.boolean().default(true),
-  showAttendance: z.boolean().default(false),
-  showPosition: z.boolean().default(true),
-  signatures: z.array(z.string()).default(["Class teacher", "Principal", "Parent / guardian"]),
+  isDefault: z.boolean(),
+  layout: z.object({
+    orientation: z.enum(["portrait", "landscape"]),
+    paperSize: z.string(),
+  }),
+  header: z.object({
+    showLogo: z.boolean(),
+    schoolName: z.string().max(200).optional().or(z.literal("")),
+    subtitle: z.string().max(300).optional().or(z.literal("")),
+    address: z.string().max(300).optional().or(z.literal("")),
+    phone: z.string().max(50).optional().or(z.literal("")),
+  }),
+  showGradingScale: z.boolean(),
+  showSkills: z.boolean(),
+  showRemarks: z.boolean(),
+  showAttendance: z.boolean(),
+  showPosition: z.boolean(),
+  signatures: z.array(z.string()),
   remarkLabels: z.array(z.string()).optional(),
   footerText: z.string().max(300).optional().or(z.literal("")),
 });

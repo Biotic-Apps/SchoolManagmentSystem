@@ -1,6 +1,9 @@
 import { IsInt, IsOptional, IsUUID, Max, Min } from 'class-validator';
 
 export class CreateSiblingDiscountDto {
+  @IsUUID()
+  schoolId!: string;
+
   @IsInt()
   @Min(2)
   @Max(20)

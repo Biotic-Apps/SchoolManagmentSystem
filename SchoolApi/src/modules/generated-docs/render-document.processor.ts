@@ -26,6 +26,7 @@ const PURPOSE: Record<GeneratedDocumentKind, FilePurpose> = {
   RECEIPT_THERMAL: 'RECEIPT',
   PAYSLIP: 'PAYSLIP',
   CERTIFICATE: 'CERTIFICATE',
+  HR_LETTER: 'DOCUMENT',
 };
 
 /** Renders one generated document into file storage (idempotent per version). */

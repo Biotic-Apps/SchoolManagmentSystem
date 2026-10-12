@@ -14,9 +14,8 @@ export class SiblingDiscountsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async list(scope: Scope): Promise<SiblingDiscountDto[]> {
-    const schoolId = scope.schoolId;
     const rows = await this.prisma.siblingDiscount.findMany({
-      where: { schoolId, status: 'ACTIVE' },
+      where: { ...scope.schoolFilter(), status: 'ACTIVE' },
       orderBy: { childIndex: 'asc' },
     });
     return rows.map((r) => this.toDto(r));
@@ -27,11 +26,11 @@ export class SiblingDiscountsService {
     scope: Scope,
     dto: CreateSiblingDiscountDto,
   ): Promise<SiblingDiscountDto> {
-    scope.assertManageSchool(scope.schoolId);
+    scope.assertManageSchool(dto.schoolId);
     const existing = await this.prisma.siblingDiscount.findUnique({
       where: {
         schoolId_childIndex: {
-          schoolId: scope.schoolId,
+          schoolId: dto.schoolId,
           childIndex: dto.childIndex,
         },
       },
@@ -52,7 +51,7 @@ export class SiblingDiscountsService {
     }
     const row = await this.prisma.siblingDiscount.create({
       data: {
-        schoolId: scope.schoolId,
+        schoolId: dto.schoolId,
         childIndex: dto.childIndex,
         percentOff: dto.percentOff,
         createdById: user.id,
@@ -67,11 +66,11 @@ export class SiblingDiscountsService {
     id: string,
     dto: UpdateSiblingDiscountDto,
   ): Promise<SiblingDiscountDto> {
-    scope.assertManageSchool(scope.schoolId);
     const row = await this.prisma.siblingDiscount.findFirst({
-      where: { id, schoolId: scope.schoolId, status: 'ACTIVE' },
+      where: { id, schoolId: { in: [...scope.schoolIds] }, status: 'ACTIVE' },
     });
     if (!row) throw notFound('Sibling discount rule');
+    scope.assertManageSchool(row.schoolId);
     const updated = await this.prisma.siblingDiscount.update({
       where: { id },
       data: { percentOff: dto.percentOff, updatedById: user.id },
@@ -80,14 +79,14 @@ export class SiblingDiscountsService {
   }
 
   async remove(user: AuthUser, scope: Scope, id: string): Promise<void> {
-    scope.assertManageSchool(scope.schoolId);
     const row = await this.prisma.siblingDiscount.findFirst({
-      where: { id, schoolId: scope.schoolId, status: 'ACTIVE' },
+      where: { id, schoolId: { in: [...scope.schoolIds] }, status: 'ACTIVE' },
     });
     if (!row) throw notFound('Sibling discount rule');
+    scope.assertManageSchool(row.schoolId);
     await this.prisma.siblingDiscount.update({
       where: { id },
-      data: { status: 'INACTIVE', updatedById: user.id },
+      data: { status: 'ARCHIVED', updatedById: user.id },
     });
   }
 

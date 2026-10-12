@@ -2,7 +2,7 @@ import { z } from "zod";
 import { todayIso } from "@/lib/dates";
 import { moneyText, toMinor } from "@/lib/money";
 import { blankToUndefined, isoDate, optionalText, requiredText } from "@/lib/validation";
-import type { IncomeInput } from "./types";
+import type { IncomeCategoryInput, IncomeInput } from "./types";
 
 export const incomeSchema = z.object({
   categoryId: z.string().min(1, "Choose a category"),

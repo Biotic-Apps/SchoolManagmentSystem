@@ -7,6 +7,7 @@ import {
   toSkipTake,
 } from '../../../core/common/pagination/paginate';
 import type { AuthUser } from '../../../core/common/types/auth-user';
+import { toJson } from '../../../core/common/prisma-json';
 import { PrismaService } from '../../../core/prisma/prisma.service';
 import type { Scope } from '../../../core/rbac/scope/scope';
 import type {
@@ -86,8 +87,8 @@ export class ReportCardTemplatesService {
             branchId: dto.branchId ?? null,
             name: dto.name.trim(),
             isDefault: dto.isDefault ?? false,
-            layout: dto.layout ?? { orientation: 'portrait', paperSize: 'A4' },
-            header: dto.header ?? { showLogo: true },
+            layout: toJson(dto.layout ?? { orientation: 'portrait', paperSize: 'A4' }),
+            header: toJson(dto.header ?? { showLogo: true }),
             showGradingScale: dto.showGradingScale ?? true,
             showSkills: dto.showSkills ?? true,
             showRemarks: dto.showRemarks ?? true,
@@ -173,8 +174,8 @@ export class ReportCardTemplatesService {
           data: {
             name: dto.name?.trim(),
             isDefault: dto.isDefault,
-            layout: dto.layout ?? undefined,
-            header: dto.header ?? undefined,
+            layout: dto.layout ? toJson(dto.layout) : undefined,
+            header: dto.header ? toJson(dto.header) : undefined,
             showGradingScale: dto.showGradingScale,
             showSkills: dto.showSkills,
             showRemarks: dto.showRemarks,

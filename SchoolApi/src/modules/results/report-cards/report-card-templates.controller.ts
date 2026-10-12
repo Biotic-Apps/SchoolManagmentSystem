@@ -36,7 +36,7 @@ export class ReportCardTemplatesController {
   constructor(private readonly templates: ReportCardTemplatesService) {}
 
   @Post()
-  @RequirePermission('exams.manage')
+  @RequirePermission('exams.add')
   @ApiData(ReportCardTemplateDto)
   create(
     @CurrentUser() user: AuthUser,
@@ -67,7 +67,7 @@ export class ReportCardTemplatesController {
   }
 
   @Patch(':id')
-  @RequirePermission('exams.manage')
+  @RequirePermission('exams.edit')
   @ApiData(ReportCardTemplateDto)
   update(
     @CurrentUser() user: AuthUser,
@@ -80,7 +80,7 @@ export class ReportCardTemplatesController {
 
   @Delete(':id')
   @HttpCode(204)
-  @RequirePermission('exams.manage')
+  @RequirePermission('exams.delete')
   remove(
     @CurrentScope() scope: Scope,
     @Param('id', ParseUUIDPipe) id: string,
@@ -90,7 +90,7 @@ export class ReportCardTemplatesController {
 
   @Post(':id/set-default')
   @HttpCode(200)
-  @RequirePermission('exams.manage')
+  @RequirePermission('exams.edit')
   @ApiData(ReportCardTemplateDto)
   setDefault(
     @CurrentScope() scope: Scope,

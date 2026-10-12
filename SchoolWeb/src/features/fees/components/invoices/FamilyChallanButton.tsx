@@ -10,8 +10,8 @@ interface FamilyChallanButtonProps {
   guardianId?: string;
   /** Specific student IDs (siblings). */
   studentIds?: string[];
-  variant?: "secondary" | "outline" | "ghost";
-  size?: "sm" | "default";
+  variant?: "secondary" | "ghost";
+  size?: "sm";
 }
 
 /** Button that generates and opens a family (combined sibling) challan PDF. */

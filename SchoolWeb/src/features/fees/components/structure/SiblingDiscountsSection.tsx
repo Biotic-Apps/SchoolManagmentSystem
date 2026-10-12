@@ -83,7 +83,7 @@ export function SiblingDiscountsSection({ schoolId }: Props) {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-base">Sibling Discounts</CardTitle>
         {!showForm && (
-          <Button size="sm" variant="outline" onClick={() => setShowForm(true)}>
+          <Button size="sm" variant="secondary" onClick={() => setShowForm(true)}>
             <Plus className="mr-1 h-4 w-4" />
             Add rule
           </Button>

@@ -20,12 +20,12 @@ export class FamilyChallanService {
     branchId: string,
   ): Promise<{ buffer: Buffer; fileName: string; pages: number }> {
     const guardian = await this.prisma.guardian.findFirst({
-      where: { id: guardianId, schoolId: scope.schoolId },
+      where: { id: guardianId, ...scope.schoolFilter() },
     });
     if (!guardian) throw notFound('Guardian');
 
     const links = await this.prisma.studentGuardian.findMany({
-      where: { guardianId, schoolId: scope.schoolId, status: 'VERIFIED' },
+      where: { guardianId, ...scope.schoolFilter(), status: 'VERIFIED' },
       select: { studentId: true },
     });
     const studentIds = links.map((l) => l.studentId);

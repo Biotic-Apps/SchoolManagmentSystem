@@ -27,14 +27,14 @@ interface TemplateFormProps {
 }
 
 const ORIENTATION_OPTIONS = [
-  { value: "portrait", label: "Portrait" },
-  { value: "landscape", label: "Landscape" },
+  { id: "portrait", name: "Portrait" },
+  { id: "landscape", name: "Landscape" },
 ];
 
 const PAPER_SIZE_OPTIONS = [
-  { value: "A4", label: "A4" },
-  { value: "Letter", label: "Letter" },
-  { value: "Legal", label: "Legal" },
+  { id: "A4", name: "A4" },
+  { id: "Letter", name: "Letter" },
+  { id: "Legal", name: "Legal" },
 ];
 
 export function TemplateForm({ template, onClose }: TemplateFormProps) {
@@ -130,7 +130,7 @@ export function TemplateForm({ template, onClose }: TemplateFormProps) {
                 </Button>
               </div>
             ))}
-            <Button type="button" variant="outline" size="sm" className="self-start" onClick={addSignature}>
+            <Button type="button" variant="secondary" size="sm" className="self-start" onClick={addSignature}>
               <Plus className="mr-1.5 size-4" />
               Add signature
             </Button>
@@ -144,7 +144,7 @@ export function TemplateForm({ template, onClose }: TemplateFormProps) {
 
         {/* Actions */}
         <div className="flex justify-end gap-2 border-t border-border pt-4">
-          <Button type="button" variant="outline" onClick={onClose}>
+          <Button type="button" variant="secondary" onClick={onClose}>
             Cancel
           </Button>
           <Button type="submit" loading={submitting}>
