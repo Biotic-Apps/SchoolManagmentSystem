@@ -137,8 +137,8 @@ export const envSchema = z
      * returned by POST /auth/otp/request. Refused in production.
      */
     OTP_DEV_ECHO: booleanString.default(false),
-    /** log (default), twilio, or http (any local SMS gateway). */
-    SMS_DRIVER: z.enum(['log', 'twilio', 'http']).default('log'),
+    /** log (default), twilio, http (any local SMS gateway), or android-relay (phone polls outbox). */
+    SMS_DRIVER: z.enum(['log', 'twilio', 'http', 'android-relay']).default('log'),
     TWILIO_ACCOUNT_SID: z.string().min(1).optional(),
     TWILIO_AUTH_TOKEN: z.string().min(1).optional(),
     TWILIO_FROM: z.string().min(1).optional(),
