@@ -3,7 +3,7 @@ import { useCan } from "@/features/auth/use-can";
 import { useSession } from "@/features/auth/session-context";
 import { useSettingsSchool } from "./use-settings-school";
 
-export type SettingsTabId = "school" | "notifications" | "policies" | "support" | "backups" | "imports";
+export type SettingsTabId = "school" | "notifications" | "policies" | "support" | "backups" | "imports" | "sms-gateway";
 
 export function useSettingsRoute() {
   const can = useCan();
@@ -25,5 +25,6 @@ export function useSettingsRoute() {
     showSupport: isSuperAdmin,
     showBackups: isSuperAdmin,
     showImports: canEdit || isPrincipal,
+    showSmsGateway: isSuperAdmin || isPrincipal,
   };
 }

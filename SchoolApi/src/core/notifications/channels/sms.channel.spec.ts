@@ -1,4 +1,5 @@
 import type { AppConfigService } from '../../../config/app-config.service';
+import type { PrismaService } from '../../prisma/prisma.service';
 import type { SenderIdentityResolver } from './sender-identity';
 import { SmsChannel } from './sms.channel';
 
@@ -18,9 +19,10 @@ function channel(env: Record<string, unknown>) {
     },
   } as unknown as AppConfigService;
   const identity = {
-    forUser: jest.fn().mockResolvedValue({ fromName: null, senderId: 'BFS' }),
+    forUser: jest.fn().mockResolvedValue({ fromName: null, senderId: 'BFS', schoolId: null }),
   } as unknown as SenderIdentityResolver;
-  return new SmsChannel(config, identity);
+  const prisma = {} as unknown as PrismaService;
+  return new SmsChannel(config, identity, prisma);
 }
 
 const message = { title: 'Code', body: '123456', phone: '0300-1112233' };

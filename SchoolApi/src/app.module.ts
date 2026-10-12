@@ -62,6 +62,7 @@ import { SettingsModule } from './modules/settings/settings.module';
 import { SupportModule } from './modules/support/support.module';
 import { BackupsModule } from './modules/backups/backups.module';
 import { ImportsModule } from './modules/imports/imports.module';
+import { SmsGatewayModule } from './modules/sms-gateway/sms-gateway.module';
 
 @Module({
   imports: [
@@ -128,6 +129,7 @@ import { ImportsModule } from './modules/imports/imports.module';
     SupportModule,
     BackupsModule,
     ImportsModule,
+    SmsGatewayModule,
   ],
 })
 export class AppModule {}

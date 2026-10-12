@@ -1,0 +1,27 @@
+// SMS Gateway: outbox for android-relay driver (phone polls and sends real SMS).
+
+enum SmsOutboxStatus {
+  PENDING
+  SENT
+  FAILED
+
+  @@map("sms_outbox_status")
+}
+
+model SmsOutbox {
+  id        String          @id @default(uuid(7)) @db.Uuid
+  schoolId  String          @map("school_id") @db.Uuid
+  to        String
+  message   String
+  senderId  String?         @map("sender_id")
+  status    SmsOutboxStatus @default(PENDING)
+  attempts  Int             @default(0)
+  error     String?
+  createdAt DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  sentAt    DateTime?       @map("sent_at") @db.Timestamptz(3)
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+
+  @@index([schoolId, status, createdAt])
+  @@map("sms_outbox")
+}

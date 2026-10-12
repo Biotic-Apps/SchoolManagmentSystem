@@ -9,4 +9,5 @@ export const settingsKeys = {
   backups: ["settings", "backups"] as const,
   imports: (branchId: string | null) => ["settings", "imports", branchId] as const,
   importDetail: (id: string) => ["settings", "imports", "detail", id] as const,
+  smsGateway: (schoolId: string) => ["settings", "sms-gateway", schoolId] as const,
 };

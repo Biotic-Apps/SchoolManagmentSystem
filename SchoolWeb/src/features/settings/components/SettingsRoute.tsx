@@ -13,6 +13,7 @@ import { ImportsTab } from "./imports/ImportsTab";
 import { NotificationsTab } from "./notifications/NotificationsTab";
 import { PoliciesTab } from "./policies/PoliciesTab";
 import { SchoolBrandingTab } from "./school/SchoolBrandingTab";
+import { SmsGatewayTab } from "./sms-gateway/SmsGatewayTab";
 import { SupportTab } from "./support/SupportTab";
 
 // Form tabs stay mounted so switching tabs never drops unsaved edits.
@@ -59,6 +60,7 @@ export function SettingsRoute() {
             {route.showSupport && <TabsTrigger value="support">Support</TabsTrigger>}
             {route.showBackups && <TabsTrigger value="backups">Backups</TabsTrigger>}
             {route.showImports && <TabsTrigger value="imports">Data import</TabsTrigger>}
+            {route.showSmsGateway && <TabsTrigger value="sms-gateway">SMS Gateway</TabsTrigger>}
           </TabsList>
           <TabsContent value="school" forceMount className={KEEP_MOUNTED}>
             <SchoolBrandingTab schoolId={schoolId} canEdit={route.canEdit} />
@@ -82,6 +84,11 @@ export function SettingsRoute() {
           {route.showImports && (
             <TabsContent value="imports">
               <ImportsTab schoolId={schoolId} />
+            </TabsContent>
+          )}
+          {route.showSmsGateway && (
+            <TabsContent value="sms-gateway">
+              <SmsGatewayTab schoolId={schoolId} />
             </TabsContent>
           )}
         </Tabs>

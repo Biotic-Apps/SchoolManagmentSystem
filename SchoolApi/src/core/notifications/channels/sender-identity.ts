@@ -8,6 +8,8 @@ export interface SenderIdentity {
   fromName: string | null;
   /** SMS sender id (`notifications.sms.senderId`). */
   senderId: string | null;
+  /** Resolved school id (used by android-relay driver). */
+  schoolId: string | null;
 }
 
 /**
@@ -25,9 +27,9 @@ export class SenderIdentityResolver {
 
   async forUser(userId?: string): Promise<SenderIdentity> {
     const schoolId = await this.schoolOf(userId);
-    if (!schoolId) return { fromName: null, senderId: null };
+    if (!schoolId) return { fromName: null, senderId: null, schoolId: null };
     const { email, sms } = await this.settings.notifications(schoolId);
-    return { fromName: email.fromName, senderId: sms.senderId };
+    return { fromName: email.fromName, senderId: sms.senderId, schoolId };
   }
 
   private async schoolOf(userId?: string): Promise<string | null> {
