@@ -60,8 +60,10 @@ USER node
 EXPOSE 3000
 VOLUME ["/app/storage"]
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+COPY --chown=node:node docker-entrypoint.sh ./
+RUN chmod +x docker-entrypoint.sh
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=3 \
   CMD ["node", "-e", "fetch('http://127.0.0.1:'+(process.env.PORT||3000)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
 
-# docker-compose.prod.yml runs `prisma migrate deploy` before this.
-CMD ["node", "dist/main.js"]
+CMD ["./docker-entrypoint.sh"]
