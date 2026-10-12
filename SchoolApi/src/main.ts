@@ -21,4 +21,7 @@ async function bootstrap(): Promise<void> {
   await app.listen(config.get('PORT'), '0.0.0.0');
 }
 
-void bootstrap();
+bootstrap().catch((err) => {
+  console.error('FATAL: bootstrap failed', err);
+  process.exit(1);
+});
