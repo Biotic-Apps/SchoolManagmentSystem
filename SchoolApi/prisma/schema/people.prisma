@@ -117,6 +117,7 @@ model Student {
   ledgerEntries     LedgerEntry[]         @relation("StudentLedger")
   payments          Payment[]             @relation("StudentPayments")
   certificates      Certificate[]         @relation("StudentCertificates")
+  hwSubmissions     HomeworkSubmission[]  @relation("StudentHomeworkSubmissions")
 
   @@unique([schoolId, admissionNo])
   @@index([schoolId, status])

@@ -267,6 +267,7 @@ model Section {
   syllabusPlans       SyllabusPlan[]
   attendanceRegisters AttendanceRegister[]
   diaryEntries        DiaryEntry[]
+  homework            Homework[]           @relation("HomeworkSection")
 
   @@unique([sessionId, classId, name])
   @@index([schoolId])
@@ -296,6 +297,7 @@ model Subject {
   bookListItems    BookListItem[]
   syllabusPlans    SyllabusPlan[]
   diaryEntries     DiaryEntry[]
+  homework         Homework[]        @relation("HomeworkSubject")
 
   @@unique([schoolId, code])
   @@map("subjects")
