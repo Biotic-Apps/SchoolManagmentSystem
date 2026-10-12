@@ -1,11 +1,25 @@
 #!/bin/sh
-set -e
 
-echo "Running Prisma migrations..."
-npx prisma migrate deploy
+echo "=== eSchool API entrypoint ==="
+echo "NODE_ENV=$NODE_ENV"
+echo "JOBS_DRIVER=$JOBS_DRIVER"
+echo "CACHE_DRIVER=$CACHE_DRIVER"
+echo "ALLOW_DEV_DRIVERS=$ALLOW_DEV_DRIVERS"
 
-echo "Seeding database..."
-npm run db:seed
+echo "--- Running Prisma migrations ---"
+if npx prisma migrate deploy; then
+  echo "--- Migrations OK ---"
+else
+  echo "!!! Migration FAILED (exit $?) !!!"
+  exit 1
+fi
 
-echo "Starting API..."
+echo "--- Seeding database ---"
+if npm run db:seed; then
+  echo "--- Seed OK ---"
+else
+  echo "!!! Seed FAILED (exit $?) — continuing anyway !!!"
+fi
+
+echo "--- Starting API ---"
 exec node dist/main.js
