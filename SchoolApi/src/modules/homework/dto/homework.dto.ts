@@ -13,7 +13,7 @@ import {
   MinLength,
 } from 'class-validator';
 import type {
-  HomeworkStatus,
+  RecordStatus,
   SubmissionStatus,
 } from '../../../generated/prisma/client';
 import { IdNameDto } from '../../../core/common/dto/id-name.dto';

@@ -199,7 +199,7 @@ export class OnlinePaymentsService {
         throw notFound('Online payment');
     } else {
       // Staff must have access to the school
-      if (!scope.schoolIds.includes(record.schoolId))
+      if (!scope.schoolIds.has(record.schoolId))
         throw notFound('Online payment');
     }
 
@@ -225,7 +225,7 @@ export class OnlinePaymentsService {
     if (!invoice) throw notFound('Invoice');
     if (scope.guardian && !scope.canAccessStudent(invoice.studentId))
       throw notFound('Invoice');
-    if (!scope.guardian && !scope.schoolIds.includes(invoice.schoolId))
+    if (!scope.guardian && !scope.schoolIds.has(invoice.schoolId))
       throw notFound('Invoice');
 
     const records = await this.prisma.onlinePayment.findMany({

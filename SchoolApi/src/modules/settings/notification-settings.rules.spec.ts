@@ -22,6 +22,7 @@ describe('notification settings rules', () => {
           email: false,
           sms: false,
           push: true,
+          whatsapp: false,
           inApp: true,
         },
       ],
@@ -39,6 +40,7 @@ describe('notification settings rules', () => {
       email: true,
       sms: true,
       push: true,
+      whatsapp: false,
       inApp: true,
     };
     expect(categoriesProblem([row, row])).toMatch(/repeated/);

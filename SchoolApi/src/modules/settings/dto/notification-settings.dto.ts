@@ -45,6 +45,7 @@ export class CategoryChannelsDto {
   @ApiProperty() @IsBoolean() email!: boolean;
   @ApiProperty() @IsBoolean() sms!: boolean;
   @ApiProperty() @IsBoolean() push!: boolean;
+  @ApiProperty() @IsBoolean() whatsapp!: boolean;
   @ApiProperty() @IsBoolean() inApp!: boolean;
 }
 
@@ -76,6 +77,12 @@ export class UpdateNotificationSettingsDto {
   @ValidateNested()
   @Type(() => PushSwitchDto)
   push?: PushSwitchDto;
+
+  @ApiPropertyOptional({ type: PushSwitchDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PushSwitchDto)
+  whatsapp?: PushSwitchDto;
 
   @ApiPropertyOptional({ type: [CategoryChannelsDto] })
   @IsOptional()

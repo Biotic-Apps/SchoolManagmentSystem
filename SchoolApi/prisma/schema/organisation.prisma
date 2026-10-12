@@ -68,6 +68,8 @@ model School {
   qrScanLogs            QrScanLog[]
   smsOutbox             SmsOutbox[]
   whatsappMessages      WhatsappMessage[]
+  questions             Question[]
+  examPapers            ExamPaper[]
 
   @@index([logoFileId])
   @@map("schools")
@@ -233,6 +235,8 @@ model SchoolClass {
   admissionEnquiries    AdmissionEnquiry[]
   admissionApplications AdmissionApplication[]
   bookLists             BookList[]
+  questions             Question[]
+  examPapers            ExamPaper[]
 
   @@unique([schoolId, name])
   @@map("classes")
@@ -301,6 +305,8 @@ model Subject {
   syllabusPlans    SyllabusPlan[]
   diaryEntries     DiaryEntry[]
   homework         Homework[]        @relation("HomeworkSubject")
+  questions        Question[]
+  examPapers       ExamPaper[]
 
   @@unique([schoolId, code])
   @@map("subjects")

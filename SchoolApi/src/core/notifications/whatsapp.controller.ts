@@ -19,7 +19,7 @@ export class WhatsAppController {
   ) {}
 
   @Get()
-  @RequirePermission('notifications.view')
+  @RequirePermission('settings.view')
   async list(
     @CurrentScope() scope: Scope,
     @Query() query: WhatsAppQueryDto,

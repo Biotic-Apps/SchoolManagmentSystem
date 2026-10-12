@@ -64,6 +64,7 @@ import { SupportModule } from './modules/support/support.module';
 import { BackupsModule } from './modules/backups/backups.module';
 import { ImportsModule } from './modules/imports/imports.module';
 import { SmsGatewayModule } from './modules/sms-gateway/sms-gateway.module';
+import { QuestionBankModule } from './modules/question-bank/question-bank.module';
 
 @Module({
   imports: [
@@ -132,6 +133,7 @@ import { SmsGatewayModule } from './modules/sms-gateway/sms-gateway.module';
     BackupsModule,
     ImportsModule,
     SmsGatewayModule,
+    QuestionBankModule,
   ],
 })
 export class AppModule {}

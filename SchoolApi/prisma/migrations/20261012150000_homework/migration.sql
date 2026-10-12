@@ -1,7 +1,4 @@
 -- CreateEnum
-CREATE TYPE "homework_status" AS ENUM ('ACTIVE', 'ARCHIVED');
-
--- CreateEnum
 CREATE TYPE "submission_status" AS ENUM ('SUBMITTED', 'LATE', 'GRADED', 'RETURNED');
 
 -- CreateTable
@@ -18,7 +15,7 @@ CREATE TABLE "homework" (
     "max_marks" INTEGER,
     "attachment_file_ids" UUID[] DEFAULT ARRAY[]::UUID[],
     "assigned_by_id" UUID NOT NULL,
-    "status" "homework_status" NOT NULL DEFAULT 'ACTIVE',
+    "status" "record_status" NOT NULL DEFAULT 'ACTIVE',
     "created_at" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ(3) NOT NULL,
 
