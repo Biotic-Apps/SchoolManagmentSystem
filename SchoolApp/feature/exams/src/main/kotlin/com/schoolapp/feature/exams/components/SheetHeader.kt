@@ -2,7 +2,9 @@ package com.schoolapp.feature.exams.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,7 +33,7 @@ internal fun SheetHeader(
             KeyValueRow(stringResource(R.string.exams_pass_marks), sheet.passMarks?.let(::formatMarks))
             formatDate(sheet.paperDate)?.let { KeyValueRow(stringResource(R.string.exams_paper_date_label), it) }
             if (showTeacher) KeyValueRow(stringResource(R.string.exams_teacher), sheet.teacher?.name)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 CountTile(stringResource(R.string.exams_count_entered), entered, StatusTone.Success, Modifier.weight(1f))
                 CountTile(stringResource(R.string.exams_count_absent), absent, StatusTone.Neutral, Modifier.weight(1f))
                 CountTile(stringResource(R.string.exams_count_pending), pending, StatusTone.Warning, Modifier.weight(1f))

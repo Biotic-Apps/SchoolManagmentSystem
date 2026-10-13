@@ -3,9 +3,12 @@ package com.schoolapp.feature.attendance.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -24,8 +27,8 @@ internal data class CountItem(val label: String, val value: Int, val tone: Statu
 internal fun CountsGrid(items: List<CountItem>, modifier: Modifier = Modifier, columns: Int = 3) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items.chunked(columns).forEach { row ->
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                row.forEach { CountTile(it, Modifier.weight(1f)) }
+            Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                row.forEach { CountTile(it, Modifier.weight(1f).fillMaxHeight()) }
                 repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
             }
         }

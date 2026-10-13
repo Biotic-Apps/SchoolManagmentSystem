@@ -3,6 +3,7 @@ package com.schoolapp.feature.exams.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,7 +20,7 @@ import com.schoolapp.core.designsystem.theme.AppColors
 internal fun CountTile(label: String, count: Int, tone: StatusTone, modifier: Modifier = Modifier) {
     val (container, content) = tone.tileColors()
     Column(
-        modifier.background(container, MaterialTheme.shapes.small).padding(horizontal = 10.dp, vertical = 8.dp),
+        modifier.fillMaxHeight().background(container, MaterialTheme.shapes.small).padding(horizontal = 10.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Text(count.toString(), style = MaterialTheme.typography.titleLarge.copy(fontFeatureSettings = TabularNumbers), color = content)
