@@ -17,7 +17,7 @@ fun AttachmentLinks(
     if (attachments.isEmpty()) return
     val external = rememberExternalActions()
     AttachmentChips(
-        items = attachments.map { AttachmentChipItem(it.id, it.name.orEmpty(), it.isImage) },
+        items = attachments.map { AttachmentChipItem(it.id, it.name.orEmpty(), it.isImage, it.url) },
         modifier = modifier,
         onOpen = { item -> attachments.firstOrNull { it.id == item.id }?.url?.let(external::open) },
         onRemove = onRemove?.let { remove -> { item -> remove(item.id) } },

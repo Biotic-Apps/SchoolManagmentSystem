@@ -30,6 +30,7 @@ interface PickupApi {
         @Query("branchId") branchId: String? = null,
         @Query("date") date: String? = null,
         @Query("status") status: String? = null,
+        @Query("studentId") studentId: String? = null,
     ): ApiEnvelope<List<EarlyLeaveDto>>
 
     @POST("early-leave/{id}/approve")

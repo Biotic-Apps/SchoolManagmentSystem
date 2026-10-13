@@ -58,7 +58,7 @@ export const TabsList = forwardRef<
           aria-hidden
           style={style}
           className={cn(
-            "pointer-events-none absolute left-0 top-0 rounded-lg bg-primary shadow-[0_1px_2px_rgb(11_127_116/0.3)] will-change-transform",
+            "pointer-events-none absolute left-0 top-0 rounded-lg bg-primary shadow-[0_1px_2px_rgb(123_104_238/0.3)] will-change-transform",
             animated && "transition-[transform,width,height] duration-(--dur-standard) ease-standard motion-reduce:transition-none",
           )}
         />

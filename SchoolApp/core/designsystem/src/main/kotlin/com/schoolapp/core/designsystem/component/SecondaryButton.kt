@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.motion.pressScale
 import com.schoolapp.core.designsystem.theme.AppColors
@@ -31,11 +32,11 @@ fun SecondaryButton(
     val interaction = remember { MutableInteractionSource() }
     OutlinedButton(
         onClick = onClick,
-        modifier = modifier.heightIn(min = 48.dp).pressScale(interaction, enabled && !loading),
+        modifier = modifier.heightIn(min = 52.dp).pressScale(interaction, enabled && !loading),
         interactionSource = interaction,
         enabled = enabled && !loading,
-        shape = MaterialTheme.shapes.small,
-        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
+        shape = RoundedCornerShape(16.dp),
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
         border = BorderStroke(Borders.Thin, AppColors.Border),
         colors = ButtonDefaults.outlinedButtonColors(
             containerColor = AppColors.Surface,

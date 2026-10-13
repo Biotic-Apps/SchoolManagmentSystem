@@ -139,7 +139,7 @@ private fun AttachmentsField(state: DiaryEditorUiState, editable: Boolean, actio
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeader(title = stringResource(R.string.diary_attachments))
         AttachmentChips(
-            items = state.attachments.map { AttachmentChipItem(it.id, it.name, it.isImage) },
+            items = state.attachments.map { AttachmentChipItem(it.id, it.name, it.isImage, it.url) },
             onOpen = { actions.onOpenFile(it.id) },
             onRemove = if (editable) ({ actions.onRemoveFile(it.id) }) else null,
         )

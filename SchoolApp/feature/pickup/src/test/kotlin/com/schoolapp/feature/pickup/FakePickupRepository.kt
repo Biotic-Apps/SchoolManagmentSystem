@@ -41,7 +41,7 @@ internal class FakePickupRepository : PickupRepository {
         )
     }
 
-    override suspend fun earlyLeaves(branchId: String?, date: String?, status: EarlyLeaveStatus?): AppResult<List<EarlyLeave>> =
+    override suspend fun earlyLeaves(branchId: String?, date: String?, status: EarlyLeaveStatus?, studentId: String?): AppResult<List<EarlyLeave>> =
         AppResult.Success(emptyList())
 
     override suspend fun approveEarlyLeave(id: String): AppResult<EarlyLeave> = error("unused")

@@ -16,7 +16,7 @@ export function DetailDrawer({ open, onOpenChange, title, description, actions, 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent>
-        <div className="flex shrink-0 flex-col gap-3 border-b border-border bg-[linear-gradient(180deg,#f2f9f7,#ffffff)] px-5 py-5 pr-12 sm:px-6">
+        <div className="flex shrink-0 flex-col gap-3 border-b border-border bg-[linear-gradient(180deg,#F5F3FF,#ffffff)] px-5 py-5 pr-12 sm:px-6">
           <div className="flex flex-col gap-1">
             <SheetTitle className="text-card-title font-semibold tracking-[-0.01em] text-fg">{title}</SheetTitle>
             <SheetDescription asChild>

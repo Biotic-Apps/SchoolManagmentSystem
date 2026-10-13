@@ -14,7 +14,7 @@ import { PrimaryColorPresets } from "./PrimaryColorPresets";
 const ID = "field-primaryColor";
 
 function liveMessage(color: PrimaryColorState): string | null {
-  if (!color.isHex) return "Enter a hex colour like #0B7F74.";
+  if (!color.isHex) return "Enter a hex colour like #7B68EE.";
   if (!color.passes) {
     return `Pick a darker colour — white text on it needs a contrast of at least ${MIN_CONTRAST} : 1 to stay readable.`;
   }

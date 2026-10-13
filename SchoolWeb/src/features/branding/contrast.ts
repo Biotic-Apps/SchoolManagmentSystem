@@ -1,6 +1,6 @@
 // WCAG 2.1 contrast helpers for the school's primary colour (phase5-contract §A).
 
-export const DEFAULT_PRIMARY = "#0B7F74";
+export const DEFAULT_PRIMARY = "#7B68EE";
 export const MIN_CONTRAST = 4.5;
 
 const HEX = /^#([0-9a-f]{6})$/i;

@@ -18,7 +18,7 @@ export function PendingPanel({ branchId }: { branchId: string | null }) {
           <ErrorState error={query.error} onRetry={() => query.refetch()} />
         </Card>
       ) : (
-        <div className="stagger grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+        <div className="stagger grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
           {tiles.map((tile) => (
             <PendingTile key={tile.key} tile={tile} loading={query.isLoading} />
           ))}

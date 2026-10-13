@@ -20,7 +20,7 @@ export function MobileNavDrawer({ open, onOpenChange, items, activeId }: MobileN
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
         <DialogOverlay className="lg:hidden" />
-        <DialogPrimitive.Content className="fixed inset-y-0 left-0 z-50 flex w-[min(300px,85vw)] flex-col border-r border-border bg-surface shadow-overlay outline-none data-[state=open]:animate-sheet-in-left data-[state=closed]:animate-sheet-out-left lg:hidden">
+        <DialogPrimitive.Content className="fixed inset-y-0 left-0 z-50 flex w-[min(300px,85vw)] flex-col border-r border-border/40 bg-surface shadow-overlay outline-none data-[state=open]:animate-sheet-in-left data-[state=closed]:animate-sheet-out-left lg:hidden">
           <DialogPrimitive.Title className="sr-only">Main menu</DialogPrimitive.Title>
           <DialogPrimitive.Description className="sr-only">Navigate to a section</DialogPrimitive.Description>
           <div className="flex h-16 shrink-0 items-center justify-between border-b border-border px-4">

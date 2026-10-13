@@ -37,7 +37,7 @@ fun StatCard(
     onClick: (() -> Unit)? = null,
     footer: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
-    AppCard(modifier = modifier, onClick = onClick, verticalSpacing = 4.dp) {
+    AppCard(modifier = modifier, onClick = onClick, verticalSpacing = 8.dp) {
         if (icon != null || onClick != null) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 if (icon != null) IconTile(icon, tone)
@@ -51,7 +51,7 @@ fun StatCard(
                     )
                 }
             }
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(8.dp))
         }
         AnimatedValueText(value, style = MaterialTheme.typography.headlineSmall, color = AppColors.TextPrimary)
         Text(

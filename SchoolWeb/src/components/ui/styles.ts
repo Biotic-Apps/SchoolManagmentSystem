@@ -10,10 +10,10 @@ export const fieldBase =
   "aria-invalid:border-error aria-invalid:focus:border-error aria-invalid:focus:shadow-[inset_0_0_0_1px_var(--error)]";
 
 /** The one card surface: white, hairline border, barely-there shadow. */
-export const cardSurface = "rounded-card border border-border bg-surface shadow-card";
+export const cardSurface = "rounded-card border border-border bg-surface shadow-card transition-shadow duration-(--dur-quick) ease-standard hover:shadow-sm";
 
 /**
- * Clickable card ONLY (a link/button or a card wrapping one): border tints teal and the card lifts a pixel
+ * Clickable card ONLY (a link/button or a card wrapping one): border tints purple and the card lifts a pixel
  * on hover; presses back down. Never put this on a static card.
  */
 export const cardInteractive =
@@ -21,7 +21,7 @@ export const cardInteractive =
   "hover:-translate-y-px hover:border-primary/35 hover:shadow-raised active:translate-y-0 active:shadow-card " +
   "motion-reduce:hover:translate-y-0";
 
-/** Selected card / tile: soft mint with a teal border. */
+/** Selected card / tile: soft lavender with a purple border. */
 export const cardSelected = "border-primary bg-selected text-on-selected";
 
 /** Floating layer (menus, popovers, selects): white, hairline border, overlay shadow. */

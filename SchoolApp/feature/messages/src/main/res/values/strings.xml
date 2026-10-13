@@ -30,7 +30,8 @@
     <string name="messages_send">Send</string>
     <string name="messages_uploading">Uploading attachment…</string>
     <string name="messages_thread_closed_note">This conversation is closed. You can read it but not reply.</string>
-    <string name="messages_no_messages">No messages yet. Say hello.</string>
+    <string name="messages_no_messages_title">Start chatting</string>
+    <string name="messages_no_messages">No messages yet. Send the first one below.</string>
 
     <string name="messages_new_title">New message</string>
     <string name="messages_child">Child</string>
@@ -50,5 +51,6 @@
     <string name="messages_required">Required</string>
     <string name="messages_pick_student">Pick a student</string>
     <string name="messages_pick_child">Pick a child</string>
+    <string name="messages_compose_hint">Messages sent outside office hours are delivered silently.</string>
     <string name="messages_no_children">No linked children on your account.</string>
 </resources>

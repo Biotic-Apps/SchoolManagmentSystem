@@ -31,7 +31,7 @@ const STATUS_COLORS: Record<string, string> = {
   WAITLISTED: "bg-orange-100 text-orange-800",
   REJECTED: "bg-red-100 text-red-800",
   CONFIRMED: "bg-green-100 text-green-800",
-  ENROLLED: "bg-teal-100 text-teal-800",
+  ENROLLED: "bg-purple-100 text-purple-800",
   EXPIRED: "bg-gray-100 text-gray-600",
   WITHDRAWN: "bg-gray-100 text-gray-600",
 };

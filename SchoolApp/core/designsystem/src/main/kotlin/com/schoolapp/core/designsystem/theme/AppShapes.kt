@@ -4,19 +4,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes
 import androidx.compose.ui.unit.dp
 
-/** Three radii only: [Small] for icon tiles and segments, [Input] for fields and buttons, [Card] for cards, dialogs and sheets. */
+/** Five radii: [Small] for icon tiles and segments, [Medium] for fields and buttons, [Large] for cards, [ExtraLarge] for dialogs and sheets, [Full] for pill buttons. */
 object AppRadius {
-    val Small = 8.dp
-    val Input = 12.dp
-    val Card = 16.dp
+    val Small = 12.dp
+    val Medium = 16.dp
+    val Large = 20.dp
+    val ExtraLarge = 28.dp
+    val Full = 50.dp
 }
 
 internal val AppShapes = Shapes(
     extraSmall = RoundedCornerShape(AppRadius.Small),
-    small = RoundedCornerShape(AppRadius.Input),
-    medium = RoundedCornerShape(AppRadius.Card),
-    large = RoundedCornerShape(AppRadius.Card),
-    extraLarge = RoundedCornerShape(AppRadius.Card),
+    small = RoundedCornerShape(AppRadius.Small),
+    medium = RoundedCornerShape(AppRadius.Medium),
+    large = RoundedCornerShape(AppRadius.Large),
+    extraLarge = RoundedCornerShape(AppRadius.ExtraLarge),
 )
 
 object Borders {

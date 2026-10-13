@@ -68,11 +68,13 @@ fun AppCard(
             shape = shape,
             color = colors.container,
             border = border,
+            tonalElevation = 0.dp,
+            shadowElevation = 2.dp,
             interactionSource = interaction,
             content = body,
         )
     } else {
-        Surface(modifier = modifier, shape = shape, color = colors.container, border = border, content = body)
+        Surface(modifier = modifier, shape = shape, color = colors.container, border = border, tonalElevation = 0.dp, shadowElevation = 2.dp, content = body)
     }
 }
 

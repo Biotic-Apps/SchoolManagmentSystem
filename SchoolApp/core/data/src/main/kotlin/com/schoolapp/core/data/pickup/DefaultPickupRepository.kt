@@ -36,9 +36,9 @@ class DefaultPickupRepository @Inject constructor(
     override suspend fun requestEarlyLeave(input: EarlyLeaveInput): AppResult<EarlyLeave> =
         apiCaller.call { api.requestEarlyLeave(input.toBody()).data.toModel() }
 
-    override suspend fun earlyLeaves(branchId: String?, date: String?, status: EarlyLeaveStatus?): AppResult<List<EarlyLeave>> =
+    override suspend fun earlyLeaves(branchId: String?, date: String?, status: EarlyLeaveStatus?, studentId: String?): AppResult<List<EarlyLeave>> =
         apiCaller.call {
-            api.earlyLeaves(branchId, date, status?.name).data.map { it.toModel() }
+            api.earlyLeaves(branchId, date, status?.name, studentId).data.map { it.toModel() }
                 .sortedWith(compareBy({ it.date }, { it.time }))
         }
 

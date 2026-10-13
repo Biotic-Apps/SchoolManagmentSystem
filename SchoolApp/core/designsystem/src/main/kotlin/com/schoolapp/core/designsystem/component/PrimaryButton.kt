@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.motion.pressScale
 import com.schoolapp.core.designsystem.theme.AppColors
@@ -30,18 +31,18 @@ fun PrimaryButton(
     val pressed by interaction.collectIsPressedAsState()
     Button(
         onClick = onClick,
-        modifier = modifier.heightIn(min = 48.dp).pressScale(interaction, enabled && !loading),
+        modifier = modifier.heightIn(min = 52.dp).pressScale(interaction, enabled && !loading),
         interactionSource = interaction,
         enabled = enabled && !loading,
-        shape = MaterialTheme.shapes.small,
-        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
+        shape = RoundedCornerShape(16.dp),
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = if (pressed) AppColors.PrimaryPressed else AppColors.Primary,
             contentColor = AppColors.OnPrimary,
             disabledContainerColor = if (loading) AppColors.Primary else AppColors.Border,
             disabledContentColor = if (loading) AppColors.OnPrimary else AppColors.TextSecondary,
         ),
-        elevation = null,
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp, pressedElevation = 4.dp),
     ) {
         ButtonContent(text, loading, AppColors.OnPrimary, leadingIcon)
     }

@@ -57,7 +57,7 @@ class ParentPickupViewModel @Inject constructor(
         _uiState.value = ParentPickupUiState(isLoading = true, childId = childId, today = today)
         val (persons, leaves) = coroutineScope {
             val persons = async { pickupRepository.pickupPersons(childId) }
-            val leaves = async { pickupRepository.earlyLeaves() }
+            val leaves = async { pickupRepository.earlyLeaves(studentId = childId) }
             persons.await() to leaves.await()
         }
         _uiState.update { state ->

@@ -59,8 +59,8 @@ fun LoginScreen(
             val formColumn: @Composable (Modifier) -> Unit = { columnModifier ->
                 Box(columnModifier.verticalScroll(rememberScrollState()), contentAlignment = Alignment.Center) {
                     Column(
-                        modifier = Modifier.widthIn(max = 440.dp).fillMaxWidth().padding(24.dp),
-                        verticalArrangement = Arrangement.spacedBy(24.dp),
+                        modifier = Modifier.widthIn(max = 440.dp).fillMaxWidth().padding(horizontal = 32.dp, vertical = 40.dp),
+                        verticalArrangement = Arrangement.spacedBy(28.dp),
                     ) {
                         if (!twoPane) LoginHeader(brand)
                         val step = when {

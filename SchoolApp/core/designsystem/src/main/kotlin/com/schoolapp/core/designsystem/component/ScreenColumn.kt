@@ -29,7 +29,7 @@ fun ScreenColumn(
     modifier: Modifier = Modifier,
     maxWidth: Dp = ContentMaxWidth,
     contentPadding: PaddingValues = PaddingValues(16.dp),
-    itemSpacing: Dp = 12.dp,
+    itemSpacing: Dp = 16.dp,
     state: LazyListState = rememberLazyListState(),
     content: LazyListScope.() -> Unit,
 ) {

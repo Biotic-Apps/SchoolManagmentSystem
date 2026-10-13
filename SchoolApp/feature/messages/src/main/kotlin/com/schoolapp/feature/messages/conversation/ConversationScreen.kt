@@ -1,16 +1,24 @@
 package com.schoolapp.feature.messages.conversation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.runtime.Composable
@@ -21,6 +29,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppTextButton
@@ -30,8 +39,10 @@ import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.LoadingState
 import com.schoolapp.core.designsystem.component.StatusTone
+import com.schoolapp.core.designsystem.motion.rememberShimmerProgress
+import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.model.files.Attachment
-import com.schoolapp.core.ui.appErrorMessage
+import com.schoolapp.core.ui.loadErrorMessage
 import com.schoolapp.feature.messages.R
 import com.schoolapp.feature.messages.components.BubbleStatus
 import com.schoolapp.feature.messages.components.DaySeparator
@@ -56,9 +67,9 @@ internal class ConversationActions(
 @Composable
 internal fun ConversationScreen(state: ConversationUiState, actions: ConversationActions, modifier: Modifier = Modifier) {
     when {
-        state.isLoading -> LoadingState(modifier)
+        state.isLoading -> ChatLoadingSkeleton(modifier)
         state.error != null && state.thread == null ->
-            ErrorState(appErrorMessage(state.error), modifier, onRetry = actions.onRetryLoad)
+            ErrorState(loadErrorMessage(state.error), modifier, onRetry = actions.onRetryLoad)
         else -> Column(modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             ChatList(state, actions, Modifier.weight(1f).widthIn(max = ContentMaxWidth).fillMaxWidth())
             Box(Modifier.widthIn(max = ContentMaxWidth).fillMaxWidth()) {
@@ -89,7 +100,12 @@ private fun ChatList(state: ConversationUiState, actions: ConversationActions, m
         buildChatRows(state).asReversed()
     }
     if (rows.isEmpty()) {
-        EmptyState(stringResource(R.string.messages_no_messages), modifier, icon = Icons.AutoMirrored.Outlined.Chat)
+        EmptyState(
+            title = stringResource(R.string.messages_no_messages_title),
+            message = stringResource(R.string.messages_no_messages),
+            modifier = modifier,
+            icon = Icons.AutoMirrored.Outlined.Chat,
+        )
         return
     }
     val listState = rememberLazyListState()
@@ -139,6 +155,7 @@ private fun ChatRowItem(row: ChatRow, state: ConversationUiState, actions: Conve
             mine = row.mine,
             senderName = row.message.senderName,
             time = MessageTime.time(row.message.sentAt),
+            fullTimestamp = MessageTime.fullTimestamp(row.message.sentAt),
             status = when {
                 !row.mine -> BubbleStatus.RECEIVED
                 row.message.readByOthers -> BubbleStatus.READ
@@ -153,10 +170,64 @@ private fun ChatRowItem(row: ChatRow, state: ConversationUiState, actions: Conve
             mine = true,
             senderName = null,
             time = null,
+            fullTimestamp = null,
             status = if (row.message.failed) BubbleStatus.FAILED else BubbleStatus.SENDING,
             onOpenAttachment = actions.onOpenAttachment,
             onRetry = { actions.onRetrySend(row.message.tempId) },
         )
+    }
+}
+
+/** Chat-bubble loading skeleton that mimics a conversation layout. */
+@Composable
+private fun ChatLoadingSkeleton(modifier: Modifier = Modifier) {
+    val progress = rememberShimmerProgress()
+    Column(
+        modifier = modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Bottom),
+    ) {
+        SkeletonBubble(mine = false, widthFraction = 0.65f, progress = progress.value)
+        SkeletonBubble(mine = true, widthFraction = 0.55f, progress = progress.value)
+        SkeletonBubble(mine = false, widthFraction = 0.75f, progress = progress.value)
+        SkeletonBubble(mine = true, widthFraction = 0.45f, progress = progress.value)
+        SkeletonBubble(mine = false, widthFraction = 0.60f, progress = progress.value)
+    }
+}
+
+@Composable
+private fun SkeletonBubble(mine: Boolean, widthFraction: Float, progress: Float) {
+    val shape = if (mine) {
+        RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 4.dp)
+    } else {
+        RoundedCornerShape(topStart = 4.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp)
+    }
+    val shimmer = AppColors.Border.copy(alpha = 0.3f + 0.15f * progress)
+    val shimmerDark = AppColors.Border.copy(alpha = 0.15f + 0.1f * progress)
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = if (mine) Arrangement.End else Arrangement.Start,
+        verticalAlignment = Alignment.Bottom,
+    ) {
+        if (!mine) {
+            Box(
+                Modifier
+                    .size(28.dp)
+                    .clip(CircleShape)
+                    .background(shimmer)
+            )
+            Spacer(Modifier.width(8.dp))
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(widthFraction)
+                .clip(shape)
+                .background(shimmerDark)
+                .padding(horizontal = 12.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Box(Modifier.fillMaxWidth(0.9f).height(12.dp).clip(RoundedCornerShape(4.dp)).background(shimmer))
+            Box(Modifier.fillMaxWidth(0.6f).height(12.dp).clip(RoundedCornerShape(4.dp)).background(shimmer))
+        }
     }
 }
 

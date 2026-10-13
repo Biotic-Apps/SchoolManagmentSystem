@@ -22,7 +22,7 @@ interface StatCardProps {
 /** KPI tile: icon tile + label, a large value (eases only when it changes), and an optional secondary line. */
 export function StatCard({ label, value, hint, icon, tone = "primary", loading, interactive, className }: StatCardProps) {
   return (
-    <Card interactive={interactive} className={cn("flex h-full flex-col gap-4 p-5", className)}>
+    <Card interactive={interactive} className={cn("flex h-full flex-col gap-4 p-5 sm:p-6", className)}>
       <div className="flex items-center gap-3">
         {icon && <IconTile icon={icon} tone={tone} />}
         <span className="min-w-0 text-label font-medium text-fg-muted">{label}</span>
@@ -31,7 +31,7 @@ export function StatCard({ label, value, hint, icon, tone = "primary", loading, 
         {loading ? (
           <Skeleton className="h-9 w-20" />
         ) : (
-          <span className="text-[30px] font-semibold leading-9 tracking-[-0.02em] text-fg tabular-nums">
+          <span className="text-[28px] font-bold leading-9 tracking-[-0.02em] text-fg tabular-nums sm:text-[30px]">
             {value === undefined || value === null ? EMPTY_VALUE : <AnimatedNumber value={value} />}
           </span>
         )}

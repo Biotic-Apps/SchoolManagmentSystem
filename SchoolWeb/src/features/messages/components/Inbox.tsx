@@ -15,11 +15,16 @@ export function Inbox() {
   const open = !!inbox.selectedId;
 
   return (
-    <Card className="grid h-[calc(100dvh-14rem)] min-h-[32rem] grid-rows-1 overflow-hidden lg:grid-cols-[360px_1fr]">
-      <div className={cn("min-h-0 flex-col border-border lg:flex lg:border-r", open ? "hidden" : "flex")}>
+    <Card className="grid h-[calc(100dvh-14rem)] min-h-[32rem] grid-rows-1 overflow-hidden lg:grid-cols-[380px_1fr]">
+      <div
+        className={cn(
+          "min-h-0 flex-col border-border transition-all lg:flex lg:border-r lg:bg-surface",
+          open ? "hidden" : "flex",
+        )}
+      >
         <ThreadList inbox={inbox} />
       </div>
-      <div className={cn("min-h-0 min-w-0 flex-col lg:flex", open ? "flex" : "hidden")}>
+      <div className={cn("min-h-0 min-w-0 flex-col transition-all lg:flex", open ? "flex" : "hidden")}>
         {inbox.selectedId ? (
           <Conversation
             key={`${inbox.selectedId}:${inbox.scope}`}
@@ -30,9 +35,9 @@ export function Inbox() {
         ) : (
           <EmptyState
             icon={MessagesSquare}
-            title="Pick a conversation"
-            description="Choose a thread to read and reply."
-            className="h-full"
+            title="No conversation selected"
+            description="Select a thread from the list to view messages and reply."
+            className="h-full opacity-80"
           />
         )}
       </div>

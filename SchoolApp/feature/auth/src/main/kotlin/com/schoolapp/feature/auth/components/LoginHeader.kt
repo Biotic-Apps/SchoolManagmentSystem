@@ -19,11 +19,11 @@ import com.schoolapp.feature.auth.branding.LoginBrandUiState
 
 @Composable
 internal fun LoginHeader(brand: LoginBrandUiState, modifier: Modifier = Modifier) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         BrandMark(logoUrl = brand.logoUrl, color = brand.color)
         Text(
             text = brand.name ?: stringResource(R.string.auth_title),
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineMedium,
             color = AppColors.TextPrimary,
             modifier = Modifier.semantics { heading() },
         )

@@ -44,8 +44,8 @@ export function NavSearch({ value, onChange, onSubmit }: NavSearchProps) {
         placeholder="Search menu…"
         aria-label="Search menu"
         className={cn(
-          "h-9 w-full rounded-lg border border-border bg-background pl-9 pr-14 text-label text-fg placeholder:text-fg-muted",
-          "outline-none transition-colors focus:border-primary focus:bg-surface [&::-webkit-search-cancel-button]:hidden",
+          "h-9 w-full rounded-full border border-border/60 bg-background/60 pl-9 pr-14 text-label text-fg placeholder:text-fg-muted/60",
+          "outline-none transition-all duration-200 focus:border-primary/40 focus:bg-surface focus:shadow-sm [&::-webkit-search-cancel-button]:hidden",
         )}
       />
       {value ? (

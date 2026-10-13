@@ -1,6 +1,7 @@
 package com.schoolapp.core.designsystem.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -28,7 +29,7 @@ fun PersonAvatar(
     size: Dp = 40.dp,
 ) {
     Box(
-        modifier = modifier.size(size).clip(CircleShape).background(AppColors.Selected),
+        modifier = modifier.size(size).border(width = 1.5.dp, color = AppColors.Border, shape = CircleShape).clip(CircleShape).background(AppColors.Selected),
         contentAlignment = Alignment.Center,
     ) {
         Text(

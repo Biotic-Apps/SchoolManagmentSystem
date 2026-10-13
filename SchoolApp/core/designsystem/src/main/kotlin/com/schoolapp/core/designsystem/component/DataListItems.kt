@@ -44,7 +44,7 @@ fun <T> LazyListScope.dataListItems(
 
 @Composable
 private fun DataListCell(isFirst: Boolean, isLast: Boolean, content: @Composable () -> Unit) {
-    val radius = AppRadius.Card
+    val radius = AppRadius.Large
     val top = if (isFirst) radius else 0.dp
     val bottom = if (isLast) radius else 0.dp
     val shape = RoundedCornerShape(topStart = top, topEnd = top, bottomStart = bottom, bottomEnd = bottom)

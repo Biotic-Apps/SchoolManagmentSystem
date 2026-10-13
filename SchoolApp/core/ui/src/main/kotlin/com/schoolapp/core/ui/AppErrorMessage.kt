@@ -23,6 +23,18 @@ fun appErrorMessage(error: AppError): String = when (error) {
     is AppError.Unknown -> stringResource(R.string.ui_error_unknown)
 }
 
+/**
+ * Error text for a data-loading context (no form visible).
+ * VALIDATION_FAILED is form-centric ("Some details are not valid") which is confusing
+ * when it appears on a screen that only loads data. Replace it with a generic load error.
+ */
+@Composable
+@ReadOnlyComposable
+fun loadErrorMessage(error: AppError): String = when (error) {
+    is AppError.Validation -> stringResource(R.string.ui_error_load)
+    else -> appErrorMessage(error)
+}
+
 private const val NOT_FOUND = 404
 private const val CONFLICT = 409
 private const val LOCKED = 423

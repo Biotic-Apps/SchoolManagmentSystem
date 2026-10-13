@@ -3,7 +3,11 @@ package com.schoolapp.feature.messages.newthread
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
@@ -19,6 +23,7 @@ import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.SectionHeader
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.designsystem.component.SwitcherOption
+import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.model.people.StudentSummary
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.messages.R
@@ -40,6 +45,12 @@ internal class NewThreadActions(
 internal fun NewThreadScreen(state: NewThreadUiState, actions: NewThreadActions, modifier: Modifier = Modifier) {
     ScreenColumn(modifier.imePadding()) {
         if (state.isParent) parentRecipient(state, actions) else staffRecipient(state, actions)
+        item(key = "divider") {
+            HorizontalDivider(
+                color = AppColors.Border,
+                modifier = Modifier.padding(vertical = 8.dp),
+            )
+        }
         item(key = "subject") {
             AppTextField(
                 value = state.subject,
@@ -59,6 +70,14 @@ internal fun NewThreadScreen(state: NewThreadUiState, actions: NewThreadActions,
             )
         }
         state.error?.let { error -> item(key = "error") { InlineMessage(appErrorMessage(error), StatusTone.Error) } }
+        item(key = "hint_compose") {
+            Text(
+                text = stringResource(R.string.messages_compose_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = AppColors.TextSecondary.copy(alpha = 0.7f),
+                modifier = Modifier.padding(horizontal = 4.dp),
+            )
+        }
         item(key = "send") {
             PrimaryButton(
                 text = stringResource(R.string.messages_send),

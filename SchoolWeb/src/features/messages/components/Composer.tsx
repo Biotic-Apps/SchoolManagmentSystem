@@ -16,24 +16,31 @@ export function Composer({ threadId }: { threadId: string }) {
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={composer.submit} noValidate className="flex flex-col gap-3 border-t border-border p-4">
+      <form onSubmit={composer.submit} noValidate className="flex flex-col gap-2 border-t border-border bg-surface p-3">
         <FormAlert message={composer.formError} />
         {composer.silent && <InlineNotice>{SILENT_DELIVERY_TEXT}</InlineNotice>}
-        <Textarea
-          rows={3}
-          placeholder="Write a reply"
-          aria-label="Reply"
-          onKeyDown={composer.onKeyDown}
-          {...form.register("body")}
-        />
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <AttachmentsField key={composer.resetKey} name="attachmentFileIds" label="Attach files" max={3} />
-          <Button type="submit" loading={composer.submitting} disabled={!composer.canSend} className="self-end">
-            <SendHorizontal />
-            Send
+        <div className="flex items-end gap-2">
+          <Textarea
+            rows={2}
+            placeholder="Write a reply..."
+            aria-label="Reply"
+            onKeyDown={composer.onKeyDown}
+            className="rounded-xl"
+            {...form.register("body")}
+          />
+          <Button
+            type="submit"
+            loading={composer.submitting}
+            disabled={!composer.canSend}
+            className="h-10 w-10 shrink-0 rounded-full bg-primary p-0 text-on-primary"
+          >
+            <SendHorizontal className="h-4 w-4" />
           </Button>
         </div>
-        <p className="text-caption text-fg-muted">
+        <div className="flex items-center justify-between">
+          <AttachmentsField key={composer.resetKey} name="attachmentFileIds" label="Attach files" max={3} />
+        </div>
+        <p className="text-xs text-fg-muted/70">
           Messages sent outside office hours are delivered without a notification until the school day starts.
         </p>
       </form>

@@ -21,7 +21,7 @@ export function ChildHeaderCard({ child, today }: { child: ParentHomeChild; toda
   return (
     <Card className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:p-6">
       <div className="flex min-w-0 items-center gap-4">
-        <PersonAvatar name={child.name} photoUrl={child.photoUrl} size="lg" className="ring-4 ring-selected" />
+        <PersonAvatar name={child.name} photoUrl={child.photoUrl} size="lg" className="ring-4 ring-primary/20" />
         <div className="flex min-w-0 flex-col gap-1">
           <h2 className="truncate text-card-title font-semibold text-fg">{child.name}</h2>
           <div className="flex flex-wrap items-center gap-2 text-label text-fg-muted">

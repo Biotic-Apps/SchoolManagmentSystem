@@ -1,12 +1,15 @@
 package com.schoolapp.feature.messages.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,28 +44,50 @@ internal fun ThreadRow(
     val unread = thread.unreadCount > 0
     val otherName = thread.participants.firstOrNull { it.userId != myUserId }?.name ?: thread.studentName ?: thread.subject
     AppCard(modifier = modifier, onClick = onClick, contentPadding = 0.dp) {
-        Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            PersonAvatar(name = otherName, photoUrl = null, size = 44.dp)
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(
+            Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Box {
+                PersonAvatar(name = otherName, photoUrl = null, size = 44.dp)
+                if (unread) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .size(10.dp)
+                            .clip(CircleShape)
+                            .background(AppColors.Primary)
+                            .border(BorderStroke(1.5.dp, AppColors.Surface), CircleShape)
+                    )
+                }
+            }
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Top) {
                     Text(
                         text = thread.subject,
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = if (unread) FontWeight.Bold else FontWeight.SemiBold,
                         color = AppColors.TextPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f),
                     )
                     MessageTime.listLabel(thread.lastMessageAt, today)?.let {
-                        Text(it, style = MaterialTheme.typography.labelSmall, color = if (unread) AppColors.Primary else AppColors.TextSecondary)
+                        Text(
+                            it,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = if (unread) FontWeight.SemiBold else FontWeight.Normal,
+                            color = if (unread) AppColors.Primary else AppColors.TextSecondary,
+                        )
                     }
                 }
                 studentLine(thread)?.let {
-                    Text(it, style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = preview(thread),
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodySmall,
                         color = if (unread) AppColors.TextPrimary else AppColors.TextSecondary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,

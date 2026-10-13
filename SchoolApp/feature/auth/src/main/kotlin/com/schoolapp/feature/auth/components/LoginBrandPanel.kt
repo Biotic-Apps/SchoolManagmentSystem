@@ -17,7 +17,7 @@ import com.schoolapp.feature.auth.branding.LoginBrandUiState
 /** Left pane on expanded widths. */
 @Composable
 internal fun LoginBrandPanel(brand: LoginBrandUiState, modifier: Modifier = Modifier) {
-    Box(modifier.background(AppColors.Selected).padding(32.dp), contentAlignment = Alignment.Center) {
+    Box(modifier.background(AppColors.Selected).padding(48.dp), contentAlignment = Alignment.Center) {
         LoginHeader(brand, Modifier.widthIn(max = 360.dp))
     }
 }

@@ -60,7 +60,7 @@ internal fun ProofReviewSheet(
         val fileUrl = proof.fileUrl
         if (fileUrl != null) {
             AttachmentChips(
-                items = listOf(AttachmentChipItem(proof.id, stringResource(R.string.fees_proof_file), proof.fileMime?.startsWith("image/") == true)),
+                items = listOf(AttachmentChipItem(proof.id, stringResource(R.string.fees_proof_file), proof.fileMime?.startsWith("image/") == true, fileUrl)),
                 onOpen = { onOpenFile(fileUrl) },
             )
         } else {

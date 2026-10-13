@@ -19,14 +19,14 @@ export function errorId(id: string) {
 
 export function FormField({ id, label, error, hint, required, className, children }: FormFieldProps) {
   return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
-      <Label htmlFor={id}>
+    <div className={cn("flex flex-col gap-2", className)}>
+      <Label htmlFor={id} className="text-label font-medium text-fg">
         {label}
         {required && <span className="ml-0.5 text-error">*</span>}
       </Label>
       {children}
       {error?.message ? (
-        <p id={errorId(id)} role="alert" className="animate-fade-in text-caption text-error">
+        <p id={errorId(id)} role="alert" className="animate-fade-in text-caption font-medium text-error">
           {error.message}
         </p>
       ) : (

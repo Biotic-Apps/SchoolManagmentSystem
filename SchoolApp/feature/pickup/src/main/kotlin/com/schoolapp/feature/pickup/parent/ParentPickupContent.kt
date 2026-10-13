@@ -17,7 +17,7 @@ import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.SectionHeader
 import com.schoolapp.core.designsystem.component.StatusChip
 import com.schoolapp.core.designsystem.component.StatusTone
-import com.schoolapp.core.ui.appErrorMessage
+import com.schoolapp.core.ui.loadErrorMessage
 import com.schoolapp.feature.pickup.R
 import com.schoolapp.feature.pickup.components.BorderedList
 import com.schoolapp.feature.pickup.components.EarlyLeaveCard
@@ -41,7 +41,7 @@ internal fun ParentPickupContent(
             modifier = modifier,
             icon = Icons.Outlined.FamilyRestroom,
         )
-        state.error != null -> ErrorState(appErrorMessage(state.error), modifier, onRetry = onRetry)
+        state.error != null -> ErrorState(loadErrorMessage(state.error), modifier, onRetry = onRetry)
         else -> ScreenColumn(modifier) {
             state.message?.let { message ->
                 item(key = "message") {

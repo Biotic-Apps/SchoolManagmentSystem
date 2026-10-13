@@ -1,12 +1,16 @@
 package com.schoolapp.feature.messages.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
@@ -22,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -51,7 +56,7 @@ internal fun MessageComposer(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier.fillMaxWidth().background(AppColors.Surface)) {
-        HorizontalDivider(color = AppColors.Border)
+        HorizontalDivider(color = AppColors.Border, thickness = 0.5.dp)
         Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             attachError?.let { InlineMessage(appErrorMessage(it), StatusTone.Error, Modifier.padding(horizontal = 8.dp)) }
             if (uploading) {
@@ -62,22 +67,20 @@ internal fun MessageComposer(
                     modifier = Modifier.padding(horizontal = 8.dp),
                 )
             }
-            AttachmentChips(
-                items = attachments.map { AttachmentChipItem(it.id, it.name.orEmpty(), it.isImage) },
-                onRemove = { onRemoveAttachment(it.id) },
-                modifier = Modifier.padding(horizontal = 8.dp),
-            )
-            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                IconButton(onClick = onAttach) {
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                IconButton(onClick = onAttach, modifier = Modifier.size(44.dp)) {
                     Icon(Icons.Outlined.AttachFile, contentDescription = stringResource(R.string.messages_attach), tint = AppColors.TextSecondary)
                 }
                 OutlinedTextField(
                     value = draft,
                     onValueChange = onDraftChange,
-                    modifier = Modifier.weight(1f).heightIn(min = 48.dp),
+                    modifier = Modifier.weight(1f).heightIn(min = 44.dp, max = 120.dp),
                     placeholder = { Text(stringResource(R.string.messages_composer_hint)) },
                     maxLines = 5,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(24.dp),
                     keyboardOptions = FieldKind.Sentence.keyboardOptions(ImeAction.Send),
                     keyboardActions = KeyboardActions(onSend = { if (canSend) onSend() }),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -90,14 +93,27 @@ internal fun MessageComposer(
                         unfocusedPlaceholderColor = AppColors.TextSecondary,
                     ),
                 )
-                IconButton(onClick = onSend, enabled = canSend) {
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(CircleShape)
+                        .background(if (canSend) AppColors.Primary else AppColors.Border.copy(alpha = 0.5f))
+                        .clickable(enabled = canSend, onClick = onSend),
+                    contentAlignment = Alignment.Center,
+                ) {
                     Icon(
                         Icons.AutoMirrored.Outlined.Send,
                         contentDescription = stringResource(R.string.messages_send),
-                        tint = if (canSend) AppColors.Primary else AppColors.Border,
+                        tint = if (canSend) AppColors.OnPrimary else AppColors.TextSecondary,
+                        modifier = Modifier.size(20.dp),
                     )
                 }
             }
+            AttachmentChips(
+                items = attachments.map { AttachmentChipItem(it.id, it.name.orEmpty(), it.isImage, it.url) },
+                onRemove = { onRemoveAttachment(it.id) },
+                modifier = Modifier.padding(horizontal = 8.dp),
+            )
         }
     }
 }

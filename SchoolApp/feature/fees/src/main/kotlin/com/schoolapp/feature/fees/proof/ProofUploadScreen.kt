@@ -97,7 +97,7 @@ private fun ProofForm(state: ProofUploadUiState, currency: String, actions: Proo
         } else {
             AttachmentChips(
                 items = listOf(
-                    AttachmentChipItem(file.uri, file.name ?: stringResource(R.string.fees_proof_file), file.mime?.startsWith("image/") == true),
+                    AttachmentChipItem(file.uri, file.name ?: stringResource(R.string.fees_proof_file), file.mime?.startsWith("image/") == true, file.uri),
                 ),
                 onRemove = if (enabled) ({ actions.onRemoveFile() }) else null,
             )

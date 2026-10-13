@@ -14,7 +14,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-primary text-on-primary shadow-[0_1px_2px_rgb(11_127_116/0.25),inset_0_1px_0_rgb(255_255_255/0.12)] hover:bg-primary-hover hover:shadow-[0_3px_8px_-2px_rgb(11_127_116/0.35),inset_0_1px_0_rgb(255_255_255/0.12)] active:bg-primary-hover active:shadow-[0_1px_2px_rgb(11_127_116/0.25),inset_0_1px_0_rgb(255_255_255/0.12)]",
+        primary: "bg-primary text-on-primary shadow-[0_1px_2px_rgb(123_104_238/0.25),inset_0_1px_0_rgb(255_255_255/0.12)] hover:bg-primary-hover hover:shadow-[0_3px_8px_-2px_rgb(123_104_238/0.35),inset_0_1px_0_rgb(255_255_255/0.12)] active:bg-primary-hover active:shadow-[0_1px_2px_rgb(123_104_238/0.25),inset_0_1px_0_rgb(255_255_255/0.12)]",
         secondary: "border border-border-strong bg-surface text-fg shadow-xs hover:border-primary/45 hover:bg-selected hover:text-on-selected hover:shadow-sm active:shadow-xs",
         ghost: "text-fg hover:bg-selected hover:text-on-selected",
         danger: "border border-error/30 bg-error-soft text-error hover:border-error/60 hover:bg-[#fbe1de]",

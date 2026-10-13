@@ -1,7 +1,7 @@
 <resources>
     <string name="auth_title">eSchool</string>
     <string name="auth_subtitle">Sign in to continue</string>
-    <string name="auth_identifier_label_any">Email, phone, username or admission no.</string>
+    <string name="auth_identifier_label_any">Email or phone</string>
     <string name="auth_identifier_label">Email, phone or admission number</string>
     <string name="auth_password_label">Password</string>
     <string name="auth_sign_in">Sign in</string>

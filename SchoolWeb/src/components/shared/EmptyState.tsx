@@ -15,13 +15,13 @@ interface EmptyStateProps {
 
 export function EmptyState({ title, description, icon = Inbox, action, tone = "primary", className }: EmptyStateProps) {
   return (
-    <div className={cn("flex animate-fade-in flex-col items-center justify-center gap-3 px-6 py-12 text-center", className)}>
-      <span className="rounded-[18px] bg-background p-2 ring-1 ring-border/70">
+    <div className={cn("flex animate-fade-in flex-col items-center justify-center gap-4 px-6 py-16 text-center", className)}>
+      <div className="rounded-2xl bg-primary/5 p-4 ring-1 ring-primary/10">
         <IconTile icon={icon} tone={tone} size="lg" />
-      </span>
-      <div className="flex max-w-sm flex-col gap-1">
-        <p className="text-body font-medium text-fg">{title}</p>
-        {description && <p className="text-label text-fg-muted">{description}</p>}
+      </div>
+      <div className="flex max-w-sm flex-col gap-1.5">
+        <p className="text-body font-semibold text-fg">{title}</p>
+        {description && <p className="text-label leading-relaxed text-fg-muted">{description}</p>}
       </div>
       {action}
     </div>

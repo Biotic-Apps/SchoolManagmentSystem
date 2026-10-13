@@ -43,14 +43,15 @@ fun EmptyState(
         Column(
             modifier = Modifier.widthIn(max = 420.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Box(
-                modifier = Modifier.size(56.dp).background(colors.container, CircleShape),
+                modifier = Modifier.size(72.dp).background(colors.container, CircleShape),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(icon, contentDescription = null, tint = colors.content, modifier = Modifier.size(28.dp))
+                Icon(icon, contentDescription = null, tint = colors.content, modifier = Modifier.size(36.dp))
             }
+            Spacer(Modifier.height(4.dp))
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,

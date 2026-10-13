@@ -17,11 +17,13 @@ import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.PrimaryButton
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.SectionHeader
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.ui.appErrorMessage
+import com.schoolapp.core.ui.loadErrorMessage
 import com.schoolapp.feature.messages.R
 import com.schoolapp.feature.messages.components.ParentShortcuts
 import com.schoolapp.feature.messages.components.ThreadRow
@@ -43,22 +45,33 @@ internal fun ThreadsScreen(
                 }
                 item(key = "header") { SectionHeader(stringResource(R.string.messages_threads_header)) }
                 when {
-                    state.isLoading -> item(key = "loading") { LoadingState() }
+                    state.isLoading -> item(key = "loading") { LoadingState(rows = 4) }
                     state.error != null && state.threads.isEmpty() -> item(key = "error") {
-                        ErrorState(appErrorMessage(state.error), onRetry = onRefresh)
+                        ErrorState(loadErrorMessage(state.error), onRetry = onRefresh)
                     }
                     state.threads.isEmpty() -> item(key = "empty") {
                         EmptyState(
                             title = stringResource(R.string.messages_empty_title),
                             message = stringResource(R.string.messages_empty_message),
                             icon = Icons.AutoMirrored.Outlined.Chat,
+                            action = {
+                                PrimaryButton(
+                                    text = stringResource(R.string.messages_new_message),
+                                    onClick = onNewMessage,
+                                    leadingIcon = Icons.Outlined.Edit,
+                                )
+                            },
                         )
                     }
                     else -> {
                         state.error?.let { error -> item(key = "stale") { InlineMessage(appErrorMessage(error), StatusTone.Error) } }
                         items(state.threads.size, key = { state.threads[it].id }) { index ->
                             val thread = state.threads[index]
-                            ThreadRow(thread, state.myUserId, state.today, onClick = { onOpenThread(thread.id) })
+                            ThreadRow(
+                                thread, state.myUserId, state.today,
+                                onClick = { onOpenThread(thread.id) },
+                                modifier = Modifier.padding(bottom = if (index < state.threads.size - 1) 8.dp else 0.dp),
+                            )
                         }
                     }
                 }

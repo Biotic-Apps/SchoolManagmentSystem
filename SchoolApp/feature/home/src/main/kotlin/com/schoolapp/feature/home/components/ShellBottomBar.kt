@@ -1,14 +1,16 @@
 package com.schoolapp.feature.home.components
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.designsystem.theme.SchoolTheme
@@ -33,9 +35,8 @@ internal fun ShellBottomBar(
         unselectedIconColor = AppColors.TextSecondary,
         unselectedTextColor = AppColors.TextSecondary,
     )
-    Column(modifier) {
-        HorizontalDivider(color = AppColors.Border)
-        NavigationBar(containerColor = AppColors.Surface, tonalElevation = NoElevation) {
+    Column(modifier.shadow(4.dp, RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp), clip = false)) {
+        NavigationBar(containerColor = AppColors.Surface, tonalElevation = 3.dp) {
             items.forEach { item ->
                 NavigationBarItem(
                     selected = item.id == selectedId,

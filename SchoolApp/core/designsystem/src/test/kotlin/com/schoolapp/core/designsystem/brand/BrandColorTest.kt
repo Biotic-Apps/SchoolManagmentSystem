@@ -11,14 +11,14 @@ import org.junit.Test
 class BrandColorTest {
 
     @Test
-    fun default_teal_passes_aa_contrast() {
-        assertEquals(Color(0xFF0B7F74), BrandColor.contrastSafeOrNull("#0B7F74"))
-        assertTrue(BrandColor.contrastAgainstWhite(Color(0xFF0B7F74)) >= BrandColor.MIN_CONTRAST)
+    fun dark_purple_passes_aa_contrast() {
+        assertEquals(Color(0xFF3B1F8C), BrandColor.contrastSafeOrNull("#3B1F8C"))
+        assertTrue(BrandColor.contrastAgainstWhite(Color(0xFF3B1F8C)) >= BrandColor.MIN_CONTRAST)
     }
 
     @Test
-    fun default_token_is_the_teal_primary() {
-        assertEquals(Color(0xFF0B7F74), AppColors.Primary)
+    fun default_token_is_the_purple_primary() {
+        assertEquals(Color(0xFF7B68EE), AppColors.Primary)
     }
 
     @Test
@@ -49,8 +49,8 @@ class BrandColorTest {
 
     @Test
     fun hash_is_optional_and_whitespace_trimmed() {
-        assertEquals(Color(0xFF0B7F74), BrandColor.contrastSafeOrNull("0B7F74"))
-        assertEquals(Color(0xFF0B7F74), BrandColor.contrastSafeOrNull(" #0b7f74 "))
+        assertEquals(Color(0xFF3B1F8C), BrandColor.contrastSafeOrNull("3B1F8C"))
+        assertEquals(Color(0xFF3B1F8C), BrandColor.contrastSafeOrNull(" #3b1f8c "))
     }
 
     @Test

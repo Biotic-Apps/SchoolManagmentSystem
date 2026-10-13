@@ -31,7 +31,7 @@ export function UserMenu({ name, email, onSignOut }: UserMenuProps) {
           focusRing,
         )}
       >
-        <span className="grid size-9 place-items-center rounded-full bg-[linear-gradient(140deg,#e6f5f2,#cdeae4)] text-label font-semibold text-on-selected ring-1 ring-inset ring-primary/15">
+        <span className="grid size-9 place-items-center rounded-full bg-primary text-label font-semibold text-on-primary shadow-xs">
           {initials(name)}
         </span>
         <span className="hidden max-w-36 truncate text-label font-medium text-fg md:block">{name}</span>

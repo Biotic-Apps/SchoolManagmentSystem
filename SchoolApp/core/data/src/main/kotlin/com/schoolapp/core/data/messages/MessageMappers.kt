@@ -36,12 +36,19 @@ internal fun MessageDto.toModel(fallbackThreadId: String) = ChatMessage(
     readByOthers = readByOthers,
 )
 
-/** Messages oldest first; [cursor] pages older messages. */
-internal fun ThreadDetailDto.toModel(cursor: String?) = ThreadDetail(
-    thread = thread.toModel(),
-    messages = messages.map { it.toModel(thread.id) }.sortedBy { it.sentAt },
-    olderCursor = cursor ?: nextCursor,
-)
+/**
+ * Messages oldest first; [cursor] pages older messages.
+ * The `before` param expects an ISO timestamp, not a message id.
+ * Prefer the server's `meta.nextCursor`; fall back to the oldest message's `sentAt`.
+ */
+internal fun ThreadDetailDto.toModel(cursor: String?) : ThreadDetail {
+    val sorted = messages.map { it.toModel(thread.id) }.sortedBy { it.sentAt }
+    return ThreadDetail(
+        thread = thread.toModel(),
+        messages = sorted,
+        olderCursor = cursor ?: sorted.firstOrNull()?.sentAt,
+    )
+}
 
 /** Threads with the newest activity first. */
 internal fun List<MessageThread>.newestFirst(): List<MessageThread> = sortedByDescending { it.lastMessageAt.orEmpty() }

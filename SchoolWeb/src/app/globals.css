@@ -2,26 +2,32 @@
 @import "./styles/motion.css";
 
 :root {
-  --primary: #0b7f74;
-  --primary-hover: #096a61;
+  --primary: #7B68EE;
+  --primary-hover: #6A5ACD;
   --on-primary: #ffffff;
-  --background: #f5faf9;
+  --background: #E8E0FF;
   --surface: #ffffff;
-  --selected: #e6f5f2;
-  --on-selected: #075f57;
-  --text-primary: #1f2a2e;
-  --text-secondary: #5f6e72;
-  --border: #dce8e5;
-  --border-strong: #c3d6d2;
+  --selected: #EDE9FE;
+  --on-selected: #4C3D99;
+  --text-primary: #1F2037;
+  --text-secondary: #6B7280;
+  --border: #DDD6FE;
+  --border-strong: #C4B5FD;
 
-  --success: #1f7a45;
-  --success-soft: #e8f5ec;
-  --warning: #8a5a00;
-  --warning-soft: #fdf3dc;
-  --error: #b42318;
-  --error-soft: #fdecea;
-  --info: #2e5e8c;
-  --info-soft: #e8f0f8;
+  --success: #059669;
+  --success-soft: #ECFDF5;
+  --warning: #D97706;
+  --warning-soft: #FFFBEB;
+  --error: #DC2626;
+  --error-soft: #FEF2F2;
+  --info: #2563EB;
+  --info-soft: #EFF6FF;
+
+  /* Category accent palette */
+  --accent-purple: #8B7AE8;
+  --accent-green: #34D399;
+  --accent-cyan: #38BDF8;
+  --accent-pink: #FB7185;
 }
 
 @theme inline {
@@ -46,6 +52,11 @@
   --color-info: var(--info);
   --color-info-soft: var(--info-soft);
 
+  --color-accent-purple: var(--accent-purple);
+  --color-accent-green: var(--accent-green);
+  --color-accent-cyan: var(--accent-cyan);
+  --color-accent-pink: var(--accent-pink);
+
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
   --text-page-title: 28px;
@@ -59,18 +70,18 @@
   --text-caption: 13px;
   --text-caption--line-height: 18px;
 
-  --radius-input: 10px;
-  --radius-card: 14px;
+  --radius-input: 12px;
+  --radius-card: 16px;
   --radius-tile: 12px;
 
-  /* Soft, teal-tinted elevation. Cards barely lift; overlays float. */
-  --shadow-xs: 0 1px 2px rgb(16 42 40 / 0.05);
-  --shadow-sm: 0 1px 2px rgb(16 42 40 / 0.04), 0 2px 6px -2px rgb(16 42 40 / 0.06);
-  --shadow-md: 0 6px 16px -6px rgb(16 42 40 / 0.12);
-  --shadow-lg: 0 16px 40px -12px rgb(16 42 40 / 0.2), 0 2px 6px rgb(16 42 40 / 0.05);
-  --shadow-card: 0 1px 2px rgb(16 42 40 / 0.04);
-  --shadow-raised: 0 8px 20px -10px rgb(11 127 116 / 0.28), 0 1px 2px rgb(16 42 40 / 0.04);
-  --shadow-overlay: 0 24px 56px -16px rgb(16 42 40 / 0.28), 0 2px 8px rgb(16 42 40 / 0.06);
+  /* Soft, purple-tinted elevation. Cards barely lift; overlays float. */
+  --shadow-xs: 0 1px 2px rgb(123 104 238 / 0.05);
+  --shadow-sm: 0 1px 2px rgb(123 104 238 / 0.04), 0 2px 6px -2px rgb(123 104 238 / 0.06);
+  --shadow-md: 0 6px 16px -6px rgb(123 104 238 / 0.12);
+  --shadow-lg: 0 16px 40px -12px rgb(123 104 238 / 0.2), 0 2px 6px rgb(123 104 238 / 0.05);
+  --shadow-card: 0 1px 3px rgb(123 104 238 / 0.06);
+  --shadow-raised: 0 8px 20px -10px rgb(123 104 238 / 0.28), 0 1px 2px rgb(123 104 238 / 0.04);
+  --shadow-overlay: 0 24px 56px -16px rgb(123 104 238 / 0.28), 0 2px 8px rgb(123 104 238 / 0.06);
 }
 
 @layer base {

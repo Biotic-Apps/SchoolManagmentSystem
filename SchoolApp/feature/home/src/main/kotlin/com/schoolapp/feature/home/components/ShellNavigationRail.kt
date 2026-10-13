@@ -9,12 +9,13 @@ import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.designsystem.theme.SchoolTheme
 import com.schoolapp.core.navigation.MenuItem
@@ -35,7 +36,7 @@ internal fun ShellNavigationRail(
         unselectedIconColor = AppColors.TextSecondary,
         unselectedTextColor = AppColors.TextSecondary,
     )
-    Row(modifier.fillMaxHeight()) {
+    Row(modifier.fillMaxHeight().shadow(4.dp, clip = false)) {
         NavigationRail(containerColor = AppColors.Surface) {
             // Every destination, scrollable so all stay reachable on short (landscape) screens; no "More".
             Column(Modifier.verticalScroll(rememberScrollState())) {
@@ -52,7 +53,6 @@ internal fun ShellNavigationRail(
                 }
             }
         }
-        VerticalDivider(color = AppColors.Border)
     }
 }
 

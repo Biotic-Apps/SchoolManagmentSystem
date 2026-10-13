@@ -25,11 +25,11 @@ export function PageHeader({ title, description, icon, actions, className }: Pag
       <div className="flex min-w-0 items-center gap-3.5">
         {tileIcon && <IconTile icon={tileIcon} size="lg" className="hidden sm:grid" />}
         <div className="flex min-w-0 flex-col gap-1">
-          <h1 className="text-[24px] font-semibold leading-8 tracking-[-0.02em] text-fg sm:text-page-title">{title}</h1>
+          <h1 className="text-[24px] font-bold leading-8 tracking-[-0.02em] text-fg sm:text-page-title">{title}</h1>
           {description && <p className="max-w-3xl text-label text-fg-muted">{description}</p>}
         </div>
       </div>
-      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap items-center gap-2.5">{actions}</div>}
     </header>
   );
 }

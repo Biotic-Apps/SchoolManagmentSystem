@@ -39,7 +39,7 @@ export function useThreadMessages(id: string | null, scope?: string) {
     getNextPageParam: (page) => {
       const oldest = sortBySent(page.messages)[0];
       const more = page.cursor?.hasMore ?? page.messages.length >= MESSAGE_PAGE_SIZE;
-      return more && oldest ? (page.cursor?.nextCursor ?? oldest.id) : undefined;
+      return more && oldest ? (page.cursor?.nextCursor ?? oldest.sentAt) : undefined;
     },
     enabled: !!id,
   });

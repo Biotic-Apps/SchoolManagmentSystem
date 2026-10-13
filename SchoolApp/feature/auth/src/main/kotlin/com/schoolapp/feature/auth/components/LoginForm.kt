@@ -30,8 +30,8 @@ import com.schoolapp.feature.auth.R
 @Composable
 internal fun LoginForm(state: LoginUiState, actions: LoginActions, modifier: Modifier = Modifier) {
     val signInButton = remember { BringIntoViewRequester() }
-    AppCard(modifier.fillMaxWidth(), contentPadding = 24.dp) {
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    AppCard(modifier.fillMaxWidth(), contentPadding = 28.dp) {
+        Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
             state.failure?.let { InlineMessage(text = stringResource(it.messageRes()), tone = it.tone()) }
             AppTextField(
                 value = state.identifier,

@@ -76,6 +76,10 @@ export class EarlyLeaveQueryDto {
   @IsOptional()
   @IsIn(Object.values(EarlyLeaveStatus))
   status?: EarlyLeaveStatus;
+
+  @IsOptional()
+  @IsUUID()
+  studentId?: string;
 }
 
 export class DecisionCommentDto {

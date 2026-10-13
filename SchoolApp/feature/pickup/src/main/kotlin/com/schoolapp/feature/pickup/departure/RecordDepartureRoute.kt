@@ -22,6 +22,7 @@ import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.SectionHeader
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.ui.appErrorMessage
+import com.schoolapp.core.ui.loadErrorMessage
 import com.schoolapp.core.ui.formatTime
 import com.schoolapp.feature.pickup.R
 import com.schoolapp.feature.pickup.components.BorderedList
@@ -72,7 +73,7 @@ internal fun RecordDepartureContent(
     val blocked = state.blocked
     when {
         state.isLoading -> LoadingState(modifier)
-        state.error != null -> ErrorState(appErrorMessage(state.error), modifier, onRetry = onRetry)
+        state.error != null -> ErrorState(loadErrorMessage(state.error), modifier, onRetry = onRetry)
         else -> ScreenColumn(modifier) {
             state.leaveTime?.let { time ->
                 item(key = "leave") { InlineMessage(stringResource(R.string.pickup_early_leave_linked, formatTime(time).orEmpty()), StatusTone.Info) }

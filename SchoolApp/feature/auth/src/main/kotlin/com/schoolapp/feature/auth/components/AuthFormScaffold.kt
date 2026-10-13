@@ -39,8 +39,8 @@ internal fun AuthFormScaffold(
                 .verticalScroll(rememberScrollState()),
             contentAlignment = Alignment.TopCenter,
         ) {
-            Column(Modifier.widthIn(max = 440.dp).fillMaxWidth().padding(24.dp)) {
-                AppCard(Modifier.fillMaxWidth(), contentPadding = 24.dp, content = content)
+            Column(Modifier.widthIn(max = 440.dp).fillMaxWidth().padding(32.dp)) {
+                AppCard(Modifier.fillMaxWidth(), contentPadding = 28.dp, content = content)
             }
         }
     }

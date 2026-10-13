@@ -1,9 +1,11 @@
 package com.schoolapp.feature.messages.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +24,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AttachmentChipItem
 import com.schoolapp.core.designsystem.component.AttachmentChips
+import com.schoolapp.core.designsystem.component.PersonAvatar
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.model.files.Attachment
 import com.schoolapp.feature.messages.R
@@ -38,6 +45,7 @@ import com.schoolapp.feature.messages.R
 enum class BubbleStatus { RECEIVED, SENT, READ, SENDING, FAILED }
 
 /** Chat bubble: mine on the right in the soft selected colour, others on the left on surface with a border. */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun MessageBubble(
     body: String,
@@ -45,39 +53,62 @@ internal fun MessageBubble(
     mine: Boolean,
     senderName: String?,
     time: String?,
+    fullTimestamp: String? = null,
     status: BubbleStatus,
     onOpenAttachment: (Attachment) -> Unit,
     modifier: Modifier = Modifier,
     silent: Boolean = false,
     onRetry: (() -> Unit)? = null,
 ) {
+    var showTimestamp by remember { mutableStateOf(false) }
     val shape = if (mine) MineShape else OthersShape
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = if (mine) 48.dp else 0.dp, end = if (mine) 0.dp else 48.dp),
+            .padding(start = if (mine) 52.dp else 0.dp, end = if (mine) 0.dp else 48.dp),
         contentAlignment = if (mine) Alignment.CenterEnd else Alignment.CenterStart,
     ) {
         Column(horizontalAlignment = if (mine) Alignment.End else Alignment.Start, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Column(
-                modifier = Modifier
-                    .clip(shape)
-                    .background(if (mine) AppColors.Selected else AppColors.Surface)
-                    .then(if (mine) Modifier else Modifier.border(BorderStroke(1.dp, AppColors.Border), shape))
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                if (!mine && !senderName.isNullOrBlank()) {
-                    Text(senderName, style = MaterialTheme.typography.labelMedium, color = AppColors.Primary)
+                if (!mine) {
+                    PersonAvatar(name = senderName ?: "?", photoUrl = null, size = 28.dp)
                 }
-                if (body.isNotBlank()) {
-                    Text(body, style = MaterialTheme.typography.bodyMedium, color = AppColors.TextPrimary)
+                Column(
+                    modifier = Modifier
+                        .clip(shape)
+                        .background(if (mine) AppColors.Selected else AppColors.Surface)
+                        .then(if (mine) Modifier else Modifier.border(BorderStroke(1.dp, AppColors.Border), shape))
+                        .combinedClickable(
+                            onClick = {},
+                            onLongClick = { if (fullTimestamp != null) showTimestamp = !showTimestamp },
+                        )
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    if (!mine && !senderName.isNullOrBlank()) {
+                        Text(senderName, style = MaterialTheme.typography.labelMedium, color = AppColors.Primary)
+                    }
+                    if (body.isNotBlank()) {
+                        Text(body, style = MaterialTheme.typography.bodyMedium, color = AppColors.TextPrimary)
+                    }
+                    AttachmentChips(
+                        items = attachments.map { AttachmentChipItem(it.id, it.name.orEmpty(), it.isImage, it.url) },
+                        onOpen = { item -> attachments.firstOrNull { it.id == item.id }?.let(onOpenAttachment) },
+                    )
+                    BubbleFooter(time, status, Modifier.align(Alignment.End))
                 }
-                AttachmentChips(
-                    items = attachments.map { AttachmentChipItem(it.id, it.name.orEmpty(), it.isImage) },
-                    onOpen = { item -> attachments.firstOrNull { it.id == item.id }?.let(onOpenAttachment) },
+            }
+            if (showTimestamp && fullTimestamp != null) {
+                Text(
+                    text = fullTimestamp,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = AppColors.TextSecondary,
+                    modifier = Modifier.padding(horizontal = if (mine) 4.dp else 40.dp),
                 )
-                BubbleFooter(time, status, Modifier.align(Alignment.End))
             }
             if (status == BubbleStatus.FAILED && onRetry != null) {
                 Note(
@@ -139,5 +170,5 @@ private fun Note(text: String, icon: ImageVector, error: Boolean, modifier: Modi
     }
 }
 
-private val MineShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 12.dp, bottomEnd = 4.dp)
-private val OthersShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 4.dp, bottomEnd = 12.dp)
+private val MineShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 4.dp)
+private val OthersShape = RoundedCornerShape(topStart = 4.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp)

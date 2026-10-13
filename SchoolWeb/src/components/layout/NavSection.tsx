@@ -28,7 +28,7 @@ export function NavSection({ group, activeId, open, onToggle, onNavigate }: NavS
         aria-controls={bodyId}
         onClick={onToggle}
         className={cn(
-          "flex items-center justify-between rounded-md px-3 pb-1.5 pt-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-fg-muted/80 transition-colors duration-(--dur-quick) hover:text-fg",
+          "flex items-center justify-between rounded-lg px-3 pb-1.5 pt-5 text-[11px] font-semibold uppercase tracking-[0.1em] text-fg-muted/60 transition-colors duration-(--dur-quick) hover:text-fg-muted",
           focusRing,
         )}
       >
