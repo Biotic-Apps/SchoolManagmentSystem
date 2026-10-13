@@ -33,8 +33,6 @@ export function useThreadMessages(id: string | null, scope?: string) {
     queryFn: async ({ pageParam }) => {
       const result = await http.get<ThreadDetail, CursorMeta>(`/messages/threads/${id}`, {
         before: pageParam,
-        pageSize: MESSAGE_PAGE_SIZE,
-        scope,
       });
       return { ...result.data, cursor: result.meta };
     },
