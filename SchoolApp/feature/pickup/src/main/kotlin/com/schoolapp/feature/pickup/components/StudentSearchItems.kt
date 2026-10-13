@@ -1,7 +1,9 @@
 package com.schoolapp.feature.pickup.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.ui.Modifier
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PersonSearch
 import androidx.compose.material3.HorizontalDivider
@@ -39,7 +41,7 @@ internal fun LazyListScope.studentSearchItems(
             EmptyState(stringResource(R.string.pickup_search_empty), icon = Icons.Outlined.PersonSearch)
         }
         state.results.isNotEmpty() -> item(key = "results") {
-            AppCard(contentPadding = 0.dp) {
+            AppCard(Modifier.fillMaxWidth(), contentPadding = 0.dp) {
                 state.results.forEachIndexed { index, student ->
                     Column {
                         StudentResultRow(student, onClick = { onPick(student) })

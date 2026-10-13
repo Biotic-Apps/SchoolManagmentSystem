@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,7 +50,7 @@ internal fun EarlyLeaveCard(
     busy: Boolean = false,
     actions: EarlyLeaveActions = EarlyLeaveActions(),
 ) {
-    AppCard(modifier) {
+    AppCard(modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.Top) {
             Column(Modifier.weight(1f)) {
                 val title = if (showStudent) leave.studentName.orEmpty() else formatDate(leave.date).orEmpty()

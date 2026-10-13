@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +33,7 @@ internal fun IncidentCard(
     closing: Boolean = false,
     onClose: (() -> Unit)? = null,
 ) {
-    AppCard(modifier) {
+    AppCard(modifier.fillMaxWidth()) {
         val title = if (showStudent) incident.studentName ?: incidentTypeLabel(incident.type) else incidentTypeLabel(incident.type)
         Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = AppColors.TextPrimary)
         Spacer(Modifier.height(4.dp))

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -16,7 +17,7 @@ import com.schoolapp.core.designsystem.theme.AppColors
 /** Titled card for one part of the health card. */
 @Composable
 internal fun HealthSectionCard(title: String, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
-    AppCard(modifier) {
+    AppCard(modifier.fillMaxWidth()) {
         Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, color = AppColors.TextSecondary)
         Spacer(Modifier.height(8.dp))
         content()

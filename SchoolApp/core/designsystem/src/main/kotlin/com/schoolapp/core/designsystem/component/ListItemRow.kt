@@ -56,7 +56,7 @@ fun ListItemRow(
             Icon(
                 imageVector = leadingIcon,
                 contentDescription = null,
-                tint = if (selected) AppColors.Primary else AppColors.TextSecondary,
+                tint = AppColors.Primary,
                 modifier = Modifier.size(24.dp),
             )
             Spacer(Modifier.width(16.dp))

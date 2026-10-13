@@ -34,7 +34,7 @@ internal fun AllergyDraftFields(
     onRemove: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    AppCard(modifier, contentPadding = 12.dp) {
+    AppCard(modifier.fillMaxWidth(), contentPadding = 12.dp) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             AppTextField(
                 value = draft.name,
@@ -70,7 +70,7 @@ internal fun ContactDraftFields(
     modifier: Modifier = Modifier,
 ) {
     val required = stringResource(R.string.health_required)
-    AppCard(modifier, contentPadding = 12.dp) {
+    AppCard(modifier.fillMaxWidth(), contentPadding = 12.dp) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
                 stringResource(R.string.health_contact_number, number),
