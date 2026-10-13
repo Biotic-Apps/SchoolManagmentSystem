@@ -5,8 +5,8 @@
   --primary: #7B68EE;
   --primary-hover: #6A5ACD;
   --on-primary: #ffffff;
-  --background: #E8E0FF;
-  --surface: #ffffff;
+  --background: #FFFFFF;
+  --surface: #E8E0FF;
   --selected: #EDE9FE;
   --on-selected: #4C3D99;
   --text-primary: #1F2037;
@@ -14,8 +14,8 @@
   --border: #DDD6FE;
   --border-strong: #C4B5FD;
 
-  --success: #059669;
-  --success-soft: #ECFDF5;
+  --success: #7B68EE;
+  --success-soft: #EDE9FE;
   --warning: #D97706;
   --warning-soft: #FFFBEB;
   --error: #DC2626;
@@ -25,7 +25,7 @@
 
   /* Category accent palette */
   --accent-purple: #8B7AE8;
-  --accent-green: #34D399;
+  --accent-green: #9B8BF4;
   --accent-cyan: #38BDF8;
   --accent-pink: #FB7185;
 }

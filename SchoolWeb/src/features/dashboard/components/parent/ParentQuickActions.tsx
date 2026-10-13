@@ -18,7 +18,7 @@ const ACCENT_STYLES: { bg: string; fg: string }[] = [
   { bg: "bg-accent-purple/10", fg: "text-accent-purple" },
   { bg: "bg-accent-cyan/10", fg: "text-accent-cyan" },
   { bg: "bg-accent-pink/10", fg: "text-accent-pink" },
-  { bg: "bg-accent-green/10", fg: "text-accent-green" },
+  { bg: "bg-accent-purple/10", fg: "text-accent-purple" },
 ];
 
 /** The four things parents do most, each opening its page. */

@@ -13,7 +13,7 @@ import type { QrScanResult, QrScanResultCode } from "../qr-scan-types";
 type ScanType = "IN" | "OUT";
 
 const RESULT_CONFIG: Record<QrScanResultCode, { label: string; color: string; Icon: typeof CheckCircle2 }> = {
-  MARKED: { label: "Marked", color: "text-green-600", Icon: CheckCircle2 },
+  MARKED: { label: "Marked", color: "text-primary", Icon: CheckCircle2 },
   ALREADY_MARKED: { label: "Already marked", color: "text-amber-600", Icon: Clock },
   NOT_FOUND: { label: "Not found", color: "text-red-600", Icon: XCircle },
   OUTSIDE_HOURS: { label: "Outside hours", color: "text-red-600", Icon: AlertCircle },

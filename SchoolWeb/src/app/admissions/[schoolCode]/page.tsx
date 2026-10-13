@@ -27,10 +27,10 @@ const STATUS_COLORS: Record<string, string> = {
   DOCUMENTS_PENDING: "bg-amber-100 text-amber-800",
   TEST_SCHEDULED: "bg-purple-100 text-purple-800",
   TEST_COMPLETED: "bg-indigo-100 text-indigo-800",
-  OFFERED: "bg-emerald-100 text-emerald-800",
+  OFFERED: "bg-purple-100 text-purple-800",
   WAITLISTED: "bg-orange-100 text-orange-800",
   REJECTED: "bg-red-100 text-red-800",
-  CONFIRMED: "bg-green-100 text-green-800",
+  CONFIRMED: "bg-purple-100 text-purple-800",
   ENROLLED: "bg-purple-100 text-purple-800",
   EXPIRED: "bg-gray-100 text-gray-600",
   WITHDRAWN: "bg-gray-100 text-gray-600",
@@ -213,7 +213,7 @@ export default function PublicAdmissionPage() {
     return (
       <div className="flex min-h-dvh items-center justify-center px-4 py-10">
         <div className="flex w-full max-w-md flex-col items-center gap-6 rounded-xl border border-border bg-white p-8 text-center shadow-sm">
-          <CheckCircle2 className="size-16 text-emerald-500" />
+          <CheckCircle2 className="size-16 text-primary" />
           <div className="flex flex-col gap-2">
             <h1 className="text-card-title font-semibold text-fg">Application Submitted!</h1>
             <p className="text-body text-fg-muted">

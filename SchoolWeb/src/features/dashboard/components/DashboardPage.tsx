@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { LayoutDashboard, Search } from "lucide-react";
 import { NoticesFeedCard } from "@/features/notices/components/NoticesFeedCard";
 import { SetupChecklistCard } from "@/features/school-setup/components/SetupChecklistCard";
 import { useDashboard } from "../use-dashboard";
@@ -22,7 +22,7 @@ export function DashboardPage() {
       <div className="flex flex-col gap-4 rounded-2xl bg-gradient-to-br from-primary/[0.08] via-selected/60 to-accent-pink/[0.08] p-6 border border-primary/10 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-1">
           <h1 className="text-[24px] font-bold tracking-[-0.02em] text-fg sm:text-page-title">
-            Hey {firstName} <span aria-hidden className="inline-block animate-[wave_2s_ease-in-out_1] origin-[70%_70%]">&#128075;</span>
+            Hey {firstName} <LayoutDashboard aria-hidden className="inline-block size-6 text-primary" />
           </h1>
           <p className="text-label text-fg-muted">
             {dashboard.title} &mdash; here is what is happening today.

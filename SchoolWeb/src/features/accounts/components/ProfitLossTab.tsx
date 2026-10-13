@@ -67,7 +67,7 @@ export function ProfitLossTab({ branchId }: { branchId: string }) {
       {data && (
         <>
           <div className="grid gap-4 sm:grid-cols-3">
-            <SummaryCard label="Total Income" amount={incomeMinor} icon={<ArrowUpRight className="h-5 w-5 text-emerald-600" />} />
+            <SummaryCard label="Total Income" amount={incomeMinor} icon={<ArrowUpRight className="h-5 w-5 text-primary" />} />
             <SummaryCard label="Total Expenses" amount={expenseMinor} icon={<ArrowDownRight className="h-5 w-5 text-red-500" />} />
             <SummaryCard label="Net Profit / (Loss)" amount={netMinor} icon={<MinusCircle className="h-5 w-5 text-blue-500" />} />
           </div>

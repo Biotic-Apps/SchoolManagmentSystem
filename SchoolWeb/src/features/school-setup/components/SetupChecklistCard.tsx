@@ -29,7 +29,7 @@ export function SetupChecklistCard({ branchId }: { branchId: string | null }) {
         </Button>
       </div>
       {card.picker && <BranchPickerSelect picker={card.picker} className="sm:w-72" />}
-      <ProgressBar percent={(card.done / Math.max(1, card.total)) * 100} label="Setup progress" tone="success" />
+      <ProgressBar percent={(card.done / Math.max(1, card.total)) * 100} label="Setup progress" tone="primary" />
       <ul className="-mx-3 grid grid-cols-1 gap-x-4 sm:grid-cols-2">
         {card.items.map((item) => (
           <ChecklistRow key={item.key} item={item} />

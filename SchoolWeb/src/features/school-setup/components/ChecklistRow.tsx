@@ -9,7 +9,7 @@ function RowContent({ item }: { item: ChecklistItemView }) {
   const Icon = item.done ? CircleCheck : Circle;
   return (
     <>
-      <Icon className={cn("size-5 shrink-0", item.done ? "text-success" : "text-border-strong")} aria-hidden />
+      <Icon className={cn("size-5 shrink-0", item.done ? "text-primary" : "text-border-strong")} aria-hidden />
       <span className="flex min-w-0 flex-1 flex-col">
         <span className={cn("text-label font-medium", item.done ? "text-fg-muted" : "text-fg")}>{item.label}</span>
         {item.hint && <span className="truncate text-caption text-fg-muted">{item.hint}</span>}

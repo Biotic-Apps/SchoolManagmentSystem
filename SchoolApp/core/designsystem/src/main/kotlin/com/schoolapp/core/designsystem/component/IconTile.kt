@@ -17,7 +17,7 @@ import com.schoolapp.core.designsystem.theme.AppRadius
 /** Tone-tinted square holding a 20dp icon; the leading mark of stat tiles and feature rows. */
 @Composable
 fun IconTile(icon: ImageVector, tone: StatusTone, modifier: Modifier = Modifier, size: Dp = 44.dp) {
-    val colors = if (tone == StatusTone.Neutral) primaryTileColors() else tone.colors()
+    val colors = primaryTileColors()
     Box(
         modifier = modifier.size(size).background(colors.container, RoundedCornerShape(AppRadius.Small)),
         contentAlignment = Alignment.Center,
