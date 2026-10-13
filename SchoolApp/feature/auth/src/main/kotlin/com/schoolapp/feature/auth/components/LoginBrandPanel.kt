@@ -8,16 +8,18 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.designsystem.theme.SchoolTheme
 import com.schoolapp.feature.auth.branding.LoginBrandUiState
 
-/** Left pane on expanded widths. */
+/** Left pane on expanded widths: vertical gradient from lavender to a lighter wash. */
 @Composable
 internal fun LoginBrandPanel(brand: LoginBrandUiState, modifier: Modifier = Modifier) {
-    Box(modifier.background(AppColors.Selected).padding(48.dp), contentAlignment = Alignment.Center) {
+    val gradient = Brush.verticalGradient(listOf(AppColors.Background, AppColors.Selected))
+    Box(modifier.background(gradient).padding(48.dp), contentAlignment = Alignment.Center) {
         LoginHeader(brand, Modifier.widthIn(max = 360.dp))
     }
 }

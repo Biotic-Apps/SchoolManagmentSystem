@@ -1,7 +1,7 @@
 // WCAG 2.1 contrast of the school's primary colour against white
 // (same formula as SchoolWeb/src/features/branding/contrast.ts).
 
-export const DEFAULT_PRIMARY_COLOR = '#0B7F74';
+export const DEFAULT_PRIMARY_COLOR = '#7B68EE';
 export const MIN_CONTRAST_ON_WHITE = 4.5;
 
 const HEX = /^#[0-9a-fA-F]{6}$/;

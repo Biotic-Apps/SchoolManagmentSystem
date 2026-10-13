@@ -67,7 +67,7 @@ fun AppTextField(
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         textStyle = MaterialTheme.typography.bodyLarge,
-        shape = MaterialTheme.shapes.small,
+        shape = MaterialTheme.shapes.medium,
         colors = appTextFieldColors(),
     )
 }

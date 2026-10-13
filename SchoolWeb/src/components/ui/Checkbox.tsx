@@ -14,8 +14,8 @@ export const Checkbox = forwardRef<
     <CheckboxPrimitive.Root
       ref={ref}
       className={cn(
-        "grid size-5 shrink-0 place-items-center rounded-[5px] border border-border bg-surface transition-[background-color,border-color,color] duration-(--dur-quick) ease-standard",
-        "data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-on-primary",
+        "grid size-5 shrink-0 place-items-center rounded-[6px] border border-border-strong bg-surface transition-[background-color,border-color,color,box-shadow] duration-(--dur-quick) ease-standard hover:border-primary/50",
+        "data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-on-primary data-[state=checked]:shadow-[0_1px_3px_rgb(123_104_238/0.25)]",
         "disabled:cursor-not-allowed disabled:opacity-60",
         focusRing,
         className,

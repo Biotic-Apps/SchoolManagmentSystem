@@ -25,7 +25,7 @@ export function Topbar({ onOpenMenu }: TopbarProps) {
   return (
     <header
       style={brandStyle}
-      className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border/40 bg-surface/90 px-4 backdrop-blur-xl backdrop-saturate-150 sm:px-6">
+      className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border/30 bg-surface/85 px-4 shadow-[0_1px_3px_rgb(123_104_238/0.04)] backdrop-blur-xl backdrop-saturate-150 sm:px-6">
       <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu" onClick={onOpenMenu}>
         <Menu />
       </Button>
@@ -51,7 +51,7 @@ export function Topbar({ onOpenMenu }: TopbarProps) {
             type="search"
             placeholder="Search anything..."
             aria-label="Search"
-            className="h-10 w-full rounded-full border border-border/60 bg-background/60 pl-10 pr-4 text-label text-fg placeholder:text-fg-muted/50 outline-none transition-all duration-200 focus:border-primary/40 focus:bg-surface focus:shadow-sm [&::-webkit-search-cancel-button]:hidden"
+            className="h-10 w-full rounded-full border border-border/50 bg-background/50 pl-10 pr-4 text-label text-fg placeholder:text-fg-muted/50 outline-none shadow-xs transition-all duration-200 focus:border-primary/40 focus:bg-surface focus:shadow-sm focus:ring-2 focus:ring-primary/10 [&::-webkit-search-cancel-button]:hidden"
           />
         </div>
       )}

@@ -35,8 +35,8 @@ internal fun ShellBottomBar(
         unselectedIconColor = AppColors.TextSecondary,
         unselectedTextColor = AppColors.TextSecondary,
     )
-    Column(modifier.shadow(4.dp, RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp), clip = false)) {
-        NavigationBar(containerColor = AppColors.Surface, tonalElevation = 3.dp) {
+    Column(modifier.shadow(3.dp, RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp), clip = false)) {
+        NavigationBar(containerColor = AppColors.Surface, tonalElevation = 0.dp) {
             items.forEach { item ->
                 NavigationBarItem(
                     selected = item.id == selectedId,

@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.motion.pressScale
 import com.schoolapp.core.designsystem.theme.AppColors
@@ -26,9 +27,9 @@ import com.schoolapp.core.designsystem.theme.AppMotion
 import com.schoolapp.core.designsystem.theme.Borders
 
 /**
- * The one card of the app: white surface, 1dp border, 16dp corners, no shadow.
- * - [onClick]: ripple plus a slight press scale; the border warms to teal while pressed.
- * - [selected]: mint fill with a teal border (chosen option, "now" row).
+ * The one card of the app: white surface, soft border, 20dp corners, gentle shadow.
+ * - [onClick]: ripple plus a slight press scale; the border warms to purple while pressed.
+ * - [selected]: lavender fill with a purple border (chosen option, "now" row).
  * - [tone]: tinted alert card (error, warning...) — tone container fill with a soft tone border.
  * - [animateSize] (default on): content that grows or shrinks (errors, expanding parts) animates its height.
  */
@@ -47,8 +48,9 @@ fun AppCard(
     val interaction = remember { MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
     val colors = cardColors(selected = selected, pressed = pressed && onClick != null, tone = tone)
-    val shape = MaterialTheme.shapes.medium
-    val border = BorderStroke(Borders.Thin, colors.border)
+    val shape = MaterialTheme.shapes.large           // 20dp corners — premium feel
+    val border = if (selected || tone != null) BorderStroke(Borders.Thin, colors.border) else null
+    val cardShadow = 4.dp                            // soft shadow for depth
     val body: @Composable () -> Unit = {
         CompositionLocalProvider(LocalInsetContent provides true) {
             Column(
@@ -63,18 +65,28 @@ fun AppCard(
     if (onClick != null) {
         Surface(
             onClick = onClick,
-            modifier = modifier.pressScale(interaction, enabled),
+            modifier = modifier
+                .shadow(cardShadow, shape, clip = false)
+                .pressScale(interaction, enabled),
             enabled = enabled,
             shape = shape,
             color = colors.container,
             border = border,
             tonalElevation = 0.dp,
-            shadowElevation = 2.dp,
+            shadowElevation = cardShadow,
             interactionSource = interaction,
             content = body,
         )
     } else {
-        Surface(modifier = modifier, shape = shape, color = colors.container, border = border, tonalElevation = 0.dp, shadowElevation = 2.dp, content = body)
+        Surface(
+            modifier = modifier.shadow(cardShadow, shape, clip = false),
+            shape = shape,
+            color = colors.container,
+            border = border,
+            tonalElevation = 0.dp,
+            shadowElevation = cardShadow,
+            content = body,
+        )
     }
 }
 

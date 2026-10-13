@@ -50,7 +50,7 @@ fun PasswordField(
                     contentDescription = stringResource(
                         if (visible) R.string.ds_hide_password else R.string.ds_show_password,
                     ),
-                    tint = AppColors.TextSecondary,
+                    tint = if (visible) AppColors.Primary else AppColors.TextSecondary,
                 )
             }
         },

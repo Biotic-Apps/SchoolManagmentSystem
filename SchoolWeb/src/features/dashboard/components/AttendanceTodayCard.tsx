@@ -32,7 +32,7 @@ export function AttendanceTodayCard({ counts, linked }: { counts: AttendanceToda
         )}
         <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {ITEMS.map((item) => (
-            <div key={item.key} className="flex flex-col gap-1 rounded-xl border border-border/60 bg-background/40 px-4 py-3">
+            <div key={item.key} className="flex flex-col gap-1 rounded-xl border border-border/50 bg-surface/80 px-4 py-3 shadow-xs">
               <dt className="flex items-center gap-2 text-caption text-fg-muted">
                 <span aria-hidden className={cn("size-2 rounded-full", item.dot)} />
                 {item.label}

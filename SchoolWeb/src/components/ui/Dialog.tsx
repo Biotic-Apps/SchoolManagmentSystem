@@ -15,7 +15,7 @@ export const DialogOverlay = forwardRef<
   ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
 >(function DialogOverlay({ className, ...props }, ref) {
   return <DialogPrimitive.Overlay ref={ref} className={cn(
-        "fixed inset-0 z-40 bg-[#1F2037]/35 data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out",
+        "fixed inset-0 z-40 bg-[#1F2037]/40 backdrop-blur-[2px] data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out",
         className,
       )} {...props} />;
 });

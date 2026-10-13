@@ -19,8 +19,8 @@ export function SidebarNavLink({ item: { route, label, icon: Icon }, active, onN
       className={cn(
         "group/nav relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-label font-medium transition-all duration-(--dur-quick)",
         active
-          ? "bg-primary/10 font-semibold text-primary shadow-xs"
-          : "text-fg-muted hover:bg-selected/60 hover:text-fg",
+          ? "bg-selected font-semibold text-primary shadow-xs border border-primary/15"
+          : "text-fg-muted hover:bg-selected/50 hover:text-fg border border-transparent",
         focusRing,
       )}
     >

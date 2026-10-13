@@ -15,7 +15,7 @@ export function Table({ className, wrapperClassName, ...props }: TableProps) {
 }
 
 export function TableHeader({ className, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
-  return <thead className={cn("border-b border-border bg-[#F8F6FF]", className)} {...props} />;
+  return <thead className={cn("border-b border-border bg-gradient-to-b from-[#F8F6FF] to-[#F3F0FF]", className)} {...props} />;
 }
 
 export function TableBody({ className, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
@@ -23,13 +23,13 @@ export function TableBody({ className, ...props }: HTMLAttributes<HTMLTableSecti
 }
 
 export function TableRow({ className, ...props }: HTMLAttributes<HTMLTableRowElement>) {
-  return <tr className={cn("border-b border-border/70 transition-colors duration-(--dur-instant) ease-standard hover:bg-[#F5F3FF]", className)} {...props} />;
+  return <tr className={cn("border-b border-border/60 transition-colors duration-(--dur-quick) ease-standard hover:bg-selected/50", className)} {...props} />;
 }
 
 export function TableHead({ className, ...props }: ThHTMLAttributes<HTMLTableCellElement>) {
   return (
     <th
-      className={cn("h-11 whitespace-nowrap px-5 text-left align-middle text-[12px] font-semibold uppercase tracking-[0.04em] text-fg-muted", className)}
+      className={cn("h-11 whitespace-nowrap px-5 text-left align-middle text-[11.5px] font-semibold uppercase tracking-[0.06em] text-primary/60", className)}
       {...props}
     />
   );

@@ -10,10 +10,11 @@ object AppColors {
     val Background = Color(0xFFE8E0FF)
     val Surface = Color(0xFFFFFFFF)
     val Selected = Color(0xFFEDE9FE)
-    val OnSelected = Color(0xFF3B1F8C)
+    val OnSelected = Color(0xFF7B68EE)
     val TextPrimary = Color(0xFF1F2037)
     val TextSecondary = Color(0xFF6B7280)
     val Border = Color(0xFFDDD6FE)
+    val Accent = Color(0xFFEDE9FE)
 
     val Success = Color(0xFF1E7B45)
     val SuccessContainer = Color(0xFFE6F4EA)

@@ -1,11 +1,14 @@
 package com.schoolapp.core.designsystem.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -57,11 +60,16 @@ fun LoadingState(
 @Composable
 private fun Spinner(message: String) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        CircularProgressIndicator(color = AppColors.Primary, trackColor = AppColors.Selected)
+        Box(
+            modifier = Modifier.size(64.dp).background(AppColors.Selected, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            CircularProgressIndicator(color = AppColors.Primary, trackColor = AppColors.Border, strokeWidth = 3.dp)
+        }
         Text(message, style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
     }
 }

@@ -34,7 +34,7 @@ fun PrimaryButton(
         modifier = modifier.heightIn(min = 52.dp).pressScale(interaction, enabled && !loading),
         interactionSource = interaction,
         enabled = enabled && !loading,
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(50),
         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = if (pressed) AppColors.PrimaryPressed else AppColors.Primary,

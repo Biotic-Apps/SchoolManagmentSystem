@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,15 +47,15 @@ fun EmptyState(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Box(
-                modifier = Modifier.size(72.dp).background(colors.container, CircleShape),
+                modifier = Modifier.size(80.dp).background(Brush.verticalGradient(listOf(colors.container.copy(alpha = 0.7f), colors.container)), CircleShape),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(icon, contentDescription = null, tint = colors.content, modifier = Modifier.size(36.dp))
+                Icon(icon, contentDescription = null, tint = colors.content, modifier = Modifier.size(40.dp))
             }
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(8.dp))
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.headlineSmall,
                 color = AppColors.TextPrimary,
                 textAlign = TextAlign.Center,
             )

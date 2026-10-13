@@ -19,7 +19,7 @@ export function DashboardPage() {
   return (
     <>
       {/* Welcome banner */}
-      <div className="flex flex-col gap-4 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-accent-pink/10 p-6 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-2xl bg-gradient-to-br from-primary/[0.08] via-selected/60 to-accent-pink/[0.08] p-6 border border-primary/10 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-1">
           <h1 className="text-[24px] font-bold tracking-[-0.02em] text-fg sm:text-page-title">
             Hey {firstName} <span aria-hidden className="inline-block animate-[wave_2s_ease-in-out_1] origin-[70%_70%]">&#128075;</span>
@@ -38,7 +38,7 @@ export function DashboardPage() {
             type="search"
             placeholder="Search anything..."
             aria-label="Search dashboard"
-            className="h-10 w-full rounded-full border border-border/50 bg-surface/80 pl-10 pr-4 text-label text-fg placeholder:text-fg-muted/50 outline-none backdrop-blur-sm transition-all duration-200 focus:border-primary/40 focus:bg-surface focus:shadow-sm [&::-webkit-search-cancel-button]:hidden"
+            className="h-10 w-full rounded-full border border-border/60 bg-surface/90 pl-10 pr-4 text-label text-fg placeholder:text-fg-muted/50 outline-none backdrop-blur-sm shadow-xs transition-all duration-200 focus:border-primary/40 focus:bg-surface focus:shadow-sm focus:ring-2 focus:ring-primary/10 [&::-webkit-search-cancel-button]:hidden"
           />
         </div>
       </div>

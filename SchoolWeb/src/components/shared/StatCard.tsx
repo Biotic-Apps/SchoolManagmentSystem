@@ -22,10 +22,10 @@ interface StatCardProps {
 /** KPI tile: icon tile + label, a large value (eases only when it changes), and an optional secondary line. */
 export function StatCard({ label, value, hint, icon, tone = "primary", loading, interactive, className }: StatCardProps) {
   return (
-    <Card interactive={interactive} className={cn("flex h-full flex-col gap-4 p-5 sm:p-6", className)}>
+    <Card interactive={interactive} className={cn("flex h-full flex-col gap-4 p-5 sm:p-6 group/stat", className)}>
       <div className="flex items-center gap-3">
         {icon && <IconTile icon={icon} tone={tone} />}
-        <span className="min-w-0 text-label font-medium text-fg-muted">{label}</span>
+        <span className="min-w-0 text-label font-medium text-fg-muted group-hover/stat:text-fg transition-colors duration-(--dur-quick)">{label}</span>
       </div>
       <div className="flex flex-col gap-1">
         {loading ? (

@@ -47,7 +47,7 @@ fun PickerField(
         interactionSource = interaction,
         singleLine = true,
         textStyle = MaterialTheme.typography.bodyLarge,
-        shape = MaterialTheme.shapes.small,
+        shape = MaterialTheme.shapes.medium,
         colors = appTextFieldColors(),
         modifier = modifier.fillMaxWidth(),
     )

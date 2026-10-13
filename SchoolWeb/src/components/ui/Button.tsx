@@ -7,17 +7,17 @@ import { focusRing } from "./styles";
 
 const buttonVariants = cva(
   // Press = 1px nudge via `translate` (never changes the box). Disabled/loading buttons ignore the pointer, so no press.
-  "relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-input font-medium " +
+  "relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium " +
     "transition-[background-color,border-color,color,box-shadow,translate] duration-(--dur-quick) ease-standard " +
     "active:translate-y-px motion-reduce:active:translate-y-0 aria-disabled:active:translate-y-0 " +
     `disabled:pointer-events-none disabled:opacity-60 [&_svg]:size-4 ${focusRing}`,
   {
     variants: {
       variant: {
-        primary: "bg-primary text-on-primary shadow-[0_1px_2px_rgb(123_104_238/0.25),inset_0_1px_0_rgb(255_255_255/0.12)] hover:bg-primary-hover hover:shadow-[0_3px_8px_-2px_rgb(123_104_238/0.35),inset_0_1px_0_rgb(255_255_255/0.12)] active:bg-primary-hover active:shadow-[0_1px_2px_rgb(123_104_238/0.25),inset_0_1px_0_rgb(255_255_255/0.12)]",
-        secondary: "border border-border-strong bg-surface text-fg shadow-xs hover:border-primary/45 hover:bg-selected hover:text-on-selected hover:shadow-sm active:shadow-xs",
-        ghost: "text-fg hover:bg-selected hover:text-on-selected",
-        danger: "border border-error/30 bg-error-soft text-error hover:border-error/60 hover:bg-[#fbe1de]",
+        primary: "bg-primary text-on-primary shadow-[0_1px_2px_rgb(123_104_238/0.30),0_4px_12px_-4px_rgb(123_104_238/0.35),inset_0_1px_0_rgb(255_255_255/0.15)] hover:bg-primary-hover hover:shadow-[0_2px_4px_rgb(123_104_238/0.30),0_6px_16px_-4px_rgb(123_104_238/0.40),inset_0_1px_0_rgb(255_255_255/0.15)] active:bg-primary-hover active:shadow-[0_1px_2px_rgb(123_104_238/0.25),inset_0_1px_0_rgb(255_255_255/0.10)]",
+        secondary: "border border-border-strong bg-surface text-fg shadow-xs hover:border-primary/50 hover:bg-selected/80 hover:text-on-selected hover:shadow-sm active:shadow-xs",
+        ghost: "text-fg hover:bg-selected/70 hover:text-on-selected",
+        danger: "border border-error/30 bg-error-soft text-error shadow-xs hover:border-error/60 hover:bg-[#fbe1de] hover:shadow-sm",
       },
       size: {
         sm: "h-8 px-3 text-label",

@@ -27,7 +27,7 @@ fun SecondaryButton(
     enabled: Boolean = true,
     loading: Boolean = false,
     leadingIcon: ImageVector? = null,
-    contentColor: Color = AppColors.TextPrimary,
+    contentColor: Color = AppColors.Primary,
 ) {
     val interaction = remember { MutableInteractionSource() }
     OutlinedButton(
@@ -35,9 +35,9 @@ fun SecondaryButton(
         modifier = modifier.heightIn(min = 52.dp).pressScale(interaction, enabled && !loading),
         interactionSource = interaction,
         enabled = enabled && !loading,
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(50),
         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
-        border = BorderStroke(Borders.Thin, AppColors.Border),
+        border = BorderStroke(Borders.Thin, AppColors.Primary),
         colors = ButtonDefaults.outlinedButtonColors(
             containerColor = AppColors.Surface,
             contentColor = contentColor,

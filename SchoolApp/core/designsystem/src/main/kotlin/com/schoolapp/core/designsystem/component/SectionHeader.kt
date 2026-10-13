@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.theme.AppColors
@@ -20,6 +21,8 @@ fun SectionHeader(
     title: String,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    titleColor: Color = AppColors.TextPrimary,
+    subtitleColor: Color = AppColors.TextSecondary,
     action: (@Composable () -> Unit)? = null,
 ) {
     Row(
@@ -30,11 +33,11 @@ fun SectionHeader(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
-                color = AppColors.TextPrimary,
+                color = titleColor,
                 modifier = Modifier.semantics { heading() },
             )
             if (subtitle != null) {
-                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)
+                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = subtitleColor)
             }
         }
         action?.invoke()

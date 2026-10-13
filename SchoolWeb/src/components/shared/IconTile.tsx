@@ -2,12 +2,12 @@ import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const TONES = {
-  primary: "bg-selected text-primary ring-primary/15",
-  success: "bg-success-soft text-success ring-success/15",
-  warning: "bg-warning-soft text-warning ring-warning/15",
-  error: "bg-error-soft text-error ring-error/15",
-  info: "bg-info-soft text-info ring-info/15",
-  neutral: "bg-background text-fg-muted ring-border",
+  primary: "bg-gradient-to-br from-selected to-[#E0D8FF] text-primary ring-primary/15",
+  success: "bg-gradient-to-br from-success-soft to-[#D1FAE5] text-success ring-success/15",
+  warning: "bg-gradient-to-br from-warning-soft to-[#FEF3C7] text-warning ring-warning/15",
+  error: "bg-gradient-to-br from-error-soft to-[#FECACA] text-error ring-error/15",
+  info: "bg-gradient-to-br from-info-soft to-[#DBEAFE] text-info ring-info/15",
+  neutral: "bg-gradient-to-br from-background to-[#F3F4F6] text-fg-muted ring-border",
 };
 
 const SIZES = { sm: "size-8 rounded-lg [&_svg]:size-4", md: "size-10 rounded-tile [&_svg]:size-[18px]", lg: "size-12 rounded-tile [&_svg]:size-5" };

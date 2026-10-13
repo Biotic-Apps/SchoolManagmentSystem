@@ -35,13 +35,13 @@ fun rememberShimmerProgress(): State<Float> {
 /** Fills the element with the placeholder tint and a soft highlight travelling left to right. */
 fun Modifier.shimmer(progress: State<Float>, shape: Shape): Modifier = drawBehind {
     val outline = shape.createOutline(size, layoutDirection, this)
-    drawOutline(outline, AppColors.Border.copy(alpha = BASE_ALPHA))
+    drawOutline(outline, AppColors.Selected)
     val sweep = progress.value
     if (sweep == STATIC) return@drawBehind
     val band = size.width.coerceAtLeast(1f)
     val x = -band + sweep * (size.width + band * 2)
     val brush = Brush.linearGradient(
-        colors = listOf(AppColors.Surface.copy(alpha = 0f), AppColors.Surface.copy(alpha = HIGHLIGHT_ALPHA), AppColors.Surface.copy(alpha = 0f)),
+        colors = listOf(AppColors.Background.copy(alpha = 0f), AppColors.Background.copy(alpha = HIGHLIGHT_ALPHA), AppColors.Background.copy(alpha = 0f)),
         start = Offset(x, 0f),
         end = Offset(x + band, 0f),
     )
@@ -50,5 +50,4 @@ fun Modifier.shimmer(progress: State<Float>, shape: Shape): Modifier = drawBehin
 
 private const val SWEEP_MS = 1200
 private const val STATIC = -1f
-private const val BASE_ALPHA = 0.6f
-private const val HIGHLIGHT_ALPHA = 0.7f
+private const val HIGHLIGHT_ALPHA = 0.9f

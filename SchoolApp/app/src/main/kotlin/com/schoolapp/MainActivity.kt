@@ -1,6 +1,7 @@
 package com.schoolapp
 
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -22,7 +23,13 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setKeepOnScreenCondition { SplashGate.keepOnScreen(viewModel.uiState.value) }
-        enableEdgeToEdge()
+        val bgColor = android.graphics.Color.parseColor("#E8E0FF")
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(bgColor, bgColor),
+            navigationBarStyle = SystemBarStyle.light(
+                android.graphics.Color.WHITE, android.graphics.Color.WHITE,
+            ),
+        )
         super.onCreate(savedInstanceState)
         setContent {
             val state by viewModel.uiState.collectAsStateWithLifecycle()

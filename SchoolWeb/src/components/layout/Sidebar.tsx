@@ -19,18 +19,18 @@ export function Sidebar({ items, activeId }: SidebarProps) {
     <aside
       className={cn(
         "sticky top-0 hidden h-dvh w-68 shrink-0 flex-col bg-surface lg:flex",
-        "border-r border-border/50 shadow-sm",
+        "border-r border-border/40 shadow-[2px_0_12px_-4px_rgb(123_104_238/0.06)]",
         "transition-[width] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
       )}
     >
       {/* Logo header */}
-      <div className="flex h-16 shrink-0 items-center justify-between border-b border-border/40 px-5">
+      <div className="flex h-16 shrink-0 items-center justify-between border-b border-border/30 px-5">
         <AppLogo subtitle="School Management" />
       </div>
 
       {/* User profile card */}
       {session && (
-        <div className="mx-3 mt-3 flex items-center gap-3 rounded-xl bg-selected/60 px-3 py-2.5">
+        <div className="mx-3 mt-3 flex items-center gap-3 rounded-xl bg-gradient-to-r from-selected/70 to-selected/40 px-3 py-2.5 border border-border/40">
           <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-label font-semibold text-on-primary shadow-xs">
             {initials(session.user.name)}
           </span>

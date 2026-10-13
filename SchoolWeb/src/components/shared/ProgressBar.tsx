@@ -27,7 +27,7 @@ export function ProgressBar({ percent, label, tone = "primary", className }: Pro
         aria-label={label}
         className="h-2 flex-1 overflow-hidden rounded-full bg-border/70"
       >
-        <div className={cn("h-full rounded-full", TONE_CLASS[tone])} style={{ width: `${value}%` }} />
+        <div className={cn("h-full rounded-full transition-[width] duration-(--dur-slow) ease-standard", TONE_CLASS[tone])} style={{ width: `${value}%` }} />
       </div>
       <span className="w-10 text-right text-caption tabular-nums text-fg-muted">{value}%</span>
     </div>

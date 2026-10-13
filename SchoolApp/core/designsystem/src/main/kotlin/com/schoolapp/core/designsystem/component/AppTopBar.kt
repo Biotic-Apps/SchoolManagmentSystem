@@ -26,7 +26,7 @@ fun AppTopBar(
     navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
-    Column(modifier.shadow(1.dp, RoundedCornerShape(0.dp), clip = false)) {
+    Column(modifier.shadow(3.dp, RoundedCornerShape(0.dp), clip = false)) {
         TopAppBar(
             title = {
                 Column {

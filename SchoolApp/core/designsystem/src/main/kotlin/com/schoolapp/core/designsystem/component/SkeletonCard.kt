@@ -1,7 +1,6 @@
 package com.schoolapp.core.designsystem.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.motion.rememberShimmerProgress
 import com.schoolapp.core.designsystem.motion.shimmer
 import com.schoolapp.core.designsystem.theme.AppColors
-import com.schoolapp.core.designsystem.theme.Borders
 
 /** Placeholder with the shape of a typical list card (avatar, title, supporting line, trailing chip). */
 @Composable
@@ -32,8 +30,7 @@ fun SkeletonCard(progress: State<Float>, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(AppColors.Surface, shape)
-            .border(Borders.Thin, AppColors.Border, shape)
+            .background(AppColors.Selected.copy(alpha = 0.3f), shape)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
