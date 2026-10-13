@@ -8,12 +8,13 @@ export class BrandMigrationService implements OnApplicationBootstrap {
   constructor(private readonly prisma: PrismaService) {}
 
   async onApplicationBootstrap(): Promise<void> {
-    const { count } = await this.prisma.schoolSetting.updateMany({
-      where: { primaryColor: '#0B7F74' },
-      data: { primaryColor: '#7B68EE', accentSoftColor: '#EDE9FE' },
-    });
-    if (count > 0) {
-      this.log.log(`Migrated ${count} school(s) from teal to purple brand`);
+    const result = await this.prisma.$executeRaw`
+      UPDATE school_settings
+      SET primary_color = '#7B68EE', accent_soft_color = '#EDE9FE'
+      WHERE UPPER(primary_color) = '#0B7F74'
+    `;
+    if (result > 0) {
+      this.log.log(`Migrated ${result} school(s) from teal to purple brand`);
     }
   }
 }
