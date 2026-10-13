@@ -1,6 +1,5 @@
 package com.schoolapp.core.designsystem.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,20 +9,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Inbox
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.schoolapp.core.designsystem.R
 import com.schoolapp.core.designsystem.motion.entrance
 import com.schoolapp.core.designsystem.theme.AppColors
 
@@ -36,7 +33,6 @@ fun EmptyState(
     action: (@Composable () -> Unit)? = null,
     tone: StatusTone = StatusTone.Neutral,
 ) {
-    val colors = if (tone == StatusTone.Neutral) primaryTileColors() else tone.colors()
     Box(
         modifier = modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 32.dp).entrance(offset = 0.dp),
         contentAlignment = Alignment.Center,
@@ -46,12 +42,10 @@ fun EmptyState(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Box(
-                modifier = Modifier.size(80.dp).background(Brush.verticalGradient(listOf(colors.container.copy(alpha = 0.7f), colors.container)), CircleShape),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(icon, contentDescription = null, tint = colors.content, modifier = Modifier.size(40.dp))
-            }
+            AppLottie(
+                resId = R.raw.anim_empty,
+                modifier = Modifier.size(120.dp),
+            )
             Spacer(Modifier.height(8.dp))
             Text(
                 text = title,

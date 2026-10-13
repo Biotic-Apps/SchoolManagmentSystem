@@ -23,9 +23,10 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setKeepOnScreenCondition { SplashGate.keepOnScreen(viewModel.uiState.value) }
-        val bgColor = android.graphics.Color.parseColor("#E8E0FF")
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.light(bgColor, bgColor),
+            statusBarStyle = SystemBarStyle.light(
+                android.graphics.Color.WHITE, android.graphics.Color.WHITE,
+            ),
             navigationBarStyle = SystemBarStyle.light(
                 android.graphics.Color.WHITE, android.graphics.Color.WHITE,
             ),

@@ -1,6 +1,5 @@
 package com.schoolapp.core.designsystem.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -64,12 +61,10 @@ private fun Spinner(message: String) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Box(
-            modifier = Modifier.size(64.dp).background(AppColors.Selected, CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            CircularProgressIndicator(color = AppColors.Primary, trackColor = AppColors.Border, strokeWidth = 3.dp)
-        }
+        AppLottie(
+            resId = R.raw.anim_loading,
+            modifier = Modifier.size(80.dp),
+        )
         Text(message, style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
     }
 }

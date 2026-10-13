@@ -17,7 +17,7 @@ internal fun cardColors(selected: Boolean, pressed: Boolean, tone: StatusTone?):
     val container = when {
         selected -> AppColors.Selected
         toneColors != null -> toneColors.container
-        else -> AppColors.Surface
+        else -> AppColors.CardBackground
     }
     val border = when {
         selected -> AppColors.Primary
