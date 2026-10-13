@@ -27,7 +27,7 @@ export function LoginForm({ login }: { login: ReturnType<typeof useLoginForm> })
           autoComplete="username"
           autoCapitalize="none"
           spellCheck={false}
-          placeholder="Email, phone or admission no."
+          placeholder="Email or phone"
           autoFocus
           aria-invalid={!!errors.identifier}
           aria-describedby={errors.identifier ? errorId("identifier") : undefined}

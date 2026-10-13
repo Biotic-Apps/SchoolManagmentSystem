@@ -17,7 +17,7 @@ export async function seedSchoolSettings(
     create: {
       schoolId,
       displayName: school.name,
-      primaryColor: '#0B7F74',
+      primaryColor: '#7B68EE',
       policies: toJson(DEFAULT_SCHOOL_POLICIES),
       notifications: toJson(DEFAULT_NOTIFICATION_SETTINGS),
     },
