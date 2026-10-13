@@ -10,7 +10,7 @@ export const fieldBase =
   "aria-invalid:border-error aria-invalid:focus:border-error aria-invalid:focus:shadow-[inset_0_0_0_1px_var(--error),0_0_0_3px_rgb(220_38_38/0.10)]";
 
 /** The one card surface: white, hairline border, subtle purple-tinted shadow. */
-export const cardSurface = "rounded-card border border-border/80 bg-surface shadow-card transition-[shadow,border-color] duration-(--dur-standard) ease-standard hover:shadow-card-hover hover:border-border";
+export const cardSurface = "rounded-card border border-border/80 bg-card-bg shadow-card transition-[shadow,border-color] duration-(--dur-standard) ease-standard hover:shadow-card-hover hover:border-border";
 
 /**
  * Clickable card ONLY (a link/button or a card wrapping one): border tints purple and the card lifts a pixel

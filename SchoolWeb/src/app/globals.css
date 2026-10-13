@@ -6,7 +6,8 @@
   --primary-hover: #6A5ACD;
   --on-primary: #ffffff;
   --background: #FFFFFF;
-  --surface: #E8E0FF;
+  --surface: #FFFFFF;
+  --card-bg: #E8E0FF;
   --selected: #EDE9FE;
   --on-selected: #4C3D99;
   --text-primary: #1F2037;
@@ -36,6 +37,7 @@
   --color-on-primary: var(--on-primary);
   --color-background: var(--background);
   --color-surface: var(--surface);
+  --color-card-bg: var(--card-bg);
   --color-selected: var(--selected);
   --color-on-selected: var(--on-selected);
   --color-fg: var(--text-primary);
