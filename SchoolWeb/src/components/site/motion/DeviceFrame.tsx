@@ -234,6 +234,9 @@ export const DeviceFrame = forwardRef<DeviceFrameHandle, DeviceFrameProps>(funct
               </div>
             ))
           )}
+          {/* The screens are cropped, not scaled down; fade the cut edge so no
+              row ends half-drawn against the frame. Above the layers (z ≤ 100). */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[101] h-[16%] bg-gradient-to-b from-white/0 via-white/70 to-white" />
         </div>
       </div>
     </div>
