@@ -3,10 +3,7 @@ import type { Prisma } from '../../generated/prisma/client';
 import { formatDate } from '../../core/common/dates';
 import { UrlSigner } from '../../core/files/url-signer';
 import { PrismaService } from '../../core/prisma/prisma.service';
-import type {
-  HomeworkDto,
-  HomeworkSubmissionDto,
-} from './dto/homework.dto';
+import type { HomeworkDto, HomeworkSubmissionDto } from './dto/homework.dto';
 
 export interface Attachment {
   id: string;
@@ -48,9 +45,7 @@ export class HomeworkMapper {
     rows: HomeworkRow[],
     gradedCounts?: Map<string, number>,
   ): Promise<HomeworkDto[]> {
-    const fileIds = [
-      ...new Set(rows.flatMap((r) => r.attachmentFileIds)),
-    ];
+    const fileIds = [...new Set(rows.flatMap((r) => r.attachmentFileIds))];
     const fileMap = await this.loadFiles(fileIds);
     return rows.map((row) => ({
       id: row.id,
@@ -107,17 +102,13 @@ export class HomeworkMapper {
     }));
   }
 
-  async toSubmissionDto(
-    row: SubmissionRow,
-  ): Promise<HomeworkSubmissionDto> {
+  async toSubmissionDto(row: SubmissionRow): Promise<HomeworkSubmissionDto> {
     return (await this.toSubmissionDtos([row]))[0];
   }
 
   private async loadFiles(
     ids: string[],
-  ): Promise<
-    Map<string, { id: string; mime: string; originalName: string }>
-  > {
+  ): Promise<Map<string, { id: string; mime: string; originalName: string }>> {
     if (!ids.length) return new Map();
     const files = await this.prisma.file.findMany({
       where: {
@@ -131,10 +122,7 @@ export class HomeworkMapper {
 
   private mapAttachments(
     ids: string[],
-    fileMap: Map<
-      string,
-      { id: string; mime: string; originalName: string }
-    >,
+    fileMap: Map<string, { id: string; mime: string; originalName: string }>,
   ): Attachment[] {
     return ids
       .map((id) => fileMap.get(id))

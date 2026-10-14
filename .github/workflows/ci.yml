@@ -106,10 +106,11 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          # The last entry becomes JAVA_HOME. Sources compile for Java 17 (build-logic AppSdk.JAVA).
+          # The last entry becomes JAVA_HOME. Keep 17 there: setup-android's sdkmanager
+          # fails on JDK 25. The Gradle step below switches JAVA_HOME to 25 itself.
           java-version: |
-            17
             25
+            17
       - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v4
         with:
@@ -117,6 +118,9 @@ jobs:
       - name: Make the wrapper executable
         run: chmod +x gradlew
       - name: Build and unit test
+        env:
+          # Gradle daemon toolchain is JDK 25 (gradle-daemon-jvm.properties); sources still target 17.
+          JAVA_HOME: ${{ env.JAVA_HOME_25_X64 }}
         run: ./gradlew assembleDebug testDebugUnitTest --stacktrace
       - name: Upload test reports
         if: failure()

@@ -10,7 +10,11 @@ import { ProfitLossService } from './profit-loss.service';
 /** Phase 5: other income (donations, rent, events, etc.) and P&L. */
 @Module({
   imports: [ExpensesModule],
-  controllers: [IncomeCategoriesController, IncomeController, ProfitLossController],
+  controllers: [
+    IncomeCategoriesController,
+    IncomeController,
+    ProfitLossController,
+  ],
   providers: [IncomeCategoriesService, IncomeService, ProfitLossService],
   exports: [IncomeService],
 })

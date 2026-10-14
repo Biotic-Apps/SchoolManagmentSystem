@@ -87,7 +87,9 @@ export class ReportCardTemplatesService {
             branchId: dto.branchId ?? null,
             name: dto.name.trim(),
             isDefault: dto.isDefault ?? false,
-            layout: toJson(dto.layout ?? { orientation: 'portrait', paperSize: 'A4' }),
+            layout: toJson(
+              dto.layout ?? { orientation: 'portrait', paperSize: 'A4' },
+            ),
             header: toJson(dto.header ?? { showLogo: true }),
             showGradingScale: dto.showGradingScale ?? true,
             showSkills: dto.showSkills ?? true,
@@ -183,7 +185,10 @@ export class ReportCardTemplatesService {
             showPosition: dto.showPosition,
             signatures: dto.signatures ?? undefined,
             remarkLabels: dto.remarkLabels ?? undefined,
-            footerText: dto.footerText !== undefined ? (dto.footerText?.trim() ?? null) : undefined,
+            footerText:
+              dto.footerText !== undefined
+                ? (dto.footerText?.trim() ?? null)
+                : undefined,
           },
         })
         .catch((error: unknown) => {
@@ -216,10 +221,7 @@ export class ReportCardTemplatesService {
     await this.prisma.reportCardTemplate.delete({ where: { id } });
   }
 
-  async setDefault(
-    scope: Scope,
-    id: string,
-  ): Promise<ReportCardTemplateDto> {
+  async setDefault(scope: Scope, id: string): Promise<ReportCardTemplateDto> {
     const existing = await this.prisma.reportCardTemplate.findUnique({
       where: { id },
     });

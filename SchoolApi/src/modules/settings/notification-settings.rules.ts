@@ -8,7 +8,13 @@ import type {
 } from '../../core/school-settings/notification-settings';
 import type { UpdateNotificationSettingsDto } from './dto/notification-settings.dto';
 
-const ALL_ON = { email: true, sms: true, push: true, whatsapp: false, inApp: true };
+const ALL_ON = {
+  email: true,
+  sms: true,
+  push: true,
+  whatsapp: false,
+  inApp: true,
+};
 
 /** Every known category with its effective value (unlisted = all on). */
 export function withAllCategories(
@@ -74,7 +80,9 @@ export function mergeNotificationSettings(
         }
       : current.sms,
     push: patch.push ? { enabled: patch.push.enabled } : current.push,
-    whatsapp: patch.whatsapp ? { enabled: patch.whatsapp.enabled } : current.whatsapp,
+    whatsapp: patch.whatsapp
+      ? { enabled: patch.whatsapp.enabled }
+      : current.whatsapp,
     categories: [...categories.values()],
   };
 }

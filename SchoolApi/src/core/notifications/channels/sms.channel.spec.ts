@@ -19,7 +19,9 @@ function channel(env: Record<string, unknown>) {
     },
   } as unknown as AppConfigService;
   const identity = {
-    forUser: jest.fn().mockResolvedValue({ fromName: null, senderId: 'BFS', schoolId: null }),
+    forUser: jest
+      .fn()
+      .mockResolvedValue({ fromName: null, senderId: 'BFS', schoolId: null }),
   } as unknown as SenderIdentityResolver;
   const prisma = {} as unknown as PrismaService;
   return new SmsChannel(config, identity, prisma);

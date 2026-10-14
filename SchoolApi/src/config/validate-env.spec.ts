@@ -111,6 +111,8 @@ describe('validateEnv', () => {
     EMAIL_FROM: 'eSchool <no-reply@example.com>',
     SMS_DRIVER: 'http',
     SMS_HTTP_URL: 'https://sms.example.com/send',
+    WHATSAPP_DRIVER: 'http',
+    WHATSAPP_HTTP_URL: 'https://wa.example.com/send',
   };
 
   it('accepts a complete production environment', () => {

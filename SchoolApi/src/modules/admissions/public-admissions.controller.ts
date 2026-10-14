@@ -16,10 +16,7 @@ import {
   PublicApplicationResultDto,
   PublicApplicationStatusDto,
   PublicFormConfigDto,
-  type PublicBranchDto,
-  type PublicClassDto,
   type PublicSchoolInfoDto,
-  type PublicSessionDto,
 } from './dto/public-admission.dto';
 
 @ApiTags('public-admissions')
@@ -77,9 +74,9 @@ export class PublicAdmissionsController {
 
     return {
       school: schoolInfo,
-      branches: branches as PublicBranchDto[],
-      classes: classes as PublicClassDto[],
-      sessions: sessions as PublicSessionDto[],
+      branches,
+      classes,
+      sessions,
     };
   }
 

@@ -53,6 +53,11 @@ import { WorkloadService } from './workload.service';
     StaffIdCardProcessor,
     StaffIdCardContentLoader,
   ],
-  exports: [StaffRepository, StaffAccessService, AssignmentEnder, AllocationService],
+  exports: [
+    StaffRepository,
+    StaffAccessService,
+    AssignmentEnder,
+    AllocationService,
+  ],
 })
 export class StaffModule {}

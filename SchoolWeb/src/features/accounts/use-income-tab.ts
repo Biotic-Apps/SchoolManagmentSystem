@@ -4,7 +4,6 @@ import { useDialogState } from "@/lib/use-dialog-state";
 import { useListState } from "@/lib/use-list-state";
 import { incomeColumns } from "./income-columns";
 import { useIncomeList } from "./income-api";
-import type { Income } from "./types";
 import { useIncomeLookups } from "./use-income-lookups";
 
 type IncomeFilters = { categoryId?: string; from?: string; to?: string };

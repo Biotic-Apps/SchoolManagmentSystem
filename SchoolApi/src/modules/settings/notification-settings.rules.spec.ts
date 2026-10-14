@@ -30,7 +30,14 @@ describe('notification settings rules', () => {
     expect(merged.sms).toEqual({ enabled: false, senderId: null });
     expect(merged.email).toEqual(DEFAULT_NOTIFICATION_SETTINGS.email);
     expect(merged.categories).toEqual([
-      { category: 'DIARY', email: false, sms: false, push: true, inApp: true },
+      {
+        category: 'DIARY',
+        email: false,
+        sms: false,
+        push: true,
+        whatsapp: false,
+        inApp: true,
+      },
     ]);
   });
 

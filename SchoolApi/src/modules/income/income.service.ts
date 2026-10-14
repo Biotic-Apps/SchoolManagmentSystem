@@ -4,13 +4,20 @@ import { AuditService } from '../../core/audit/audit.service';
 import { parseDate } from '../../core/common/dates';
 import { notFound } from '../../core/common/errors/errors';
 import type { PageResult } from '../../core/common/pagination/page-result';
-import { toPageResult, toSkipTake } from '../../core/common/pagination/paginate';
+import {
+  toPageResult,
+  toSkipTake,
+} from '../../core/common/pagination/paginate';
 import type { AuthUser } from '../../core/common/types/auth-user';
 import { UrlSigner } from '../../core/files/url-signer';
 import { PrismaService } from '../../core/prisma/prisma.service';
 import type { Scope } from '../../core/rbac/scope/scope';
 import { BranchAccess } from '../expenses/branch-access';
-import type { CreateIncomeDto, IncomeQueryDto, UpdateIncomeDto } from './dto/income-input.dto';
+import type {
+  CreateIncomeDto,
+  IncomeQueryDto,
+  UpdateIncomeDto,
+} from './dto/income-input.dto';
 import type { IncomeDto } from './dto/income.dto';
 import { INCOME_INCLUDE, toIncomeDto, type IncomeRow } from './income.mapper';
 
@@ -24,11 +31,16 @@ export class IncomeService {
   ) {}
 
   private view(row: IncomeRow): IncomeDto {
-    const url = row.receiptFileId ? this.signer.sign(row.receiptFileId).url : null;
+    const url = row.receiptFileId
+      ? this.signer.sign(row.receiptFileId).url
+      : null;
     return toIncomeDto(row, url);
   }
 
-  async list(scope: Scope, query: IncomeQueryDto): Promise<PageResult<IncomeDto>> {
+  async list(
+    scope: Scope,
+    query: IncomeQueryDto,
+  ): Promise<PageResult<IncomeDto>> {
     if (query.branchId) await this.access.manage(scope, query.branchId);
     const where: Prisma.IncomeWhereInput = {
       AND: [
@@ -52,7 +64,11 @@ export class IncomeService {
       }),
       this.prisma.income.count({ where }),
     ]);
-    return toPageResult(rows.map((row) => this.view(row)), total, query);
+    return toPageResult(
+      rows.map((row) => this.view(row)),
+      total,
+      query,
+    );
   }
 
   async get(scope: Scope, id: string): Promise<IncomeDto> {
@@ -60,7 +76,11 @@ export class IncomeService {
     return this.view(row);
   }
 
-  async create(user: AuthUser, scope: Scope, dto: CreateIncomeDto): Promise<IncomeDto> {
+  async create(
+    user: AuthUser,
+    scope: Scope,
+    dto: CreateIncomeDto,
+  ): Promise<IncomeDto> {
     const branch = await this.access.manage(scope, dto.branchId);
     const row = await this.prisma.income.create({
       data: {
@@ -89,21 +109,33 @@ export class IncomeService {
     return view;
   }
 
-  async update(user: AuthUser, scope: Scope, id: string, dto: UpdateIncomeDto): Promise<IncomeDto> {
+  async update(
+    user: AuthUser,
+    scope: Scope,
+    id: string,
+    dto: UpdateIncomeDto,
+  ): Promise<IncomeDto> {
     const before = await this.findManaged(scope, id);
     await this.prisma.income.update({
       where: { id },
       data: {
         categoryId: dto.categoryId,
         title: dto.title?.trim(),
-        description: dto.description !== undefined ? dto.description?.trim() || null : undefined,
-        amountMinor: dto.amountMinor !== undefined ? BigInt(dto.amountMinor) : undefined,
+        description:
+          dto.description !== undefined
+            ? dto.description?.trim() || null
+            : undefined,
+        amountMinor:
+          dto.amountMinor !== undefined ? BigInt(dto.amountMinor) : undefined,
         receivedOn: dto.receivedOn ? parseDate(dto.receivedOn) : undefined,
         receiptFileId: dto.receiptFileId,
         notes: dto.notes !== undefined ? dto.notes.trim() || null : undefined,
       },
     });
-    const after = await this.prisma.income.findUniqueOrThrow({ where: { id }, include: INCOME_INCLUDE });
+    const after = await this.prisma.income.findUniqueOrThrow({
+      where: { id },
+      include: INCOME_INCLUDE,
+    });
     const afterView = this.view(after);
     this.audit.stage({
       action: 'income.update',
@@ -131,7 +163,10 @@ export class IncomeService {
   }
 
   private async findManaged(scope: Scope, id: string): Promise<IncomeRow> {
-    const row = await this.prisma.income.findUnique({ where: { id }, include: INCOME_INCLUDE });
+    const row = await this.prisma.income.findUnique({
+      where: { id },
+      include: INCOME_INCLUDE,
+    });
     if (!row) throw notFound('Income');
     scope.assertManageBranch({ id: row.branchId, schoolId: row.schoolId });
     return row;

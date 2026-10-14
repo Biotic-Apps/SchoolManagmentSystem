@@ -36,7 +36,9 @@ export class SiblingDiscountsService {
       },
     });
     if (existing && existing.status === 'ACTIVE')
-      throw conflict(`A discount rule for child #${dto.childIndex} already exists`);
+      throw conflict(
+        `A discount rule for child #${dto.childIndex} already exists`,
+      );
     // If archived, reactivate with the new percent
     if (existing) {
       const updated = await this.prisma.siblingDiscount.update({

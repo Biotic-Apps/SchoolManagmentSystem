@@ -24,17 +24,6 @@ const LETTER_INCLUDE = {
   staff: { select: { id: true, name: true, designation: true } },
 } satisfies Prisma.HrLetterInclude;
 
-const PLACEHOLDERS: Record<string, true> = {
-  staffName: true,
-  designation: true,
-  joiningDate: true,
-  salary: true,
-  schoolName: true,
-  branchName: true,
-  today: true,
-  effectiveDate: true,
-};
-
 function formatDate(date: Date | string | null | undefined): string {
   if (!date) return '';
   const d = typeof date === 'string' ? new Date(date) : date;
@@ -95,7 +84,11 @@ export class HrLettersService {
       }),
       this.prisma.hrLetterTemplate.count({ where }),
     ]);
-    return toPageResult(rows.map((r) => this.mapTemplate(r)), total, query);
+    return toPageResult(
+      rows.map((r) => this.mapTemplate(r)),
+      total,
+      query,
+    );
   }
 
   async updateTemplate(
@@ -199,8 +192,7 @@ export class HrLettersService {
     };
 
     const body = this.replacePlaceholders(template.bodyTemplate, values);
-    const subject =
-      dto.subject?.trim() || `${template.title} - ${staff.name}`;
+    const subject = dto.subject?.trim() || `${template.title} - ${staff.name}`;
 
     const letter = await this.prisma.hrLetter.create({
       data: {
@@ -226,10 +218,7 @@ export class HrLettersService {
     return this.mapLetter(letter);
   }
 
-  async listLetters(
-    scope: Scope,
-    staffId: string,
-  ): Promise<HrLetterDto[]> {
+  async listLetters(scope: Scope, staffId: string): Promise<HrLetterDto[]> {
     await this.staffAccess.read(scope, staffId);
     const rows = await this.prisma.hrLetter.findMany({
       where: { staffId },
@@ -239,10 +228,7 @@ export class HrLettersService {
     return rows.map((r) => this.mapLetter(r));
   }
 
-  async getLetter(
-    scope: Scope,
-    id: string,
-  ): Promise<HrLetterDto> {
+  async getLetter(scope: Scope, id: string): Promise<HrLetterDto> {
     const row = await this.prisma.hrLetter.findUnique({
       where: { id },
       include: LETTER_INCLUDE,
@@ -254,10 +240,7 @@ export class HrLettersService {
 
   // ── PDF download ──
 
-  async getDownloadUrl(
-    scope: Scope,
-    id: string,
-  ): Promise<{ fileUrl: string }> {
+  async getDownloadUrl(scope: Scope, id: string): Promise<{ fileUrl: string }> {
     const row = await this.prisma.hrLetter.findUnique({
       where: { id },
       select: { staffId: true, fileId: true },
@@ -274,7 +257,7 @@ export class HrLettersService {
     template: string,
     values: Record<string, string>,
   ): string {
-    return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+    return template.replace(/\{\{(\w+)\}\}/g, (match, key: string) => {
       if (key in values) return values[key];
       return match; // Leave unrecognized placeholders as-is.
     });
@@ -289,7 +272,7 @@ export class HrLettersService {
     if (Array.isArray(allowances)) {
       for (const a of allowances) {
         if (a && typeof a === 'object' && 'amountMinor' in a) {
-          total += Number(a.amountMinor);
+          total += Number((a as { amountMinor: unknown }).amountMinor);
         }
       }
     }
@@ -318,21 +301,19 @@ export class HrLettersService {
     };
   }
 
-  private mapLetter(
-    row: {
-      id: string;
-      schoolId: string;
-      staffId: string;
-      templateId: string;
-      type: string;
-      subject: string;
-      body: string;
-      fileId: string | null;
-      issuedAt: Date;
-      createdAt: Date;
-      staff: { id: string; name: string; designation: string };
-    },
-  ): HrLetterDto {
+  private mapLetter(row: {
+    id: string;
+    schoolId: string;
+    staffId: string;
+    templateId: string;
+    type: string;
+    subject: string;
+    body: string;
+    fileId: string | null;
+    issuedAt: Date;
+    createdAt: Date;
+    staff: { id: string; name: string; designation: string };
+  }): HrLetterDto {
     return {
       id: row.id,
       schoolId: row.schoolId,

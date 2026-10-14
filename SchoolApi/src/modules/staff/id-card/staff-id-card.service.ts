@@ -7,7 +7,10 @@ import { OutboxService } from '../../../core/outbox/outbox.service';
 import { PrismaService } from '../../../core/prisma/prisma.service';
 import type { Scope } from '../../../core/rbac/scope/scope';
 import { StaffAccessService } from '../staff-access.service';
-import type { StaffIdCardJobDto, StaffIdCardStatusDto } from './staff-id-card.dto';
+import type {
+  StaffIdCardJobDto,
+  StaffIdCardStatusDto,
+} from './staff-id-card.dto';
 import { queueStaffIdCard } from './staff-id-card-job';
 
 @Injectable()

@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma, SubmissionStatus } from '../../generated/prisma/client';
-import { parseDate, formatDate } from '../../core/common/dates';
-import {
-  forbidden,
-  invalid,
-  notFound,
-} from '../../core/common/errors/errors';
+import { parseDate } from '../../core/common/dates';
+import { forbidden, invalid, notFound } from '../../core/common/errors/errors';
 import { today } from '../../core/common/week';
 import type { AuthUser } from '../../core/common/types/auth-user';
 import { FileRefService } from '../../core/files/file-ref.service';
@@ -37,10 +33,7 @@ export class HomeworkService {
 
   // ─── Teacher: CRUD ──────────────────────────────────────────
 
-  async list(
-    scope: Scope,
-    query: HomeworkQueryDto,
-  ): Promise<HomeworkDto[]> {
+  async list(scope: Scope, query: HomeworkQueryDto): Promise<HomeworkDto[]> {
     const from = query.from ? parseDate(query.from) : undefined;
     const to = query.to ? parseDate(query.to) : undefined;
     const where: Prisma.HomeworkWhereInput = {
@@ -68,9 +61,7 @@ export class HomeworkService {
           _count: true,
         })
       : [];
-    const gradedMap = new Map(
-      graded.map((g) => [g.homeworkId, g._count]),
-    );
+    const gradedMap = new Map(graded.map((g) => [g.homeworkId, g._count]));
     return this.mapper.toHomeworkDtos(rows, gradedMap);
   }
 
@@ -162,7 +153,9 @@ export class HomeworkService {
   ): Promise<HomeworkDto> {
     const hw = await this.prisma.homework.findUnique({
       where: { id: homeworkId },
-      include: { section: { select: { id: true, branchId: true, schoolId: true } } },
+      include: {
+        section: { select: { id: true, branchId: true, schoolId: true } },
+      },
     });
     if (!hw) throw notFound('Homework');
     scope.assertReadSection(hw.section);
@@ -192,13 +185,12 @@ export class HomeworkService {
     return this.mapper.toHomeworkDto(row);
   }
 
-  async archive(
-    scope: Scope,
-    homeworkId: string,
-  ): Promise<HomeworkDto> {
+  async archive(scope: Scope, homeworkId: string): Promise<HomeworkDto> {
     const hw = await this.prisma.homework.findUnique({
       where: { id: homeworkId },
-      include: { section: { select: { id: true, branchId: true, schoolId: true } } },
+      include: {
+        section: { select: { id: true, branchId: true, schoolId: true } },
+      },
     });
     if (!hw) throw notFound('Homework');
     scope.assertReadSection(hw.section);
@@ -241,7 +233,7 @@ export class HomeworkService {
         purposes: ['ATTACHMENT', 'DOCUMENT'],
       });
     }
-    if (!dto.text && !(dto.fileIds?.length)) {
+    if (!dto.text && !dto.fileIds?.length) {
       throw invalid('Submission must include text or at least one file');
     }
     const isLate = today() > hw.dueDate;
@@ -284,7 +276,9 @@ export class HomeworkService {
   ): Promise<HomeworkSubmissionDto[]> {
     const hw = await this.prisma.homework.findUnique({
       where: { id: homeworkId },
-      include: { section: { select: { id: true, branchId: true, schoolId: true } } },
+      include: {
+        section: { select: { id: true, branchId: true, schoolId: true } },
+      },
     });
     if (!hw) throw notFound('Homework');
     scope.assertReadSection(hw.section);

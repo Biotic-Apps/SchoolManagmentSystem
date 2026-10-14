@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ReportCardTemplateDto {
   @ApiProperty() id!: string;
@@ -14,7 +14,8 @@ export class ReportCardTemplateDto {
   @ApiProperty() showAttendance!: boolean;
   @ApiProperty() showPosition!: boolean;
   @ApiProperty({ type: [String] }) signatures!: string[];
-  @ApiProperty({ type: [String], nullable: true }) remarkLabels!: string[] | null;
+  @ApiProperty({ type: [String], nullable: true }) remarkLabels!:
+    string[] | null;
   @ApiProperty({ nullable: true }) footerText!: string | null;
   @ApiProperty() createdAt!: string;
   @ApiProperty() updatedAt!: string;

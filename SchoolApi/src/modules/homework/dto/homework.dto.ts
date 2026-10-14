@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
   IsArray,
-  IsEnum,
   IsInt,
   IsOptional,
   IsString,
@@ -12,10 +11,6 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
-import type {
-  RecordStatus,
-  SubmissionStatus,
-} from '../../../generated/prisma/client';
 import { IdNameDto } from '../../../core/common/dto/id-name.dto';
 import {
   IsDateOnly,

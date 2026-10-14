@@ -29,7 +29,8 @@ export class FamilyChallanService {
       select: { studentId: true },
     });
     const studentIds = links.map((l) => l.studentId);
-    if (studentIds.length === 0) throw invalid('Guardian has no linked students');
+    if (studentIds.length === 0)
+      throw invalid('Guardian has no linked students');
 
     return this.generateFamilyPdf(studentIds, branchId, guardian.name);
   }
@@ -58,7 +59,8 @@ export class FamilyChallanService {
       select: { id: true },
       orderBy: [{ studentId: 'asc' }, { dueDate: 'asc' }],
     });
-    if (invoices.length === 0) throw invalid('No open invoices found for these students');
+    if (invoices.length === 0)
+      throw invalid('No open invoices found for these students');
 
     const school = await this.source.school(branchId);
     const views = await this.source.views(

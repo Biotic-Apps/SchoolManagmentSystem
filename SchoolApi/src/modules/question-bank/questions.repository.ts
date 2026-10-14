@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import type { Prisma, RecordStatus } from '../../generated/prisma/client';
+import type {
+  DifficultyLevel,
+  Prisma,
+  QuestionType,
+  RecordStatus,
+} from '../../generated/prisma/client';
 import { toSkipTake } from '../../core/common/pagination/paginate';
 import { containsInsensitive } from '../../core/common/search';
 import { PrismaService } from '../../core/prisma/prisma.service';
@@ -26,10 +31,7 @@ export class QuestionsRepository {
             chapterName: { equals: query.chapterName, mode: 'insensitive' },
           }),
           ...(search && {
-            OR: [
-              { questionText: search },
-              { chapterName: search },
-            ],
+            OR: [{ questionText: search }, { chapterName: search }],
           }),
         },
       ],
@@ -92,8 +94,8 @@ export class QuestionsRepository {
       schoolId,
       subjectId,
       classId,
-      questionType: questionType as any,
-      difficultyLevel: difficultyLevel as any,
+      questionType: questionType as QuestionType,
+      difficultyLevel: difficultyLevel as DifficultyLevel,
       status: 'ACTIVE',
     };
     const all = await this.prisma.question.findMany({

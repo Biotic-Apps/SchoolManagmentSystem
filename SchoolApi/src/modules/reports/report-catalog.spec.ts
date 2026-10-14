@@ -19,6 +19,7 @@ describe('report catalog', () => {
       'fees.aging',
       'fees.defaulters',
       'expenses.summary',
+      'profit-loss',
     ]);
   });
 

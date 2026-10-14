@@ -10,9 +10,7 @@ import {
   MaxLength,
   Min,
   MinLength,
-  ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 import {
   DifficultyLevel,
   QuestionType,

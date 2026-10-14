@@ -3,11 +3,9 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
-  IsIn,
   IsOptional,
   IsString,
   MaxLength,
-  MinLength,
   ValidateNested,
 } from 'class-validator';
 import type { ApplicationStatus } from '../../../generated/prisma/client';

@@ -38,8 +38,7 @@ export function drawReportCard(
   footer: string,
 ): void {
   // Header: use custom overrides if provided
-  const headerSchoolName =
-    c.customHeaderOverrides?.schoolName ?? c.schoolName;
+  const headerSchoolName = c.customHeaderOverrides?.schoolName ?? c.schoolName;
   const headerBranchLine = c.customHeaderOverrides
     ? [
         c.customHeaderOverrides.subtitle,

@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { AppError } from '../../../core/common/errors/app-error';
 import { ErrorCode } from '../../../core/common/errors/error-code.enum';
-import type { GatewayInitiateResult, PaymentGateway, VerifiedGatewayPayment } from './payment-gateway';
+import type {
+  GatewayInitiateResult,
+  PaymentGateway,
+  VerifiedGatewayPayment,
+} from './payment-gateway';
 
 export const MANUAL_GATEWAY = 'MANUAL';
 

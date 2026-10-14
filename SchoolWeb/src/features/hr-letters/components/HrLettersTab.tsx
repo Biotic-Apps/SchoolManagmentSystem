@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useSession } from "@/features/auth/session-context";
 import { useStaffHrLetters, useHrLetterTemplates } from "../api";
-import type { HrLetter } from "../types";
 import { GenerateLetterDialog } from "./GenerateLetterDialog";
 import { HrLetterCard } from "./HrLetterCard";
 
@@ -37,7 +36,7 @@ export function HrLettersTab({ staffId, canGenerate }: HrLettersTabProps) {
   if (lettersQuery.isLoading) return <Skeleton className="h-32 w-full" />;
   if (lettersQuery.error) return <ErrorState error={lettersQuery.error} onRetry={() => lettersQuery.refetch()} />;
 
-  const handleSaved = (_letter: HrLetter) => {
+  const handleSaved = () => {
     setShowDialog(false);
   };
 

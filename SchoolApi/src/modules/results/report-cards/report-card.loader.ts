@@ -144,9 +144,7 @@ export class ReportCardLoader {
       showAttendance: template?.showAttendance ?? false,
       showPosition: template?.showPosition ?? true,
       landscape: layout.orientation === 'landscape',
-      customSignatures: template
-        ? (template.signatures as string[])
-        : null,
+      customSignatures: template ? (template.signatures as string[]) : null,
       customFooterText: template?.footerText ?? null,
       customHeaderOverrides: template
         ? {

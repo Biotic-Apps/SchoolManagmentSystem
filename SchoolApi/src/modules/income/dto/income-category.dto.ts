@@ -1,8 +1,15 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUUID, Matches, MaxLength, MinLength } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsUUID,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class CreateIncomeCategoryDto {
-  @ApiPropertyOptional({ description: 'Defaults to the caller\'s school' })
+  @ApiPropertyOptional({ description: "Defaults to the caller's school" })
   @IsOptional()
   @IsUUID()
   schoolId?: string;
@@ -12,9 +19,13 @@ export class CreateIncomeCategoryDto {
   @MaxLength(100)
   name!: string;
 
-  @ApiPropertyOptional({ description: 'Upper snake case; derived from the name when omitted' })
+  @ApiPropertyOptional({
+    description: 'Upper snake case; derived from the name when omitted',
+  })
   @IsOptional()
-  @Matches(/^[A-Z][A-Z0-9_]{1,29}$/, { message: 'code must be UPPER_SNAKE_CASE (2-30 chars)' })
+  @Matches(/^[A-Z][A-Z0-9_]{1,29}$/, {
+    message: 'code must be UPPER_SNAKE_CASE (2-30 chars)',
+  })
   code?: string;
 }
 

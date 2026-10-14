@@ -32,7 +32,12 @@ export const BRANCH_SETTING_DEFAULTS: Readonly<Record<string, unknown>> = {
 };
 
 /** Online gateways known to the registry ("NONE" disables online payment). */
-export const ONLINE_GATEWAYS = ['NONE', 'MANUAL', 'JAZZCASH', 'EASYPAISA'] as const;
+export const ONLINE_GATEWAYS = [
+  'NONE',
+  'MANUAL',
+  'JAZZCASH',
+  'EASYPAISA',
+] as const;
 
 const FREE_TEXT_SETTINGS: Record<string, number> = {
   'fees.receiptFooter': 300,

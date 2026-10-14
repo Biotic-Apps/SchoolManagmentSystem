@@ -1,6 +1,10 @@
 import type { Env } from '../../../../config/env.schema';
 import { errorText, providerError } from '../provider-error';
-import { escapeFor, fillTemplate, type TemplateValues } from '../sms/sms-template';
+import {
+  escapeFor,
+  fillTemplate,
+  type TemplateValues,
+} from '../sms/sms-template';
 import {
   responseText,
   WHATSAPP_TIMEOUT_MS,
@@ -74,10 +78,7 @@ export class HttpWhatsAppSender implements WhatsAppSender {
         signal: AbortSignal.timeout(WHATSAPP_TIMEOUT_MS),
       });
     } catch (error) {
-      throw providerError(
-        `WhatsApp gateway: ${errorText(error)}`,
-        secrets,
-      );
+      throw providerError(`WhatsApp gateway: ${errorText(error)}`, secrets);
     }
     if (response.ok) return;
     const detail = await responseText(response);

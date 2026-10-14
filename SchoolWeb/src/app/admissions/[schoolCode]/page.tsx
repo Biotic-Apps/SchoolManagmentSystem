@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { GraduationCap, Search, CheckCircle2, Clock, AlertCircle, Loader2 } from "lucide-react";
+import { GraduationCap, Search, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import {
@@ -129,9 +129,10 @@ export default function PublicAdmissionPage() {
   }, [schoolCode]);
 
   // Reset session when branch changes
-  useEffect(() => {
+  const handleBranchChange = (value: string) => {
+    setBranchId(value);
     setSessionId("");
-  }, [branchId]);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -375,7 +376,7 @@ export default function PublicAdmissionPage() {
             <h2 className="mb-4 text-card-title font-semibold text-fg">Admission Details</h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <Field label="Branch" required>
-                <Select value={branchId} onValueChange={setBranchId} required>
+                <Select value={branchId} onValueChange={handleBranchChange} required>
                   <SelectTrigger>
                     <SelectValue placeholder="Select branch" />
                   </SelectTrigger>

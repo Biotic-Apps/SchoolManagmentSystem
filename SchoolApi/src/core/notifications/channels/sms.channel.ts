@@ -6,7 +6,7 @@ import type { ChannelMessage } from './channel-message';
 import { DevLogChannel } from './dev-log-channel';
 import { SenderIdentityResolver } from './sender-identity';
 import { createSmsSender } from './sms/sms-sender.factory';
-import type { SmsSender } from './sms/sms-sender';
+import type { OutgoingSms, SmsSender } from './sms/sms-sender';
 
 /** SMS has no subject line: `Title: body`. */
 function smsText({ title, body }: ChannelMessage): string {
@@ -35,9 +35,13 @@ export class SmsChannel extends DevLogChannel {
     const to = toE164(message.phone, this.config.get('DEFAULT_PHONE_COUNTRY'));
     if (!to) throw new Error('Phone number is not valid');
     const { senderId, schoolId } = await this.identity.forUser(message.userId);
-    const sms: Record<string, unknown> = { to, message: smsText(message), senderId };
+    const sms: OutgoingSms & { schoolId?: string } = {
+      to,
+      message: smsText(message),
+      senderId,
+    };
     if (this.isAndroidRelay && schoolId) sms.schoolId = schoolId;
-    await this.sender.send(sms as any);
+    await this.sender.send(sms);
   }
 
   protected destination(message: ChannelMessage): string | undefined {

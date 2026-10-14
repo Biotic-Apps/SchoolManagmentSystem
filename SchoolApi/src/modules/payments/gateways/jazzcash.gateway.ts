@@ -12,8 +12,10 @@ import type {
 
 export const JAZZCASH_GATEWAY = 'JAZZCASH';
 
-const SANDBOX_URL = 'https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform';
-const PRODUCTION_URL = 'https://payments.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform';
+const SANDBOX_URL =
+  'https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform';
+const PRODUCTION_URL =
+  'https://payments.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform';
 
 /**
  * JazzCash hosted checkout adapter.
@@ -29,7 +31,22 @@ export class JazzCashGateway implements PaymentGateway {
 
   constructor(private readonly config: AppConfigService) {}
 
-  async initiate(invoice: Invoice): Promise<GatewayInitiateResult> {
+  initiate(invoice: Invoice): Promise<GatewayInitiateResult> {
+    // Executor throws (e.g. missing config) become rejections.
+    return new Promise((resolve) => resolve(this.buildInitiate(invoice)));
+  }
+
+  verifyCallback(
+    request: GatewayCallbackRequest,
+  ): Promise<VerifiedGatewayPayment | null> {
+    return new Promise((resolve) => resolve(this.verify(request)));
+  }
+
+  refund(): Promise<void> {
+    return Promise.reject(invalid('JazzCash refunds are processed manually'));
+  }
+
+  private buildInitiate(invoice: Invoice): GatewayInitiateResult {
     const merchantId = this.env('JAZZCASH_MERCHANT_ID');
     const password = this.env('JAZZCASH_PASSWORD');
     const salt = this.env('JAZZCASH_INTEGRITY_SALT');
@@ -41,7 +58,9 @@ export class JazzCashGateway implements PaymentGateway {
     const amountStr = invoice.totalMinor.toString();
     const now = new Date();
     const txnDateTime = formatJazzCashDate(now);
-    const expiryDateTime = formatJazzCashDate(new Date(now.getTime() + 60 * 60 * 1000)); // 1 hour
+    const expiryDateTime = formatJazzCashDate(
+      new Date(now.getTime() + 60 * 60 * 1000),
+    ); // 1 hour
 
     const fields: Record<string, string> = {
       pp_Version: '1.1',
@@ -73,9 +92,9 @@ export class JazzCashGateway implements PaymentGateway {
     return { redirectUrl: baseUrl, formData: fields };
   }
 
-  async verifyCallback(
+  private verify(
     request: GatewayCallbackRequest,
-  ): Promise<VerifiedGatewayPayment | null> {
+  ): VerifiedGatewayPayment | null {
     const body = request.body as Record<string, string>;
     const salt = this.env('JAZZCASH_INTEGRITY_SALT');
 
@@ -116,14 +135,7 @@ export class JazzCashGateway implements PaymentGateway {
     };
   }
 
-  async refund(): Promise<void> {
-    throw invalid('JazzCash refunds are processed manually');
-  }
-
-  private computeHash(
-    fields: Record<string, string>,
-    salt: string,
-  ): string {
+  private computeHash(fields: Record<string, string>, salt: string): string {
     // JazzCash HMAC: sort field names that start with "pp_", concatenate values with "&", prepend salt
     const sortedKeys = Object.keys(fields)
       .filter((k) => k.startsWith('pp_') || k.startsWith('ppmpf_'))

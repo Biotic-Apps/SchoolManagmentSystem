@@ -48,9 +48,16 @@ export class ChallanPrintController {
   ): Promise<void> {
     const result = body.guardianId
       ? await this.family.forGuardian(scope, body.guardianId, body.branchId)
-      : await this.family.forStudents(scope, body.studentIds ?? [], body.branchId);
+      : await this.family.forStudents(
+          scope,
+          body.studentIds ?? [],
+          body.branchId,
+        );
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `inline; filename="${result.fileName}"`);
+    res.setHeader(
+      'Content-Disposition',
+      `inline; filename="${result.fileName}"`,
+    );
     res.end(result.buffer);
   }
 }

@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../core/common/decorators/current-user.decorator';
 import type { PageResult } from '../../core/common/pagination/page-result';
@@ -7,7 +18,11 @@ import type { AuthUser } from '../../core/common/types/auth-user';
 import { RequirePermission } from '../../core/rbac/require-permission.decorator';
 import { CurrentScope } from '../../core/rbac/scope/current-scope.decorator';
 import type { Scope } from '../../core/rbac/scope/scope';
-import { CreateIncomeDto, IncomeQueryDto, UpdateIncomeDto } from './dto/income-input.dto';
+import {
+  CreateIncomeDto,
+  IncomeQueryDto,
+  UpdateIncomeDto,
+} from './dto/income-input.dto';
 import { IncomeDto } from './dto/income.dto';
 import { IncomeService } from './income.service';
 

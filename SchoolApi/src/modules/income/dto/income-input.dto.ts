@@ -1,7 +1,19 @@
 import { ApiPropertyOptional, OmitType, PartialType } from '@nestjs/swagger';
-import { IsInt, IsOptional, IsString, IsUUID, Max, MaxLength, Min, MinLength } from 'class-validator';
+import {
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { PaginationQueryDto } from '../../../core/common/pagination/pagination-query.dto';
-import { IsDateOnly, IsOptionalDateOnly } from '../../../core/common/validation/is-date-only';
+import {
+  IsDateOnly,
+  IsOptionalDateOnly,
+} from '../../../core/common/validation/is-date-only';
 
 export class CreateIncomeDto {
   @IsUUID()

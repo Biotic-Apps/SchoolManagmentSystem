@@ -138,7 +138,9 @@ export const envSchema = z
      */
     OTP_DEV_ECHO: booleanString.default(false),
     /** log (default), twilio, http (any local SMS gateway), or android-relay (phone polls outbox). */
-    SMS_DRIVER: z.enum(['log', 'twilio', 'http', 'android-relay']).default('log'),
+    SMS_DRIVER: z
+      .enum(['log', 'twilio', 'http', 'android-relay'])
+      .default('log'),
     TWILIO_ACCOUNT_SID: z.string().min(1).optional(),
     TWILIO_AUTH_TOKEN: z.string().min(1).optional(),
     TWILIO_FROM: z.string().min(1).optional(),
@@ -198,7 +200,11 @@ export const envSchema = z
     if (env.NODE_ENV !== 'production') return;
 
     if (!env.ALLOW_LOG_CHANNELS) {
-      for (const key of ['EMAIL_DRIVER', 'SMS_DRIVER', 'WHATSAPP_DRIVER'] as const) {
+      for (const key of [
+        'EMAIL_DRIVER',
+        'SMS_DRIVER',
+        'WHATSAPP_DRIVER',
+      ] as const) {
         if (env[key] === 'log') {
           ctx.addIssue({
             code: 'custom',
@@ -314,7 +320,10 @@ function channelIssues(env: ChannelEnv): [keyof ChannelEnv, string][] {
   }
   for (const key of waRequired[env.WHATSAPP_DRIVER] ?? []) {
     if (!env[key])
-      issues.push([key, `required when WHATSAPP_DRIVER is ${env.WHATSAPP_DRIVER}`]);
+      issues.push([
+        key,
+        `required when WHATSAPP_DRIVER is ${env.WHATSAPP_DRIVER}`,
+      ]);
   }
   return issues;
 }

@@ -25,7 +25,8 @@ export function createSmsSender(
         SMS_HTTP_BODY: config.get('SMS_HTTP_BODY'),
       });
     case 'android-relay':
-      if (!prisma) throw new Error('PrismaService required for android-relay SMS driver');
+      if (!prisma)
+        throw new Error('PrismaService required for android-relay SMS driver');
       return new AndroidRelaySmsSender(prisma);
     default:
       return null;

@@ -12,6 +12,21 @@ import type { QrScanResult, QrScanResultCode } from "../qr-scan-types";
 
 type ScanType = "IN" | "OUT";
 
+/** Minimal typings for browser QR APIs not in lib.dom (BarcodeDetector, html5-qrcode/jsQR globals). */
+interface DetectedBarcode {
+  rawValue: string;
+}
+interface BarcodeDetectorInstance {
+  detect(source: CanvasImageSource): Promise<DetectedBarcode[]>;
+}
+type BarcodeDetectorCtor = new (options?: { formats?: string[] }) => BarcodeDetectorInstance;
+type JsQrFn = (data: Uint8ClampedArray, width: number, height: number) => { data: string } | null;
+type QrWindow = Window & {
+  BarcodeDetector?: BarcodeDetectorCtor;
+  Html5Qrcode?: unknown;
+  jsQR?: JsQrFn;
+};
+
 const RESULT_CONFIG: Record<QrScanResultCode, { label: string; color: string; Icon: typeof CheckCircle2 }> = {
   MARKED: { label: "Marked", color: "text-primary", Icon: CheckCircle2 },
   ALREADY_MARKED: { label: "Already marked", color: "text-amber-600", Icon: Clock },
@@ -89,51 +104,9 @@ export function QrScannerPage() {
     [scanType, scanMutation, queryClient],
   );
 
-  const startCamera = useCallback(async () => {
-    setCameraError(null);
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } },
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
-      setCameraActive(true);
-      scanningRef.current = true;
-
-      // Use BarcodeDetector API if available
-      if ("BarcodeDetector" in window) {
-        const detector = new (window as any).BarcodeDetector({ formats: ["qr_code"] });
-        const scanLoop = async () => {
-          if (!scanningRef.current || !videoRef.current) return;
-          try {
-            const barcodes = await detector.detect(videoRef.current);
-            if (barcodes.length > 0) {
-              await processQrCode(barcodes[0].rawValue);
-            }
-          } catch {
-            // Detection failed, continue
-          }
-          if (scanningRef.current) {
-            requestAnimationFrame(() => void scanLoop());
-          }
-        };
-        void scanLoop();
-      } else {
-        // Fallback: use html5-qrcode from CDN
-        await loadHtml5QrCodeFallback();
-      }
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Could not access camera";
-      setCameraError(msg);
-    }
-  }, [processQrCode]);
-
   const loadHtml5QrCodeFallback = useCallback(async () => {
     // Load the library dynamically from CDN
-    if (!(window as any).Html5Qrcode) {
+    if (!(window as QrWindow).Html5Qrcode) {
       await new Promise<void>((resolve, reject) => {
         const script = document.createElement("script");
         script.src = "https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js";
@@ -163,8 +136,9 @@ export function QrScannerPage() {
       try {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         // Use jsQR if available from the html5-qrcode bundle, otherwise just skip
-        if ((window as any).jsQR) {
-          const code = (window as any).jsQR(imageData.data, imageData.width, imageData.height);
+        const jsQR = (window as QrWindow).jsQR;
+        if (jsQR) {
+          const code = jsQR(imageData.data, imageData.width, imageData.height);
           if (code?.data) {
             await processQrCode(code.data);
           }
@@ -178,6 +152,49 @@ export function QrScannerPage() {
     };
     void scanFrame();
   }, [processQrCode]);
+
+  const startCamera = useCallback(async () => {
+    setCameraError(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } },
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+      }
+      setCameraActive(true);
+      scanningRef.current = true;
+
+      // Use BarcodeDetector API if available
+      const BarcodeDetectorImpl = (window as QrWindow).BarcodeDetector;
+      if (BarcodeDetectorImpl) {
+        const detector = new BarcodeDetectorImpl({ formats: ["qr_code"] });
+        const scanLoop = async () => {
+          if (!scanningRef.current || !videoRef.current) return;
+          try {
+            const barcodes = await detector.detect(videoRef.current);
+            if (barcodes.length > 0) {
+              await processQrCode(barcodes[0].rawValue);
+            }
+          } catch {
+            // Detection failed, continue
+          }
+          if (scanningRef.current) {
+            requestAnimationFrame(() => void scanLoop());
+          }
+        };
+        void scanLoop();
+      } else {
+        // Fallback: use html5-qrcode from CDN
+        await loadHtml5QrCodeFallback();
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Could not access camera";
+      setCameraError(msg);
+    }
+  }, [processQrCode, loadHtml5QrCodeFallback]);
 
   useEffect(() => {
     return () => {

@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/
 import { EmptyState } from "@/components/shared/EmptyState";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { AttachmentList } from "@/components/shared/AttachmentList";
-import { useHomeworkSubmissions, useGradeSubmission, useReturnSubmission } from "../api";
+import { useHomeworkSubmissions, useReturnSubmission } from "../api";
 import { GradeDialog } from "./GradeDialog";
 import type { Homework, HomeworkSubmission } from "../types";
 

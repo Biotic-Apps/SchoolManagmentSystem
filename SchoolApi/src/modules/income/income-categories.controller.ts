@@ -4,7 +4,11 @@ import { ApiData } from '../../core/common/swagger/api-data.decorator';
 import { RequirePermission } from '../../core/rbac/require-permission.decorator';
 import { CurrentScope } from '../../core/rbac/scope/current-scope.decorator';
 import type { Scope } from '../../core/rbac/scope/scope';
-import { CreateIncomeCategoryDto, IncomeCategoryDto, IncomeCategoryQueryDto } from './dto/income-category.dto';
+import {
+  CreateIncomeCategoryDto,
+  IncomeCategoryDto,
+  IncomeCategoryQueryDto,
+} from './dto/income-category.dto';
 import { IncomeCategoriesService } from './income-categories.service';
 
 @ApiTags('income')

@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { notFound } from '../../core/common/errors/errors';
 import { PrismaService } from '../../core/prisma/prisma.service';
 import type { Scope } from '../../core/rbac/scope/scope';
-import type { AckSmsDto, GatewayStatusDto, PendingSmsDto } from './dto/sms-gateway.dto';
+import type {
+  AckSmsDto,
+  GatewayStatusDto,
+  PendingSmsDto,
+} from './dto/sms-gateway.dto';
 
 const MAX_PENDING = 20;
 
@@ -37,11 +41,7 @@ export class SmsGatewayService {
   }
 
   /** Phone acknowledges it sent (or failed to send) a message. */
-  async acknowledge(
-    scope: Scope,
-    id: string,
-    dto: AckSmsDto,
-  ): Promise<void> {
+  async acknowledge(scope: Scope, id: string, dto: AckSmsDto): Promise<void> {
     const row = await this.prisma.smsOutbox.findUnique({
       where: { id },
       select: { id: true, schoolId: true, status: true },
@@ -78,8 +78,14 @@ export class SmsGatewayService {
       select: { notifications: true },
     });
 
-    const notifications = (settings?.notifications ?? {}) as Record<string, unknown>;
-    const smsGateway = (notifications.smsGateway ?? {}) as Record<string, unknown>;
+    const notifications = (settings?.notifications ?? {}) as Record<
+      string,
+      unknown
+    >;
+    const smsGateway = (notifications.smsGateway ?? {}) as Record<
+      string,
+      unknown
+    >;
     const enabled = smsGateway.enabled === true;
     const deviceId = (smsGateway.deviceId as string) ?? null;
 

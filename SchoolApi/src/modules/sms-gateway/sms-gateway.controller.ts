@@ -1,10 +1,22 @@
-import { Body, Controller, Get, HttpCode, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  ParseUUIDPipe,
+  Post,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ApiData } from '../../core/common/swagger/api-data.decorator';
 import { RequirePermission } from '../../core/rbac/require-permission.decorator';
 import { CurrentScope } from '../../core/rbac/scope/current-scope.decorator';
 import type { Scope } from '../../core/rbac/scope/scope';
-import { AckSmsDto, GatewayStatusDto, PendingSmsDto } from './dto/sms-gateway.dto';
+import {
+  AckSmsDto,
+  GatewayStatusDto,
+  PendingSmsDto,
+} from './dto/sms-gateway.dto';
 import { SmsGatewayService } from './sms-gateway.service';
 
 @ApiTags('sms-gateway')

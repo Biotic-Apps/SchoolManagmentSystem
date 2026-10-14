@@ -35,7 +35,7 @@ export function SmsGatewayTab({ schoolId }: SmsGatewayTabProps) {
             SMS Gateway via Android Phone
           </CardTitle>
           <CardDescription>
-            Use your school's Android phone as an SMS relay. The phone polls for pending messages and sends them as
+            Use your school&apos;s Android phone as an SMS relay. The phone polls for pending messages and sends them as
             real SMS.
           </CardDescription>
         </CardHeader>
@@ -92,7 +92,7 @@ export function SmsGatewayTab({ schoolId }: SmsGatewayTabProps) {
             <QrCode className="size-8 text-fg-muted" />
             <h3 className="text-body font-semibold text-fg">Gateway Registration</h3>
             <p className="text-center text-caption text-fg-muted">
-              Open the eSchool app on your school's Android phone, go to Settings, and scan the QR code or enter this
+              Open the eSchool app on your school&apos;s Android phone, go to Settings, and scan the QR code or enter this
               URL to register as an SMS gateway.
             </p>
             <code className="block max-w-full overflow-x-auto rounded-input bg-background px-3 py-2 text-caption text-fg">

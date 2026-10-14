@@ -127,10 +127,7 @@ export class EarlyLeaveService {
       ? { studentId: { in: [...scope.studentIds] } }
       : scope.sectionFilter();
     const where: Prisma.EarlyLeaveWhereInput = {
-      AND: [
-        scopeFilter,
-        query.studentId ? { studentId: query.studentId } : {},
-      ],
+      AND: [scopeFilter, query.studentId ? { studentId: query.studentId } : {}],
       branchId: query.branchId,
       date: query.date ? parseDate(query.date) : undefined,
       status: query.status,

@@ -3,7 +3,6 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
-  IsObject,
   IsOptional,
   IsString,
   IsUUID,
@@ -108,7 +107,10 @@ export class CreateReportCardTemplateDto {
   @IsBoolean()
   showPosition?: boolean;
 
-  @ApiPropertyOptional({ type: [String], default: ['Class teacher', 'Principal', 'Parent / guardian'] })
+  @ApiPropertyOptional({
+    type: [String],
+    default: ['Class teacher', 'Principal', 'Parent / guardian'],
+  })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })

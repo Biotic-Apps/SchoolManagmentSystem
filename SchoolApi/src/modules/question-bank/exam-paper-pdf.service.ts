@@ -56,7 +56,8 @@ export class ExamPaperPdfService {
       for (const qId of section.questionIds) {
         const q = questionsById.get(qId);
         if (!q) continue;
-        const typeLabel = QUESTION_TYPE_LABELS[q.questionType] ?? q.questionType;
+        const typeLabel =
+          QUESTION_TYPE_LABELS[q.questionType] ?? q.questionType;
         pdf.paragraph(
           `Q${questionNumber}. [${q.marks} marks | ${typeLabel}]  ${q.questionText}`,
           { size: 10 },

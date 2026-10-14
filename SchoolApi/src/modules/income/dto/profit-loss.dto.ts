@@ -1,7 +1,5 @@
 import { IsUUID } from 'class-validator';
-import {
-  IsDateOnly,
-} from '../../../core/common/validation/is-date-only';
+import { IsDateOnly } from '../../../core/common/validation/is-date-only';
 
 export class ProfitLossQueryDto {
   @IsUUID()

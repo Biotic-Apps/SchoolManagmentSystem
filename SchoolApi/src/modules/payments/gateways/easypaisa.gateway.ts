@@ -29,7 +29,22 @@ export class EasypaisaGateway implements PaymentGateway {
 
   constructor(private readonly config: AppConfigService) {}
 
-  async initiate(invoice: Invoice): Promise<GatewayInitiateResult> {
+  initiate(invoice: Invoice): Promise<GatewayInitiateResult> {
+    // Executor throws (e.g. missing config) become rejections.
+    return new Promise((resolve) => resolve(this.buildInitiate(invoice)));
+  }
+
+  verifyCallback(
+    request: GatewayCallbackRequest,
+  ): Promise<VerifiedGatewayPayment | null> {
+    return new Promise((resolve) => resolve(this.verify(request)));
+  }
+
+  refund(): Promise<void> {
+    return Promise.reject(invalid('Easypaisa refunds are processed manually'));
+  }
+
+  private buildInitiate(invoice: Invoice): GatewayInitiateResult {
     const storeId = this.env('EASYPAISA_STORE_ID');
     const hashKey = this.env('EASYPAISA_HASH_KEY');
     const sandbox = this.envBool('EASYPAISA_SANDBOX');
@@ -86,9 +101,9 @@ export class EasypaisaGateway implements PaymentGateway {
     return { redirectUrl: baseUrl, formData: fields };
   }
 
-  async verifyCallback(
+  private verify(
     request: GatewayCallbackRequest,
-  ): Promise<VerifiedGatewayPayment | null> {
+  ): VerifiedGatewayPayment | null {
     const body = request.body as Record<string, string>;
     const hashKey = this.env('EASYPAISA_HASH_KEY');
 
@@ -137,12 +152,11 @@ export class EasypaisaGateway implements PaymentGateway {
       invoiceId,
       amountMinor,
       reference:
-        body.transactionId || body.transactionRefNumber || body.orderRefNum || '',
+        body.transactionId ||
+        body.transactionRefNumber ||
+        body.orderRefNum ||
+        '',
     };
-  }
-
-  async refund(): Promise<void> {
-    throw invalid('Easypaisa refunds are processed manually');
   }
 
   private env(key: string): string {

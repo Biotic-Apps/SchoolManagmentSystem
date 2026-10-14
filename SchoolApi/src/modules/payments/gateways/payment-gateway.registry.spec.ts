@@ -1,6 +1,8 @@
 import type { Invoice, Payment } from '../../../generated/prisma/client';
 import { AppError } from '../../../core/common/errors/app-error';
 import { ErrorCode } from '../../../core/common/errors/error-code.enum';
+import type { EasypaisaGateway } from './easypaisa.gateway';
+import type { JazzCashGateway } from './jazzcash.gateway';
 import { MANUAL_GATEWAY, ManualGateway } from './manual.gateway';
 import type { PaymentGateway } from './payment-gateway';
 import { PaymentGatewayRegistry } from './payment-gateway.registry';
@@ -36,8 +38,8 @@ describe('PaymentGatewayRegistry', () => {
     const ep = fake('EASYPAISA');
     const registry = new PaymentGatewayRegistry(
       new ManualGateway(),
-      jc as any,
-      ep as any,
+      jc as unknown as JazzCashGateway,
+      ep as unknown as EasypaisaGateway,
     );
     expect(registry.find('JAZZCASH')?.key).toBe('JAZZCASH');
     expect(registry.find('EASYPAISA')?.key).toBe('EASYPAISA');

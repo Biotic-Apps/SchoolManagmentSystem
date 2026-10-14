@@ -33,10 +33,7 @@ export class ProfitLossService {
     private readonly access: BranchAccess,
   ) {}
 
-  async generate(
-    scope: Scope,
-    query: ProfitLossQuery,
-  ): Promise<ProfitLossDto> {
+  async generate(scope: Scope, query: ProfitLossQuery): Promise<ProfitLossDto> {
     await this.access.manage(scope, query.branchId);
     const { branchId, from, to } = query;
     const fromDate = parseDate(from);
@@ -98,9 +95,7 @@ export class ProfitLossService {
         select: { id: true, name: true },
       }),
     ]);
-    const incomeCatName = new Map(
-      incomeCategories.map((c) => [c.id, c.name]),
-    );
+    const incomeCatName = new Map(incomeCategories.map((c) => [c.id, c.name]));
     const expenseCatName = new Map(
       expenseCategories.map((c) => [c.id, c.name]),
     );

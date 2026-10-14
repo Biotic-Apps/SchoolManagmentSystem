@@ -118,10 +118,7 @@ export function drawStaffIdCardBack(
   doc.rect(x, y, W, H).clip();
   // Header band
   doc.rect(x, y, W, 24).fill(PRIMARY);
-  doc
-    .fillColor('#FFFFFF')
-    .font('Helvetica-Bold')
-    .fontSize(9);
+  doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(9);
   doc.text('STAFF IDENTITY CARD', x + 10, y + 7, {
     width: W - 20,
     align: 'center',
@@ -134,7 +131,9 @@ export function drawStaffIdCardBack(
 
   if (content.phone) {
     doc.text('Phone:', x + 10, infoY, { lineBreak: false });
-    doc.fillColor(TEXT).text(content.phone, x + 60, infoY, { lineBreak: false });
+    doc
+      .fillColor(TEXT)
+      .text(content.phone, x + 60, infoY, { lineBreak: false });
     infoY += 12;
     doc.fillColor(MUTED);
   }
@@ -162,11 +161,16 @@ export function drawStaffIdCardBack(
 
   // Footer
   doc.fillColor(MUTED).fontSize(6);
-  doc.text('If found, please return to the school office.', x + 10, y + H - 16, {
-    width: W - 20,
-    align: 'center',
-    lineBreak: false,
-  });
+  doc.text(
+    'If found, please return to the school office.',
+    x + 10,
+    y + H - 16,
+    {
+      width: W - 20,
+      align: 'center',
+      lineBreak: false,
+    },
+  );
   doc.restore();
 }
 

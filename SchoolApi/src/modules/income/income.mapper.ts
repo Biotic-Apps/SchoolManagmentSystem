@@ -10,7 +10,10 @@ export type IncomeRow = Prisma.IncomeGetPayload<{
   include: typeof INCOME_INCLUDE;
 }>;
 
-export function toIncomeDto(row: IncomeRow, receiptUrl: string | null): IncomeDto {
+export function toIncomeDto(
+  row: IncomeRow,
+  receiptUrl: string | null,
+): IncomeDto {
   return {
     id: row.id,
     branchId: row.branchId,

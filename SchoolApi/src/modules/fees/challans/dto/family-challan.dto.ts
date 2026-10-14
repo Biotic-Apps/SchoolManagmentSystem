@@ -8,7 +8,7 @@ export class FamilyChallanDto {
   @IsUUID()
   guardianId?: string;
 
-  @ValidateIf((o) => !o.guardianId)
+  @ValidateIf((o: FamilyChallanDto) => !o.guardianId)
   @IsArray()
   @IsUUID('all', { each: true })
   studentIds?: string[];

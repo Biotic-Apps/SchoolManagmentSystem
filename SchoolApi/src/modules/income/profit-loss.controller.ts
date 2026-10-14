@@ -4,10 +4,7 @@ import { RequirePermission } from '../../core/rbac/require-permission.decorator'
 import { CurrentScope } from '../../core/rbac/scope/current-scope.decorator';
 import type { Scope } from '../../core/rbac/scope/scope';
 import { ProfitLossQueryDto } from './dto/profit-loss.dto';
-import {
-  ProfitLossService,
-  type ProfitLossDto,
-} from './profit-loss.service';
+import { ProfitLossService, type ProfitLossDto } from './profit-loss.service';
 
 @ApiTags('income')
 @ApiBearerAuth()

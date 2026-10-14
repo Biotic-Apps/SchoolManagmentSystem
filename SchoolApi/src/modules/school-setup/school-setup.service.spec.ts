@@ -195,7 +195,7 @@ describe('SchoolSetupService', () => {
     );
     expect(t.settings.upsert).toHaveBeenCalledWith(
       'school-1',
-      expect.objectContaining({ primaryColor: '#0B7F74' }),
+      expect.objectContaining({ primaryColor: '#7B68EE' }),
       t.tx,
     );
     expect(t.branchSettings.save).toHaveBeenCalledWith(

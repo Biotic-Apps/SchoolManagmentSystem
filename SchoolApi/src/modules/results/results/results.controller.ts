@@ -107,6 +107,12 @@ export class ResultsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Query() query: ReportCardQueryDto,
   ): Promise<ReportCardViewDto> {
-    return this.reportCards.view(user, scope, id, query.examId, query.templateId);
+    return this.reportCards.view(
+      user,
+      scope,
+      id,
+      query.examId,
+      query.templateId,
+    );
   }
 }

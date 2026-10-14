@@ -142,7 +142,11 @@ export class OnlinePaymentsService {
 
       // Link the online payment record to the created payment
       await tx.onlinePayment.updateMany({
-        where: { invoiceId: invoice.id, gateway: gatewayKey as 'JAZZCASH' | 'EASYPAISA', status: 'INITIATED' },
+        where: {
+          invoiceId: invoice.id,
+          gateway: gatewayKey as 'JAZZCASH' | 'EASYPAISA',
+          status: 'INITIATED',
+        },
         data: { paymentId: recorded.id, status: 'SUCCESS' },
       });
 

@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import type { QrResolvedType, QrScanResult } from '../../../generated/prisma/client';
+import type {
+  QrResolvedType,
+  QrScanResult,
+} from '../../../generated/prisma/client';
 import { AuditService } from '../../../core/audit/audit.service';
 import { PrismaService } from '../../../core/prisma/prisma.service';
 import { UrlSigner } from '../../../core/files/url-signer';
@@ -8,7 +11,11 @@ import type { Scope } from '../../../core/rbac/scope/scope';
 import { today } from '../../../core/common/week';
 import { fullName } from '../../students/student.mapper';
 import { currentEnrollment } from '../../students/student-scope';
-import type { QrScanInputDto, QrScanLogDto, QrScanResultDto } from './qr-scan.dto';
+import type {
+  QrScanInputDto,
+  QrScanLogDto,
+  QrScanResultDto,
+} from './qr-scan.dto';
 
 @Injectable()
 export class QrScanService {
@@ -251,7 +258,9 @@ export class QrScanService {
 
   async recentLogs(scope: Scope, limit = 20): Promise<QrScanLogDto[]> {
     const logs = await this.prisma.qrScanLog.findMany({
-      where: scope.global ? {} : { schoolId: { in: [...scope.memberSchoolIds] } },
+      where: scope.global
+        ? {}
+        : { schoolId: { in: [...scope.memberSchoolIds] } },
       orderBy: { scannedAt: 'desc' },
       take: limit,
     });
@@ -287,7 +296,9 @@ export class QrScanService {
       id: log.id,
       publicId: log.publicId,
       resolvedType: log.resolvedType,
-      resolvedName: log.resolvedId ? (nameMap.get(log.resolvedId) ?? null) : null,
+      resolvedName: log.resolvedId
+        ? (nameMap.get(log.resolvedId) ?? null)
+        : null,
       result: log.result,
       scannedAt: log.scannedAt.toISOString(),
     }));
