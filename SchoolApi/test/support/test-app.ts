@@ -16,6 +16,13 @@ export async function createTestApp(): Promise<INestApplication<App>> {
   const app = moduleRef.createNestApplication<INestApplication<App>>();
   configureApp(app);
   await app.init();
+  // Fire-and-forget writes (audit reads, notifications) can still be in flight
+  // when a suite ends; let them settle so nothing touches the pool after close.
+  const close = app.close.bind(app);
+  app.close = async () => {
+    await new Promise((r) => setTimeout(r, 500));
+    return close();
+  };
   return app;
 }
 

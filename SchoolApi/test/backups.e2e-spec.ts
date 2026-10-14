@@ -103,7 +103,8 @@ describe('Backups (e2e)', () => {
         'file checksum',
         'decrypt',
         'restore',
-        'foreign keys',
+        // Only the COPY restore checks foreign keys itself; pg_restore enforces them.
+        ...(backup.format === 'copy' ? ['foreign keys'] : []),
         'rows: students',
         'rows: audit_logs',
         'ledger total',
