@@ -7,6 +7,8 @@ const PUBLIC_PATHS = ["/login", "/forgot-password", "/reset-password"];
 
 function needsSignIn(request: NextRequest): boolean {
   const { pathname } = request.nextUrl;
+  // "/" is the public landing page (exact match; app/page.tsx sends signed-in users to /dashboard).
+  if (pathname === "/") return false;
   if (PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))) return false;
   return !request.cookies.has(SESSION_COOKIE);
 }
