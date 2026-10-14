@@ -38,7 +38,7 @@ export function DashboardPage() {
             type="search"
             placeholder="Search anything..."
             aria-label="Search dashboard"
-            className="h-10 w-full rounded-full border border-border/60 bg-surface/90 pl-10 pr-4 text-label text-fg placeholder:text-fg-muted/50 outline-none backdrop-blur-sm shadow-xs transition-all duration-200 focus:border-primary/40 focus:bg-surface focus:shadow-sm focus:ring-2 focus:ring-primary/10 [&::-webkit-search-cancel-button]:hidden"
+            className="h-10 w-full rounded-full border border-border/60 bg-surface pl-10 pr-4 text-label text-fg placeholder:text-fg-muted/50 outline-none shadow-xs transition-all duration-200 focus:border-primary/40 focus:bg-surface focus:shadow-sm focus:ring-2 focus:ring-primary/10 [&::-webkit-search-cancel-button]:hidden"
           />
         </div>
       </div>

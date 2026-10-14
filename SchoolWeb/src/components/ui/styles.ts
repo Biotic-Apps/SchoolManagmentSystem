@@ -25,7 +25,7 @@ export const cardInteractive =
 export const cardSelected = "border-primary/60 bg-selected text-on-selected shadow-[0_0_0_1px_rgb(123_104_238/0.08),0_2px_8px_-2px_rgb(123_104_238/0.12)]";
 
 /** Floating layer (menus, popovers, selects): white, hairline border, overlay shadow. */
-export const overlaySurface = "rounded-input border border-border/70 bg-surface shadow-overlay backdrop-blur-xl";
+export const overlaySurface = "rounded-input border border-border/70 bg-surface shadow-overlay";
 
 /** Radix open/close animation for menus, popovers and tooltips: fade + 4px move from the trigger's side (data-side). */
 export const popMotion =

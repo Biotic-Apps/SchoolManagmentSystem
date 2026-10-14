@@ -56,7 +56,7 @@ export function ScrollProgress() {
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.94 }}
             transition={{ type: "spring", stiffness: 360, damping: 24 }}
-            className="group fixed bottom-5 right-5 z-[55] grid size-12 place-items-center rounded-full bg-surface/90 text-brand-700 shadow-[0_10px_30px_-12px_rgb(42_31_107/0.45)] ring-1 ring-line backdrop-blur-md sm:bottom-7 sm:right-7"
+            className="group fixed bottom-5 right-5 z-[55] grid size-12 place-items-center rounded-full bg-surface text-brand-700 shadow-[0_10px_30px_-12px_rgb(42_31_107/0.45)] ring-1 ring-line sm:bottom-7 sm:right-7"
           >
             <svg aria-hidden viewBox="0 0 48 48" className="absolute inset-0 size-full -rotate-90">
               <defs>

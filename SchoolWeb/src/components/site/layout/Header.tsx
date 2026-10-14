@@ -133,8 +133,8 @@ export function Header() {
         className={cn(
           "fixed inset-x-0 top-0 z-50 border-b border-transparent bg-transparent",
           "transition-[background-color,border-color,box-shadow] duration-300",
-          "data-[elevated]:border-line data-[elevated]:bg-background/85",
-          "data-[elevated]:shadow-[var(--shadow-card)] data-[elevated]:backdrop-blur-xl",
+          "data-[elevated]:border-line data-[elevated]:bg-background",
+          "data-[elevated]:shadow-[var(--shadow-card)]",
         )}
       >
         <div className="mx-auto flex h-[var(--header-height)] max-w-7xl items-center gap-4 px-5 sm:px-8">

@@ -25,7 +25,7 @@ export function Topbar({ onOpenMenu }: TopbarProps) {
   return (
     <header
       style={brandStyle}
-      className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border/30 bg-surface/85 px-4 shadow-[0_1px_3px_rgb(123_104_238/0.04)] backdrop-blur-xl backdrop-saturate-150 sm:px-6">
+      className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border/30 bg-surface px-4 shadow-[0_1px_3px_rgb(123_104_238/0.04)] sm:px-6">
       <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu" onClick={onOpenMenu}>
         <Menu />
       </Button>

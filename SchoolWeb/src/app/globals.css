@@ -96,6 +96,14 @@
     color-scheme: light;
   }
 
+  /* No elastic bounce at the top/bottom on desktop touchpads: it drags the whole page, so the
+     window's rounded corners look like they wobble. Phones keep pull to refresh. */
+  @media (hover: hover) and (pointer: fine) {
+    html {
+      overscroll-behavior: none;
+    }
+  }
+
   body {
     background: var(--background);
     color: var(--text-primary);
