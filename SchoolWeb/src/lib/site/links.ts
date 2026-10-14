@@ -16,10 +16,14 @@
 /** Sign-in is internal. A plain path, so it cannot point anywhere but this app. */
 export const SIGN_IN_URL = "/login";
 
-export const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "hello@pixdevelop.com";
+export const SUPPORT_EMAIL =
+  process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "hello@pixdevelop.com";
 
 /** The studio that builds eSchool, credited in the footer. */
-export const MAKER = { name: "Pixdevelop", email: "hello@pixdevelop.com" } as const;
+export const MAKER = {
+  name: "Pixdevelop",
+  email: "hello@pixdevelop.com",
+} as const;
 
 /**
  * The canonical origin of this site, used for metadata, sitemap and JSON-LD.
@@ -30,7 +34,8 @@ export const MAKER = { name: "Pixdevelop", email: "hello@pixdevelop.com" } as co
  * or crawlers and share cards will follow URLs that host does not serve.
  */
 export const SITE_ORIGIN =
-  process.env.NEXT_PUBLIC_SITE_ORIGIN ?? "https://eschool-web-s9tq.onrender.com";
+  process.env.NEXT_PUBLIC_SITE_ORIGIN ??
+  "https://eschool-web-s9tq.onrender.com";
 
 /**
  * Header navigation, grouped under two menus rather than laid out flat. Legal
@@ -43,26 +48,78 @@ export const NAV_MENUS: NavMenu[] = [
   {
     label: "Product",
     items: [
-      { label: "Attendance & diary", href: "/#attendance", detail: "Marked offline, synced later" },
-      { label: "Exams & results", href: "/#academics", detail: "Marks, results, report cards" },
-      { label: "Fees & payroll", href: "/#fees", detail: "Challans, dues, salaries" },
-      { label: "Parent portal", href: "/#parents", detail: "Every child, one login" },
-      { label: "All modules", href: "/#modules", detail: "The whole school, one system" },
+      {
+        label: "Attendance & diary",
+        href: "/#attendance",
+        detail: "Marked offline, synced later",
+      },
+      {
+        label: "Exams & results",
+        href: "/#academics",
+        detail: "Marks, results, report cards",
+      },
+      {
+        label: "Fees & payroll",
+        href: "/#fees",
+        detail: "Challans, dues, salaries",
+      },
+      {
+        label: "Parent portal",
+        href: "/#parents",
+        detail: "Every child, one login",
+      },
+      {
+        label: "All modules",
+        href: "/#modules",
+        detail: "The whole school, one system",
+      },
     ],
   },
   {
     label: "Why eSchool",
     items: [
-      { label: "How it works", href: "/#how-it-works", detail: "From setup to first day" },
-      { label: "Built for Pakistan", href: "/#built-for-pakistan", detail: "Rupees, challans, local terms" },
-      { label: "Security & trust", href: "/#security", detail: "Roles, branches, audit trail" },
+      {
+        label: "How it works",
+        href: "/#how-it-works",
+        detail: "From setup to first day",
+      },
+      {
+        label: "Portals for every role",
+        href: "/#roles",
+        detail: "Admin, teacher, parent, student",
+      },
+      {
+        label: "A school day",
+        href: "/#school-day",
+        detail: "Morning bell to last challan",
+      },
+      {
+        label: "Built for Pakistan",
+        href: "/#built-for-pakistan",
+        detail: "Rupees, challans, local terms",
+      },
+      {
+        label: "Security & trust",
+        href: "/#security",
+        detail: "Roles, branches, audit trail",
+      },
       { label: "FAQ", href: "/#faq", detail: "Answers before you ask" },
     ],
   },
 ];
 
+/**
+ * The first top-level link. `/#top` rather than `/`: on the home page it
+ * scrolls back to the top (as the logo does), anywhere else it loads home.
+ */
+export const NAV_HOME = { label: "Home", href: "/#top" } as const;
+
 /** Flat links that sit beside the menus. */
-export const NAV_LINKS = [{ label: "Contact", href: "/contact" }] as const;
+export const NAV_LINKS = [
+  { label: "Android app", href: "/#android-app" },
+  { label: "Contact", href: "/contact" },
+  { label: "Privacy", href: "/privacy-policy" },
+] as const;
 
 type FooterLink = {
   label: string;
@@ -73,7 +130,7 @@ type FooterLink = {
 
 type FooterColumn = { title: string; links: FooterLink[] };
 
-/** Every entry points at a real section or page — no placeholder links. */
+/** Every entry points at a real section or page, no placeholder links. */
 export const FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "Product",
@@ -86,13 +143,21 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     ],
   },
   {
-    title: "Company",
+    title: "Why eSchool",
     links: [
       { label: "How it works", href: "/#how-it-works" },
+      { label: "Portals for every role", href: "/#roles" },
+      { label: "Android app", href: "/#android-app" },
       { label: "Built for Pakistan", href: "/#built-for-pakistan" },
-      { label: "Security & trust", href: "/#security" },
-      { label: "FAQ", href: "/#faq" },
+      { label: "Security", href: "/#security" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
       { label: "Contact", href: "/contact" },
+      { label: "FAQ", href: "/#faq" },
+      { label: "Sign in", href: SIGN_IN_URL },
     ],
   },
   {
@@ -100,7 +165,6 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     links: [
       { label: "Privacy policy", href: "/privacy-policy" },
       { label: "Terms", href: "/terms" },
-      { label: "Sign in", href: SIGN_IN_URL },
     ],
   },
 ];

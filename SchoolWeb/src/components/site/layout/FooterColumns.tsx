@@ -1,49 +1,41 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { Reveal } from "@/components/site/motion/Reveal";
 import { FOOTER_COLUMNS } from "@/lib/site/links";
 import { NAV_COPY } from "@/lib/site/content";
 
 const linkClass =
-  "group relative inline-flex items-center gap-1.5 text-[0.9rem] text-muted transition-colors hover:text-brand-700";
+  "inline-flex items-center gap-1 whitespace-nowrap text-sm text-white/65 underline decoration-transparent underline-offset-4 " +
+  "transition-[color,text-decoration-color] duration-200 hover:text-white hover:decoration-white/40";
 
-/** The link columns. Each link shows a small purple dot on hover. */
+/** Four link columns, a 2x2 grid on phones. Each column fades in once. */
 export function FooterColumns() {
   return (
-    <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3">
-      {FOOTER_COLUMNS.map((column) => (
-        <div key={column.title}>
-          <h3 className="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brand-700">
+    <nav aria-label="Footer" className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4">
+      {FOOTER_COLUMNS.map((column, index) => (
+        <Reveal key={column.title} delay={index * 0.06}>
+          <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-white">
             {column.title}
           </h3>
-          <ul className="mt-4 space-y-2.5">
-            {column.links.map((link) => {
-              const dot = (
-                <span
-                  aria-hidden
-                  className="absolute -left-3 top-1/2 -mt-[3px] size-1.5 scale-0 rounded-full bg-brand-500 transition-transform duration-200 group-hover:scale-100"
-                />
-              );
-              return (
-                <li key={`${column.title}-${link.label}`}>
-                  {link.external ? (
-                    <a href={link.href} target="_blank" rel="noopener noreferrer" className={linkClass}>
-                      {dot}
-                      {link.label}
-                      <ArrowUpRight aria-hidden className="size-3.5" strokeWidth={2.2} />
-                      <span className="sr-only"> {NAV_COPY.newTab}</span>
-                    </a>
-                  ) : (
-                    <Link href={link.href} className={linkClass}>
-                      {dot}
-                      {link.label}
-                    </Link>
-                  )}
-                </li>
-              );
-            })}
+          <ul className="mt-4 space-y-3">
+            {column.links.map((link) => (
+              <li key={`${column.title}-${link.label}`}>
+                {link.external ? (
+                  <a href={link.href} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                    {link.label}
+                    <ArrowUpRight aria-hidden className="size-3.5" strokeWidth={2.2} />
+                    <span className="sr-only"> {NAV_COPY.newTab}</span>
+                  </a>
+                ) : (
+                  <Link href={link.href} className={linkClass}>
+                    {link.label}
+                  </Link>
+                )}
+              </li>
+            ))}
           </ul>
-        </div>
+        </Reveal>
       ))}
-    </div>
+    </nav>
   );
 }

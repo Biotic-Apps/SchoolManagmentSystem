@@ -1,63 +1,51 @@
 import { Mail } from "lucide-react";
 import { Logo } from "@/components/site/layout/Logo";
 import { FooterColumns } from "@/components/site/layout/FooterColumns";
-import { FooterWordmark } from "@/components/site/layout/FooterWordmark";
-import { BackToTop } from "@/components/site/layout/BackToTop";
-import { MAKER } from "@/lib/site/links";
+import { Button } from "@/components/site/ui/Button";
+import { MAKER, SIGN_IN_URL, SUPPORT_EMAIL } from "@/lib/site/links";
 import { NAV_COPY, SITE } from "@/lib/site/content";
 
 /**
- * The site's closing frame on a lavender ground: the
- * link columns at the top and the brand name, oversized, as the last thing on
- * the page.
+ * The site's closing frame: a deep purple band with the brand and contact on
+ * the left, four link columns on the right, and a thin bottom bar for the
+ * copyright and the maker credit. Back to top is the floating ring from
+ * `ScrollProgress`, so the footer carries no second one.
  */
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-surface-sunken px-3 pb-3 pt-16 sm:px-5 sm:pb-5 sm:pt-24">
+    <footer className="relative overflow-hidden bg-[linear-gradient(180deg,#1E1650,#2A1F6B)] text-white">
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-0 h-px w-[min(90%,60rem)] -translate-x-1/2 bg-gradient-to-r from-transparent via-brand-300 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
       />
-      <div className="mx-auto max-w-[1100px]">
-        <div className="grid gap-12 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
-          <div className="max-w-sm">
-            <Logo />
-            <p className="mt-5 text-[0.95rem] leading-relaxed text-muted">{NAV_COPY.footerBlurb}</p>
+      <div className="mx-auto max-w-[1160px] px-5 pb-8 pt-14 sm:px-8 sm:pt-16">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,2fr)] lg:gap-10">
+          <div className="max-w-[25rem]">
+            <Logo onDark />
+            <p className="mt-4 text-sm leading-6 text-white/65">{NAV_COPY.footerBlurb}</p>
             <a
-              href={`mailto:${MAKER.email}`}
-              className="mt-6 inline-flex items-center gap-2.5 rounded-full bg-surface py-1.5 pl-1.5 pr-4 text-[0.85rem] font-medium text-foreground ring-1 ring-line transition-colors hover:text-brand-700 hover:ring-brand-200"
+              href={`mailto:${SUPPORT_EMAIL}`}
+              className="mt-4 inline-flex items-center gap-2 text-sm text-white/80 underline decoration-transparent underline-offset-4 transition-[color,text-decoration-color] duration-200 hover:text-white hover:decoration-white/40"
             >
-              <span className="grid size-7 place-items-center rounded-full bg-brand-500 text-white">
-                <Mail aria-hidden className="size-3.5" strokeWidth={2.2} />
-              </span>
+              <Mail aria-hidden className="size-4 text-brand-300" strokeWidth={2} />
               <span className="sr-only">{NAV_COPY.writeToUs}: </span>
-              {MAKER.email}
+              {SUPPORT_EMAIL}
             </a>
+            <div className="mt-6">
+              <Button href={SIGN_IN_URL} variant="onDark">
+                {NAV_COPY.signIn}
+              </Button>
+            </div>
           </div>
           <FooterColumns />
         </div>
 
-        <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
-          <p className="text-[0.8rem] text-faint">{NAV_COPY.footerNote}</p>
-          <BackToTop />
+        <div className="mt-12 flex flex-col items-center gap-2 border-t border-white/10 pt-6 text-center text-[0.8rem] text-white/50 sm:flex-row sm:justify-between sm:text-left">
+          <p>{SITE.copyright}</p>
+          <p>
+            {NAV_COPY.madeBy} <span className="font-medium text-white/75">{MAKER.name}</span>
+          </p>
         </div>
-      </div>
-
-      <div className="mx-auto mt-10 max-w-[1400px] sm:mt-14">
-        <FooterWordmark />
-      </div>
-
-      <div className="mx-auto flex max-w-[1100px] flex-wrap items-center justify-between gap-x-6 gap-y-2 rounded-full px-1 pt-4 text-[0.78rem] text-faint">
-        <p>{SITE.copyright}</p>
-        <p>
-          {NAV_COPY.madeBy} <span className="font-semibold text-muted">{MAKER.name}</span>
-          <span aria-hidden className="mx-2 text-line-strong">
-            /
-          </span>
-          <a href={`mailto:${MAKER.email}`} className="transition-colors hover:text-brand-700">
-            {MAKER.email}
-          </a>
-        </p>
       </div>
     </footer>
   );

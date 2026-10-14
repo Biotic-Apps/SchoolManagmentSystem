@@ -42,13 +42,11 @@ export const NAV_COPY = {
   skipToContent: "Skip to content",
   /** Appended, visually hidden, to any link that leaves for a new tab. */
   newTab: "(opens in a new tab)",
-  /** Footer: the one-line description under the logo, and the maker credit. */
+  /** Footer: the two-line description under the logo, and the maker credit. */
   footerBlurb:
-    "School management for Pakistani schools, from admissions to report cards, fees to payroll, and a portal for every parent.",
+    "School management for Pakistani schools: admissions, exams, fees, payroll and a portal for every parent.",
   madeBy: "Made by",
   backToTop: "Back to top",
-  /** Footer: the short line beside the columns, above the wordmark. */
-  footerNote: "One system for the whole school.",
   writeToUs: "Write to us",
 } as const;
 
@@ -580,3 +578,147 @@ export const PARENT_POINTS = [
   { title: "The whole school day", body: "Attendance, diary, homework, timetable and results for each child, updated as teachers save them." },
   { title: "Fees and messages", body: "See and pay challans, upload payment proof, and message the class teacher directly." },
 ];
+
+export const SCHOOL_DAY_COPY = {
+  eyebrow: "A school day with eSchool",
+  title: "From the first bell to bedtime, one app keeps up",
+  body: "Follow one ordinary day at a Pakistani school. Every moment below is something eSchool already does, for the gate, the classroom, the office and the parent at home.",
+  prev: "Earlier in the day",
+  next: "Later in the day",
+  dragHint: "Drag or use the arrows",
+  progressLabel: "How far through the day",
+} as const;
+
+export type SchoolDayMini = "gate" | "attendance" | "substitute" | "proof" | "diary" | "pickup" | "dashboard" | "message";
+
+export type SchoolDayMoment = {
+  time: string;
+  title: string;
+  body: string;
+  mini: SchoolDayMini;
+  /** Short labels used inside the small illustration on the card. */
+  labels: readonly string[];
+};
+
+export const SCHOOL_DAY: SchoolDayMoment[] = [
+  { time: "7:30 AM", title: "The gate opens", body: "Pickup cards and gate passes are ready on the guard's phone before the first bus arrives.", mini: "gate", labels: ["Gate pass", "Valid today"] },
+  { time: "8:05 AM", title: "Attendance on phones", body: "Teachers mark the class in seconds and parents of absent children get an SMS.", mini: "attendance", labels: ["SMS sent", "Hamza is absent today"] },
+  { time: "9:00 AM", title: "The timetable runs", body: "A teacher is on leave, so a free teacher is put in as substitute and the class is covered.", mini: "substitute", labels: ["Period 2", "Ms Sana", "Mr Bilal"] },
+  { time: "11:30 AM", title: "Fee proof arrives", body: "A parent uploads a bank receipt and the accountant verifies it from the office.", mini: "proof", labels: ["Rs 6,500", "Verified"] },
+  { time: "1:30 PM", title: "Diary and homework", body: "Before the last bell, teachers post the daily diary and homework for every class.", mini: "diary", labels: ["English", "Maths", "Urdu"] },
+  { time: "2:30 PM", title: "Pickup at the gate", body: "The guard checks each child against the pickup list before they leave.", mini: "pickup", labels: ["Ayesha", "Usman", "Fatima"] },
+  { time: "4:00 PM", title: "The principal reviews", body: "Attendance, fees and staff for the day sit on one dashboard, branch by branch.", mini: "dashboard", labels: ["Attendance 94%", "Fees collected"] },
+  { time: "8:00 PM", title: "A parent at home", body: "A mother reads tomorrow's diary and sends the class teacher a quick message.", mini: "message", labels: ["Will the test be on Friday?", "Yes, on Friday."] },
+];
+
+/* ------------------------------------------------------------------ */
+/* Android app band                                                    */
+/* ------------------------------------------------------------------ */
+
+export const ANDROID_APP_COPY = {
+  eyebrow: "Android app",
+  title: "Your school in your pocket",
+  body: "Teachers, principals and parents get the same eSchool on their phones, built to keep working in classrooms where the signal comes and goes.",
+  features: [
+    { icon: "offline", title: "Mark attendance even offline", body: "The register saves on the phone and syncs when you are back online." },
+    { icon: "diary", title: "Diary & homework on the go", body: "Post the day's diary and homework from the classroom in a few taps." },
+    { icon: "bell", title: "Parents hear instantly", body: "Parents get results, challans and messages instantly, as soon as they are saved." },
+    { icon: "lock", title: "App lock with PIN or fingerprint", body: "Every sign-in stays private, even on a shared family phone." },
+  ],
+  badge: "Android app",
+  badgeNote: "Ask your school for the app",
+  offline: "Offline",
+  online: "Online",
+  pending: "pending",
+  syncing: "Syncing",
+  synced: "Synced",
+  records: "records",
+  /** Read out for the phone pair, which is drawn and otherwise hidden. */
+  visualLabel: "The eSchool Android app: a teacher's attendance screen and a parent's home screen.",
+} as const;
+
+/* ------------------------------------------------------------------ */
+/* Paper vs eSchool comparison                                         */
+/* ------------------------------------------------------------------ */
+
+export const COMPARE_COPY = {
+  eyebrow: "Before and after",
+  title: "Paper registers, or a school that runs itself",
+  body: "Drag the handle to see the same school day twice: once on paper, once on eSchool.",
+  paperLabel: "Paper",
+  eschoolLabel: "eSchool",
+  sliderLabel: "Compare paper with eSchool",
+  /** Spoken value of the slider, e.g. "60% eSchool". */
+  sliderValue: "% eSchool",
+  paper: {
+    register: { title: "Attendance register", note: "Page 47, Class 5-A" },
+    diary: { title: "Diary slip", text: "Maths: Ex 4.2 Q1 to Q8. Bring geometry box tomorrow!" },
+    receipt: { title: "Fee receipt book", text: "Received Rs 4,500 from ...", stamp: "Copy 2 of 3" },
+    call: { title: "Calling parents", text: "12 calls left, 3 not picking up" },
+  },
+  eschool: {
+    register: { title: "Attendance, 5-A", note: "Saved at 8:05 AM", present: "32 present", absent: "2 absent" },
+    diary: { title: "Diary posted", text: "Maths: Exercise 4.2, Q1 to Q8", seen: "Seen by 31 parents" },
+    receipt: { title: "Challan paid", text: "Rs 4,500 via JazzCash", status: "Verified" },
+    call: { title: "Absence alerts", text: "2 parents notified at 8:06 AM" },
+  },
+  statsNote: "Illustrative examples for a class of about 35 students.",
+  stats: [
+    { label: "Taking attendance", paper: "15 min", eschool: "2 min" },
+    { label: "Results to parents", paper: "3 days", eschool: "Instant" },
+    { label: "Fee receipts", paper: "Handwritten", eschool: "Auto issued" },
+    { label: "Absence calls", paper: "1 by 1", eschool: "1 tap" },
+  ],
+  paperShort: "Paper",
+  eschoolShort: "eSchool",
+} as const;
+
+export const ROLE_PORTALS_COPY = {
+  eyebrow: "Role based portals",
+  title: "A portal for every role",
+  body: "Everyone at school signs in to a portal built for their job. Parents follow their own children; students do not need a login.",
+  listLabel: "Choose a role",
+  scopeChip: "Sees only their own portal",
+  canDo: "What they can do",
+} as const;
+
+export type RolePortalId =
+  | "superAdmin"
+  | "principal"
+  | "headTeacher"
+  | "coordinator"
+  | "teacher"
+  | "accountant"
+  | "parent";
+
+export const ROLE_PORTALS: {
+  id: RolePortalId;
+  name: string;
+  line: string;
+  screen: "dashboard" | "attendance" | "academics" | "fees" | "parent";
+  url: string;
+  points: string[];
+}[] = [
+  { id: "superAdmin", name: "Super admin", line: "Runs the whole school group", screen: "dashboard", url: "eschool.pk/admin", points: ["Add branches, sessions and classes", "Create staff accounts and assign roles", "Set fee heads, grading and school policies", "See every branch side by side", "Review the audit log of changes"] },
+  { id: "principal", name: "Principal", line: "Leads one campus day to day", screen: "dashboard", url: "eschool.pk/principal", points: ["Today's attendance for staff and students", "Fee collection and dues at a glance", "Approve leave and early leave requests", "Send notices to classes or all parents", "Publish exam results"] },
+  { id: "headTeacher", name: "Head teacher", line: "Looks after a section of classes", screen: "dashboard", url: "eschool.pk/head-teacher", points: ["Track attendance across their section", "Review diary and homework before it goes out", "Check class results and weak subjects", "Follow up on absent students"] },
+  { id: "coordinator", name: "Coordinator", line: "Keeps timetables and exams on track", screen: "dashboard", url: "eschool.pk/coordinator", points: ["Build the timetable and arrange substitutes", "Schedule exams and date sheets", "Watch marks entry progress per class", "Share circulars with teachers"] },
+  { id: "teacher", name: "Teacher", line: "Marks, teaches and reports", screen: "attendance", url: "eschool.pk/teacher", points: ["Mark class attendance in a few taps", "Post the daily diary and homework", "Enter marks for tests and exams", "Message parents of their own class", "Works offline and syncs later"] },
+  { id: "accountant", name: "Accountant", line: "Handles fees and payroll", screen: "fees", url: "eschool.pk/accounts", points: ["Generate family fee challans", "Verify payment proofs and issue receipts", "Apply sibling discounts and late fines", "Run payroll and record expenses", "Fee and dues reports per branch"] },
+  { id: "parent", name: "Parent", line: "Follows their own children", screen: "parent", url: "eschool.pk/parent", points: ["Attendance, diary and homework each day", "Results and report cards", "See and pay fee challans", "Message the class teacher", "Switch between all their children"] },
+];
+
+/** "Print-ready documents" section: the paper eSchool prints, shown as a fanned stack. */
+export const PRINT_DOCS_COPY = {
+  eyebrow: "Print-ready documents",
+  title: "Paperwork that prints itself, properly",
+  body: "Report cards, family fee challans, certificates and student ID cards come straight out of eSchool as clean PDFs, laid out for A4 and ready for the office printer.",
+  points: [
+    { icon: "pdf", title: "Straight to PDF", body: "One click turns saved marks, fees or records into a print-ready PDF. No copying into Word, no retyping." },
+    { icon: "brand", title: "Your logo, your colours", body: "Every page carries the school's crest, name and colours, so documents look like they came from your office." },
+    { icon: "bulk", title: "A whole class at once", body: "Print report cards for all of Class 7-B, or challans for every family, in a single batch." },
+  ],
+  tabs: { report: "Report card", challan: "Fee challan", certificate: "Certificate", id: "ID card" },
+  tabsLabel: "Choose a document",
+  swipeHint: "Swipe to see each document",
+} as const;

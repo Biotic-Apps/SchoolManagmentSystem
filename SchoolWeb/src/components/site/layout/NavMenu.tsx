@@ -1,84 +1,129 @@
 "use client";
 
-import { useEffect, useId, useRef } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
+import { useEffect, useId, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/site/cn";
 import type { NavMenu as NavMenuData } from "@/lib/site/links";
-import { MegaPanel } from "@/components/site/layout/MegaPanel";
-import { NavHighlight } from "@/components/site/layout/NavHighlight";
+import { navIcon } from "@/components/site/layout/navIcons";
 
-/** Grace period before a menu closes, so the diagonal down to it is forgiving. */
-const CLOSE_DELAY = 140;
+/** Grace period before a menu closes, so the diagonal to it is forgiving. */
+const CLOSE_DELAY = 120;
 
 /**
- * A menu trigger in the pill. Opens on hover and on click, closes on Escape
- * and when focus leaves it, so keyboard and touch work as well as a mouse.
- * Which menu is open is owned by the bar, so only one is ever open.
+ * A navigation menu that opens on hover and on click.
+ *
+ * Hover alone is a trap for anyone using a keyboard or a touch screen, so the
+ * button is a real toggle as well, `Escape` closes, and focus leaving the group
+ * closes it. The short close delay stops the menu vanishing when the pointer
+ * cuts a corner on its way down.
  */
-export function NavMenu({
-  menu,
-  open,
-  highlighted,
-  onOpenChange,
-}: {
-  menu: NavMenuData;
-  open: boolean;
-  highlighted: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
+export function NavMenu({ menu }: { menu: NavMenuData }) {
+  const [open, setOpen] = useState(false);
   const timer = useRef<number | undefined>(undefined);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const pointer = useRef("");
   const id = useId();
 
   const cancelClose = () => window.clearTimeout(timer.current);
   const scheduleClose = () => {
     cancelClose();
-    timer.current = window.setTimeout(() => onOpenChange(false), CLOSE_DELAY);
+    timer.current = window.setTimeout(() => setOpen(false), CLOSE_DELAY);
   };
 
-  useEffect(() => () => window.clearTimeout(timer.current), []);
+  useEffect(() => () => cancelClose(), []);
 
   useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onOpenChange(false);
+      if (event.key === "Escape") setOpen(false);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, onOpenChange]);
+  }, [open]);
 
   return (
     <div
+      ref={wrapRef}
       className="relative"
       onMouseEnter={() => {
         cancelClose();
-        onOpenChange(true);
+        setOpen(true);
       }}
       onMouseLeave={scheduleClose}
       onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node)) onOpenChange(false);
+        if (!event.currentTarget.contains(event.relatedTarget as Node))
+          setOpen(false);
       }}
     >
       <button
         type="button"
         aria-expanded={open}
-        aria-controls={open ? id : undefined}
-        onClick={() => onOpenChange(!open)}
+        aria-controls={id}
+        onPointerDown={(event) => {
+          pointer.current = event.pointerType;
+        }}
+        onClick={() => {
+          // A mouse has already opened the menu on hover, so a click on the
+          // trigger keeps it open instead of toggling it straight back shut.
+          // Touch and keyboard (no pointerdown) still toggle.
+          if (pointer.current === "mouse") setOpen(true);
+          else setOpen((value) => !value);
+          pointer.current = "";
+        }}
         className={cn(
-          "relative isolate flex items-center gap-1 rounded-full px-3.5 py-2 text-[0.86rem] font-medium transition-colors",
-          highlighted ? "text-brand-800" : "text-muted hover:text-foreground",
+          "flex items-center gap-1 rounded-lg px-3 py-2 text-[0.86rem] font-medium transition-colors",
+          open
+            ? "bg-surface-sunken text-foreground"
+            : "text-muted hover:text-foreground",
         )}
       >
-        {highlighted ? <NavHighlight /> : null}
         {menu.label}
-        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.25 }}>
-          <ChevronDown aria-hidden className="size-3.5" strokeWidth={2.4} />
-        </motion.span>
+        <ChevronDown
+          className={cn(
+            "size-3.5 transition-transform duration-200",
+            open && "rotate-180",
+          )}
+          strokeWidth={2.4}
+        />
       </button>
 
-      <AnimatePresence>
-        {open ? <MegaPanel id={id} menu={menu} onNavigate={() => onOpenChange(false)} /> : null}
-      </AnimatePresence>
+      <div
+        id={id}
+        className={cn(
+          "absolute left-0 top-full w-[21rem] pt-2 transition-[opacity,transform] duration-200",
+          open
+            ? "pointer-events-auto translate-y-0 opacity-100"
+            : "pointer-events-none -translate-y-1 opacity-0",
+        )}
+      >
+        <div className="panel p-2 shadow-[var(--shadow-lift)]">
+          {menu.items.map((item) => {
+            const Icon = navIcon(item.href);
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                tabIndex={open ? 0 : -1}
+                className="group flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-surface-sunken"
+              >
+                <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-600 transition-colors group-hover:bg-brand-100">
+                  <Icon className="size-4" strokeWidth={2} aria-hidden />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[0.88rem] font-medium">
+                    {item.label}
+                  </span>
+                  <span className="mt-0.5 block text-[0.78rem] text-faint">
+                    {item.detail}
+                  </span>
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

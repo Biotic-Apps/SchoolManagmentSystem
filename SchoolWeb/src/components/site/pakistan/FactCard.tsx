@@ -52,7 +52,7 @@ export function FactCard({ fact }: { fact: Fact }) {
       data-motion
       variants={flipUp}
       style={{ transformOrigin: "50% 0%" }}
-      className="group relative overflow-hidden rounded-[1.4rem] border border-white/12 bg-white/[0.06] p-6 transition-colors duration-300 hover:border-white/25 hover:bg-white/[0.1] sm:p-7"
+      className="group relative h-full overflow-hidden rounded-[1.4rem] border border-white/12 bg-white/[0.06] p-6 transition-colors duration-300 hover:border-white/25 hover:bg-white/[0.1] sm:p-7"
     >
       {/* A soft glow that wakes up behind the icon on hover. */}
       <span
