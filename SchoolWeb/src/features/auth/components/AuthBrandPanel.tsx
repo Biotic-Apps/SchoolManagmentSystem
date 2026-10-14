@@ -22,7 +22,7 @@ interface AuthBrandPanelProps {
 /** Light lavender side panel of the sign-in pages (desktop only): branding, highlights and a stat card. */
 export function AuthBrandPanel({ schoolName, logoUrl }: AuthBrandPanelProps) {
   return (
-    <aside className="relative isolate m-3 hidden flex-col justify-between gap-10 rounded-[28px] border border-border/70 bg-gradient-to-br from-selected via-selected/60 to-background px-10 py-10 text-fg lg:flex xl:px-14">
+    <aside className="relative isolate m-3 hidden min-h-0 flex-col justify-between gap-6 overflow-hidden rounded-[28px] border border-border/70 bg-gradient-to-br from-selected via-selected/60 to-background px-10 py-8 text-fg lg:flex xl:px-14">
       {/* Decoration is clipped in its own layer so the content (logo included) is never cut off. */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[inherit]">
         <div className="auth-dot-grid absolute inset-0 opacity-70 [mask-image:linear-gradient(to_bottom,black,transparent_80%)]" />
@@ -35,11 +35,12 @@ export function AuthBrandPanel({ schoolName, logoUrl }: AuthBrandPanelProps) {
         <span className="text-card-title font-semibold text-fg">{schoolName}</span>
       </div>
 
-      <div className="flex flex-col gap-10">
-        <div className="self-end xl:mr-6" style={riseIn(1)}>
+      <div className="flex flex-col gap-8">
+        {/* Dropped on short screens so the panel never needs to scroll. */}
+        <div className="self-end xl:mr-6 [@media(max-height:720px)]:hidden" style={riseIn(1)}>
           <AuthStatCard className="auth-float" />
         </div>
-        <div className="flex max-w-md flex-col gap-6">
+        <div className="flex max-w-md flex-col gap-5">
           <h2 className="text-[32px] font-bold leading-[40px] tracking-tight text-fg" style={riseIn(1)}>
             Your whole school, <span className="text-primary">one simple app.</span>
           </h2>

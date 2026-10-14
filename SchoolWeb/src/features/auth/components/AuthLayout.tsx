@@ -24,11 +24,12 @@ export function AuthLayout({ title, description, footer, children }: AuthLayoutP
   return (
     <main
       style={brandStyle(branding?.primaryColor)}
-      className="grid min-h-dvh grid-cols-1 overflow-x-hidden bg-background lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]"
+      className="grid min-h-dvh grid-cols-1 overflow-x-hidden bg-background lg:h-dvh lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:overflow-hidden"
     >
       <AuthBrandPanel schoolName={schoolName} logoUrl={branding?.logoUrl} />
 
-      <section className="relative isolate flex min-w-0 flex-col bg-background px-4 py-5 sm:px-8 lg:px-10 lg:py-8">
+      {/* Desktop: the page fits the screen; only this column scrolls if the window is very short. */}
+      <section className="relative isolate flex min-w-0 flex-col bg-background px-4 py-5 sm:px-8 lg:overflow-y-auto lg:px-10 lg:py-6">
         {/* Phones/tablets: no side panel, just a soft lavender wash behind the top of the page. */}
         <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 bg-gradient-to-b from-selected/70 to-transparent lg:hidden" />
 
@@ -40,8 +41,8 @@ export function AuthLayout({ title, description, footer, children }: AuthLayoutP
           Back to home
         </Link>
 
-        <div className="flex flex-1 items-center justify-center py-8 sm:py-10">
-          <div className="flex w-full max-w-[420px] animate-page-in flex-col gap-6">
+        <div className="flex flex-1 items-center justify-center py-8 sm:py-10 lg:py-4">
+          <div className="flex w-full max-w-[420px] animate-page-in flex-col gap-6 lg:gap-5">
             <div className="flex items-center gap-3 lg:hidden">
               <BrandLogo logoUrl={branding?.logoUrl} size="md" className="shadow-sm" />
               <span className="text-card-title font-semibold text-fg">{schoolName}</span>
