@@ -106,21 +106,21 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          # The last entry becomes JAVA_HOME. Keep 17 there: setup-android's sdkmanager
-          # fails on JDK 25. The Gradle step below switches JAVA_HOME to 25 itself.
+          # The last entry becomes JAVA_HOME. Sources compile for Java 17 (build-logic AppSdk.JAVA).
           java-version: |
-            25
             17
+            25
       - uses: android-actions/setup-android@v3
+        with:
+          # The action's default list includes the removed 'tools' package, which makes
+          # sdkmanager exit 1. AGP downloads the platforms/build-tools it needs itself.
+          packages: platform-tools
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
       - name: Make the wrapper executable
         run: chmod +x gradlew
       - name: Build and unit test
-        env:
-          # Gradle daemon toolchain is JDK 25 (gradle-daemon-jvm.properties); sources still target 17.
-          JAVA_HOME: ${{ env.JAVA_HOME_25_X64 }}
         run: ./gradlew assembleDebug testDebugUnitTest --stacktrace
       - name: Upload test reports
         if: failure()

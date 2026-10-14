@@ -1,6 +1,12 @@
+import { schoolDateTime } from '../../core/common/school-time';
 import { deliversSilently } from './office-hours';
 
-const at = (hh: number, mm = 0) => new Date(2026, 9, 6, hh, mm);
+// Built on the school's clock so the test doesn't depend on the machine's TZ.
+const at = (hh: number, mm = 0) =>
+  schoolDateTime(
+    '2026-10-06',
+    `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`,
+  );
 const day = { from: '08:00', to: '16:00' };
 
 describe('office hours delivery', () => {
