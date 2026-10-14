@@ -20,19 +20,19 @@ const ATTENDANCE = [94, 95, 93, 97, 96, 91, 95, 96, 94, 97, 98, 96];
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const RECENT: Array<[string, string, string, string, PillTone]> = [
-  ["9:41 AM", "Admission form — Hamza Tariq, Class 3", "Online", "Pending", "warn"],
-  ["9:28 AM", "Attendance marked — Class 5-A (38/40)", "Ms. Hira", "Synced", "ok"],
-  ["9:12 AM", "Fee received — FC-10482, Rs 8,500", "Accountant", "Verified", "ok"],
-  ["8:57 AM", "Homework — Grade 7 Science, Ch. 4", "Mr. Bilal", "Review", "info"],
-  ["8:40 AM", "Complaint — school van late, Route 3", "Parent", "Open", "danger"],
-  ["8:15 AM", "Daily diary published — Class 2-B", "Ms. Noor", "Published", "ok"],
+  ["9:41 AM", "Admission form · Hamza Tariq, Class 3", "Online", "Pending", "warn"],
+  ["9:28 AM", "Attendance marked · Class 5-A (38/40)", "Ms. Hira", "Synced", "ok"],
+  ["9:12 AM", "Fee received · FC-10482, Rs 8,500", "Accountant", "Verified", "ok"],
+  ["8:57 AM", "Homework · Grade 7 Science, Ch. 4", "Mr. Bilal", "Review", "info"],
+  ["8:40 AM", "Complaint · School van late, Route 3", "Parent", "Open", "danger"],
+  ["8:15 AM", "Daily diary published · Class 2-B", "Ms. Noor", "Published", "ok"],
 ];
 
 const EVENTS: Array<[string, string, string]> = [
-  ["17 Oct", "Parent–teacher meeting", "Classes 1–5 · 10:00 AM"],
+  ["17 Oct", "Parent-teacher meeting", "Classes 1-5 · 10:00 AM"],
   ["21 Oct", "Mid-term exams begin", "All classes · 8:00 AM"],
   ["28 Oct", "Science exhibition", "Main hall · 11:30 AM"],
-  ["2 Nov", "Fee due date — November", "All families"],
+  ["2 Nov", "Fee due date · November", "All families"],
 ];
 
 function Kpis() {
@@ -87,7 +87,7 @@ function AttendanceChart() {
 function Events() {
   return (
     <Panel>
-      <PanelHead title="Upcoming events" meta="Session 2026–27" />
+      <PanelHead title="Upcoming events" meta="Session 2026-27" />
       <div className="divide-y divide-slate-100">
         {EVENTS.map(([date, title, meta]) => (
           <div key={title} className="flex items-center gap-[0.6em] px-[0.85em] py-[0.45em]">

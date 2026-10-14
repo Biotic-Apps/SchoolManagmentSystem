@@ -168,7 +168,8 @@ html[data-scroll-locked] {
   color: var(--color-brand-900);
 }
 
-.site-shell :focus-visible {
+/* Form fields show focus with their own single border instead (no outline on top of it). */
+.site-shell :focus-visible:not(input, textarea, select) {
   outline: 2px solid var(--color-brand-500);
   outline-offset: 2px;
 }

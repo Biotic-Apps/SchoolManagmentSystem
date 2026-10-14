@@ -7,7 +7,7 @@ type Mark = "P" | "A" | "L";
 const REGISTER: Array<[string, string, string, Mark, string]> = [
   ["01", "Abdullah Rehman", "5A-2301", "P", "8:02 AM"],
   ["02", "Aiman Fatima", "5A-2302", "P", "7:58 AM"],
-  ["03", "Ali Hassan", "5A-2303", "A", "—"],
+  ["03", "Ali Hassan", "5A-2303", "A", "SMS sent"],
   ["04", "Areeba Zahid", "5A-2304", "P", "8:05 AM"],
   ["05", "Fatima Noor", "5A-2305", "L", "Sick leave"],
   ["06", "Hamza Iqbal", "5A-2306", "P", "8:01 AM"],
@@ -55,7 +55,7 @@ export function AttendanceScreen() {
         </span>
         <span className="ml-auto flex shrink-0 items-center gap-[0.35em] rounded-full border border-amber-200 bg-amber-50 px-[0.7em] py-[0.32em] text-[0.74em] font-semibold text-amber-700">
           <CloudOff className="size-[0.95em]" strokeWidth={2.2} />
-          <span>Saved offline — will sync</span>
+          <span>Saved offline, will sync</span>
         </span>
       </div>
 

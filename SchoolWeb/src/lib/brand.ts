@@ -12,7 +12,7 @@ export const BRAND_SUFFIX = "School";
 export const BRAND_TAGLINE = "School management made simple";
 
 /** The document <title> shown in the browser tab. */
-export const BRAND_TITLE = `${BRAND} — ${BRAND_TAGLINE}`;
+export const BRAND_TITLE = `${BRAND} | ${BRAND_TAGLINE}`;
 
 /** Footer copyright line, e.g. "© 2026 eSchool. All rights reserved." */
 export const brandCopyright = (year: number) =>

@@ -22,7 +22,7 @@ export function TopBar({
 
       <div className="ml-auto flex shrink-0 items-center gap-[0.4em] rounded-[0.45em] border border-brand-100 bg-brand-50 px-[0.6em] py-[0.35em] @xl:ml-[0.8em]">
         <CalendarDays className="size-[0.8em] text-brand-400" strokeWidth={2} />
-        <span className="whitespace-nowrap text-[0.76em] font-semibold text-brand-900">Session 2026–27</span>
+        <span className="whitespace-nowrap text-[0.76em] font-semibold text-brand-900">Session 2026-27</span>
         <span className="hidden text-[0.76em] text-brand-300 @lg:inline">·</span>
         <span className="hidden whitespace-nowrap text-[0.76em] font-semibold text-brand-900 @lg:inline">
           Wed, 14 Oct

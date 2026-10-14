@@ -18,8 +18,8 @@ type Status = "idle" | "sending" | "sent" | "error";
  */
 const FIELD =
   "w-full rounded-card border border-line bg-field px-4 py-3 text-base " +
-  "placeholder:text-faint transition-[border-color,box-shadow] " +
-  "focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/25 " +
+  "placeholder:text-faint transition-[border-color,background-color] " +
+  "focus:border-brand-500 focus:bg-surface focus:outline-none " +
   "aria-[invalid=true]:border-tile-rose";
 
 const FIELD_ORDER = ["name", "email", "school", "message"] as const;

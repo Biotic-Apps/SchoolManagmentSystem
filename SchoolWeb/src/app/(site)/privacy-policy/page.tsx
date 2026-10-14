@@ -82,38 +82,38 @@ export default function PrivacyPolicyPage() {
             <p className="mt-3">What a school records depends on the modules it uses. Typically:</p>
             <ul className={LIST}>
               <li>
-                <Term>Student records</Term> — name, admission number, class and section, date of
+                <Term>Student records</Term>: name, admission number, class and section, date of
                 birth, photograph and enrolment details.
               </li>
               <li>
-                <Term>Guardian records</Term> — names, relationship to the student, phone numbers,
+                <Term>Guardian records</Term>: names, relationship to the student, phone numbers,
                 email addresses and home address.
               </li>
               <li>
-                <Term>Staff records</Term> — name, role, branch, contact details and, where the
+                <Term>Staff records</Term>: name, role, branch, contact details and, where the
                 school uses them, employment and payroll details.
               </li>
               <li>
-                <Term>Attendance</Term> — daily attendance for students and staff, including scan
+                <Term>Attendance</Term>: daily attendance for students and staff, including scan
                 times where the school uses QR attendance.
               </li>
               <li>
-                <Term>Results</Term> — marks, grades, report cards and exam schedules.
+                <Term>Results</Term>: marks, grades, report cards and exam schedules.
               </li>
               <li>
-                <Term>Fees</Term> — fee structures, challans, payments received, discounts and
+                <Term>Fees</Term>: fee structures, challans, payments received, discounts and
                 balances.
               </li>
               <li>
-                <Term>Health records</Term> — allergies, medical notes and incidents the school
+                <Term>Health records</Term>: allergies, medical notes and incidents the school
                 chooses to record.
               </li>
               <li>
-                <Term>Messages</Term> — notices, homework, messages between the school and
+                <Term>Messages</Term>: notices, homework, messages between the school and
                 families, and the SMS, WhatsApp or email notifications the school sends.
               </li>
               <li>
-                <Term>Audit logs</Term> — who signed in, and who created, changed or deleted a
+                <Term>Audit logs</Term>: who signed in, and who created, changed or deleted a
                 record, and when.
               </li>
             </ul>
@@ -155,22 +155,22 @@ export default function PrivacyPolicyPage() {
             </p>
             <ul className={LIST}>
               <li>
-                <Term>Super admin and Principal</Term> — the school&apos;s records across the
+                <Term>Super admin and Principal</Term>: the school&apos;s records across the
                 branches they are responsible for.
               </li>
               <li>
-                <Term>Head teacher and Coordinator</Term> — the classes, sections and staff they
+                <Term>Head teacher and Coordinator</Term>: the classes, sections and staff they
                 oversee.
               </li>
               <li>
-                <Term>Teacher</Term> — the students in the classes they teach: attendance, results,
-                homework and messages.
+                <Term>Teacher</Term>: the students in the classes they teach, including attendance,
+                results, homework and messages.
               </li>
               <li>
-                <Term>Accountant</Term> — fees, payments and other financial records.
+                <Term>Accountant</Term>: fees, payments and other financial records.
               </li>
               <li>
-                <Term>Parent</Term> — only their own children&apos;s records. Students do not have
+                <Term>Parent</Term>: only their own children&apos;s records. Students do not have
                 accounts of their own.
               </li>
             </ul>

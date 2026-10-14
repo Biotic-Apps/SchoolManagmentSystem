@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   // query or a trailing slash does not read as a second copy of the page.
   alternates: { canonical: "/" },
   title: {
-    default: `${SITE.name} — ${SITE.tagline}`,
+    default: `${SITE.name} | ${SITE.tagline}`,
     template: `%s · ${SITE.name}`,
   },
   description: SITE.description,
@@ -35,12 +35,12 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_PK",
     siteName: SITE.name,
-    title: `${SITE.name} — ${SITE.tagline}`,
+    title: `${SITE.name} | ${SITE.tagline}`,
     description: SITE.description,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE.name} — ${SITE.tagline}`,
+    title: `${SITE.name} | ${SITE.tagline}`,
     description: SITE.description,
   },
   robots: { index: true, follow: true },

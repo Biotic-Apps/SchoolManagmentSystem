@@ -254,7 +254,7 @@ function PrincipalDashboard({ step }: { step: number }) {
       </div>
 
       <p className="mt-4 text-4xl font-bold tracking-tight tabular-nums">
-        {shown ? <CountUp value={presentShare} suffix="%" decimals={0} durationMs={1100} /> : "—"}
+        {shown ? <CountUp value={presentShare} suffix="%" decimals={0} durationMs={1100} /> : "0"}
       </p>
 
       <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-surface-sunken">
@@ -275,7 +275,7 @@ function PrincipalDashboard({ step }: { step: number }) {
           <div key={row.key} className="rounded-xl bg-surface-sunken px-1 py-2.5">
             <dt className="text-[0.66rem] font-semibold uppercase tracking-[0.1em] text-faint">{row.label}</dt>
             <dd className="mt-1 text-lg font-bold tabular-nums">
-              {shown ? <CountUp value={row.value} decimals={0} durationMs={1100} /> : "—"}
+              {shown ? <CountUp value={row.value} decimals={0} durationMs={1100} /> : "0"}
             </dd>
           </div>
         ))}

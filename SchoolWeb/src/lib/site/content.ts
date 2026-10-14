@@ -21,8 +21,8 @@ export const SITE = {
   name: BRAND,
   tagline: "Run your whole school from one place.",
   subline:
-    "Admissions · Attendance · Exams · Fees · Payroll · Parent portal — one web portal and an Android app for every school in Pakistan.",
-  description: `${BRAND} is school management software for Pakistani schools — admissions, attendance, exams and report cards, fee challans, payroll and a parent portal, on the web and on Android.`,
+    "Admissions · Attendance · Exams · Fees · Payroll · Parent portal. One web portal and an Android app for every school in Pakistan.",
+  description: `${BRAND} is school management software for Pakistani schools: admissions, attendance, exams and report cards, fee challans, payroll and a parent portal, on the web and on Android.`,
   // Same helper the app's login footer uses, so the two cannot word it
   // differently. The year stays a literal: `new Date()` at module scope is a
   // value the server and the client can disagree about across a new-year
@@ -44,7 +44,7 @@ export const NAV_COPY = {
   newTab: "(opens in a new tab)",
   /** Footer: the one-line description under the logo, and the maker credit. */
   footerBlurb:
-    "School management for Pakistani schools — admissions to report cards, fees to payroll, and a portal for every parent.",
+    "School management for Pakistani schools, from admissions to report cards, fees to payroll, and a portal for every parent.",
   madeBy: "Made by",
 } as const;
 
@@ -63,7 +63,7 @@ export const HERO_COPY = {
   badge: "Built for schools in Pakistan",
   headline: "Run your whole school from one place.",
   subline:
-    "Admissions, attendance, timetable, homework, exams and report cards, fees and payroll — on the web and on Android, with a portal for every role.",
+    "Admissions, attendance, timetable, homework, exams and report cards, fees and payroll, on the web and on Android, with a portal for every role.",
   signIn: "Sign in",
   secondary: "See how it works",
 } as const;
@@ -89,9 +89,9 @@ export const HERO_CAPABILITY = [
 export const STATS_COPY = {
   eyebrow: "At a glance",
   title: "Your whole school at a glance",
-  body: "Students, attendance, fees, staff and everything waiting for your approval — the figures the principal's dashboard opens with, current to the last entry.",
+  body: "Students, attendance, fees, staff and everything waiting for your approval: the figures the principal's dashboard opens with, current to the last entry.",
   panelTitle: "School overview",
-  panelMeta: "Session 2026–27 · All branches · Updated 9:30 AM",
+  panelMeta: "Session 2026-27 · All branches · Updated 9:30 AM",
   disclaimer: "Figures shown are illustrative. Your dashboard reads your own school's records.",
 } as const;
 
@@ -104,7 +104,7 @@ export const HOW_COPY = {
 export const TRUST_COPY = {
   eyebrow: "Security & control",
   title: "Student records you can stand behind",
-  body: "Every account is created by the school, every action is checked against a role, and every change leaves a trail. Parents trust you with their children's details — the system is built to keep that trust.",
+  body: "Every account is created by the school, every action is checked against a role, and every change leaves a trail. Parents trust you with their children's details, and the system is built to keep that trust.",
 } as const;
 
 export const PAKISTAN_COPY = {
@@ -116,7 +116,7 @@ export const PAKISTAN_COPY = {
 export const FLOW_COPY = {
   eyebrow: "One tap, three people informed",
   title: "Attendance that tells the right people, right away",
-  body: "A teacher marks the register once. The parent of an absent child hears about it in minutes, and the principal's dashboard is already up to date — no phone calls, no paper slips, no end-of-day tally.",
+  body: "A teacher marks the register once. The parent of an absent child hears about it in minutes, and the principal's dashboard is already up to date. No phone calls, no paper slips, no end-of-day tally.",
   steps: {
     teacher: "Teacher marks attendance",
     parent: "Parent is notified",
@@ -136,7 +136,7 @@ export const FLOW_COPY = {
   updated: "Updated",
   alertsSent: "Absence alerts sent to parents:",
   offlineNote:
-    "No signal in the classroom? The Android app keeps the register on the phone and syncs it — and sends the alerts — as soon as it is back online.",
+    "No signal in the classroom? The Android app keeps the register on the phone and syncs it, and sends the alerts, as soon as it is back online.",
 } as const;
 
 export const MODULES_COPY = {
@@ -163,7 +163,7 @@ export const CTA_COPY = {
 export const ATTENDANCE_COPY = {
   eyebrow: "Attendance & daily diary",
   title: "The school day, recorded as it happens",
-  body: "Registers, diary entries and homework go in from the classroom on a phone or the web portal — and parents see them the same day, without a single paper slip going home.",
+  body: "Registers, diary entries and homework go in from the classroom on a phone or the web portal, and parents see them the same day, without a single paper slip going home.",
 } as const;
 
 export const ACADEMICS_COPY = {
@@ -181,7 +181,7 @@ export const FEES_COPY = {
 export const PARENT_COPY = {
   eyebrow: "Parent portal",
   title: "Parents stay close without calling the office",
-  body: "One sign-in for every child in the family. Attendance, homework, results, fee challans and messages to teachers — on the web or the Android app.",
+  body: "One sign-in for every child in the family. Attendance, homework, results, fee challans and messages to teachers, on the web or the Android app.",
 } as const;
 
 /** The contact form — every label, placeholder and outcome it can report. */
@@ -300,17 +300,17 @@ export const HOW_IT_WORKS = [
   {
     step: "01",
     title: "Set up your school in one form",
-    body: "School name, logo, branches, session dates and fee basics — entered once, on one form. Your branding then appears on every challan, report card and certificate.",
+    body: "School name, logo, branches, session dates and fee basics, entered once, on one form. Your branding then appears on every challan, report card and certificate.",
   },
   {
     step: "02",
     title: "Add students, staff & classes",
-    body: "Create classes, sections and subjects, then add students, guardians and staff one by one — or import them all from an Excel sheet in a single pass.",
+    body: "Create classes, sections and subjects, then add students, guardians and staff one by one, or import them all from an Excel sheet in a single pass.",
   },
   {
     step: "03",
     title: "Every role signs in to its own portal",
-    body: "Principal, coordinators, teachers, accountants and parents each see only their part of the school — on the web portal or the Android app, even when the signal drops.",
+    body: "Principal, coordinators, teachers, accountants and parents each see only their part of the school, on the web portal or the Android app, even when the signal drops.",
   },
 ] as const;
 
@@ -384,7 +384,7 @@ export const MODULES: ModuleEntry[] = [
   { name: "Payroll", detail: "Salaries · Deductions · Payslips", tone: "rose", icon: "Wallet", status: "live" },
   { name: "Expenses & accounts", detail: "Expenses · Income · Payment proofs", tone: "sky", icon: "Landmark", status: "live" },
   { name: "Inventory", detail: "Items · Stock · Issue & return", tone: "violet", icon: "Package", status: "live" },
-  { name: "Messaging & notifications", detail: "Parent–teacher chat · Email · SMS", tone: "purple", icon: "MessageSquare", status: "live" },
+  { name: "Messaging & notifications", detail: "Parent-teacher chat · Email · SMS", tone: "purple", icon: "MessageSquare", status: "live" },
   { name: "Complaints & meetings", detail: "Complaints for every role · Meetings", tone: "rose", icon: "MessageSquareWarning", status: "live" },
   { name: "Health & pickup", detail: "Health records · Gate pass · Events", tone: "sky", icon: "HeartPulse", status: "live" },
   { name: "Reports", detail: "Fees · Attendance · Results · Audit", tone: "indigo", icon: "BarChart3", status: "live" },
@@ -398,8 +398,8 @@ export const MODULES: ModuleEntry[] = [
 
 export const PAKISTAN_FACTS = [
   { value: "Rs", label: "Rupees and local challans", body: "Fees, receipts and payroll in Rs, with printable bank-style fee challans and family challans for siblings." },
-  { value: "Apr–Mar", label: "Your academic session", body: "Sessions run April to March by default, and classes, fees and results all follow the session you set." },
-  { value: "12-hour", label: "Times the way you say them", body: "Timetables, attendance and gate passes read 8:00 AM and 1:30 PM — never a 24‑hour clock." },
+  { value: "Apr-Mar", label: "Your academic session", body: "Sessions run April to March by default, and classes, fees and results all follow the session you set." },
+  { value: "12-hour", label: "Times the way you say them", body: "Timetables, attendance and gate passes read 8:00 AM and 1:30 PM, never a 24‑hour clock." },
   { value: "SMS", label: "Reaches every parent", body: "Fee reminders and absence alerts go by SMS too, so parents on basic phones are never left out." },
   { value: "Offline", label: "Low-end Android, patchy internet", body: "Teachers mark attendance with no signal; it saves on the phone and syncs once the connection is back." },
   { value: "Branches", label: "Built for school chains", body: "Run every campus from one account, with each branch keeping its own classes, staff, fees and reports." },
@@ -422,7 +422,7 @@ export const TRUST_POINTS = [
   },
   {
     title: "Encrypted backups, tested restores",
-    body: "Backups are encrypted, and each one is checked by restoring it — so the backup you are counting on is one that actually works.",
+    body: "Backups are encrypted, and each one is checked by restoring it, so the backup you are counting on is one that actually works.",
     icon: "DatabaseBackup",
   },
   {
@@ -449,7 +449,7 @@ export const TRUST_POINTS = [
 export const FAQ = [
   {
     q: "Who can sign in?",
-    a: "Super admins, principals, head teachers, coordinators, teachers, accountants and parents — each with their own role and permissions. Students do not have a login; parents follow their child's progress instead. Every account is created by the school, so there is no public sign-up.",
+    a: "Super admins, principals, head teachers, coordinators, teachers, accountants and parents, each with their own role and permissions. Students do not have a login; parents follow their child's progress instead. Every account is created by the school, so there is no public sign-up.",
   },
   {
     q: "How do parents sign in?",
@@ -481,7 +481,7 @@ export const FAQ = [
   },
   {
     q: `How do we get ${BRAND} for our school?`,
-    a: "Get in touch through the contact page or write to hello@pixdevelop.com. We set your school up — branches, sessions, classes and staff — and hand over the accounts. If your school already uses it, sign in from the button above.",
+    a: "Get in touch through the contact page or write to hello@pixdevelop.com. We set your school up (branches, sessions, classes and staff) and hand over the accounts. If your school already uses it, sign in from the button above.",
   },
 ] as const;
 
@@ -490,16 +490,16 @@ export const FAQ = [
 /* ------------------------------------------------------------------ */
 
 export const ATTENDANCE_POINTS = [
-  { title: "Mark a class in a minute", body: "Present, absent, late or on leave — one tap per student, with the whole class pre-filled as present." },
+  { title: "Mark a class in a minute", body: "Present, absent, late or on leave: one tap per student, with the whole class pre-filled as present." },
   { title: "Works without signal", body: "The Android app saves the register offline and syncs it the moment the phone is back online." },
   { title: "Daily diary and homework", body: "Teachers post the day's diary and homework per class and subject, with due dates parents can see." },
   { title: "Staff attendance too", body: "Teachers' own check-ins sit alongside the student registers, ready for payroll at month end." },
 ];
 
 export const ACADEMICS_POINTS = [
-  { title: "Exams on a schedule", body: "Set terms, papers and total marks per class and subject — draw questions from the school's question bank." },
+  { title: "Exams on a schedule", body: "Set terms, papers and total marks per class and subject, and draw questions from the school's question bank." },
   { title: "Marks entry, then approval", body: "Teachers enter marks; work from teachers on probation goes to the coordinator or principal to approve." },
-  { title: "Results worked out for you", body: "Percentages, grades and class positions are calculated the moment marks are saved — no spreadsheets." },
+  { title: "Results worked out for you", body: "Percentages, grades and class positions are calculated the moment marks are saved, so no spreadsheets." },
   { title: "Report cards worth printing", body: "Printable report cards with skills and remarks, in your school's branding, plus certificates when needed." },
 ];
 
@@ -507,12 +507,12 @@ export const FEES_POINTS = [
   { title: "Fee structures per class", body: "Tuition, admission, transport and other heads set once per class and session, with sibling discounts applied." },
   { title: "Family challans", body: "One challan for all the children in a family, printed or shared with parents, with due dates and late fines." },
   { title: "Payment proofs verified", body: "Parents upload a bank or wallet receipt; the accountant verifies it and the receipt is issued in Rs." },
-  { title: "Payroll and expenses", body: "Salaries from staff attendance, school expenses and accounts in one place — reported per branch." },
+  { title: "Payroll and expenses", body: "Salaries from staff attendance, school expenses and accounts in one place, reported per branch." },
 ];
 
 export const PARENT_POINTS = [
   { title: "Every child, one sign-in", body: "A child switcher moves between brothers and sisters, even across branches of the same school." },
-  { title: "Sign in their way", body: "Admission number and password, or a one-time code sent to their email — with two-step verification if they want it." },
+  { title: "Sign in their way", body: "Admission number and password, or a one-time code sent to their email, with two-step verification if they want it." },
   { title: "The whole school day", body: "Attendance, diary, homework, timetable and results for each child, updated as teachers save them." },
   { title: "Fees and messages", body: "See and pay challans, upload payment proof, and message the class teacher directly." },
 ];

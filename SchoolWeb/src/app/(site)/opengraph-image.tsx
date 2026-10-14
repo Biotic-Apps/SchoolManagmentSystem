@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { SITE } from "@/lib/site/content";
 
-export const alt = `${SITE.name} — ${SITE.tagline}`;
+export const alt = `${SITE.name} | ${SITE.tagline}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -80,7 +80,7 @@ export default function OpengraphImage() {
             {SITE.tagline}
           </span>
           <span style={{ marginTop: 26, fontSize: 28, color: "#5b5670", maxWidth: 900 }}>
-            School management software for Pakistan — admissions, attendance, exams,
+            School management software for Pakistan: admissions, attendance, exams,
             fees, payroll and a portal for every parent.
           </span>
         </div>

@@ -9,8 +9,8 @@ const CHILDREN: Array<[string, string, string]> = [
 ];
 
 const DIARY: Array<[string, string]> = [
-  ["English", "Read pages 42–45 aloud; learn 10 new words."],
-  ["Math", "Fractions worksheet — questions 1 to 12."],
+  ["English", "Read pages 42-45 aloud; learn 10 new words."],
+  ["Math", "Fractions worksheet, questions 1 to 12."],
   ["Science", "Bring a leaf for Friday's plant activity."],
 ];
 
