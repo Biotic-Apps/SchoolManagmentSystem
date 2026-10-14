@@ -3,12 +3,14 @@ import { SESSION_COOKIE } from "@/lib/auth-cookie-names";
 import { buildCsp } from "@/lib/csp";
 
 const isDev = process.env.NODE_ENV === "development";
-const PUBLIC_PATHS = ["/login", "/forgot-password", "/reset-password"];
+const PUBLIC_PATHS = ["/login", "/forgot-password", "/reset-password", "/contact", "/privacy-policy", "/terms"];
 
 function needsSignIn(request: NextRequest): boolean {
   const { pathname } = request.nextUrl;
-  // "/" is the public landing page (exact match; app/page.tsx sends signed-in users to /dashboard).
+  // "/" is the public marketing home page (app/(site)/page.tsx).
   if (pathname === "/") return false;
+  // The marketing share image is served at /opengraph-image-<hash>.
+  if (pathname.startsWith("/opengraph-image")) return false;
   if (PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))) return false;
   return !request.cookies.has(SESSION_COOKIE);
 }

@@ -1,0 +1,58 @@
+/*
+ * Marketing-site tokens (src/app/(site)/** and src/components/site/** only).
+ * Ported from the AuditWithUS site, recoloured to eSchool purple: `brand-*` is the purple ramp around
+ * the app's primary #7B68EE. The portal uses none of these class names, so adding them changes no
+ * portal screen. `background`, `surface` and `info` already exist in globals.css and are reused.
+ */
+@theme {
+  --color-brand-50: #f5f3ff;
+  --color-brand-100: #ede9fe;
+  --color-brand-200: #ddd6fe;
+  --color-brand-300: #c4b5fd;
+  --color-brand-400: #a78bfa;
+  --color-brand-500: #7b68ee;
+  --color-brand-600: #6a5acd;
+  --color-brand-700: #5b4bc7;
+  --color-brand-800: #4c3d99;
+  --color-brand-900: #2a1f6b;
+
+  --color-accent-50: #fdf2f8;
+  --color-accent-100: #fce7f3;
+  --color-accent-200: #fbcfe8;
+  --color-accent-400: #f472b6;
+  --color-accent-500: #ec4899;
+  --color-accent-600: #db2777;
+  --color-accent-700: #be185d;
+
+  --color-ink-50: #f8fafc;
+  --color-ink-100: #f1f5f9;
+  --color-ink-200: #e2e8f0;
+  --color-ink-300: #cbd5e1;
+  --color-ink-400: #94a3b8;
+  --color-ink-500: #64748b;
+  --color-ink-600: #475569;
+  --color-ink-700: #334155;
+  --color-ink-800: #1e293b;
+  --color-ink-900: #0f172a;
+  --color-ink-950: #020617;
+
+  --color-tile-green: #7b68ee;
+  --color-tile-indigo: #6366f1;
+  --color-tile-rose: #f43f5e;
+  --color-tile-blue: #3b82f6;
+  --color-tile-sky: #0ea5e9;
+  --color-tile-violet: #8b5cf6;
+
+  --color-surface-sunken: #f7f5ff;
+  --color-foreground: #1f2037;
+  --color-muted: #5b6070;
+  --color-faint: #8b8fa3;
+  --color-line: #e9e5fb;
+  --color-line-strong: #d9d2f7;
+  --color-field: #f3f0ff;
+
+  --radius-panel: 1.15rem;
+  --shadow-soft: 0 1px 2px rgb(42 31 107 / 0.04), 0 1px 3px rgb(42 31 107 / 0.06);
+  --shadow-lift: 0 1px 2px rgb(42 31 107 / 0.05), 0 12px 28px -14px rgb(42 31 107 / 0.22);
+  --shadow-glow: 0 0 0 4px rgb(123 104 238 / 0.14);
+}

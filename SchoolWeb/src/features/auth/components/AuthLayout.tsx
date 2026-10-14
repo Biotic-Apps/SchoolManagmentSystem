@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { useBranding } from "@/features/branding/api";
 import { brandStyle } from "@/features/branding/brand-style";
 import { BrandLogo } from "@/features/branding/components/BrandLogo";
-import "@/features/landing/landing.css";
+import "@/app/styles/auth.css";
 import { AuthBrandPanel } from "./AuthBrandPanel";
 
 interface AuthLayoutProps {

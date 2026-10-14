@@ -28,7 +28,7 @@ export function AuthStatCard({ className }: { className?: string }) {
             key={index}
             style={{ height: `${height}%`, "--bar-delay": `${400 + index * 90}ms` } as CSSProperties}
             className={cn(
-              "animate-bar-grow flex-1 rounded-t-md",
+              "auth-bar-grow flex-1 rounded-t-md",
               index === BARS.length - 1 ? "bg-white" : "bg-white/35",
             )}
           />

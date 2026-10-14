@@ -23,10 +23,10 @@ interface AuthBrandPanelProps {
 export function AuthBrandPanel({ schoolName, logoUrl }: AuthBrandPanelProps) {
   return (
     <aside className="relative isolate hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-primary via-[#6A5ACD] to-[#3B2D8F] p-12 text-white lg:flex">
-      <div aria-hidden className="bg-dot-grid absolute inset-0 -z-10 opacity-50 [mask-image:linear-gradient(to_bottom,black,transparent_85%)]" />
-      <div aria-hidden className="animate-drift absolute -right-24 -top-24 -z-10 size-80 rounded-full bg-white/[0.12] blur-3xl" />
-      <div aria-hidden className="animate-drift absolute -bottom-32 -left-20 -z-10 size-96 rounded-full bg-[#2A1F6B]/60 blur-3xl" style={{ animationDelay: "-8s" }} />
-      <div aria-hidden className="animate-drift absolute right-1/4 top-1/2 -z-10 size-64 rounded-full bg-accent-pink/20 blur-3xl" style={{ animationDelay: "-16s" }} />
+      <div aria-hidden className="auth-dot-grid absolute inset-0 -z-10 opacity-50 [mask-image:linear-gradient(to_bottom,black,transparent_85%)]" />
+      <div aria-hidden className="auth-drift absolute -right-24 -top-24 -z-10 size-80 rounded-full bg-white/[0.12] blur-3xl" />
+      <div aria-hidden className="auth-drift absolute -bottom-32 -left-20 -z-10 size-96 rounded-full bg-[#2A1F6B]/60 blur-3xl" style={{ animationDelay: "-8s" }} />
+      <div aria-hidden className="auth-drift absolute right-1/4 top-1/2 -z-10 size-64 rounded-full bg-accent-pink/20 blur-3xl" style={{ animationDelay: "-16s" }} />
 
       <div className="flex items-center gap-3" style={riseIn(0)}>
         <BrandLogo logoUrl={logoUrl} size="md" />
@@ -35,7 +35,7 @@ export function AuthBrandPanel({ schoolName, logoUrl }: AuthBrandPanelProps) {
 
       <div className="flex flex-col gap-8">
         <div className="self-end xl:mr-8" style={riseIn(1)}>
-          <AuthStatCard className="animate-float" />
+          <AuthStatCard className="auth-float" />
         </div>
         <div className="flex flex-col gap-6">
           <h2 className="text-[34px] font-bold leading-tight tracking-tight" style={riseIn(1)}>

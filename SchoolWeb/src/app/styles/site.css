@@ -1,0 +1,412 @@
+/* ---------- The marketing site's stylesheet ----------
+
+   Everything here backs `app/(site)/**` and `components/site/**`, ported from
+   that site's Tailwind v4 `globals.css`. Nothing here may reach the accounting
+   app, and the comments below say, rule by rule, what would break if it did.
+
+   IMPORTED AT THE TOP OF `globals.css`, AND WRITTEN AS PLAIN CSS — NO `@layer`.
+
+   Both halves of that were forced, and the second one is not a style choice.
+   Next hands an `@import`ed stylesheet to css-loader, which resolves it into
+   its OWN webpack module and runs it back through postcss-loader
+   (`importLoaders: 1`, `next/dist/build/webpack/config/blocks/css/loaders/
+   global.js`). So this file meets the Tailwind plugin ALONE, with no
+   `@tailwind` directives in it — and Tailwind 3.4 does not tolerate that:
+
+     `@layer components` is used but no matching `@tailwind components`
+     directive is present.
+
+   That is a thrown `CssSyntaxError`, not a warning, so the fallback would not
+   have been a page that looks wrong; it would have been a build that stops.
+   Plain rules pass through the same solo pass untouched, which is the whole
+   reason this arrangement works. The import goes at the TOP because `@import`
+   must precede every other rule in a stylesheet, and it lands the file ahead of
+   `@tailwind base` in the bundle.
+
+   What is given up is the layer's cascade position, and it costs nothing here.
+   A Tailwind UTILITY now beats `.panel` and `.card-surface` rather than losing
+   to them, which is the order anybody writing `className="panel bg-white"`
+   expects; and preflight resets ELEMENT selectors, not classes, so arriving
+   before `@tailwind base` resets none of this. The alternative — appending
+   these blocks to `globals.css` inside its existing `@layer` sections — builds
+   too, and puts two hundred lines of marketing CSS in the middle of the file
+   that sets the density of every accounting screen.
+
+   `theme()` DOES resolve in that solo pass (verified against 3.4.19), and it
+   is doing more work below than it looks. Tailwind v4, which this was ported
+   from, mints a `--color-brand-500` custom property for every theme key, so
+   the original file wrote `var(--color-brand-500)` and `var(--radius-card)`
+   throughout. v3's `theme.extend` mints NONE of them. Copied across verbatim,
+   every gradient here would have resolved to nothing — an invisible primary
+   button on the site's call to action — and every card would have lost its
+   corner radius. Reading them back through `theme()` also keeps the brand
+   ramp and the two radii written once, in `tailwind.config.ts`. */
+
+/* The site's semantic palette. `tailwind.config.ts` carries the argument for
+   the `--site-` prefix and for the RGB-channel values; the short version is
+   that four of these names are already declared by `globals.css` with
+   different values and read by `<body>`.
+
+   Declaring them on `:root` is safe BECAUSE of the prefix — no name here
+   exists anywhere else in the app, so the declarations are inert outside the
+   marketing subtree. The scoping that matters is on the RULES below, not on
+   the tokens. */
+:root {
+  --site-background: 255 255 255;
+  --site-surface: 255 255 255;
+  --site-surface-sunken: 247 245 255;
+  --site-foreground: 31 32 55;
+  --site-muted: 91 96 112;
+  --site-faint: 139 143 163;
+  --site-line: 233 229 251;
+  --site-line-strong: 217 210 247;
+  --site-field: 243 240 255;
+  --site-info: 245 243 255;
+
+  /* Restrained: a hairline and a whisper of depth, not a drop shadow.
+
+     These three keep their ORIGINAL names, against the convention above, and
+     the reason is that ten call sites under `components/site` write
+     `shadow-[var(--shadow-card)]` into a class string — a Tailwind arbitrary
+     value is text, so renaming the variable means editing components this pass
+     is not allowed to touch. There is nothing to collide with either way: the
+     app declares no `--shadow-*` at all. Its own shadows are the `shadow-card`
+     / `shadow-lift` utilities in `tailwind.config.ts`, which is a different
+     namespace that happens to share two words. */
+  --shadow-card: 0 1px 2px rgb(42 31 107 / 0.04);
+  --shadow-lift: 0 1px 2px rgb(42 31 107 / 0.05), 0 12px 28px -14px rgb(42 31 107 / 0.18);
+  --shadow-device: 0 2px 6px rgb(42 31 107 / 0.06), 0 32px 64px -28px rgb(42 31 107 / 0.3);
+
+  /* One source of truth for the site header's height: the bar itself, the
+     sticky offsets inside the scroll sections, the `scroll-margin-top` below
+     and the Lenis anchor offset all measure from it, so they cannot drift.
+
+     Two names for one number, and both are needed. `--site-header-height` is
+     the canonical one and what this file reads. `--header-height` is an alias
+     for the same string-in-a-class-name reason as the shadows: `Header.tsx`
+     spells it `h-[var(--header-height)]` and `ScrollDevice.tsx`
+     `top-[calc(var(--header-height)+1.5rem)]`. It sits on `:root` rather than
+     on `.site-shell` because a marketing overlay portalled into `<body>` would
+     escape the shell and lose it; there is no such portal today, and the app
+     measures from `--topbar-h` and reads `--header-height` nowhere, so the
+     name is free. */
+  --site-header-height: 4.5rem;
+  --header-height: var(--site-header-height);
+
+  /* The marketing components were built against `next/font/google`'s Geist,
+     which publishes `--font-geist-sans`. This app self-hosts the same typeface
+     as `--font-sans` (`GeistVF.woff`, set in `app/layout.tsx`) with Noto Sans
+     Devanagari behind it for the glyphs Geist does not have, and `<body>`
+     already carries `font-sans` — so the site inherits the right face without
+     `fontFamily` being touched and without a second copy of Geist being
+     downloaded. These two aliases are for the call site nobody has written
+     yet: a component reaching for `var(--font-geist-sans)` gets the app's
+     Geist rather than nothing. `font-mono` appears five times and is left on
+     Tailwind's default stack. */
+  --font-geist-sans: var(--font-sans);
+  --font-geist-mono: var(--font-mono, ui-monospace, monospace);
+}
+
+/* Lenis drives scrolling on the marketing pages and native smooth-scroll would
+   fight it. Global, and safe there: this declares the INITIAL value, and the
+   accounting app never asks for `smooth`, so it is already what every screen
+   does. */
+html {
+  scroll-behavior: auto;
+}
+
+/* Held open by `lockScroll()` (`lib/site/scroll.ts`) while a marketing overlay
+   is up — today that is the mobile nav. Global, and it cannot collide with the
+   app's own lock: that one is `body[data-overlay-open]` (see `globals.css`),
+   a different element AND a different attribute, and only `scroll.ts` ever
+   sets this one. `--scrollbar-gutter` keeps its name because `scroll.ts`
+   writes it by string. A `body { overflow: hidden }` would do nothing here —
+   Lenis scrolls `documentElement` directly, which is what this holds. */
+html[data-scroll-locked] {
+  overflow: hidden;
+  padding-right: var(--scrollbar-gutter, 0px);
+  touch-action: none;
+}
+
+/* ---------- The shell ----------
+   `app/(site)/layout.tsx` renders exactly one `.site-shell`, and it is what
+   every scoped rule below hangs off.
+
+   The canvas is repainted HERE rather than on `<body>`, which is most of the
+   reason this file exists at all: the app's body is `#f6f8fb` and the site's
+   ground is white, so the site's own `body` rule would have turned all 122
+   accounting screens white. Font smoothing and `optimizeLegibility` are not
+   repeated — `globals.css` already sets both on `<body>`.
+
+   `overflow-x: clip` is on the shell for a harder reason. A 3D-rotated device
+   frame contributes to the scrollable area without affecting layout, and a
+   stray sideways scrollbar on a marketing page reads as a bug — but this repo
+   has a standing rule about where that value may be written. `globals.css`
+   sets `html { overflow-x: auto }` deliberately, so the viewport stays the
+   scroll container and content that overflows can still be reached; and an
+   overflow on `<body>` makes body a scroll container that never scrolls, which
+   silently kills every sticky header and totals row in the app. Neither is at
+   risk on a DIV: `clip` creates no scroll container, so the `sticky` header
+   inside this shell still resolves against the viewport, and the accounting
+   app never renders this element at all. */
+.site-shell {
+  background-color: rgb(var(--site-background));
+  color: rgb(var(--site-foreground));
+  overflow-x: clip;
+}
+
+/* Brand purple on the selection highlight and the focus ring. Both selectors
+   are universal, which is exactly why they are scoped: unscoped, `::selection`
+   would repaint the highlight on every figure an accountant drags across in a
+   trial balance, and the outline would land on every input, button and `.btn`
+   in the app — where the focus ring is drawn by Tailwind's own `focus:ring-*`
+   utilities and this would sit outside it. The pair covers the shell's own
+   text as well as its descendants'. */
+.site-shell::selection,
+.site-shell ::selection {
+  background-color: var(--color-brand-200);
+  color: var(--color-brand-900);
+}
+
+.site-shell :focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+/* Anchor links must clear the sticky header — the nav's in-page links and
+   `#main` from the skip link. Kept in step with the header's own height and
+   with `HEADER_OFFSET` in `SmoothScroll`.
+
+   The scope is doing real work here. `[id]` matches EVERY element carrying an
+   id, which in the accounting app is most form fields and half the tables that
+   label them, and 5.5rem of `scroll-margin-top` on all of them would park a
+   field the browser scrolled to under the topbar instead of below it. */
+.site-shell [id] {
+  scroll-margin-top: calc(var(--site-header-height) + 1rem);
+}
+
+/* ---------- Components ----------
+   No class name below collides with one the app defines — `.card`, `.btn`,
+   `.input`, `.chip` and `.glass` are the app's, and `.panel` in particular was
+   checked against `components/ui/PanelSection.tsx`, which uses none. They are
+   left unscoped so their specificity matches the source; the names ARE the
+   scope. */
+
+/* The two signature gradients, lifted from the app's login screen. */
+.gradient-panel {
+  background-image: linear-gradient(
+    to bottom right,
+    var(--color-brand-500),
+    var(--color-brand-600),
+    var(--color-brand-800)
+  );
+}
+
+.gradient-button {
+  background-image: linear-gradient(
+    to bottom right,
+    var(--color-brand-600),
+    var(--color-brand-700),
+    var(--color-brand-900)
+  );
+}
+
+/* Faint document outlines, as seen behind the login panel. */
+.doc-pattern {
+  background-image:
+    linear-gradient(115deg, transparent 46%, rgb(255 255 255 / 0.055) 46% 47%, transparent 47%),
+    linear-gradient(65deg, transparent 62%, rgb(255 255 255 / 0.045) 62% 63%, transparent 63%),
+    radial-gradient(circle at 22% 28%, rgb(255 255 255 / 0.07) 0 1.5px, transparent 1.5px),
+    radial-gradient(circle at 74% 66%, rgb(255 255 255 / 0.06) 0 1.5px, transparent 1.5px);
+  background-size: 260px 260px, 340px 340px, 120px 120px, 160px 160px;
+}
+
+.card-surface {
+  background-color: rgb(var(--site-surface));
+  border: 1px solid rgb(var(--site-line));
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+/* A bordered container whose children are separated by hairlines rather than
+   floating as individual cards. This is what stops a page of information from
+   reading as a pile of tiles. */
+.panel {
+  background-color: rgb(var(--site-surface));
+  border: 1px solid rgb(var(--site-line));
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+}
+
+/* The hero ground: a quiet canvas with the brand rising behind the product,
+   rather than a wash of colour across everything. */
+.hero-canvas {
+  background-image:
+    radial-gradient(1100px 520px at 50% -12%, rgb(123 104 238 / 0.14), transparent 68%),
+    radial-gradient(760px 420px at 88% 4%, rgb(244 114 182 / 0.08), transparent 62%),
+    radial-gradient(680px 380px at 6% 18%, rgb(106 90 205 / 0.07), transparent 60%);
+}
+
+/* Faint ruled grid, fading out before it competes with the content.
+   Safari still needs the prefixed mask; without it the grid runs edge to edge
+   on every Mac and iPhone instead of fading. */
+.grid-fade {
+  background-image:
+    linear-gradient(to right, rgb(42 31 107 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(42 31 107 / 0.045) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(900px 460px at 50% 8%, #000 0%, transparent 78%);
+  mask-image: radial-gradient(900px 460px at 50% 8%, #000 0%, transparent 78%);
+}
+
+/* Shared 3D stage. Children use translateZ/rotate against this. */
+.stage-3d {
+  perspective: 1600px;
+  perspective-origin: 50% 45%;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* ---------- Utilities ----------
+   `.text-balance` is NOT ported: `globals.css` already defines it, identically,
+   and a second copy is a second thing to keep in step. */
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* Drifting colour fields behind the hero and closing band. */
+@keyframes aurora {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(6%, -8%, 0) scale(1.18);
+  }
+  66% {
+    transform: translate3d(-7%, 5%, 0) scale(0.92);
+  }
+}
+
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(var(--aurora-blur, 90px));
+  will-change: transform;
+  animation: aurora 22s ease-in-out infinite;
+}
+
+/* A 700px element under a 90px blur, re-composited every frame, is the single
+   most expensive thing on the page — and on a mid-range Android it is the
+   reason the hero stutters. Phones keep the colour and lose the motion, which
+   is the half that was doing the work anyway: at this blur radius the drift is
+   barely perceptible even on a desktop. */
+@media (max-width: 767px) {
+  .aurora-blob {
+    --aurora-blur: 56px;
+    animation: none;
+    will-change: auto;
+  }
+}
+
+/* A highlight that sweeps across a device screen, the way light moves over
+   glass when the panel turns. */
+@keyframes glare {
+  0% {
+    transform: translateX(-130%) skewX(-18deg);
+  }
+  100% {
+    transform: translateX(230%) skewX(-18deg);
+  }
+}
+
+.glare::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 45%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgb(255 255 255 / 0.28),
+    transparent
+  );
+  animation: glare 7s ease-in-out infinite;
+  animation-delay: 1.6s;
+  pointer-events: none;
+  /* Above the stacked screen layers, which sit at z-0 and z-10. */
+  z-index: 20;
+}
+
+/* Float-and-sway for the module tiles flanking the hero.
+   Four stops rather than two: a tile that only goes up and back down reads as
+   a pulse, while one that also drifts sideways and rocks reads as floating.
+   Rotation here composes with the entrance tilt on the element inside, since
+   nested transforms multiply. */
+@keyframes float-sway {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate3d(8px, -22px, 0) rotate(2.4deg);
+  }
+  50% {
+    transform: translate3d(0, -34px, 0) rotate(0deg);
+  }
+  75% {
+    transform: translate3d(-8px, -17px, 0) rotate(-2.4deg);
+  }
+}
+
+.float-sway {
+  animation: float-sway 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ---------- Less motion, but a whole page ----------
+
+   Anyone who asked their OS for less motion gets a still page — but a whole
+   one. Windows, macOS, iOS and Android all expose this same preference, so the
+   two rules below are what every visitor on every platform sees.
+
+   The order matters. Stopping the animations is the easy half; the important
+   half is forcing every animated element to its finished state, because these
+   elements are served HIDDEN and revealed by motion. Without the second rule a
+   reduced-motion visitor gets a page of invisible headings.
+
+   EVERY SELECTOR HERE IS SCOPED, and the first one is the reason the scope is
+   not optional. `*, *::before, *::after { animation-duration: .001ms
+   !important }` unscoped would reach the accounting app and end every
+   animation in it for these users — `fade-in`, `slide-in`, `scale-in`,
+   `shimmer` and `count-pop` from `tailwind.config.ts`, every `transition-all`
+   on `.btn` and `.input`, and the dialog. Half of those the app already honours
+   properly; the rest are transitions on things that must not become instant
+   because a marketing page has aurora blobs on it. `scroll-behavior` is dropped
+   from the reset rather than scoped, because `html` is out of the shell's reach
+   and the rule above already declares `auto` globally. */
+@media (prefers-reduced-motion: reduce) {
+  .site-shell,
+  .site-shell *,
+  .site-shell *::before,
+  .site-shell *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .site-shell [data-motion] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Purely decorative loops have nothing to finish, so they simply stop. */
+  .site-shell .float-sway,
+  .site-shell .aurora-blob,
+  .site-shell .glare::after {
+    animation: none !important;
+  }
+}
