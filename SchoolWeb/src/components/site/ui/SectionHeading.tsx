@@ -37,7 +37,6 @@ export function SectionHeading({
               align === "center" && "justify-center",
             )}
           >
-            <span className="h-px w-6 bg-brand-500" />
             {eyebrow}
           </p>
         </Reveal>

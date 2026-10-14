@@ -25,7 +25,6 @@ export function PageHeader({
         {eyebrow ? (
           <Reveal>
             <p className="flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brand-700">
-              <span className="h-px w-6 bg-brand-500" />
               {eyebrow}
             </p>
           </Reveal>

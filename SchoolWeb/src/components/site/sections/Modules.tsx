@@ -147,7 +147,6 @@ export function Modules() {
                 <h3 className="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-faint">
                   {MODULES_COPY.onTheWay}
                 </h3>
-                <div className="h-px flex-1 bg-line" />
               </div>
 
               <div className="-mb-px -mr-px grid sm:grid-cols-2 lg:grid-cols-4">
