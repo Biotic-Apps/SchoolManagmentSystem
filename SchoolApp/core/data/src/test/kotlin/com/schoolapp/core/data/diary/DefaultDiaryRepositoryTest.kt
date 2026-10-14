@@ -97,7 +97,7 @@ class DefaultDiaryRepositoryTest {
             return ApiEnvelope(publishResponse)
         }
 
-        override suspend fun entries(sectionId: String?, date: String?, from: String?, to: String?) = ApiEnvelope(emptyList<DiaryEntryDto>())
+        override suspend fun entries(sectionId: String?, date: String?, from: String?, to: String?, branchId: String?, status: String?) = ApiEnvelope(emptyList<DiaryEntryDto>())
         override suspend fun returnEntry(id: String, body: CommentBodyDto) = ApiEnvelope(DiaryEntryDto(id = id))
         override suspend fun missing(branchId: String?, date: String) = ApiEnvelope(emptyList<MissingDiaryDto>())
     }

@@ -43,8 +43,8 @@ class DefaultStudentCalendarRepositoryTest {
         assertEquals(
             AppResult.Success(
                 listOf(
-                    CalendarEvent("e1", "HOLIDAY", "Founders' Day", "2026-10-20", "2026-10-20", "School closed"),
-                    CalendarEvent("e2", "VACATION", "Winter vacation", "2026-12-22", "2027-01-02", null),
+                    CalendarEvent("e1", "HOLIDAY", "Founders' Day", "2026-10-20", "2026-10-20", "School closed", schoolId = "sch", branchId = "b1"),
+                    CalendarEvent("e2", "VACATION", "Winter vacation", "2026-12-22", "2027-01-02", null, schoolId = "sch"),
                 ),
             ),
             result,

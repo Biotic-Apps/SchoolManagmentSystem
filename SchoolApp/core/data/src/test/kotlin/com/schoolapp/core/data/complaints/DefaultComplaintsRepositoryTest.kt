@@ -69,7 +69,7 @@ private class FakeComplaintsApi : ComplaintsApi {
     private fun dto(json: String) = NetworkJson.decodeFromString(ComplaintDto.serializer(), json)
     private fun obj(json: String): JsonObject = NetworkJson.parseToJsonElement(json).jsonObject
 
-    override suspend fun complaints(box: String, status: String?, category: String?) = ApiEnvelope(listOf(dto(complaintJson())))
+    override suspend fun complaints(box: String, status: String?, category: String?, page: Int?, pageSize: Int?) = ApiEnvelope(listOf(dto(complaintJson())))
     override suspend fun complaint(id: String) = ApiEnvelope(dto(complaintJson()))
     override suspend fun file(body: ComplaintBodyDto) = ApiEnvelope(dto(complaintJson()))
 
