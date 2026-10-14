@@ -69,6 +69,12 @@ const PUBLIC: Record<string, string> = {
   'POST /auth/password/forgot': '@AuthThrottle, no user enumeration',
   'POST /auth/password/reset': '@AuthThrottle, single-use hashed token',
   'POST /auth/refresh': '@AuthThrottle, rotation + reuse detection',
+  'GET /public/admissions/schools/:schoolCode/form-config':
+    'online admission form config, no student data',
+  'GET /public/admissions/status/:applicationNo':
+    'applicant status lookup by application number',
+  'POST /public/admissions/schools/:schoolCode/apply':
+    'online admission application form',
   'POST /payments/online/callback/:gateway':
     'gateway adapter verifies the signature (MANUAL never accepts)',
 };

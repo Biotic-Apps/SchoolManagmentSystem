@@ -46,6 +46,7 @@ const PROBES: Record<string, Probe> = {
   'GET /activities/mine': { url: q('/activities/mine') },
   'GET /certificates': { url: q('/certificates') },
   'GET /concessions': { url: q('/concessions') },
+  'GET /early-leave': { url: q('/early-leave') },
   'GET /dashboard/child-today': { url: q('/dashboard/child-today') },
   'GET /documents': {
     url: (id) => `/documents?ownerType=STUDENT&ownerId=${id}`,

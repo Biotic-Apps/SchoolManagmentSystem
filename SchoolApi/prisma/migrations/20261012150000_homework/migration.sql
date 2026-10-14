@@ -75,32 +75,36 @@ ALTER TABLE "homework_submissions" ADD CONSTRAINT "homework_submissions_student_
 -- AddForeignKey
 ALTER TABLE "homework_submissions" ADD CONSTRAINT "homework_submissions_graded_by_id_fkey" FOREIGN KEY ("graded_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- Seed default homework permissions into existing roles
-INSERT INTO "permissions" ("id", "role_id", "key", "created_at", "updated_at")
-SELECT gen_random_uuid(), r."id", p."key", NOW(), NOW()
+-- Grant homework permissions to existing system roles. Catalogue rows come
+-- from the seed; on a fresh database nothing matches and the seed grants them.
+INSERT INTO "role_permissions" ("role_id", "permission_key", "created_at")
+SELECT r."id", k.key, now()
 FROM "roles" r
 CROSS JOIN (
   VALUES ('homework.view'), ('homework.add'), ('homework.edit'), ('homework.delete'), ('homework.submit')
-) AS p("key")
-WHERE r."key" IN ('SUPER_ADMIN', 'PRINCIPAL')
+) AS k(key)
+WHERE r."is_system" = true AND r."key" IN ('SUPER_ADMIN', 'PRINCIPAL')
+  AND EXISTS (SELECT 1 FROM "permissions" p WHERE p."key" = k.key)
 ON CONFLICT DO NOTHING;
 
 -- Teachers get view, add, edit (not delete)
-INSERT INTO "permissions" ("id", "role_id", "key", "created_at", "updated_at")
-SELECT gen_random_uuid(), r."id", p."key", NOW(), NOW()
+INSERT INTO "role_permissions" ("role_id", "permission_key", "created_at")
+SELECT r."id", k.key, now()
 FROM "roles" r
 CROSS JOIN (
   VALUES ('homework.view'), ('homework.add'), ('homework.edit')
-) AS p("key")
-WHERE r."key" IN ('TEACHER', 'HEAD_TEACHER', 'COORDINATOR')
+) AS k(key)
+WHERE r."is_system" = true AND r."key" IN ('TEACHER', 'HEAD_TEACHER', 'COORDINATOR')
+  AND EXISTS (SELECT 1 FROM "permissions" p WHERE p."key" = k.key)
 ON CONFLICT DO NOTHING;
 
 -- Parents get view and submit
-INSERT INTO "permissions" ("id", "role_id", "key", "created_at", "updated_at")
-SELECT gen_random_uuid(), r."id", p."key", NOW(), NOW()
+INSERT INTO "role_permissions" ("role_id", "permission_key", "created_at")
+SELECT r."id", k.key, now()
 FROM "roles" r
 CROSS JOIN (
   VALUES ('homework.view'), ('homework.submit')
-) AS p("key")
-WHERE r."key" = 'PARENT'
+) AS k(key)
+WHERE r."is_system" = true AND r."key" = 'PARENT'
+  AND EXISTS (SELECT 1 FROM "permissions" p WHERE p."key" = k.key)
 ON CONFLICT DO NOTHING;

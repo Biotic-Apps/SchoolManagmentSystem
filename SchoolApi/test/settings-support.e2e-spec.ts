@@ -53,7 +53,7 @@ describe('Settings and support (e2e)', () => {
     const res = await t('principal')
       .get(`/settings/school/${schoolId}`)
       .expect(200);
-    expect(data<{ primaryColor: string }>(res).primaryColor).toBe('#0B7F74');
+    expect(data<{ primaryColor: string }>(res).primaryColor).toBe('#7B68EE');
     await t('principal')
       .get(`/settings/policies?schoolId=${schoolId}`)
       .expect(200);

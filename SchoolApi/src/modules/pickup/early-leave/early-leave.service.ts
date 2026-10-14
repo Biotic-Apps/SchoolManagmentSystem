@@ -123,6 +123,13 @@ export class EarlyLeaveService {
     scope: Scope,
     query: EarlyLeaveQueryDto,
   ): Promise<EarlyLeaveDto[]> {
+    // A guardian asking about someone else's child gets 404, not an empty list.
+    if (
+      scope.guardian &&
+      query.studentId &&
+      !scope.canAccessStudent(query.studentId)
+    )
+      throw notFound('Student');
     const scopeFilter = scope.guardian
       ? { studentId: { in: [...scope.studentIds] } }
       : scope.sectionFilter();
