@@ -14,12 +14,12 @@ import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.model.pickup.EarlyLeave
 import com.schoolapp.core.model.pickup.EarlyLeaveStatus
 import com.schoolapp.core.ui.appErrorMessage
-import com.schoolapp.core.ui.formatDate
 import com.schoolapp.feature.pickup.R
 import com.schoolapp.feature.pickup.components.BorderedList
 import com.schoolapp.feature.pickup.components.EarlyLeaveActions
 import com.schoolapp.feature.pickup.components.EarlyLeaveCard
 import com.schoolapp.feature.pickup.components.PersonRow
+import com.schoolapp.feature.pickup.components.PickupDateBar
 import com.schoolapp.feature.pickup.components.departureTime
 import com.schoolapp.feature.pickup.components.studentSearchItems
 
@@ -30,15 +30,19 @@ internal fun GateContent(
     onApprove: (String) -> Unit,
     onReject: (String) -> Unit,
     onQueryChange: (String) -> Unit,
+    onDateChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ScreenColumn(modifier) {
-        item(key = "today") { SectionHeader(stringResource(R.string.pickup_today, formatDate(state.today).orEmpty())) }
+        item(key = "date") { PickupDateBar(state.date, state.today, onDateChange) }
         state.error?.let { item(key = "refresh_error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
         state.actionError?.let { item(key = "action_error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
         item(key = "leaves_header") { SectionHeader(stringResource(R.string.pickup_early_leaves)) }
         if (state.earlyLeaves.isEmpty()) {
-            item(key = "leaves_empty") { EmptyState(stringResource(R.string.pickup_early_leaves_empty), icon = Icons.Outlined.EventBusy) }
+            item(key = "leaves_empty") {
+                val text = if (state.isToday) R.string.pickup_early_leaves_empty else R.string.pickup_early_leaves_empty_day
+                EmptyState(stringResource(text), icon = Icons.Outlined.EventBusy)
+            }
         }
         items(state.earlyLeaves.size, key = { "leave_" + state.earlyLeaves[it].id }) { index ->
             val leave = state.earlyLeaves[index]
@@ -54,15 +58,18 @@ internal fun GateContent(
                     EarlyLeaveActions(
                         onApprove = { onApprove(leave.id) }.takeIf { leave.status == EarlyLeaveStatus.REQUESTED },
                         onReject = { onReject(leave.id) }.takeIf { leave.status == EarlyLeaveStatus.REQUESTED },
-                        onRecordDeparture = { onRecordDeparture(leave.studentId, leave.studentName, leave) },
+                        onRecordDeparture = { onRecordDeparture(leave.studentId, leave.studentName, leave) }.takeIf { state.isToday },
                     )
                 },
             )
         }
-        item(key = "departures_header") { SectionHeader(stringResource(R.string.pickup_departures_today)) }
+        item(key = "departures_header") {
+            SectionHeader(stringResource(if (state.isToday) R.string.pickup_departures_today else R.string.pickup_departures))
+        }
         if (state.departures.isEmpty()) {
             item(key = "departures_empty") {
-                EmptyState(stringResource(R.string.pickup_departures_empty), icon = Icons.AutoMirrored.Outlined.DirectionsWalk)
+                val text = if (state.isToday) R.string.pickup_departures_empty else R.string.pickup_departures_empty_day
+                EmptyState(stringResource(text), icon = Icons.AutoMirrored.Outlined.DirectionsWalk)
             }
         } else {
             item(key = "departures") {
@@ -75,7 +82,7 @@ internal fun GateContent(
                 }
             }
         }
-        if (state.canEdit) {
+        if (state.canEdit && state.isToday) {
             item(key = "other_header") { SectionHeader(stringResource(R.string.pickup_record_other)) }
             studentSearchItems(
                 state = state.search,

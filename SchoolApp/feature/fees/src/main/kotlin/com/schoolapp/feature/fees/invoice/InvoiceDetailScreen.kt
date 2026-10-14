@@ -35,6 +35,7 @@ internal fun InvoiceDetailScreen(
     onPayOnline: () -> Unit,
     modifier: Modifier = Modifier,
     onDownloadChallan: () -> Unit = {},
+    staffActions: (@Composable () -> Unit)? = null,
 ) {
     val invoice = state.invoice
     when {
@@ -73,6 +74,7 @@ internal fun InvoiceDetailScreen(
                     state.challanError?.let { InlineMessage(fileJobMessage(it), StatusTone.Error) }
                 }
             }
+            staffActions?.let { item(key = "staff_actions") { it() } }
             item(key = "payments") {
                 InvoicePaymentsCard(
                     payments = invoice.payments,

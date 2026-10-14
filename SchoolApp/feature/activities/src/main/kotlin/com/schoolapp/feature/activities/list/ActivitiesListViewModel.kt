@@ -55,7 +55,7 @@ class ActivitiesListViewModel @Inject constructor(
                         load(session)
                     }
             } else {
-                load(session)
+                _uiState.update { it.copy(isLoading = false, isStaff = true) }
             }
         }
     }
@@ -72,6 +72,7 @@ class ActivitiesListViewModel @Inject constructor(
     }
 
     private fun reload(refreshing: Boolean, silent: Boolean = false) {
+        if (_uiState.value.isStaff) return
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = refreshing, isLoading = !silent && !refreshing && it.visible.isEmpty(), error = null) }

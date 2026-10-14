@@ -13,6 +13,7 @@ import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.model.exams.StudentResult
 import com.schoolapp.feature.exams.R
 import com.schoolapp.feature.exams.components.formatMarks
+import com.schoolapp.feature.exams.reportcard.ReportCardPanel
 import com.schoolapp.feature.exams.results.components.SubjectsTable
 
 /** One student's result in the exam: overall figures, marks per subject and remarks (web StudentResultDrawer). */
@@ -41,6 +42,13 @@ internal fun StudentResultSheet(result: StudentResult, examName: String, onDismi
         Column {
             KeyValueRow(stringResource(R.string.exams_result_remarks), result.remarks)
             KeyValueRow(stringResource(R.string.exams_teacher_remark), result.teacherRemark)
+        }
+        if (result.examId.isNotBlank()) {
+            ReportCardPanel(
+                studentId = result.studentId,
+                examId = result.examId,
+                title = stringResource(R.string.exams_report_card_title, result.name, examName.ifBlank { result.examName }),
+            )
         }
     }
 }

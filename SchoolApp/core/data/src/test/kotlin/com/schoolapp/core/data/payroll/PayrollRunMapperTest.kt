@@ -35,4 +35,21 @@ class PayrollRunMapperTest {
         assertEquals("a1", decode("""{"id":"a1","status":"PENDING"}""").approvalId)
         assertNull(decode("""{"id":"a1","status":"REJECTED"}""").approvalId)
     }
+
+    @Test
+    fun approval_status_overtime_count_and_gross_are_read() {
+        val run = NetworkJson.decodeFromString(
+            PayrollRunDto.serializer(),
+            live.replace("APPROVAL", """{"id":"a1","status":"PENDING"}""").replace("\"totals\"", "\"pendingOvertimeCount\":2,\"totals\""),
+        ).toModel()
+        assertEquals("PENDING", run.approvalStatus)
+        assertEquals(true, run.awaitingApproval)
+        assertEquals(2, run.pendingOvertimeCount)
+        assertEquals("PKR", run.currency)
+        val line = run.lines.single()
+        assertEquals("EMP-003", line.employeeNo)
+        assertEquals(8_200_000L, line.gross)
+        assertEquals(8_200_000L, line.totalEarnings)
+        assertEquals(350_000L, line.totalDeductions)
+    }
 }

@@ -8,7 +8,7 @@ import com.schoolapp.core.model.activity.ActivityConsent
 import com.schoolapp.core.model.activity.ActivityParticipant
 import com.schoolapp.core.model.activity.ConsentStatus
 
-enum class ActivityMessage { CONSENT_SAVED, APPROVED, REJECTED }
+enum class ActivityMessage { CONSENT_SAVED, APPROVED, REJECTED, STARTED, COMPLETED, CANCELLED }
 
 @Immutable
 data class ActivityDetailUiState(
@@ -31,6 +31,7 @@ data class ActivityDetailUiState(
     val participants: List<ActivityParticipant> = emptyList(),
     val staffDataError: AppError? = null,
     val message: ActivityMessage? = null,
+    val actions: LifecycleActions = LifecycleActions(),
 ) {
     private val parentConsentActions: Boolean
         get() = isParent && childId != null && activity?.consentRequired == true && consentOpen

@@ -33,6 +33,7 @@ internal fun PayslipDto.toModel(): Payslip {
         pdfUrl = pdf?.fileUrl ?: pdfUrl ?: fileUrl,
         currency = currency ?: DEFAULT_CURRENCY,
         breakdown = breakdown.toModel(overtimeMinutes, overtimeMinor),
+        pdfStatus = pdf?.status,
     )
 }
 
@@ -51,6 +52,8 @@ private fun PayrollLineDto.toModel() = PayrollLine(
     balanceMinor = balanceMinor,
     status = status,
     breakdown = breakdown.toModel(overtimeMinutes, overtimeMinor),
+    employeeNo = employeeNo,
+    grossMinor = grossMinor ?: (basicMinor + allowancesMinor),
 )
 
 /** Totals fall back to the sum of the lines when the list endpoint leaves them out. */
@@ -67,6 +70,9 @@ internal fun PayrollRunDto.toModel(): PayrollRun {
         balanceMinor = totals?.balanceMinor ?: balanceMinor ?: lineModels.sumOf { it.balanceMinor },
         approvalId = approval?.takeIf { it.status == null || it.status == APPROVAL_PENDING }?.id ?: approvalId,
         lines = lineModels,
+        approvalStatus = approval?.status,
+        pendingOvertimeCount = pendingOvertimeCount ?: 0,
+        currency = currency ?: DEFAULT_CURRENCY,
     )
 }
 

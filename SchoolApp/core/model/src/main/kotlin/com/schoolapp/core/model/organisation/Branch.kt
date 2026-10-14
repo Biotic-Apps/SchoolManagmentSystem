@@ -13,4 +13,5 @@ data class Branch(
     val workingDays: List<Int>,
     val principalName: String?,
     val status: String?,
+    val principalId: String? = null,
 )

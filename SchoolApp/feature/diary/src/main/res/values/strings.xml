@@ -80,5 +80,9 @@
     <string name="diary_return_comment">What should be changed?</string>
     <string name="diary_return_comment_required">Enter a comment for the teacher.</string>
     <string name="diary_return_action">Return</string>
+    <string name="diary_tab_diary">Diary</string>
+    <string name="diary_tab_moderation">Moderation</string>
+    <string name="diary_moderation_empty">Nothing waiting for moderation</string>
+    <string name="diary_moderation_empty_message">Diary entries submitted by teachers appear here.</string>
     <string name="diary_returned_done">Entry returned to the teacher.</string>
 </resources>

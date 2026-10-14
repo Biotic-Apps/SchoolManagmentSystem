@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Staff student profile tabs (attendance, health, pickup, documents, enrollments, ID card) and bulk ID cards. -->
+<resources>
+    <string name="sd_tab_profile">Profile</string>
+    <string name="sd_tab_attendance">Attendance</string>
+    <string name="sd_tab_health">Health</string>
+    <string name="sd_tab_pickup">Pickup</string>
+    <string name="sd_tab_documents">Documents</string>
+    <string name="sd_tab_enrollments">Enrollment history</string>
+    <string name="sd_tab_id_card">ID card</string>
+
+    <string name="sd_save">Save</string>
+    <string name="sd_name">Name</string>
+    <string name="sd_relation">Relation</string>
+    <string name="sd_phone">Phone</string>
+    <string name="sd_call">Call %1$s</string>
+    <string name="sd_required">Required</string>
+    <string name="sd_too_long">Must be %1$d characters or fewer</string>
+    <string name="sd_phone_invalid">Enter a valid phone number</string>
+    <string name="sd_remove_named">Remove %1$s</string>
+
+    <!-- Attendance -->
+    <string name="sd_att_present">Present</string>
+    <string name="sd_att_absent">Absent</string>
+    <string name="sd_att_late">Late</string>
+    <string name="sd_att_leave">Leave</string>
+    <string name="sd_att_half_day">Half day</string>
+    <string name="sd_att_unmarked">Not marked</string>
+    <string name="sd_att_previous_month">Previous month</string>
+    <string name="sd_att_next_month">Next month</string>
+    <string name="sd_att_percent_label">Attendance this month</string>
+    <string name="sd_att_percent">%1$d%%</string>
+    <string name="sd_att_empty_title">No attendance this month</string>
+    <string name="sd_att_empty_message">Marks appear here once the class register is taken.</string>
+
+    <!-- Health -->
+    <string name="sd_health_edit">Edit health profile</string>
+    <string name="sd_health_saved">Health profile saved</string>
+    <string name="sd_health_updated">Updated %1$s</string>
+    <string name="sd_health_not_updated">Not updated yet</string>
+    <string name="sd_health_empty_title">No health profile yet</string>
+    <string name="sd_health_empty_message">Blood group, allergies, medicines and emergency contacts appear here once recorded.</string>
+    <string name="sd_health_general">General</string>
+    <string name="sd_health_blood_group">Blood group</string>
+    <string name="sd_health_not_known">Not known</string>
+    <string name="sd_health_none">None</string>
+    <string name="sd_health_doctor">Doctor</string>
+    <string name="sd_health_doctor_phone">Doctor\'s phone</string>
+    <string name="sd_health_allergies">Allergies</string>
+    <string name="sd_health_no_allergies">No known allergies.</string>
+    <string name="sd_health_add_allergy">Add allergy</string>
+    <string name="sd_health_allergy_n">Allergy %1$d</string>
+    <string name="sd_health_allergic_to">Allergic to</string>
+    <string name="sd_health_severity">Severity</string>
+    <string name="sd_health_reaction">Reaction (e.g. rash, swelling)</string>
+    <string name="sd_health_conditions">Conditions</string>
+    <string name="sd_health_no_conditions">No ongoing conditions.</string>
+    <string name="sd_health_add_condition">Add condition</string>
+    <string name="sd_health_condition_n">Condition %1$d</string>
+    <string name="sd_health_condition">Condition (e.g. asthma)</string>
+    <string name="sd_health_medications">Medications</string>
+    <string name="sd_health_no_medications">No regular medication.</string>
+    <string name="sd_health_add_medicine">Add medicine</string>
+    <string name="sd_health_medicine_n">Medicine %1$d</string>
+    <string name="sd_health_medicine">Medicine</string>
+    <string name="sd_health_dose">Dose (e.g. 5 ml)</string>
+    <string name="sd_health_schedule">Schedule (e.g. after lunch)</string>
+    <string name="sd_health_instructions">Instructions for staff</string>
+    <string name="sd_health_instructions_hint">What staff should do, e.g. inhaler in the school bag</string>
+    <string name="sd_health_no_instructions">No special instructions.</string>
+    <string name="sd_health_contacts">Emergency contacts</string>
+    <string name="sd_health_contacts_order">Listed in the order to call them.</string>
+    <string name="sd_health_no_contacts">No emergency contacts.</string>
+    <string name="sd_health_add_contact">Add contact</string>
+    <string name="sd_health_contact_n">Contact %1$d</string>
+    <string name="sd_health_fix_errors">Fix the highlighted fields to save.</string>
+    <string name="sd_health_incidents">Health incidents</string>
+    <string name="sd_health_no_incidents">No incidents recorded.</string>
+    <string name="sd_health_action_taken">Action taken: %1$s</string>
+
+    <!-- Pickup -->
+    <string name="sd_pickup_hint">Only verified persons can collect the student. Guardians on record can always collect.</string>
+    <string name="sd_pickup_empty_title">No authorized pickup persons</string>
+    <string name="sd_pickup_cnic">CNIC %1$s</string>
+    <string name="sd_pickup_status_pending">Pending verification</string>
+    <string name="sd_pickup_status_verified">Verified</string>
+    <string name="sd_pickup_status_revoked">Revoked</string>
+    <string name="sd_pickup_verify">Verify</string>
+    <string name="sd_pickup_revoke">Revoke</string>
+    <string name="sd_pickup_verify_title">Verify this pickup person?</string>
+    <string name="sd_pickup_verify_message">Check %1$s\'s CNIC and photo first. Once verified, the gate can release the student to them.</string>
+    <string name="sd_pickup_revoke_title">Revoke pickup authorization?</string>
+    <string name="sd_pickup_revoke_message">%1$s will be blocked at the gate.</string>
+    <string name="sd_pickup_verified">Pickup person verified</string>
+    <string name="sd_pickup_revoked">Pickup authorization revoked</string>
+
+    <!-- Documents -->
+    <string name="sd_docs_empty_title">No documents yet</string>
+    <string name="sd_docs_empty_message">Upload birth certificate, B-Form, CNIC or other records.</string>
+    <string name="sd_docs_upload">Upload</string>
+    <string name="sd_docs_upload_title">Upload document</string>
+    <string name="sd_docs_type">Document type</string>
+    <string name="sd_docs_type_required">Choose a document type</string>
+    <string name="sd_docs_file">File</string>
+    <string name="sd_docs_pick_file">Choose image or PDF</string>
+    <string name="sd_docs_replace_file">Replace file</string>
+    <string name="sd_docs_uploading_file">Uploading file…</string>
+    <string name="sd_docs_file_ready">Uploaded: %1$s</string>
+    <string name="sd_docs_file_required">Choose a file to upload</string>
+    <string name="sd_docs_file_wait">Wait for the file to finish uploading</string>
+    <string name="sd_docs_file_type">Only images or PDF files can be uploaded</string>
+    <string name="sd_docs_note">Note (optional)</string>
+    <string name="sd_docs_note_too_long">Note must be 255 characters or fewer</string>
+    <string name="sd_docs_uploaded">Document uploaded</string>
+    <string name="sd_docs_verified">Document verified</string>
+    <string name="sd_docs_rejected">Document rejected</string>
+    <string name="sd_docs_verify">Verify</string>
+    <string name="sd_docs_reject">Reject</string>
+    <string name="sd_docs_verify_title">Verify document?</string>
+    <string name="sd_docs_reject_title">Reject document?</string>
+    <string name="sd_docs_verify_note">Note (optional)</string>
+    <string name="sd_docs_reject_reason">Reason (the uploader sees it)</string>
+    <string name="sd_docs_reason_length">Reason must be 3 to 500 characters</string>
+    <string name="sd_docs_verify_note_too_long">Note must be 500 characters or fewer</string>
+    <string name="sd_docs_checked_by">Checked by %1$s · %2$s</string>
+    <string name="sd_docs_open">Open file</string>
+    <string name="sd_docs_status_uploaded">Pending</string>
+    <string name="sd_docs_status_verified">Verified</string>
+    <string name="sd_docs_status_rejected">Rejected</string>
+    <string name="sd_docs_cancel">Cancel</string>
+
+    <!-- Enrollment history -->
+    <string name="sd_enroll_empty">No enrollment history</string>
+    <string name="sd_enroll_session_unknown">Session</string>
+    <string name="sd_enroll_dates">Dates</string>
+    <string name="sd_enroll_present">present</string>
+    <string name="sd_enroll_reason">Reason: %1$s</string>
+
+    <!-- ID card -->
+    <string name="sd_idcard_title">ID card</string>
+    <string name="sd_idcard_version">Version</string>
+    <string name="sd_idcard_generated">Generated</string>
+    <string name="sd_idcard_status_pending">Rendering</string>
+    <string name="sd_idcard_status_ready">Ready</string>
+    <string name="sd_idcard_status_failed">Failed</string>
+    <string name="sd_idcard_status_unknown">Unknown</string>
+    <string name="sd_idcard_rendering">Rendering… this takes a few seconds.</string>
+    <string name="sd_idcard_failed">The ID card could not be rendered.</string>
+    <string name="sd_idcard_download">Download ID card</string>
+    <string name="sd_idcard_generate">Generate ID card</string>
+    <string name="sd_idcard_reprint">Reprint ID card</string>
+    <string name="sd_idcard_try_again">Try again</string>
+    <string name="sd_idcard_empty_can_generate">No ID card yet. Generate a printable card for this student.</string>
+    <string name="sd_idcard_empty_view_only">The school has not issued an ID card yet.</string>
+    <string name="sd_idcard_queued">ID card is being generated</string>
+    <string name="sd_idcard_ready">ID card is ready</string>
+
+    <!-- Bulk ID cards -->
+    <string name="sd_print_cards">Print ID cards</string>
+    <string name="sd_print_hint">A4 sheets with 10 cards each and cut marks, for the current session.</string>
+    <string name="sd_print_target">Print for</string>
+    <string name="sd_print_whole_branch">Whole branch (all classes)</string>
+    <string name="sd_print_class_all">%1$s · all sections</string>
+    <string name="sd_print_working">Preparing the PDF… this can take up to a minute.</string>
+    <string name="sd_print_submit">Print</string>
+    <plurals name="sd_print_students">
+        <item quantity="one">%1$d student</item>
+        <item quantity="other">%1$d students</item>
+    </plurals>
+    <plurals name="sd_print_ready">
+        <item quantity="one">ID card sheet ready (%1$d card)</item>
+        <item quantity="other">ID card sheet ready (%1$d cards)</item>
+    </plurals>
+</resources>

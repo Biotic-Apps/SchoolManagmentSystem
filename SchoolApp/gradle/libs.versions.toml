@@ -30,6 +30,7 @@ espressoCore = "3.7.0"
 turbine = "1.2.1"
 desugarJdkLibs = "2.1.5"
 lottie = "6.6.2"
+gmsCodeScanner = "16.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -85,6 +86,7 @@ coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp"
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarJdkLibs" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+gms-code-scanner = { group = "com.google.android.gms", name = "play-services-code-scanner", version.ref = "gmsCodeScanner" }
 javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }

@@ -12,6 +12,7 @@ data class DocumentDto(
     val status: String? = null,
     val note: String? = null,
     val verifiedAt: String? = null,
+    val verifiedBy: com.schoolapp.core.network.dto.common.IdNameDto? = null,
 )
 
 @Serializable

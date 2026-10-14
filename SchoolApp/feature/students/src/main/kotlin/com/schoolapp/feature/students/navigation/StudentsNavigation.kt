@@ -44,4 +44,14 @@ fun NavGraphBuilder.studentsDestinations(navController: NavHostController) {
             },
         )
     }
+    composable<GuardianDetailDestination> {
+        com.schoolapp.feature.students.guardiandetail.GuardianDetailRoute(
+            onBack = navController::popBackStack,
+            onOpenStudent = { navController.navigate(StudentDetailDestination(it)) },
+        )
+    }
 }
+
+/** A guardian's page: details, parent sign-in, linked children. */
+@Serializable
+data class GuardianDetailDestination(val id: String)

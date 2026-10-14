@@ -5,9 +5,24 @@ sealed interface LeaveInput {
     val to: String
     val reason: String
 
+    /** Optional supporting document (medical note...) uploaded via `POST /files` first. */
+    val attachmentFileId: String?
+
     /** Parent for a linked child. */
-    data class ForStudent(val studentId: String, override val from: String, override val to: String, override val reason: String) : LeaveInput
+    data class ForStudent(
+        val studentId: String,
+        override val from: String,
+        override val to: String,
+        override val reason: String,
+        override val attachmentFileId: String? = null,
+    ) : LeaveInput
 
     /** Staff for themselves. */
-    data class ForSelf(val type: LeaveType, override val from: String, override val to: String, override val reason: String) : LeaveInput
+    data class ForSelf(
+        val type: LeaveType,
+        override val from: String,
+        override val to: String,
+        override val reason: String,
+        override val attachmentFileId: String? = null,
+    ) : LeaveInput
 }

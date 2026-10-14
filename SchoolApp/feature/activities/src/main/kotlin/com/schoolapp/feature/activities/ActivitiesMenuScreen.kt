@@ -13,7 +13,7 @@ import com.schoolapp.feature.activities.navigation.ProposeActivityDestination
 fun ActivitiesMenuScreen(role: RoleRef, onOpen: (Any) -> Unit, modifier: Modifier = Modifier) {
     ActivitiesListRoute(
         onOpenActivity = { onOpen(ActivityDetailDestination(it)) },
-        onPropose = { onOpen(ProposeActivityDestination) },
+        onPropose = { onOpen(ProposeActivityDestination()) },
         modifier = modifier,
         viewModel = hiltViewModel(key = "activities_${role.key}"),
     )

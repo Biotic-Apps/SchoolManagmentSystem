@@ -5,7 +5,7 @@ import com.schoolapp.core.model.staff.StaffDetail
 import com.schoolapp.core.model.staff.StaffSummary
 import com.schoolapp.core.model.staff.StaffWorkload
 
-/** Read-only staff directory for supervisors; editing stays on the web panel. */
+/** Staff directory and profiles; writes live in StaffAdminRepository and StaffAssignmentsRepository. */
 interface StaffRepository {
     suspend fun staff(search: String?): AppResult<List<StaffSummary>>
     suspend fun staffMember(id: String): AppResult<StaffDetail>

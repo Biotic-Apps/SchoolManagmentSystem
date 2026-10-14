@@ -1,0 +1,103 @@
+<resources>
+    <!-- Tabs of the staff exams menu -->
+    <string name="exams_tab_exams">Exams</string>
+    <string name="exams_tab_grading">Grading</string>
+    <string name="exams_tab_templates">Report cards</string>
+
+    <!-- Exam types and statuses -->
+    <string name="exams_type_term">Term exam</string>
+    <string name="exams_type_midterm">Mid-term</string>
+    <string name="exams_type_unit_test">Unit test</string>
+    <string name="exams_type_final">Final exam</string>
+    <string name="exams_exam_status_draft">Draft</string>
+    <string name="exams_exam_status_scheduled">Scheduled</string>
+    <string name="exams_exam_status_marks_open">Marks open</string>
+    <string name="exams_exam_status_marks_closed">Marks closed</string>
+    <string name="exams_exam_status_results_approved">Results approved</string>
+    <string name="exams_exam_status_published">Published</string>
+
+    <!-- Exams list -->
+    <string name="exams_list_all">All</string>
+    <string name="exams_list_empty">No exams yet</string>
+    <string name="exams_list_empty_message">Create an exam, add its date sheet, then open marks entry for teachers.</string>
+    <string name="exams_list_filtered_empty">No exams with this status</string>
+    <string name="exams_new_exam">New exam</string>
+    <string name="exams_classes_count">%1$d classes</string>
+
+    <!-- Exam form -->
+    <string name="exams_form_new_title">New exam</string>
+    <string name="exams_form_edit_title">Edit exam</string>
+    <string name="exams_form_name">Exam name</string>
+    <string name="exams_form_name_required">Enter the exam name</string>
+    <string name="exams_form_type">Type</string>
+    <string name="exams_form_session">Academic session</string>
+    <string name="exams_form_session_required">Choose the session</string>
+    <string name="exams_form_term">Term (optional)</string>
+    <string name="exams_form_no_term">No term</string>
+    <string name="exams_form_scheme">Grading scheme</string>
+    <string name="exams_form_scheme_required">Choose a grading scheme</string>
+    <string name="exams_form_no_schemes">This session has no grading scheme yet. Add one on the Grading tab first.</string>
+    <string name="exams_form_weight">Weight in final result % (optional)</string>
+    <string name="exams_form_weight_invalid">Enter a whole number from 0 to 100</string>
+    <string name="exams_form_classes">Classes</string>
+    <string name="exams_form_classes_required">Choose at least one class</string>
+    <string name="exams_form_select_all">Select all</string>
+    <string name="exams_form_clear_all">Clear</string>
+    <string name="exams_form_create">Create exam</string>
+    <string name="exams_form_save">Save changes</string>
+    <string name="exams_saved">Exam saved</string>
+
+    <!-- Exam detail -->
+    <string name="exams_detail_tab_overview">Overview</string>
+    <string name="exams_detail_tab_schedule">Date sheet</string>
+    <string name="exams_detail_tab_sheets">Mark sheets</string>
+    <string name="exams_detail_tab_skills">Behaviour &amp; skills</string>
+    <string name="exams_detail_tab_print">Print</string>
+    <string name="exams_edit_exam">Edit exam</string>
+    <string name="exams_info_type">Type</string>
+    <string name="exams_info_term">Term</string>
+    <string name="exams_info_scheme">Grading scheme</string>
+    <string name="exams_info_weight">Weight</string>
+    <string name="exams_info_weight_value">%1$d%%</string>
+    <string name="exams_info_classes">Classes</string>
+    <string name="exams_info_papers">Papers</string>
+    <string name="exams_info_computed">Results computed</string>
+    <string name="exams_info_published">Published on</string>
+
+    <!-- Workflow -->
+    <string name="exams_next_step">Next step</string>
+    <string name="exams_hint_draft">Add the papers on the Date sheet tab and save it to schedule this exam.</string>
+    <string name="exams_hint_scheduled">Open marks entry when teachers can start entering marks.</string>
+    <string name="exams_hint_marks_open">Close marks entry once all mark sheets are submitted and accepted.</string>
+    <string name="exams_hint_marks_closed">Compute results, check them, then send them for the principal\'s approval.</string>
+    <string name="exams_hint_results_approved">Publish to share results and report cards with parents.</string>
+    <string name="exams_hint_published">Results are published. Parents can see them and download report cards.</string>
+    <string name="exams_open_marks">Open marks entry</string>
+    <string name="exams_close_marks">Close marks entry</string>
+    <string name="exams_close_marks_title">Close marks entry?</string>
+    <string name="exams_close_marks_message">Teachers can no longer enter or change marks for this exam.</string>
+    <string name="exams_compute">Compute results</string>
+    <string name="exams_computing">Computing results…</string>
+    <string name="exams_computed">Results computed. Check them on the Class results tab.</string>
+    <string name="exams_compute_running">Results are still being computed. Pull to refresh in a minute.</string>
+    <string name="exams_send_for_approval">Approve results</string>
+    <string name="exams_sent_for_approval">Results sent for the principal\'s approval.</string>
+    <string name="exams_awaiting_approval">Results are waiting for the principal\'s approval in Approvals.</string>
+    <string name="exams_unaccepted_title">These mark sheets are not accepted yet</string>
+    <string name="exams_publish">Publish results</string>
+    <string name="exams_publish_title">Publish results?</string>
+    <string name="exams_publish_message">Parents are notified and report cards are generated for every student. Published results can\'t be unpublished.</string>
+    <string name="exams_published">Results published to parents.</string>
+    <string name="exams_marks_opened">Marks entry opened</string>
+    <string name="exams_marks_closed">Marks entry closed</string>
+    <string name="exams_cancel">Cancel</string>
+
+    <!-- Mark sheets tab -->
+    <string name="exams_sheets_empty">No mark sheets yet</string>
+    <string name="exams_sheets_empty_message">Mark sheets appear once the date sheet is saved and marks entry is opened.</string>
+
+    <!-- Skills tab -->
+    <string name="exams_skills_sections">Rate behaviour &amp; skills by section</string>
+    <string name="exams_skills_no_sections">No sections found for this exam\'s classes.</string>
+    <string name="exams_skills_open">Rate</string>
+</resources>

@@ -2,7 +2,6 @@ package com.schoolapp.feature.timetable.substitutions
 
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.organisation.OrganisationRepository
-import com.schoolapp.core.data.organisation.ScopedSections
 import com.schoolapp.core.data.staff.StaffRepository
 import com.schoolapp.core.data.timetable.BellScheduleRepository
 import com.schoolapp.core.data.timetable.TimetableRepository
@@ -10,6 +9,7 @@ import com.schoolapp.core.designsystem.component.SwitcherOption
 import com.schoolapp.core.model.SessionContext
 import com.schoolapp.core.model.timetable.BellSchedule
 import com.schoolapp.core.model.timetable.TimetableOverride
+import com.schoolapp.feature.timetable.scope.TimetableBranchScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
@@ -25,23 +25,17 @@ internal data class SubstitutionLookups(
 internal class SubstitutionsLoader @Inject constructor(
     private val repository: TimetableRepository,
     private val organisation: OrganisationRepository,
-    private val scopedSections: ScopedSections,
+    private val scope: TimetableBranchScope,
     private val bellSchedules: BellScheduleRepository,
     private val staff: StaffRepository,
 ) {
-    /** The active assignment's branch; global roles (super admin) fall back to the first scoped branch. */
-    suspend fun branchId(session: SessionContext): AppResult<String?> {
-        session.activeBranchId?.let { return AppResult.Success(it) }
-        return when (val branches = organisation.branches()) {
-            is AppResult.Failure -> branches
-            is AppResult.Success -> AppResult.Success(branches.data.firstOrNull()?.id)
-        }
-    }
+    /** The active assignment's branch; global roles (super admin) use the branch picked in the timetable's branch bar. */
+    suspend fun branchId(session: SessionContext): AppResult<String?> = scope.branchId(session)
 
     suspend fun day(branchId: String, date: String): AppResult<List<TimetableOverride>> = repository.overrides(branchId, date)
 
     suspend fun lookups(branchId: String): SubstitutionLookups = coroutineScope {
-        val sections = async { (scopedSections.load() as? AppResult.Success)?.data.orEmpty() }
+        val sections = async { branchSections(branchId) }
         val bell = async { (bellSchedules.schedule(branchId) as? AppResult.Success)?.data }
         val teachers = async { (staff.staff(search = null) as? AppResult.Success)?.data.orEmpty() }
         SubstitutionLookups(
@@ -54,6 +48,12 @@ internal class SubstitutionsLoader @Inject constructor(
                 .sortedBy { it.name }
                 .map { SwitcherOption(it.id, it.name) },
         )
+    }
+
+    /** Sections of the branch's active session (the picked branch, not only the role's own). */
+    private suspend fun branchSections(branchId: String): List<com.schoolapp.core.model.organisation.Section> {
+        val session = (organisation.sessions(branchId) as? AppResult.Success)?.data?.firstOrNull { it.isActive }
+        return (organisation.sections(branchId, session?.id) as? AppResult.Success)?.data.orEmpty()
     }
 
     private fun String?.isActive(): Boolean = this == null || equals(ACTIVE, ignoreCase = true)

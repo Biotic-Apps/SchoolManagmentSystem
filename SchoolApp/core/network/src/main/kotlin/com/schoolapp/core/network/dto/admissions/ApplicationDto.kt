@@ -7,14 +7,20 @@ import kotlinx.serialization.Serializable
 data class ApplicationDto(
     val id: String,
     val applicationNo: String? = null,
+    val branchId: String? = null,
+    val sessionId: String? = null,
+    val classId: String? = null,
     val status: String? = null,
     val className: String? = null,
     val child: ApplicationChildDto? = null,
     val guardians: List<ApplicantGuardianDto> = emptyList(),
+    val medical: MedicalDto? = null,
+    val notes: String? = null,
     val waitlistPosition: Int? = null,
     val test: AdmissionTestDto? = null,
     val documents: List<DocumentDto> = emptyList(),
     val decisionReason: String? = null,
+    val studentId: String? = null,
     val createdAt: String? = null,
 )
 
@@ -24,7 +30,9 @@ data class ApplicationChildDto(
     val lastName: String? = null,
     val dob: String? = null,
     val gender: String? = null,
+    val bForm: String? = null,
     val previousSchool: String? = null,
+    val address: String? = null,
 )
 
 @Serializable
@@ -32,7 +40,19 @@ data class ApplicantGuardianDto(
     val name: String,
     val relation: String? = null,
     val phone: String? = null,
+    val cnic: String? = null,
+    val email: String? = null,
+    val occupation: String? = null,
+    val address: String? = null,
     val isPrimary: Boolean = false,
+)
+
+/** Read and write shape of the optional medical block (`allergies`, `conditions`, `notes`). */
+@Serializable
+data class MedicalDto(
+    val allergies: String? = null,
+    val conditions: String? = null,
+    val notes: String? = null,
 )
 
 @Serializable

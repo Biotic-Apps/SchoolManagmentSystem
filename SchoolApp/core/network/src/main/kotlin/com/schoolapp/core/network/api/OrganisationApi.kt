@@ -13,7 +13,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-/** Read-only organisation endpoints used on mobile. */
+/** Organisation reads; editing lives in [OrganisationEditApi]. */
 interface OrganisationApi {
     @GET("branches")
     suspend fun branches(

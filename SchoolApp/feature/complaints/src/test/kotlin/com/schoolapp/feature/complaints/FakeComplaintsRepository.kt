@@ -1,5 +1,6 @@
 package com.schoolapp.feature.complaints
 
+import com.schoolapp.core.model.settings.PagedList
 import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.complaints.ComplaintsRepository
@@ -34,6 +35,17 @@ class FakeComplaintsRepository : ComplaintsRepository {
     var current: Complaint = complaint()
 
     override suspend fun complaints(box: ComplaintBox, status: ComplaintStatus?) = AppResult.Success(listOf(complaint()))
+    val pageRequests = mutableListOf<Triple<ComplaintBox, ComplaintStatus?, ComplaintCategory?>>()
+    override suspend fun complaintsPage(
+        box: ComplaintBox,
+        status: ComplaintStatus?,
+        category: ComplaintCategory?,
+        page: Int,
+        pageSize: Int,
+    ): AppResult<PagedList<Complaint>> {
+        pageRequests += Triple(box, status, category)
+        return AppResult.Success(PagedList(listOf(complaint()), page, pageSize, 1))
+    }
     override suspend fun complaint(id: String) = AppResult.Success(current)
     override suspend fun file(input: ComplaintInput): AppResult<Complaint> {
         filed += input

@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.schoolapp.feature.organisation.branches.edit.BranchEditorHost
 import com.schoolapp.feature.organisation.sessions.SessionsCalendarRoute
 
 @Composable
@@ -14,6 +15,7 @@ fun BranchesRoute(
     viewModel: BranchesViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val editorState by viewModel.editor.state.collectAsStateWithLifecycle()
     BranchesScreen(
         state = state,
         onRetry = viewModel::load,
@@ -21,5 +23,8 @@ fun BranchesRoute(
         onOpenBranch = onOpenBranch,
         modifier = modifier,
         calendarContent = { SessionsCalendarRoute() },
+        editorState = editorState,
+        editor = viewModel.editor,
     )
+    BranchEditorHost(editorState, viewModel.editor)
 }

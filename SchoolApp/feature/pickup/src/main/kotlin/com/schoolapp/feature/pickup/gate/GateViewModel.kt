@@ -10,6 +10,7 @@ import com.schoolapp.core.data.pickup.PickupRepository
 import com.schoolapp.core.model.pickup.EarlyLeave
 import com.schoolapp.feature.pickup.components.StudentSearch
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/** Branch early leaves and departures for today; refreshed whenever the screen resumes (after recording). */
+/** Branch early leaves and departures for the picked day (today by default); refreshed whenever the screen resumes (after recording). */
 @HiltViewModel
 class GateViewModel @Inject constructor(
     private val pickupRepository: PickupRepository,
@@ -31,6 +32,8 @@ class GateViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(GateUiState())
     val uiState: StateFlow<GateUiState> = _uiState.asStateFlow()
 
+    private var loadJob: Job? = null
+
     private val search = StudentSearch(viewModelScope, studentsRepository) { transform ->
         _uiState.update { it.copy(search = transform(it.search)) }
     }
@@ -39,13 +42,15 @@ class GateViewModel @Inject constructor(
         val today = clock.now().toLocalDate().toString()
         _uiState.update {
             val hasData = it.earlyLeaves.isNotEmpty() || it.departures.isNotEmpty()
-            it.copy(isLoading = !hasData, isRefreshing = hasData, error = null, today = today)
+            it.copy(isLoading = !hasData, isRefreshing = hasData, error = null, today = today, date = it.date.ifBlank { today })
         }
-        viewModelScope.launch {
+        val date = _uiState.value.date
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             val session = authRepository.session.first()
             val branchId = session?.activeBranchId
-            val leaves = async { pickupRepository.earlyLeaves(branchId = branchId, date = today) }
-            val departures = async { pickupRepository.departures(branchId = branchId, date = today) }
+            val leaves = async { pickupRepository.earlyLeaves(branchId = branchId, date = date) }
+            val departures = async { pickupRepository.departures(branchId = branchId, date = date) }
             val leavesResult = leaves.await()
             val departuresResult = departures.await()
             _uiState.update { state ->
@@ -60,6 +65,12 @@ class GateViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun onDateChange(date: String) {
+        if (date == _uiState.value.date) return
+        _uiState.update { it.copy(date = date, earlyLeaves = emptyList(), departures = emptyList(), actionError = null) }
+        refresh()
     }
 
     fun onQueryChange(query: String) = search.onQueryChange(query)

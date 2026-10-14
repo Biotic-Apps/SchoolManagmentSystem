@@ -11,20 +11,22 @@ import com.schoolapp.feature.exams.results.ParentResultsRoute
 import com.schoolapp.feature.exams.sheets.MySheetsRoute
 
 /**
- * Menu `exams`: teachers enter marks; principal/coordinator review completeness and accept/return sheets.
- * Staff with `exams.view` also get a "Class results" tab.
+ * Menu `exams`: teachers enter marks; principal/coordinator create and schedule exams, run the results workflow
+ * (open/close marks, compute, approve, publish), print report cards, review completeness and accept/return sheets.
+ * [onOpenApprovals] is kept for the shell's signature; approving results happens in the exam itself.
  */
 @Composable
+@Suppress("UnusedParameter")
 fun ExamsMenuScreen(role: RoleRef, onOpen: (Any) -> Unit, onOpenApprovals: (() -> Unit)?, modifier: Modifier = Modifier) {
     val key = "exams_${role.key}"
     when (role) {
         RoleKey.PARENT -> ParentResultsRoute(modifier, hiltViewModel(key = key))
         RoleKey.TEACHER, RoleKey.HELPER ->
-            StaffExamsTabs(key, stringResource(R.string.exams_tab_mark_sheets), modifier) { tabModifier ->
+            StaffExamsTabs(key, stringResource(R.string.exams_tab_mark_sheets), onOpen, modifier, showExamsList = false) { tabModifier ->
                 MySheetsRoute(onOpen, tabModifier, hiltViewModel(key = key))
             }
-        else -> StaffExamsTabs(key, stringResource(R.string.exams_tab_completeness), modifier) { tabModifier ->
-            CompletenessRoute(onOpen, onOpenApprovals, tabModifier, hiltViewModel(key = key))
+        else -> StaffExamsTabs(key, stringResource(R.string.exams_tab_completeness), onOpen, modifier) { tabModifier ->
+            CompletenessRoute(onOpen, tabModifier, hiltViewModel(key = key))
         }
     }
 }

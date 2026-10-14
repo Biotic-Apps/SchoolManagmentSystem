@@ -31,6 +31,8 @@ interface HealthApi {
         @Query("branchId") branchId: String? = null,
         @Query("from") from: String? = null,
         @Query("to") to: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("pageSize") pageSize: Int? = null,
     ): ApiEnvelope<List<IncidentDto>>
 
     @POST("health/incidents")

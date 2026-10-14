@@ -26,4 +26,6 @@ data class StudentDetailDto(
     val documents: List<DocumentDto> = emptyList(),
     val firstName: String? = null,
     val lastName: String? = null,
+    /** Only on `POST /students`: each guardian's parent sign-in (temporary passwords shown once). */
+    val parentLogins: List<com.schoolapp.core.network.dto.admissions.ParentLoginDto> = emptyList(),
 )

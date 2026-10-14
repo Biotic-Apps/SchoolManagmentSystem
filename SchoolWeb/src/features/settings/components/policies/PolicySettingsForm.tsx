@@ -28,7 +28,7 @@ export function PolicySettingsForm({ schoolId, settings, canEdit }: PolicySettin
             <FormAlert message={formError} />
             <fieldset disabled={!canEdit} className="flex min-w-0 flex-col gap-6">
               <SecurityPolicySection />
-              <DefaultsPolicySection />
+              <DefaultsPolicySection schoolId={schoolId} />
             </fieldset>
             {canEdit && <SettingsFormActions dirty={dirty} submitting={submitting} onDiscard={discard} />}
           </CardContent>

@@ -13,6 +13,10 @@ enum class TimetableStatus {
     NOT_CREATED,
     /** Section pickers with no section to pick. */
     NO_SECTIONS,
+    /** Teacher week: no teacher picked yet. */
+    CHOOSE_TEACHER,
+    /** Teacher week: the picked teacher has no lessons or substitutions that week. */
+    TEACHER_FREE,
 }
 
 /** A loaded week plus how to present it. */

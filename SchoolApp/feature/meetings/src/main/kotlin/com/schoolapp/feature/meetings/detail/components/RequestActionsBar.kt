@@ -17,11 +17,12 @@ import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.feature.meetings.R
 import com.schoolapp.feature.meetings.detail.MeetingAction
 
-/** Bottom bar for a parent's REQUESTED meeting: Accept the suggested time (primary) or Decline. */
+/** Bottom bar for a parent's REQUESTED meeting: Accept the suggested time (primary), accept at another time, or Decline. */
 @Composable
 internal fun RequestActionsBar(
     busy: MeetingAction?,
     onAccept: () -> Unit,
+    onAcceptChange: () -> Unit,
     onDecline: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -35,6 +36,12 @@ internal fun RequestActionsBar(
                     onClick = onAccept,
                     enabled = enabled,
                     loading = busy == MeetingAction.ACCEPT,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                SecondaryButton(
+                    text = stringResource(R.string.meetings_accept_change),
+                    onClick = onAcceptChange,
+                    enabled = enabled,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 SecondaryButton(

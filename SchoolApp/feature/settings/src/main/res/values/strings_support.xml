@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_support_health">System health</string>
+    <string name="settings_support_health_hint">Database, background jobs, file storage and backups at a glance.</string>
+    <string name="settings_support_refresh">Refresh</string>
+    <string name="settings_support_database">Database</string>
+    <string name="settings_support_queue">Job queue</string>
+    <string name="settings_support_queue_hint">%1$d waiting · %2$d failed</string>
+    <string name="settings_support_storage">File storage</string>
+    <string name="settings_support_last_backup">Last backup</string>
+    <string name="settings_support_last_restore">Last verified restore</string>
+    <string name="settings_support_version">Version</string>
+    <string name="settings_support_ok">OK</string>
+    <string name="settings_support_down">Down</string>
+    <string name="settings_support_unreachable">Unreachable</string>
+
+    <string name="settings_support_test_title">Send test message</string>
+    <string name="settings_support_test_hint">Checks the email and SMS provider settings by sending one message right away.</string>
+    <string name="settings_support_test_email">Email address</string>
+    <string name="settings_support_test_phone">Mobile number</string>
+    <string name="settings_support_test_required">Enter where to send the test</string>
+    <string name="settings_support_test_bad_email">Enter a valid email address</string>
+    <string name="settings_support_test_bad_phone">Enter a mobile number like 0300 1234567</string>
+    <string name="settings_support_test_sent">Sent. Check the inbox or phone to confirm it arrived.</string>
+    <string name="settings_support_test_not_sent">Not sent: %1$s</string>
+    <string name="settings_support_test_rejected">the provider rejected the message.</string>
+    <string name="settings_support_test_send">Send test</string>
+
+    <string name="settings_support_channel_email">Email</string>
+    <string name="settings_support_channel_sms">SMS</string>
+    <string name="settings_support_channel_push">Push</string>
+    <string name="settings_support_all_channels">All channels</string>
+    <string name="settings_support_from">From</string>
+    <string name="settings_support_to">To</string>
+    <string name="settings_support_any_date">Any date</string>
+    <string name="settings_support_clear_date">Clear %1$s</string>
+
+    <string name="settings_support_failed_title">Failed notifications</string>
+    <string name="settings_support_failed_hint">Emails, SMS and push messages that could not be delivered.</string>
+    <string name="settings_support_resend_all">Resend all</string>
+    <string name="settings_support_resend">Resend</string>
+    <string name="settings_support_resent">Notification queued to resend</string>
+    <string name="settings_support_resent_all">Failed notifications queued to resend</string>
+    <string name="settings_support_failed_empty">No failed notifications in this period</string>
+    <string name="settings_support_failed_empty_message">Every message in the selected range was delivered.</string>
+    <string name="settings_support_resend_all_title">Resend failed notifications?</string>
+    <plurals name="settings_support_resend_all_message">
+        <item quantity="one">%1$d failed notification matching the current filters will be queued to send again.</item>
+        <item quantity="other">%1$d failed notifications matching the current filters will be queued to send again.</item>
+    </plurals>
+    <string name="settings_support_resend_count">Resend %1$d</string>
+    <string name="settings_support_when">When</string>
+    <string name="settings_support_channel">Channel</string>
+    <string name="settings_support_category">Category</string>
+    <string name="settings_support_attempts">Attempts</string>
+    <string name="settings_support_last_error">Last error: %1$s</string>
+
+    <string name="settings_support_jobs_title">Background jobs</string>
+    <string name="settings_support_jobs_hint">Invoices, reports, PDFs, imports and other work that runs in the background. Select a job to see its full error.</string>
+    <string name="settings_support_queue_filter">Queue</string>
+    <string name="settings_support_all_queues">All queues</string>
+    <string name="settings_support_all_statuses">All statuses</string>
+    <string name="settings_support_status_failed">Failed</string>
+    <string name="settings_support_status_running">Running</string>
+    <string name="settings_support_status_done">Done</string>
+    <string name="settings_support_status_queued">Queued</string>
+    <string name="settings_support_reset_filters">Reset filters</string>
+    <string name="settings_support_jobs_empty">No jobs found</string>
+    <string name="settings_support_jobs_empty_message">No background jobs match these filters.</string>
+    <string name="settings_support_job_retried">Job queued to retry</string>
+    <string name="settings_support_started">Started</string>
+    <string name="settings_support_finished">Finished</string>
+    <string name="settings_support_retry">Retry</string>
+    <string name="settings_support_retry_job">Retry job</string>
+    <string name="settings_support_queue_name">%1$s queue</string>
+    <string name="settings_support_job_id">Job ID</string>
+    <string name="settings_support_error">Error</string>
+    <string name="settings_support_no_error">No error recorded.</string>
+</resources>

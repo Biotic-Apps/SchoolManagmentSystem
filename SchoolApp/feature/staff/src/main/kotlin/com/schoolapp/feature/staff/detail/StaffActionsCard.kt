@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Class
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.ManageAccounts
+import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -20,12 +21,14 @@ import com.schoolapp.feature.staff.R
 internal fun StaffActionsRow(
     onEdit: (() -> Unit)?,
     onStatus: (() -> Unit)?,
+    onProbation: (() -> Unit)?,
     onAssign: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     FlowRow(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         onEdit?.let { SecondaryButton(stringResource(R.string.staff_action_edit), it, leadingIcon = Icons.Outlined.Edit) }
         onStatus?.let { SecondaryButton(stringResource(R.string.staff_action_status), it, leadingIcon = Icons.Outlined.ManageAccounts) }
+        onProbation?.let { SecondaryButton(stringResource(R.string.staff_action_probation), it, leadingIcon = Icons.Outlined.VerifiedUser) }
         onAssign?.let { SecondaryButton(stringResource(R.string.staff_action_assign), it, leadingIcon = Icons.Outlined.Class) }
     }
 }

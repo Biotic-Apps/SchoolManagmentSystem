@@ -32,6 +32,7 @@ internal fun MeetingDetailScreen(
     onCancel: () -> Unit,
     onNoShow: () -> Unit,
     onAccept: () -> Unit,
+    onAcceptChange: () -> Unit,
     onDecline: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -40,7 +41,7 @@ internal fun MeetingDetailScreen(
         topBar = { AppTopBar(title = stringResource(R.string.meetings_detail_title), navigationIcon = { BackButton(onBack) }) },
         bottomBar = {
             if (state.canAct) MeetingActionsBar(state.busy, onComplete = onComplete, onCancel = onCancel, onNoShow = onNoShow)
-            if (state.canAnswer) RequestActionsBar(state.busy, onAccept = onAccept, onDecline = onDecline)
+            if (state.canAnswer) RequestActionsBar(state.busy, onAccept = onAccept, onAcceptChange = onAcceptChange, onDecline = onDecline)
         },
     ) { padding ->
         val body = Modifier.padding(padding)
@@ -51,7 +52,7 @@ internal fun MeetingDetailScreen(
             meeting == null -> EmptyState(stringResource(R.string.meetings_not_found), body, icon = Icons.Outlined.EventBusy)
             else -> ScreenColumn(body) {
                 state.done?.let { item(key = "done") { InlineMessage(stringResource(it.doneRes()), StatusTone.Success) } }
-                val sheetOpen = state.completeForm != null || state.cancelOpen
+                val sheetOpen = state.completeForm != null || state.cancelOpen || state.acceptDraft != null
                 if (!sheetOpen) state.actionError?.let { item(key = "error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
                 if (state.canAnswer && state.done == null) {
                     item(key = "waiting") { InlineMessage(stringResource(R.string.meetings_request_waiting), StatusTone.Warning) }

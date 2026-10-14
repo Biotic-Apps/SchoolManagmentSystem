@@ -9,6 +9,7 @@ import com.schoolapp.core.data.activities.ActivitiesRepository
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.designsystem.component.ApprovalAction
 import com.schoolapp.core.model.RoleKey
+import com.schoolapp.core.model.SessionContext
 import com.schoolapp.core.model.activity.Activity
 import com.schoolapp.core.model.activity.ActivityStatus
 import com.schoolapp.core.model.activity.ConsentStatus
@@ -38,20 +39,36 @@ class ActivityDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ActivityDetailUiState())
     val uiState: StateFlow<ActivityDetailUiState> = _uiState.asStateFlow()
 
+    private var session: SessionContext? = null
+    private var loadedOnce = false
+
+    /** Start / complete / cancel. */
+    internal val status = ActivityStatusController(activityId, repository, viewModelScope, _uiState) { activity ->
+        _uiState.update { it.withActivity(activity) }
+        viewModelScope.launch { loadStaffData(activity) }
+    }
+
     init {
         load()
+    }
+
+    /** Back from edit / participants: refresh quietly. */
+    fun onResume() {
+        if (loadedOnce) load()
     }
 
     fun load() {
         _uiState.update { it.copy(isLoading = it.activity == null, error = null) }
         viewModelScope.launch {
             val session = authRepository.session.filterNotNull().first()
+            this@ActivityDetailViewModel.session = session
             val isParent = session.activeRole == RoleKey.PARENT
             val childId = if (isParent) session.activeChild?.id else null
             when (val result = if (isParent && childId != null) parentActivity(childId) else repository.activity(activityId)) {
                 is AppResult.Failure -> _uiState.update { it.copy(isLoading = false, error = result.error) }
                 is AppResult.Success -> {
                     val activity = result.data
+                    loadedOnce = true
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -138,6 +155,7 @@ class ActivityDetailViewModel @Inject constructor(
 
     private fun ActivityDetailUiState.withActivity(activity: Activity) = copy(
         activity = activity,
+        actions = session?.let { actions.forActivity(it, activity) } ?: actions,
         timeRange = ActivityTimes.formatRange(activity.startAt, activity.endAt),
         consentOpen = ConsentRules.canRespond(activity.consentDeadline, clock.now()),
     )

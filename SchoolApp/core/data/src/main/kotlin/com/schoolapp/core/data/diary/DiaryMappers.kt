@@ -36,6 +36,7 @@ internal fun DiaryEntryDto.toModel() = DiaryEntry(
     onBehalfOfName = onBehalfOf?.name,
     comment = comment,
     publishedAt = publishedAt,
+    approvalId = approvalId,
 )
 
 internal fun MissingDiaryDto.toModel() = MissingDiary(

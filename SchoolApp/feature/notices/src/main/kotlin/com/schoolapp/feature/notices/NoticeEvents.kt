@@ -1,20 +1,23 @@
 package com.schoolapp.feature.notices
 
 import com.schoolapp.core.model.notice.Notice
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
-enum class NoticeComposeResult { PUBLISHED, SENT_FOR_APPROVAL }
+enum class NoticeComposeResult { PUBLISHED, SENT_FOR_APPROVAL, DRAFT_SAVED }
 
-/** Feature-wide hand-offs: the notice opened from the feed (so detail needs no refetch) and the compose outcome. */
+/** Feature-wide hand-offs: the notice opened from a list (so detail / edit need no refetch) and save / publish outcomes. */
 @Singleton
 class NoticeEvents @Inject constructor() {
     private val opened = mutableMapOf<String, Notice>()
-    private val _composeResult = MutableStateFlow<NoticeComposeResult?>(null)
-    val composeResult: StateFlow<NoticeComposeResult?> = _composeResult.asStateFlow()
+    private val _changes = MutableSharedFlow<NoticeComposeResult>(extraBufferCapacity = 4, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
+    /** Every list collects this to show the outcome and reload. */
+    val changes: SharedFlow<NoticeComposeResult> = _changes.asSharedFlow()
 
     @Synchronized
     fun remember(notice: Notice) {
@@ -24,11 +27,8 @@ class NoticeEvents @Inject constructor() {
     @Synchronized
     fun opened(id: String): Notice? = opened[id]
 
-    fun postComposeResult(result: NoticeComposeResult) {
-        _composeResult.value = result
-    }
-
-    fun consumeComposeResult() {
-        _composeResult.value = null
+    fun post(result: NoticeComposeResult, notice: Notice? = null) {
+        notice?.let(::remember)
+        _changes.tryEmit(result)
     }
 }

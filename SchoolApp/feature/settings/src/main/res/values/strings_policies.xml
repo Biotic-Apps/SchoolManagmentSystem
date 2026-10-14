@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_policies_load_failed">Policies could not be loaded.</string>
+    <string name="settings_policies_saved">Policies saved</string>
+    <string name="settings_policies_security">Security</string>
+    <string name="settings_policies_security_hint">Applies to every account in this school.</string>
+    <string name="settings_policies_password_min">Minimum password length</string>
+    <string name="settings_policies_password_min_hint">Between 8 and 64 characters.</string>
+    <string name="settings_policies_timeout">Sign out after inactivity (minutes)</string>
+    <string name="settings_policies_timeout_hint">Between 5 and 1440 minutes (24 hours).</string>
+    <string name="settings_policies_require_digit">Passwords must include a digit</string>
+    <string name="settings_policies_two_factor">Two-step sign-in required for</string>
+    <string name="settings_policies_two_factor_hint">People in these roles must set up an authenticator app.</string>
+    <string name="settings_policies_defaults">School defaults</string>
+    <string name="settings_policies_defaults_hint">Used by every branch unless it sets its own. Branch settings still override per branch.</string>
+    <string name="settings_policies_lock_time">Attendance locks at</string>
+    <string name="settings_policies_lock_time_hint">After this time changes need a correction request.</string>
+    <string name="settings_policies_grading">Default grading scale</string>
+    <string name="settings_policies_grading_hint">Leave blank to have no default.</string>
+    <string name="settings_policies_diary_moderation">Moderate diary entries</string>
+    <string name="settings_policies_diary_moderation_hint">Teachers\' diary entries wait for approval before parents see them.</string>
+    <string name="settings_policies_late_fee">Late fee</string>
+    <string name="settings_policies_late_fee_hint">Leave blank for no late fee.</string>
+    <string name="settings_policies_late_fee_days">Charged after (days past due)</string>
+    <string name="settings_policies_limits">Approval limits</string>
+    <string name="settings_policies_limits_hint">Requests above a limit go to the next approver. Leave blank for no limit.</string>
+    <string name="settings_policies_limit_concession">Concessions</string>
+    <string name="settings_policies_limit_refund">Refunds</string>
+    <string name="settings_policies_limit_expense">Expenses</string>
+    <string name="settings_policies_limit_purchase_order">Purchase orders</string>
+    <string name="settings_policies_whole_number">Enter a whole number from %1$d to %2$d</string>
+    <string name="settings_policies_time_invalid">Pick a time</string>
+    <string name="settings_policies_too_long">Use at most %1$d characters</string>
+    <string name="settings_policies_money_invalid">Enter a valid amount</string>
+    <string name="settings_policies_days_range">Enter a whole number of days from 1 to 365</string>
+</resources>

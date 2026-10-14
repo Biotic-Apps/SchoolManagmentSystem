@@ -12,7 +12,7 @@ export interface FailedNotification {
   at: string;
 }
 
-export type JobRunStatus = "QUEUED" | "RUNNING" | "DONE" | "FAILED";
+export type JobRunStatus = "RUNNING" | "DONE" | "FAILED";
 
 export interface JobRun {
   id: string;

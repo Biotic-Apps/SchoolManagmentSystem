@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.designsystem.component.AppTextArea
 import com.schoolapp.core.designsystem.component.AppTextField
 import com.schoolapp.core.designsystem.component.FilterChipRow
@@ -28,11 +29,13 @@ import com.schoolapp.core.model.people.StudentSummary
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.messages.R
 import com.schoolapp.feature.messages.newthread.components.GuardianRecipients
+import com.schoolapp.feature.messages.newthread.components.RecipientPicker
 import com.schoolapp.feature.messages.newthread.components.SelectedStudentCard
 import com.schoolapp.feature.messages.newthread.components.StudentSearch
 
 internal class NewThreadActions(
     val onChildSelected: (String) -> Unit,
+    val onRecipientSelected: (String?) -> Unit,
     val onQueryChange: (String) -> Unit,
     val onStudentSelected: (StudentSummary) -> Unit,
     val onClearStudent: () -> Unit,
@@ -69,7 +72,12 @@ internal fun NewThreadScreen(state: NewThreadUiState, actions: NewThreadActions,
                 enabled = !state.isSubmitting,
             )
         }
-        state.error?.let { error -> item(key = "error") { InlineMessage(appErrorMessage(error), StatusTone.Error) } }
+        state.error?.let { error ->
+            item(key = "error") {
+                val text = if (error is AppError.Forbidden && state.isParent) stringResource(R.string.messages_target_denied) else appErrorMessage(error)
+                InlineMessage(text, StatusTone.Error)
+            }
+        }
         item(key = "hint_compose") {
             Text(
                 text = stringResource(R.string.messages_compose_hint),
@@ -105,7 +113,16 @@ private fun LazyListScope.parentRecipient(state: NewThreadUiState, actions: NewT
             if (state.studentMissing) InlineMessage(stringResource(R.string.messages_pick_child), StatusTone.Error)
         }
     }
-    item(key = "hint") { InlineMessage(stringResource(R.string.messages_parent_recipient_hint), StatusTone.Info) }
+    item(key = "recipient") {
+        RecipientPicker(
+            recipients = state.recipients,
+            selectedUserId = state.staffUserId,
+            isLoading = state.isLoadingRecipients,
+            error = state.recipientsError,
+            enabled = !state.isSubmitting,
+            onSelect = actions.onRecipientSelected,
+        )
+    }
 }
 
 private fun LazyListScope.staffRecipient(state: NewThreadUiState, actions: NewThreadActions) {

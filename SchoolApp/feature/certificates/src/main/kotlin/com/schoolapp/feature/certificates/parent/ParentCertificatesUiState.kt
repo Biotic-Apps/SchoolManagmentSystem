@@ -21,7 +21,10 @@ data class ParentCertificatesUiState(
 data class RequestForm(
     val type: CertificateType? = null,
     val purpose: String = "",
+    /** Required for ACHIEVEMENT certificates. */
+    val achievement: String = "",
     val typeMissing: Boolean = false,
+    val achievementMissing: Boolean = false,
     val isSaving: Boolean = false,
     val error: AppError? = null,
 )

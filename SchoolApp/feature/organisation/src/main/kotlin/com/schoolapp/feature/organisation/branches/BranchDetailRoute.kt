@@ -18,6 +18,9 @@ import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.organisation.R
 import com.schoolapp.feature.organisation.branches.components.BranchOverviewContent
+import com.schoolapp.feature.organisation.branches.edit.BranchActionsBar
+import com.schoolapp.feature.organisation.branches.edit.BranchEditorHost
+import com.schoolapp.core.model.organisation.Branch
 
 @Composable
 fun BranchDetailRoute(
@@ -26,13 +29,16 @@ fun BranchDetailRoute(
     viewModel: BranchDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val editorState by viewModel.editor.state.collectAsStateWithLifecycle()
     BranchDetailScreen(
         state = state,
         onBack = onBack,
         onRetry = viewModel::load,
         onRefresh = viewModel::refresh,
         modifier = modifier,
+        actions = { branch -> BranchActionsBar(branch, editorState, viewModel.editor) },
     )
+    BranchEditorHost(editorState, viewModel.editor)
 }
 
 @Composable
@@ -42,6 +48,7 @@ fun BranchDetailScreen(
     onRetry: () -> Unit,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
+    actions: (@Composable (Branch) -> Unit)? = null,
 ) {
     AppScaffold(
         modifier = modifier,
@@ -58,7 +65,11 @@ fun BranchDetailScreen(
         } else {
             RefreshBox(state.isRefreshing, onRefresh, body.fillMaxSize()) {
                 when {
-                    state.overview != null -> BranchOverviewContent(state.overview, refreshError = state.error)
+                    state.overview != null -> BranchOverviewContent(
+                        state.overview,
+                        refreshError = state.error,
+                        actions = actions?.let { { it(state.overview.branch) } },
+                    )
                     state.error != null -> PullableState { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
                 }
             }

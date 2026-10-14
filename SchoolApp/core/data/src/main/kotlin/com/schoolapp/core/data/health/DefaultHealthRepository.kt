@@ -7,6 +7,7 @@ import com.schoolapp.core.model.health.HealthChangeInput
 import com.schoolapp.core.model.health.HealthProfile
 import com.schoolapp.core.model.health.Incident
 import com.schoolapp.core.model.health.IncidentInput
+import com.schoolapp.core.model.settings.PagedList
 import com.schoolapp.core.network.ApiCaller
 import com.schoolapp.core.network.api.HealthApi
 import com.schoolapp.core.network.dto.common.NoteBodyDto
@@ -30,6 +31,13 @@ class DefaultHealthRepository @Inject constructor(
 
     override suspend fun incidents(studentId: String?, branchId: String?, from: String?, to: String?): AppResult<List<Incident>> =
         apiCaller.call { api.incidents(studentId, branchId, from, to).data.map { it.toModel() }.sortedByDescending { it.occurredAt } }
+
+    override suspend fun incidentsPage(branchId: String?, from: String?, to: String?, page: Int, pageSize: Int): AppResult<PagedList<Incident>> =
+        apiCaller.call {
+            val envelope = api.incidents(branchId = branchId, from = from, to = to, page = page, pageSize = pageSize)
+            val items = envelope.data.map { it.toModel() }
+            PagedList(items, envelope.meta?.page ?: page, envelope.meta?.pageSize ?: pageSize, envelope.meta?.total ?: items.size)
+        }
 
     override suspend fun reportIncident(input: IncidentInput): AppResult<Incident> =
         apiCaller.call { api.reportIncident(input.toBody()).data.toModel() }

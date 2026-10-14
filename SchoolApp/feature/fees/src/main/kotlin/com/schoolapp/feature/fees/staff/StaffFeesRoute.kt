@@ -27,6 +27,18 @@ import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.ui.rememberExternalActions
 import com.schoolapp.feature.fees.R
+import androidx.compose.runtime.key
+import com.schoolapp.core.designsystem.component.EmptyState
+import com.schoolapp.core.designsystem.component.ErrorState
+import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.ui.appErrorMessage
+import com.schoolapp.feature.fees.scope.FeesBranchBar
+import com.schoolapp.feature.fees.scope.FeesScopeViewModel
+import com.schoolapp.feature.fees.staff.concessions.ConcessionsTab
+import com.schoolapp.feature.fees.staff.invoices.InvoicesTab
+import com.schoolapp.feature.fees.staff.ledger.StudentLedgerDestination
+import com.schoolapp.feature.fees.staff.paymentlist.PaymentsListTab
+import com.schoolapp.feature.fees.staff.structure.FeeStructureTab
 import com.schoolapp.feature.fees.RecordPaymentDestination
 import com.schoolapp.feature.fees.staff.dues.DuesActions
 import com.schoolapp.feature.fees.staff.dues.DuesTab
@@ -41,7 +53,7 @@ import com.schoolapp.feature.fees.staff.today.TodayTab
 import com.schoolapp.feature.fees.staff.today.components.CloseDayActions
 import com.schoolapp.feature.fees.staff.today.TodayViewModel
 
-/** Accountant / principal / super admin: Today (collection), Dues and Proofs tabs plus "Record payment". */
+/** Accountant / principal / super admin: collection, invoices, payments, dues, proofs, concessions and fee structure. */
 @Composable
 internal fun StaffFeesRoute(
     roleKey: String,
@@ -60,6 +72,10 @@ internal fun StaffFeesRoute(
     val dues by duesViewModel.uiState.collectAsStateWithLifecycle()
     val proofs by proofsViewModel.uiState.collectAsStateWithLifecycle()
     val external = rememberExternalActions()
+    val scopeViewModel: FeesScopeViewModel = hiltViewModel(key = "fees_scope_$roleKey")
+    val scope by scopeViewModel.state.collectAsStateWithLifecycle()
+    val branch = scope.branch
+    val session = scope.session
     var tab by rememberSaveable { mutableIntStateOf(0) }
     var resumedOnce by remember { mutableStateOf(false) }
     LifecycleResumeEffect(todayViewModel) {
@@ -69,16 +85,37 @@ internal fun StaffFeesRoute(
     }
     Box(modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
+            FeesBranchBar(scope, scopeViewModel::select)
             AppTabs(
                 titles = listOf(
                     stringResource(R.string.fees_tab_today),
+                    stringResource(R.string.fees_tab_invoices),
+                    stringResource(R.string.fees_tab_payments),
                     stringResource(R.string.fees_tab_dues),
                     stringResource(R.string.fees_tab_proofs),
+                    stringResource(R.string.fees_tab_concessions),
+                    stringResource(R.string.fees_tab_structure),
                 ),
                 selectedIndex = tab,
                 onSelect = { tab = it },
             )
-            when (tab) {
+            val needsBranch = tab in BRANCH_TABS
+            if (needsBranch && (branch == null || session == null)) {
+                when {
+                    !scope.ready -> LoadingState()
+                    scope.error != null -> ErrorState(appErrorMessage(scope.error!!), onRetry = scopeViewModel::retry)
+                    else -> EmptyState(stringResource(R.string.fees_no_branch))
+                }
+            } else if (needsBranch && branch != null && session != null) {
+                key(branch.id) {
+                    when (tab) {
+                        1 -> InvoicesTab(branch, session, onOpen)
+                        2 -> PaymentsListTab(branch, session, paymentsViewModel::open, onOpen)
+                        5 -> ConcessionsTab(branch, session)
+                        else -> FeeStructureTab(branch, session, onOpen)
+                    }
+                }
+            } else when (tab) {
                 0 -> Column(Modifier.fillMaxSize()) {
                     payments.notice?.let { notice ->
                         InlineMessage(
@@ -104,7 +141,7 @@ internal fun StaffFeesRoute(
                         ),
                     )
                 }
-                1 -> DuesTab(
+                3 -> DuesTab(
                     state = dues,
                     actions = DuesActions(
                         onSearchChange = duesViewModel::onSearchChange,
@@ -116,9 +153,10 @@ internal fun StaffFeesRoute(
                         onAskSend = duesViewModel::askToSendReminders,
                         onConfirmSend = duesViewModel::sendReminders,
                         onDismissSend = duesViewModel::dismissReminders,
+                        onOpenLedger = { row -> onOpen(StudentLedgerDestination(row.studentId, row.studentName)) },
                     ),
                 )
-                else -> ProofsTab(
+                4 -> ProofsTab(
                     state = proofs,
                     actions = ProofsActions(
                         onRetry = proofsViewModel::retry,
@@ -134,7 +172,7 @@ internal fun StaffFeesRoute(
             }
         }
         PaymentActionsHost(paymentsViewModel, payments, external::open)
-        if (today.canRecord) {
+        if (today.canRecord && tab in RECORD_TABS) {
             AppFloatingButton(
                 text = stringResource(R.string.fees_record_payment),
                 icon = Icons.Outlined.Payments,
@@ -144,3 +182,9 @@ internal fun StaffFeesRoute(
         }
     }
 }
+
+/** Tabs that work on the selected branch (Invoices, Payments, Concessions, Fee structure). */
+private val BRANCH_TABS = setOf(1, 2, 5, 6)
+
+/** Tabs that show the "Record payment" button. */
+private val RECORD_TABS = setOf(0, 2, 3)

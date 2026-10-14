@@ -2,9 +2,7 @@
     <string name="admissions_all">All (%1$d)</string>
     <string name="admissions_status_count">%1$s (%2$d)</string>
     <string name="admissions_empty">No applications here</string>
-    <string name="admissions_web_hint">New enquiries, forms, tests and confirmation are handled on the web panel.</string>
     <string name="admissions_detail_title">Application</string>
-    <string name="admissions_child">Child</string>
     <string name="admissions_class">Applying for</string>
     <string name="admissions_dob">Date of birth</string>
     <string name="admissions_gender">Gender</string>
@@ -26,7 +24,6 @@
     <string name="admissions_confirm_title_waitlist">Add to waiting list?</string>
     <string name="admissions_confirm_title_reject">Reject application?</string>
     <string name="admissions_reason">Reason</string>
-    <string name="admissions_reason_required">A reason is required to reject</string>
     <string name="admissions_decided">Decision saved.</string>
     <string name="admissions_primary">Primary</string>
     <string name="admissions_new_title">New application</string>
@@ -41,4 +38,163 @@
     <string name="admissions_new_optional">Optional</string>
     <string name="admissions_new_fix_fields">Fix the highlighted fields above</string>
     <string name="admissions_new_submit">Submit application</string>
+    <!-- Tabs and lists -->
+    <string name="admissions_tab_enquiries">Enquiries</string>
+    <string name="admissions_tab_applications">Applications</string>
+    <string name="admissions_tab_waiting">Waiting list</string>
+    <string name="admissions_search_applications">Search application no., child or guardian</string>
+    <string name="admissions_search_enquiries">Search child, guardian or phone</string>
+    <string name="admissions_status">Status</string>
+    <string name="admissions_required">Required</string>
+    <string name="admissions_updated">Application updated</string>
+
+    <!-- Enquiries -->
+    <string name="admissions_add_enquiry">Add enquiry</string>
+    <string name="admissions_enquiries_empty">No enquiries found</string>
+    <string name="admissions_enquiries_empty_hint">Record walk-in or phone enquiries here and follow them up until they apply.</string>
+    <string name="admissions_follow_up_on">Follow up %1$s</string>
+    <string name="admissions_child_name">Child\'s name</string>
+    <string name="admissions_guardian_name">Guardian\'s name</string>
+    <string name="admissions_phone">Phone</string>
+    <string name="admissions_phone_invalid">Enter a valid phone number</string>
+    <string name="admissions_email">Email</string>
+    <string name="admissions_email_invalid">Enter a valid email address</string>
+    <string name="admissions_source">Source</string>
+    <string name="admissions_source_hint">e.g. Walk-in, Referral, Facebook, Banner</string>
+    <string name="admissions_follow_up_date">Follow-up date</string>
+    <string name="admissions_created_on">Created on</string>
+    <string name="admissions_call">Call</string>
+    <string name="admissions_follow_up">Update</string>
+    <string name="admissions_update_enquiry">Update enquiry for %1$s</string>
+    <string name="admissions_save_changes">Save changes</string>
+    <string name="admissions_convert">Convert to application</string>
+    <string name="admissions_convert_short">Convert</string>
+    <string name="admissions_convert_title">Convert %1$s to an application?</string>
+    <string name="admissions_convert_message">An application is created from this enquiry. Complete the child and guardian details on it next.</string>
+    <string name="admissions_open_application">Open application</string>
+    <string name="admissions_enquiry_added">Enquiry added</string>
+    <string name="admissions_enquiry_updated">Enquiry updated</string>
+    <string name="admissions_enquiry_converted">Application created from the enquiry</string>
+
+    <!-- Waiting list -->
+    <string name="admissions_waiting_hint">Waitlisted applications in queue order.</string>
+    <string name="admissions_waiting_empty">Waiting list is empty</string>
+    <string name="admissions_waiting_empty_hint">Applications you waitlist when deciding appear here in order.</string>
+    <string name="admissions_offer_seat">Offer seat</string>
+    <string name="admissions_offer_seat_title">Offer a seat to %1$s?</string>
+    <string name="admissions_offer_seat_message">The application moves to Offered and the primary guardian is notified.</string>
+    <string name="admissions_seat_offered">Seat offered, guardian notified</string>
+
+    <!-- Application form -->
+    <string name="admissions_edit_title">Edit application</string>
+    <string name="admissions_edit_submit">Save changes</string>
+    <string name="admissions_medical">Medical</string>
+    <string name="admissions_medical_hint">Optional. Shared with staff who care for the child.</string>
+    <string name="admissions_allergies">Allergies</string>
+    <string name="admissions_conditions">Medical conditions</string>
+    <string name="admissions_medical_notes">Notes for staff</string>
+
+    <!-- Application detail -->
+    <string name="admissions_progress">Progress</string>
+    <string name="admissions_step_submitted">Submitted</string>
+    <string name="admissions_step_documents">Documents</string>
+    <string name="admissions_step_test_scheduled">Test scheduled</string>
+    <string name="admissions_step_test_completed">Test completed</string>
+    <string name="admissions_step_decision">Decision</string>
+    <string name="admissions_step_offered">Offered</string>
+    <string name="admissions_step_waitlisted">Waitlisted</string>
+    <string name="admissions_step_waitlisted_n">Waitlisted #%1$d</string>
+    <string name="admissions_step_confirmed">Confirmed</string>
+    <string name="admissions_step_enrolled">Enrolled</string>
+    <string name="admissions_step_rejected">Rejected</string>
+    <string name="admissions_step_expired">Expired</string>
+    <string name="admissions_step_withdrawn">Withdrawn</string>
+    <string name="admissions_next_steps">Next steps</string>
+    <string name="admissions_confirm_admission">Confirm admission</string>
+    <string name="admissions_record_result">Record test result</string>
+    <string name="admissions_schedule_test">Schedule test</string>
+    <string name="admissions_reschedule_test">Reschedule test</string>
+    <string name="admissions_reschedule">Reschedule</string>
+    <string name="admissions_edit">Edit application</string>
+    <string name="admissions_withdraw">Withdraw</string>
+    <string name="admissions_withdraw_title">Withdraw application %1$s?</string>
+    <string name="admissions_withdraw_message">The application is closed and can\'t be reopened.</string>
+    <string name="admissions_withdrawn">Application withdrawn</string>
+    <string name="admissions_decide_hint">The primary guardian is notified of the decision.</string>
+    <string name="admissions_decide_waitlist_hint">The application joins the end of this class\'s waiting list. The primary guardian is notified.</string>
+    <string name="admissions_reason_short">Enter at least 3 characters</string>
+    <string name="admissions_bform">B-Form number</string>
+    <string name="admissions_address">Address</string>
+    <string name="admissions_no_guardians">No guardians on this application.</string>
+    <string name="admissions_cnic_value">CNIC %1$s</string>
+    <string name="admissions_test_not_recorded">Not recorded yet</string>
+    <string name="admissions_student_created">Admission confirmed: the student record and enrollment were created.</string>
+    <string name="admissions_test_notify_hint">The primary guardian is notified of the date, time and venue.</string>
+    <string name="admissions_test_date">Date</string>
+    <string name="admissions_test_time">Time</string>
+    <string name="admissions_test_venue_hint">e.g. Room 12, Main block</string>
+    <string name="admissions_test_notes">Notes for the guardian</string>
+    <string name="admissions_test_saved">Entrance test scheduled</string>
+    <string name="admissions_total_marks">Total marks</string>
+    <string name="admissions_save_result">Save result</string>
+    <string name="admissions_result_saved">Test result saved</string>
+    <string name="admissions_not_a_number">Enter a number (up to 2 decimals)</string>
+    <string name="admissions_max_positive">Total marks must be above 0</string>
+    <string name="admissions_score_above_max">Score can\'t be more than the total marks</string>
+
+    <!-- Documents -->
+    <string name="admissions_upload">Upload</string>
+    <string name="admissions_upload_document">Upload document</string>
+    <string name="admissions_documents_empty">No documents yet</string>
+    <string name="admissions_documents_empty_upload">No documents yet. Upload birth certificate, B-Form, previous results and so on.</string>
+    <string name="admissions_document_type">Document type</string>
+    <string name="admissions_choose_file">Choose file</string>
+    <string name="admissions_change_file">Change file</string>
+    <string name="admissions_file_required">Choose the file to upload</string>
+    <string name="admissions_document_note">Note</string>
+    <string name="admissions_document_uploaded">Document uploaded</string>
+    <string name="admissions_verify">Verify</string>
+    <string name="admissions_verify_title">Verify %1$s?</string>
+    <string name="admissions_verify_message">Confirm the document matches the original.</string>
+    <string name="admissions_document_verified">Document verified</string>
+    <string name="admissions_reject_doc_title">Reject %1$s?</string>
+    <string name="admissions_reject_doc_message">The uploader sees the reason and can upload a new file.</string>
+    <string name="admissions_document_rejected">Document rejected</string>
+    <string name="admissions_doc_b_form">B-Form</string>
+    <string name="admissions_doc_cnic">CNIC</string>
+
+    <!-- Confirm admission -->
+    <string name="admissions_confirm_hint">Creates the student, guardian accounts and enrollment, and issues an admission number.</string>
+    <string name="admissions_placement">Placement</string>
+    <string name="admissions_section">Section</string>
+    <string name="admissions_seats">%1$d / %2$s seats used</string>
+    <string name="admissions_section_full">full</string>
+    <string name="admissions_section_is_full">This section is full. Choose another.</string>
+    <string name="admissions_all_full">Every section of %1$s is full.</string>
+    <string name="admissions_no_sections">No active sections for %1$s in this session. Create one first.</string>
+    <string name="admissions_admission_date">Admission date</string>
+    <string name="admissions_admission_fee">Admission fee</string>
+    <string name="admissions_fee_paid">Paid</string>
+    <string name="admissions_fee_waived">Waived</string>
+    <string name="admissions_fee_pending">Pending (collect later)</string>
+    <string name="admissions_fee_choose">Choose the admission fee status</string>
+    <string name="admissions_fee_amount">Amount received (Rs)</string>
+    <string name="admissions_fee_amount_invalid">Enter the amount received in rupees</string>
+    <string name="admissions_fee_reference">Receipt / reference no.</string>
+    <string name="admissions_enrolled_title">Student enrolled</string>
+    <string name="admissions_enrolled_message">%1$s is enrolled. The student record, guardian links and enrollment were created. The ID card is being prepared.</string>
+    <string name="admissions_enrolled_notice">Admission confirmed, student enrolled</string>
+    <string name="admissions_admission_no">Admission no.</string>
+    <string name="admissions_parent_logins">Parent sign-in details</string>
+    <string name="admissions_sign_in_with">Signs in with</string>
+    <string name="admissions_login_existing">Already has a parent sign-in and keeps their own password.</string>
+    <string name="admissions_temp_password">Temporary password</string>
+    <string name="admissions_temp_password_once">Temporary passwords are shown only once. Copy or share them now; the parent sets a new one at first sign-in.</string>
+    <string name="admissions_copy">Copy</string>
+    <string name="admissions_share">Share</string>
+    <string name="admissions_copied">Copied</string>
+    <string name="admissions_share_login_title">Share sign-in details</string>
+    <string name="admissions_share_login_text">Parent app sign-in for %1$s\nSign in with: %2$s\nTemporary password: %3$s\nYou will be asked to set a new password at first sign-in.</string>
+    <string name="admissions_done">Done</string>
 </resources>
+

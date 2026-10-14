@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shell -->
+    <string name="inv_tab_stock">Stock</string>
+    <string name="inv_tab_items">Items</string>
+    <string name="inv_tab_movements">Movements</string>
+    <string name="inv_tab_assets">Assets</string>
+    <string name="inv_tab_purchasing">Purchasing</string>
+    <string name="inv_tab_sales">Student sales</string>
+    <string name="inv_no_branch">No branch in your scope</string>
+    <string name="inv_no_branch_message">Stock is kept per branch.</string>
+    <string name="inv_load_more">Load more</string>
+    <string name="inv_save_failed">Couldn\'t save. Check the details and try again.</string>
+    <string name="inv_none">—</string>
+
+    <!-- Labels -->
+    <string name="inv_cat_furniture">Furniture</string>
+    <string name="inv_cat_computer">Computer</string>
+    <string name="inv_cat_stationery">Stationery</string>
+    <string name="inv_cat_uniform">Uniform</string>
+    <string name="inv_cat_book">Book</string>
+    <string name="inv_cat_sports">Sports</string>
+    <string name="inv_cat_other">Other</string>
+    <string name="inv_move_in">Stock in</string>
+    <string name="inv_move_issue">Issue</string>
+    <string name="inv_move_adjust">Adjustment</string>
+    <string name="inv_move_transfer_out">Transfer out</string>
+    <string name="inv_move_transfer_in">Transfer in</string>
+    <string name="inv_cond_new">New</string>
+    <string name="inv_cond_good">Good</string>
+    <string name="inv_cond_fair">Fair</string>
+    <string name="inv_cond_poor">Poor</string>
+    <string name="inv_cond_disposed">Disposed</string>
+    <string name="inv_status_pending">Pending approval</string>
+    <string name="inv_status_approved">Approved</string>
+    <string name="inv_status_rejected">Rejected</string>
+    <string name="inv_status_ordered">Ordered</string>
+    <string name="inv_status_partial">Partly received</string>
+    <string name="inv_status_received">Received</string>
+    <string name="inv_status_billed">Billed</string>
+    <string name="inv_status_unknown">Unknown</string>
+    <string name="inv_all">All</string>
+
+    <!-- Stock -->
+    <string name="inv_stock_summary">%1$d items · %2$d low on stock</string>
+    <string name="inv_low_only">Low stock only</string>
+    <string name="inv_low_stock">Low stock</string>
+    <string name="inv_reorder_at">Reorder at %1$d</string>
+    <string name="inv_qty_unit">%1$d %2$s</string>
+    <string name="inv_stock_empty">No stock yet</string>
+    <string name="inv_stock_empty_message">Record stock in with “Record movement”.</string>
+    <string name="inv_low_empty">Nothing is low on stock</string>
+    <string name="inv_low_empty_message">Items at or below their reorder level appear here.</string>
+
+    <!-- Movements -->
+    <string name="inv_record_movement">Record movement</string>
+    <string name="inv_movement_title">Record stock movement</string>
+    <string name="inv_movement_note">Stock can\'t go below zero; every movement is kept in the history.</string>
+    <string name="inv_movements_empty">No movements yet</string>
+    <string name="inv_movements_empty_message">Stock in, issues, adjustments and transfers appear here.</string>
+    <string name="inv_item">Item</string>
+    <string name="inv_movement_type">Movement type</string>
+    <string name="inv_quantity">Quantity</string>
+    <string name="inv_direction_add">Add to stock</string>
+    <string name="inv_direction_remove">Remove from stock</string>
+    <string name="inv_to_branch">To branch</string>
+    <string name="inv_issued_to">Issued to</string>
+    <string name="inv_issued_to_hint">Person or department</string>
+    <string name="inv_reason">Reason</string>
+    <string name="inv_in_stock">In stock: %1$d</string>
+    <string name="inv_issue_hint">Taken out of this branch\'s stock.</string>
+    <string name="inv_issued_to_line">Issued to %1$s</string>
+    <string name="inv_by_line">By %1$s</string>
+    <string name="inv_err_item">Choose an item</string>
+    <string name="inv_err_quantity">Enter a whole number of at least 1</string>
+    <string name="inv_err_to_branch">Choose the receiving branch</string>
+    <string name="inv_err_reason_adjust">Give a reason for the adjustment</string>
+    <string name="inv_no_other_branch">No other branch in your scope</string>
+    <string name="inv_movement_saved">Movement recorded</string>
+
+    <!-- Items -->
+    <string name="inv_add_item">Add item</string>
+    <string name="inv_item_note">Items are shared by every branch of the school; stock is kept per branch.</string>
+    <string name="inv_search_items">Search items</string>
+    <string name="inv_items_empty">No items</string>
+    <string name="inv_items_empty_message">Furniture, stationery, uniforms, books and other stock items appear here.</string>
+    <string name="inv_sku">SKU</string>
+    <string name="inv_sku_hint">e.g. NB-200</string>
+    <string name="inv_item_name">Item name</string>
+    <string name="inv_category">Category</string>
+    <string name="inv_unit">Unit</string>
+    <string name="inv_unit_hint">e.g. piece, pack, set</string>
+    <string name="inv_reorder_level">Reorder level</string>
+    <string name="inv_reorder_hint">Warn when stock falls to this quantity.</string>
+    <string name="inv_track_asset">Track as asset</string>
+    <string name="inv_track_asset_hint">Each unit gets a tag, location and condition.</string>
+    <string name="inv_saleable">Sold to students</string>
+    <string name="inv_saleable_hint">e.g. uniforms and books, billed on the invoice.</string>
+    <string name="inv_sale_price">Sale price</string>
+    <string name="inv_flag_asset">Asset</string>
+    <string name="inv_flag_saleable">Saleable</string>
+    <string name="inv_stock_here">In stock: %1$d %2$s</string>
+    <string name="inv_err_sku">Use 1–40 letters, digits, dot, dash or underscore</string>
+    <string name="inv_err_sku_taken">This SKU is already used</string>
+    <string name="inv_err_name">Enter the item name (2–120 characters)</string>
+    <string name="inv_err_category">Choose a category</string>
+    <string name="inv_err_unit">Enter the unit</string>
+    <string name="inv_err_reorder">Enter a whole number, 0 or more</string>
+    <string name="inv_err_price">Enter a valid amount</string>
+    <string name="inv_item_saved">%1$s added</string>
+
+    <!-- Assets -->
+    <string name="inv_add_asset">Add asset</string>
+    <string name="inv_edit_asset">Edit asset %1$s</string>
+    <string name="inv_asset_note">Only items marked “Track as asset” can be tagged.</string>
+    <string name="inv_assets_empty">No assets</string>
+    <string name="inv_assets_empty_message">Furniture, computers and other tagged equipment appear here.</string>
+    <string name="inv_asset_tag">Asset tag</string>
+    <string name="inv_asset_tag_hint">e.g. CHR-0012</string>
+    <string name="inv_condition">Condition</string>
+    <string name="inv_location">Location</string>
+    <string name="inv_location_hint">e.g. Room 4, Computer lab</string>
+    <string name="inv_assigned_to">Assigned to</string>
+    <string name="inv_assigned_line">Assigned to %1$s</string>
+    <string name="inv_no_asset_items">No asset items yet. Mark an item as “Track as asset” in Items first.</string>
+    <string name="inv_err_tag">Enter the asset tag</string>
+    <string name="inv_err_tag_taken">This tag is already used</string>
+    <string name="inv_err_location">Enter the location</string>
+    <string name="inv_asset_added">Asset added</string>
+    <string name="inv_asset_updated">Asset updated</string>
+    <string name="inv_save_changes">Save changes</string>
+
+    <!-- Purchasing -->
+    <string name="inv_new_request">New purchase request</string>
+    <string name="inv_request_note">Goes for approval; once approved it can be turned into a purchase order.</string>
+    <string name="inv_requests_empty">No purchase requests</string>
+    <string name="inv_requests_empty_message">Requests, their approval and purchase orders appear here.</string>
+    <string name="inv_request_items">%1$d items</string>
+    <string name="inv_request_one_item">1 item</string>
+    <string name="inv_unit_price_est">Unit price (est.)</string>
+    <string name="inv_line_total">Line total</string>
+    <string name="inv_estimated_total">Estimated total</string>
+    <string name="inv_add_line">Add item</string>
+    <string name="inv_remove_line">Remove item</string>
+    <string name="inv_reason_hint">Why these items are needed</string>
+    <string name="inv_send_for_approval">Send for approval</string>
+    <string name="inv_err_lines">Add at least one item</string>
+    <string name="inv_err_duplicate">Each item can appear only once</string>
+    <string name="inv_err_reason">Enter the reason (at least 3 characters)</string>
+    <string name="inv_request_saved">Purchase request sent for approval</string>
+    <string name="inv_line_number">Item %1$d</string>
+
+    <!-- Purchase detail -->
+    <string name="inv_purchase_request">Purchase request</string>
+    <string name="inv_requested_on">Requested on</string>
+    <string name="inv_requested_by">Requested by</string>
+    <string name="inv_requested_items">Requested items</string>
+    <string name="inv_line_math">%1$d × %2$s</string>
+    <string name="inv_waiting_approval">Waiting for approval. Approvers decide it in Approvals.</string>
+    <string name="inv_rejected_note">This request was rejected.</string>
+    <string name="inv_purchase_order">Purchase order %1$s</string>
+    <string name="inv_vendor">Vendor</string>
+    <string name="inv_expected_on">Expected on</string>
+    <string name="inv_order_total">Order total</string>
+    <string name="inv_ordered_received">Ordered %1$d · Received %2$d</string>
+    <string name="inv_billed_note">The vendor bill is in Expenses &amp; Vendors, where it is approved and paid.</string>
+    <string name="inv_create_order">Create purchase order</string>
+    <string name="inv_order_note">Confirm the vendor and the agreed prices. Items are received against this order.</string>
+    <string name="inv_unit_price">Unit price</string>
+    <string name="inv_no_vendors">No vendors yet. Type a name to add one.</string>
+    <string name="inv_add_vendor">Add vendor “%1$s”</string>
+    <string name="inv_err_vendor">Choose a vendor</string>
+    <string name="inv_order_saved">Purchase order created</string>
+    <string name="inv_receive_items">Receive items</string>
+    <string name="inv_receive_title">Receive items · %1$s</string>
+    <string name="inv_receive_note">Enter what arrived. Partial deliveries are fine; the rest stays outstanding.</string>
+    <string name="inv_received_on">Received on</string>
+    <string name="inv_received">Received</string>
+    <string name="inv_outstanding">Outstanding: %1$d</string>
+    <string name="inv_receive_submit">Receive into stock</string>
+    <string name="inv_err_receive_more">Can\'t receive more than is outstanding</string>
+    <string name="inv_err_receive_none">Enter a received quantity for at least one item</string>
+    <string name="inv_err_whole">Enter a whole number</string>
+    <string name="inv_received_saved">Items received into stock</string>
+    <string name="inv_create_bill">Create bill</string>
+    <string name="inv_bill_title">Create vendor bill?</string>
+    <string name="inv_bill_message">A bill for the order total is added to Expenses &amp; Vendors, where it is submitted, approved and paid.</string>
+    <string name="inv_bill_saved">Vendor bill created. Find it under Expenses &amp; Vendors to submit and pay it.</string>
+    <string name="inv_optional">Optional</string>
+    <string name="inv_clear">Clear</string>
+
+    <!-- Sales -->
+    <string name="inv_sell_title">Sell to a student</string>
+    <string name="inv_sell_note">Uniforms, books and other saleable items. The items are issued from this branch\'s stock and added as lines to the student\'s fee invoice.</string>
+    <string name="inv_no_saleable">No saleable items yet. Mark items as “Sold to students” first.</string>
+    <string name="inv_student">Student</string>
+    <string name="inv_search_student">Search by name or admission no.</string>
+    <string name="inv_no_students">No students found</string>
+    <string name="inv_change">Change</string>
+    <string name="inv_err_student">Choose a student</string>
+    <string name="inv_price">Price</string>
+    <string name="inv_total_to_invoice">Total to invoice</string>
+    <string name="inv_record_sale">Record sale</string>
+    <string name="inv_sale_saved">Sale recorded and added to the student\'s invoice</string>
+    <string name="inv_sale_saved_invoice">Sale recorded and added to invoice %1$s</string>
+</resources>

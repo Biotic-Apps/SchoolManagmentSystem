@@ -24,6 +24,7 @@ fun ProfileScreen(
     onDeviceSessions: () -> Unit,
     modifier: Modifier = Modifier,
     onNotificationPreferences: () -> Unit = {},
+    onTwoFactor: () -> Unit = {},
     appLock: @Composable () -> Unit = {},
 ) {
     if (state.isLoading) {
@@ -40,6 +41,7 @@ fun ProfileScreen(
                 twoFactorEnabled = state.twoFactorEnabled,
                 onChangePassword = onChangePassword,
                 onDeviceSessions = onDeviceSessions,
+                onTwoFactor = onTwoFactor,
             )
         }
         item(key = "app_lock") { appLock() }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="students_retry">Try again</string>
+    <string name="students_temp_password">Temporary password</string>
+    <string name="students_copied">Copied</string>
+    <string name="students_copy">Copy</string>
+    <string name="students_share">Share</string>
+    <string name="students_share_login_title">Share sign-in details</string>
+    <string name="students_share_login_text">Parent sign-in for %1$s\nUsername: %2$s\nTemporary password: %3$s\nSign in on the eSchool app or website. You will choose your own password the first time.</string>
+    <string name="students_share_login_text_existing">Parent sign-in for %1$s\nUsername: %2$s\nSign in on the eSchool app or website with your own password.</string>
+    <string name="students_login_username">Username</string>
+    <string name="students_login_also">Also signs in with</string>
+    <string name="students_login_existing">Already has a sign-in and keeps their own password.</string>
+    <string name="students_registered_message">%1$s is registered.</string>
+    <string name="students_parent_logins">Parent sign-in</string>
+    <string name="students_parent_logins_hint">Parents see their children\'s attendance, homework, results and fees in the eSchool app or website.</string>
+    <string name="students_temp_password_once">Shown only once. Copy or share it now and give it to the parent privately. They choose their own password the first time they sign in.</string>
+    <string name="students_open_profile">Done — open profile</string>
+</resources>

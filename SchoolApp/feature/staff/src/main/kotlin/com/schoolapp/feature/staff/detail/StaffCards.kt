@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,14 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppCard
+import com.schoolapp.core.designsystem.component.AppTextButton
 import com.schoolapp.core.designsystem.component.KeyValueRow
-import com.schoolapp.core.designsystem.component.ListItemRow
 import com.schoolapp.core.designsystem.component.PersonAvatar
 import com.schoolapp.core.designsystem.component.SectionHeader
 import com.schoolapp.core.designsystem.component.StatusChip
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.designsystem.theme.AppColors
-import com.schoolapp.core.model.staff.StaffAssignment
 import com.schoolapp.core.model.staff.StaffDetail
 import com.schoolapp.core.model.staff.StaffWorkload
 import com.schoolapp.core.ui.formatDate
@@ -55,11 +52,15 @@ internal fun StaffProfileCard(detail: StaffDetail, modifier: Modifier = Modifier
 }
 
 @Composable
-internal fun ProbationCard(requiresReview: Boolean, reviewerName: String?, modifier: Modifier = Modifier) {
+internal fun ProbationCard(requiresReview: Boolean, reviewerName: String?, modifier: Modifier = Modifier, onChange: (() -> Unit)? = null) {
     AppCard(modifier.fillMaxWidth()) {
         SectionHeader(
             title = stringResource(R.string.staff_probation),
-            action = if (requiresReview) { { StatusChip(stringResource(R.string.staff_on_probation), StatusTone.Warning) } } else null,
+            action = when {
+                onChange != null -> { { AppTextButton(text = stringResource(R.string.staff_probation_change), onClick = onChange) } }
+                requiresReview -> { { StatusChip(stringResource(R.string.staff_on_probation), StatusTone.Warning) } }
+                else -> null
+            },
         )
         val text = if (requiresReview) stringResource(R.string.staff_probation_on) else stringResource(R.string.staff_probation_off)
         Text(text, style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
@@ -76,27 +77,5 @@ internal fun WorkloadCard(workload: StaffWorkload, modifier: Modifier = Modifier
         KeyValueRow(stringResource(R.string.staff_periods_week), workload.periodsPerWeek.toString())
         KeyValueRow(stringResource(R.string.staff_sections), workload.sections.toString())
         KeyValueRow(stringResource(R.string.staff_subjects), workload.subjects.toString())
-    }
-}
-
-@Composable
-internal fun AssignmentsCard(assignments: List<StaffAssignment>, modifier: Modifier = Modifier) {
-    AppCard(modifier.fillMaxWidth()) {
-        SectionHeader(title = stringResource(R.string.staff_assignments))
-        if (assignments.isEmpty()) {
-            Text(stringResource(R.string.staff_assignments_empty), style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
-        }
-        assignments.forEach { a ->
-            val where = listOfNotNull(listOfNotNull(a.className, a.sectionName).joinToString(" - ").ifBlank { null }, a.subjectName)
-            val extra = listOfNotNull(
-                a.responsibleStaffName?.let { stringResource(R.string.staff_responsible, it) },
-                a.validUntil?.let { stringResource(R.string.staff_substitute_until, formatDate(it).orEmpty()) },
-            )
-            ListItemRow(
-                title = humanizeKey(a.kind),
-                supporting = (where + extra).joinToString(" · "),
-                leadingIcon = Icons.Outlined.Groups,
-            )
-        }
     }
 }

@@ -5,7 +5,6 @@
     <string name="timetable_break">Break</string>
     <string name="timetable_free">Free</string>
     <string name="timetable_period">Period %1$d</string>
-    <string name="timetable_read_only">Timetables are edited and published on the website.</string>
     <string name="timetable_tab_week">Timetable</string>
     <string name="timetable_tab_calendar">Calendar</string>
     <string name="timetable_tab_activities">Activities</string>
@@ -35,7 +34,8 @@
     <string name="timetable_not_assigned">You aren\'t assigned to any class yet</string>
     <string name="timetable_not_assigned_message">Ask your principal to assign your classes and subjects. Your lessons appear here once the timetable is published.</string>
     <string name="timetable_not_created">No timetable yet</string>
-    <string name="timetable_not_created_message">Build this section\'s timetable on the website, then publish it.</string>
+    <string name="timetable_not_created_message">You can build this section’s timetable here. It stays a draft until your principal publishes it.</string>
+    <string name="timetable_not_created_viewer">This section\'s timetable hasn\'t been built yet.</string>
     <string name="timetable_no_sections">No sections to show</string>
     <string name="timetable_no_my_sections">You aren\'t assigned to any section yet</string>
     <string name="timetable_holiday">Holiday</string>
@@ -43,8 +43,8 @@
     <string name="timetable_no_school_message">This isn\'t a working day for your school.</string>
     <string name="timetable_free_day_today">No lessons today</string>
     <string name="timetable_free_day">No lessons on %1$s</string>
-    <string name="timetable_free_day_message">Nothing is scheduled for you on this day.</string>
-    <string name="timetable_draft_note">Draft — edit it on the website; your principal publishes it.</string>
+    <string name="timetable_free_day_message">Nothing is scheduled on this day.</string>
+    <string name="timetable_draft_note">This is your draft. Tap “Edit draft” to change it; your principal publishes it.</string>
 
     <string name="timetable_state_draft">Draft — not published</string>
     <string name="timetable_state_published">Published</string>

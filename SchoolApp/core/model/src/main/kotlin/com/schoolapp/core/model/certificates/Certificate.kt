@@ -22,12 +22,17 @@ data class Certificate(
     val fileUrl: String?,
     val reason: String?,
     val duplicate: Boolean = false,
+    val effectiveDate: String? = null,
+    val reissueReason: String? = null,
+    /** PDF job started by issue / reissue (null otherwise). */
+    val jobId: String? = null,
 ) {
     /** Leaving and transfer certificates need clearance (no dues, no unreturned items). */
     val needsClearance: Boolean get() = type == CertificateType.SCHOOL_LEAVING || type == CertificateType.TRANSFER
 }
 
-data class CertificateInput(val studentId: String, val type: CertificateType, val purpose: String?)
+/** [achievement] is required for ACHIEVEMENT certificates (sent as `details.achievement`). */
+data class CertificateInput(val studentId: String, val type: CertificateType, val purpose: String?, val achievement: String? = null)
 
 /** `409 CLEARANCE_REQUIRED` details. */
 data class ClearanceBlock(val outstandingMinor: Long, val unreturnedItems: List<String>, val reasons: List<String>)

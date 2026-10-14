@@ -19,6 +19,8 @@ data class SectionChoice(val id: String, val label: String, val state: Timetable
 @Immutable
 data class BuilderUiState(
     val isLoading: Boolean = true,
+    /** Pull-to-refresh of the open section (the grid stays visible). */
+    val isRefreshing: Boolean = false,
     val error: AppError? = null,
     val choices: List<SectionChoice> = emptyList(),
     val sectionId: String? = null,

@@ -38,7 +38,7 @@ type IconTileProps = {
 /**
  * The filled, rounded icon tile from the product's own dashboard cards.
  *
- * It arrives with a spring rather than a fade: a stat tile that pops into place
+ * It bounces up into place on a spring rather than fading: a tile that pops in
  * carries a little of the feeling of a figure landing, which is what these
  * cards are for. The spring is short and slightly overshot — long enough to
  * notice, over before it is annoying.
@@ -47,13 +47,13 @@ export function IconTile({ children, tone, delay = 0, className }: IconTileProps
   return (
     <motion.span
       data-motion
-      initial={{ scale: 0.35, opacity: 0, rotate: -14 }}
-      whileInView={{ scale: 1, opacity: 1, rotate: 0 }}
-      viewport={{ once: true, margin: "0px 0px -12% 0px" }}
-      transition={{ type: "spring", stiffness: 280, damping: 17, delay }}
-      whileHover={{ scale: 1.07, rotate: -5 }}
+      initial={{ scale: 0.6, opacity: 0, y: 14 }}
+      whileInView={{ scale: 1, opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+      transition={{ type: "spring", stiffness: 320, damping: 15, delay }}
+      whileHover={{ scale: 1.1, y: -3, rotate: 8 }}
       className={cn(
-        "grid size-12 shrink-0 place-items-center rounded-[0.9rem] text-white",
+        "grid size-12 shrink-0 place-items-center rounded-full text-white",
         TONES[tone],
         className,
       )}

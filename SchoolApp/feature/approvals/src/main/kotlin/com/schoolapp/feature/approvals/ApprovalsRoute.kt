@@ -16,6 +16,8 @@ fun ApprovalsRoute(
     ApprovalsScreen(
         state = state,
         onFilterSelected = viewModel::onFilterSelected,
+        onTypeSelected = viewModel::onTypeSelected,
+        onLoadMore = viewModel::loadMore,
         onRefresh = viewModel::refresh,
         onOpen = onOpen,
         modifier = modifier,

@@ -1,5 +1,7 @@
 package com.schoolapp.feature.profile.components
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -10,6 +12,7 @@ import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +32,7 @@ internal fun SecurityCard(
     onChangePassword: () -> Unit,
     onDeviceSessions: () -> Unit,
     modifier: Modifier = Modifier,
+    onTwoFactor: () -> Unit = {},
 ) {
     AppCard(modifier.fillMaxWidth(), contentPadding = 0.dp) {
         SectionHeader(
@@ -51,16 +55,19 @@ internal fun SecurityCard(
             trailing = { Chevron() },
         )
         HorizontalDivider(color = AppColors.Border)
-        // Read-only on Android: setup needs a QR code, which lives on the web panel.
         ListItemRow(
             title = stringResource(R.string.profile_two_factor),
             supporting = stringResource(R.string.profile_two_factor_hint),
             leadingIcon = Icons.Outlined.VerifiedUser,
+            onClick = onTwoFactor,
             trailing = {
-                StatusChip(
-                    text = stringResource(if (twoFactorEnabled) R.string.profile_two_factor_on else R.string.profile_two_factor_off),
-                    tone = if (twoFactorEnabled) StatusTone.Success else StatusTone.Neutral,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    StatusChip(
+                        text = stringResource(if (twoFactorEnabled) R.string.profile_two_factor_on else R.string.profile_two_factor_off),
+                        tone = if (twoFactorEnabled) StatusTone.Success else StatusTone.Neutral,
+                    )
+                    Chevron()
+                }
             },
         )
     }

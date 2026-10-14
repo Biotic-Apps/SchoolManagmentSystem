@@ -13,6 +13,7 @@ fun ProfileRoute(
     onDeviceSessions: () -> Unit,
     onNotificationPreferences: () -> Unit,
     modifier: Modifier = Modifier,
+    onTwoFactor: () -> Unit = {},
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -25,6 +26,7 @@ fun ProfileRoute(
         onChangePassword = onChangePassword,
         onDeviceSessions = onDeviceSessions,
         onNotificationPreferences = onNotificationPreferences,
+        onTwoFactor = onTwoFactor,
         modifier = modifier,
         appLock = { AppLockSettingsRoute() },
     )

@@ -21,6 +21,9 @@ class DefaultDashboardRepository @Inject constructor(
     override suspend fun summary(branchId: String?): AppResult<List<DashboardMetric>> =
         apiCaller.call { api.summary(branchId = branchId).data.toMetrics() }
 
+    override suspend fun scopedSummary(schoolId: String?, branchId: String?, sessionId: String?): AppResult<List<DashboardMetric>> =
+        apiCaller.call { api.summary(schoolId = schoolId, branchId = branchId, sessionId = sessionId).data.toMetrics() }
+
     override suspend fun pending(branchId: String?, date: String): AppResult<List<DashboardMetric>> =
         apiCaller.call { api.pending(branchId, date).data.toMetrics() }
 

@@ -42,6 +42,7 @@ internal fun SupervisorGrid(
     onOpen: (Any) -> Unit,
     canOpenMenu: (String) -> Boolean,
     modifier: Modifier = Modifier,
+    scopeBar: (@Composable () -> Unit)? = null,
 ) {
     val gate = rememberEntranceGate()
     Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
@@ -53,6 +54,7 @@ internal fun SupervisorGrid(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             fullWidth("header", gate, 0) { SummaryHeader(state.userName, state.scopeName) }
+            scopeBar?.let { bar -> fullWidth("scope", gate, 0) { bar() } }
             state.setup?.let { setup ->
                 fullWidth("setup", gate, 1) { SetupChecklistCard(setup, onOpenMenu, onOpen, canOpenMenu) }
             }

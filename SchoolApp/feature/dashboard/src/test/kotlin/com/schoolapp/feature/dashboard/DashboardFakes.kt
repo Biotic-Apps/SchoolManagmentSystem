@@ -113,3 +113,17 @@ class FakeSetupRepository : SetupRepository {
         return result
     }
 }
+
+/** Scope picker with no options (school / branch lookups fail), so tests see the unfiltered dashboard. */
+fun emptyScopeController(): com.schoolapp.feature.dashboard.scope.DashboardScopeController {
+    val schools = Proxy.newProxyInstance(
+        com.schoolapp.core.data.schools.SchoolsRepository::class.java.classLoader,
+        arrayOf(com.schoolapp.core.data.schools.SchoolsRepository::class.java),
+    ) { _, _, _ -> AppResult.Failure(AppError.Network) } as com.schoolapp.core.data.schools.SchoolsRepository
+    val organisation = Proxy.newProxyInstance(
+        OrganisationRepository::class.java.classLoader, arrayOf(OrganisationRepository::class.java),
+    ) { _, _, _ -> AppResult.Failure(AppError.Network) } as OrganisationRepository
+    return com.schoolapp.feature.dashboard.scope.DashboardScopeController(
+        com.schoolapp.feature.dashboard.scope.ScopeOptionsLoader(schools, organisation),
+    )
+}

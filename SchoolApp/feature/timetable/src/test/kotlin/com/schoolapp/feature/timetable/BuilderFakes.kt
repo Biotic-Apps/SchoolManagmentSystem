@@ -28,6 +28,7 @@ import com.schoolapp.core.model.timetable.TimetableDraft
 import com.schoolapp.core.model.timetable.TimetableState
 import com.schoolapp.core.testing.FakeAuthRepository
 import com.schoolapp.feature.timetable.builder.TimetableBuilderViewModel
+import com.schoolapp.feature.timetable.scope.TimetableBranchScope
 
 internal val english = NamedRef("eng", "English")
 internal val sana = NamedRef("t1", "Ms Sana")
@@ -111,5 +112,5 @@ internal class FakeRooms : CatalogueRepository {
 internal fun builderViewModel(auth: FakeAuthRepository, repository: FakeBuilderRepository, sectionId: String? = null) =
     TimetableBuilderViewModel(
         SavedStateHandle(listOfNotNull(sectionId?.let { "sectionId" to it }).toMap()),
-        repository, FakeOverview(), OrgAnswers().repository, FakeTeaching(), FakeRooms(), auth, AcademicsEvents(),
+        repository, FakeOverview(), TimetableBranchScope(OrgAnswers().repository), FakeTeaching(), FakeRooms(), auth, AcademicsEvents(),
     )

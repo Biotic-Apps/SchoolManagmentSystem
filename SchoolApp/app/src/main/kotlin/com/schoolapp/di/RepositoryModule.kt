@@ -114,6 +114,11 @@ interface RepositoryModule {
     fun bindOrganisationRepository(impl: DefaultOrganisationRepository): OrganisationRepository
 
     @Binds
+    fun bindOrganisationEditRepository(
+        impl: com.schoolapp.core.data.organisation.DefaultOrganisationEditRepository,
+    ): com.schoolapp.core.data.organisation.OrganisationEditRepository
+
+    @Binds
     fun bindClassesOverviewRepository(impl: DefaultClassesOverviewRepository): ClassesOverviewRepository
 
     @Binds
@@ -166,6 +171,11 @@ interface RepositoryModule {
 
     @Binds
     fun bindLeaveRepository(impl: DefaultLeaveRepository): LeaveRepository
+
+    @Binds
+    fun bindQrScanRepository(
+        impl: com.schoolapp.core.data.attendance.DefaultQrScanRepository,
+    ): com.schoolapp.core.data.attendance.QrScanRepository
 
     @Binds
     fun bindDiaryRepository(impl: DefaultDiaryRepository): DiaryRepository

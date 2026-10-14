@@ -25,63 +25,102 @@ import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.core.ui.loadErrorMessage
 import com.schoolapp.feature.messages.R
+import com.schoolapp.feature.messages.components.LoadMoreRow
 import com.schoolapp.feature.messages.components.ParentShortcuts
 import com.schoolapp.feature.messages.components.ThreadRow
+import com.schoolapp.feature.messages.threads.components.InboxFilters
+
+internal class ThreadsActions(
+    val onRefresh: () -> Unit,
+    val onOpenThread: (String) -> Unit,
+    val onOpen: (Any) -> Unit,
+    val onNewMessage: () -> Unit,
+    val onSearchChange: (String) -> Unit,
+    val onUnreadOnlyChange: (Boolean) -> Unit,
+    val onBranchScopeChange: (Boolean) -> Unit,
+    val onLoadMore: () -> Unit,
+    val onRetryMore: () -> Unit,
+)
 
 @Composable
-internal fun ThreadsScreen(
-    state: ThreadsUiState,
-    onRefresh: () -> Unit,
-    onOpenThread: (String) -> Unit,
-    onOpen: (Any) -> Unit,
-    onNewMessage: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+internal fun ThreadsScreen(state: ThreadsUiState, actions: ThreadsActions, modifier: Modifier = Modifier) {
+    val canCompose = !state.branchScope
     Box(modifier.fillMaxSize()) {
-        RefreshBox(state.isRefreshing, onRefresh, Modifier.fillMaxSize()) {
+        RefreshBox(state.isRefreshing, actions.onRefresh, Modifier.fillMaxSize()) {
             ScreenColumn(contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 88.dp)) {
                 if (state.isParent) {
-                    item(key = "shortcuts") { ParentShortcuts(onOpen) }
+                    item(key = "shortcuts") { ParentShortcuts(actions.onOpen) }
                 }
                 item(key = "header") { SectionHeader(stringResource(R.string.messages_threads_header)) }
-                when {
-                    state.isLoading -> item(key = "loading") { LoadingState(rows = 4) }
-                    state.error != null && state.threads.isEmpty() -> item(key = "error") {
-                        ErrorState(loadErrorMessage(state.error), onRetry = onRefresh)
-                    }
-                    state.threads.isEmpty() -> item(key = "empty") {
-                        EmptyState(
-                            title = stringResource(R.string.messages_empty_title),
-                            message = stringResource(R.string.messages_empty_message),
-                            icon = Icons.AutoMirrored.Outlined.Chat,
-                            action = {
-                                PrimaryButton(
-                                    text = stringResource(R.string.messages_new_message),
-                                    onClick = onNewMessage,
-                                    leadingIcon = Icons.Outlined.Edit,
-                                )
-                            },
-                        )
-                    }
-                    else -> {
-                        state.error?.let { error -> item(key = "stale") { InlineMessage(appErrorMessage(error), StatusTone.Error) } }
-                        items(state.threads.size, key = { state.threads[it].id }) { index ->
-                            val thread = state.threads[index]
-                            ThreadRow(
-                                thread, state.myUserId, state.today,
-                                onClick = { onOpenThread(thread.id) },
-                                modifier = Modifier.padding(bottom = if (index < state.threads.size - 1) 8.dp else 0.dp),
-                            )
-                        }
-                    }
+                item(key = "filters") {
+                    InboxFilters(state, actions.onSearchChange, actions.onUnreadOnlyChange, actions.onBranchScopeChange)
                 }
+                threadItems(state, actions, canCompose)
             }
         }
-        AppFloatingButton(
-            text = stringResource(R.string.messages_new_message),
-            icon = Icons.Outlined.Edit,
-            onClick = onNewMessage,
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
-        )
+        if (canCompose) {
+            AppFloatingButton(
+                text = stringResource(R.string.messages_new_message),
+                icon = Icons.Outlined.Edit,
+                onClick = actions.onNewMessage,
+                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            )
+        }
     }
+}
+
+private fun androidx.compose.foundation.lazy.LazyListScope.threadItems(
+    state: ThreadsUiState,
+    actions: ThreadsActions,
+    canCompose: Boolean,
+) {
+    val threads = state.visibleThreads
+    when {
+        state.isLoading -> item(key = "loading") { LoadingState(rows = 4) }
+        state.error != null && state.threads.isEmpty() -> item(key = "error") {
+            ErrorState(loadErrorMessage(state.error), onRetry = actions.onRefresh)
+        }
+        threads.isEmpty() && !state.hasMore -> item(key = "empty") { ThreadsEmpty(state, actions, canCompose) }
+        else -> {
+            state.error?.let { error -> item(key = "stale") { InlineMessage(appErrorMessage(error), StatusTone.Error) } }
+            items(threads.size, key = { threads[it].id }) { index ->
+                val thread = threads[index]
+                ThreadRow(
+                    thread, state.myUserId, state.today,
+                    onClick = { actions.onOpenThread(thread.id) },
+                    modifier = Modifier.padding(bottom = if (index < threads.size - 1) 8.dp else 0.dp),
+                )
+            }
+            if (state.hasMore) {
+                item(key = "more") { LoadMoreRow(state.page, state.loadMoreError, actions.onLoadMore, actions.onRetryMore) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ThreadsEmpty(state: ThreadsUiState, actions: ThreadsActions, canCompose: Boolean) {
+    val filtered = state.isFiltered
+    EmptyState(
+        title = stringResource(if (filtered) R.string.messages_empty_filtered_title else R.string.messages_empty_title),
+        message = stringResource(
+            when {
+                filtered -> R.string.messages_empty_filtered_message
+                state.branchScope -> R.string.messages_empty_branch_message
+                else -> R.string.messages_empty_message
+            },
+        ),
+        icon = Icons.AutoMirrored.Outlined.Chat,
+        action = if (canCompose && !filtered) {
+            {
+                PrimaryButton(
+                    text = stringResource(R.string.messages_new_message),
+                    onClick = actions.onNewMessage,
+                    leadingIcon = Icons.Outlined.Edit,
+                )
+            }
+        } else {
+            null
+        },
+    )
 }

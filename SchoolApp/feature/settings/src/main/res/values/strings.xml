@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shell (each tab keeps its own strings_<tab>.xml) -->
+    <string name="settings_tab_school">School &amp; branding</string>
+    <string name="settings_tab_notifications">Notifications</string>
+    <string name="settings_tab_policies">Policies</string>
+    <string name="settings_tab_support">Support</string>
+    <string name="settings_tab_backups">Backups</string>
+    <string name="settings_tab_imports">Data import</string>
+    <string name="settings_tab_sms_gateway">SMS Gateway</string>
+    <string name="settings_school">School</string>
+    <string name="settings_no_school">No school in your scope</string>
+    <string name="settings_no_school_message">Settings are kept per school.</string>
+
+    <!-- Shared form pieces -->
+    <string name="settings_read_only">You can view these settings. Only a super admin can change them.</string>
+    <string name="settings_unsaved_changes">You have unsaved changes.</string>
+    <string name="settings_discard">Discard</string>
+    <string name="settings_save_changes">Save changes</string>
+    <string name="settings_page_previous">Previous page</string>
+    <string name="settings_page_next">Next page</string>
+    <string name="settings_page_of">Page %1$d of %2$d · %3$d total</string>
+    <string name="settings_dash">—</string>
+</resources>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_school_load_failed">School settings could not be loaded.</string>
+    <string name="settings_school_saved">School settings saved</string>
+    <string name="settings_school_identity">Identity</string>
+    <string name="settings_school_identity_hint">Shown on the login screen, the top bar, receipts and report cards.</string>
+    <string name="settings_school_logo">Logo</string>
+    <string name="settings_school_logo_upload">Upload logo</string>
+    <string name="settings_school_logo_replace">Replace logo</string>
+    <string name="settings_school_logo_remove">Remove</string>
+    <string name="settings_school_logo_hint">Square image works best. PNG, JPG or WebP.</string>
+    <string name="settings_school_display_name">Display name</string>
+    <string name="settings_school_display_name_required">Enter the display name</string>
+    <string name="settings_school_brand_colour">Brand colour</string>
+    <string name="settings_school_brand_colour_hint">Used for buttons and highlights on the login screen and top bar.</string>
+    <string name="settings_school_primary_colour">Primary colour</string>
+    <string name="settings_school_color_invalid">Enter a hex colour like #7B68EE.</string>
+    <string name="settings_school_color_too_light">Pick a darker colour — white text on it needs a contrast of at least %1$s : 1 to stay readable.</string>
+    <string name="settings_school_contrast_hint">Contrast against white text. At least %1$s : 1 is required.</string>
+    <string name="settings_school_passes_aa">Passes AA</string>
+    <string name="settings_school_too_light">Too light</string>
+    <string name="settings_school_reset_colour">Reset to default</string>
+    <string-array name="settings_school_preset_names">
+        <item>Purple (default)</item>
+        <item>Navy</item>
+        <item>Green</item>
+        <item>Indigo</item>
+        <item>Burgundy</item>
+        <item>Slate</item>
+    </string-array>
+    <string name="settings_school_footers">Printed footers</string>
+    <string name="settings_school_receipt_footer">Receipt footer</string>
+    <string name="settings_school_receipt_footer_hint">Printed at the bottom of fee receipts. %1$d / %2$d characters.</string>
+    <string name="settings_school_report_footer">Report card footer</string>
+    <string name="settings_school_report_footer_hint">Printed at the bottom of report cards. %1$d / %2$d characters.</string>
+    <string name="settings_school_regional">Regional</string>
+    <string name="settings_school_regional_hint">These are fixed for the school.</string>
+    <string name="settings_school_timezone">Time zone</string>
+    <string name="settings_school_currency">Currency</string>
+    <string name="settings_school_locale">Locale</string>
+    <string name="settings_school_preview">Preview</string>
+    <string name="settings_school_preview_hint">How the login screen and top bar will look.</string>
+    <string name="settings_school_preview_default">Showing the default colour until your colour passes the contrast check.</string>
+    <string name="settings_school_preview_sign_in_hint">Sign in to continue</string>
+    <string name="settings_school_preview_sign_in">Sign in</string>
+    <string name="settings_school_preview_dashboard">Dashboard</string>
+    <string name="settings_school_preview_students">Students</string>
+    <string name="settings_school_preview_save">Save</string>
+</resources>

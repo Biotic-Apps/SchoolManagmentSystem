@@ -1,5 +1,6 @@
 package com.schoolapp.core.data.diary
 
+import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.model.diary.DiaryEntry
 import com.schoolapp.core.model.diary.DiaryInput
@@ -22,6 +23,12 @@ interface DiaryRepository {
      * queued in order (the publish resolves the new id from the queued save).
      */
     suspend fun publish(input: DiaryInput, entryId: String?, clientRequestId: String): AppResult<DiaryOutcome>
+
+    /** Branch moderation queue: SUBMITTED entries (`GET /diary?status=SUBMITTED&branchId=`). */
+    suspend fun moderationQueue(branchId: String?): AppResult<List<DiaryEntry>> = AppResult.Failure(AppError.Unknown())
+
+    /** Publishes an existing entry by id (`POST /diary/{id}/publish`), online only. */
+    suspend fun publishEntry(id: String): AppResult<DiaryOutcome> = AppResult.Failure(AppError.Unknown())
 
     suspend fun returnEntry(id: String, comment: String): AppResult<DiaryEntry>
 

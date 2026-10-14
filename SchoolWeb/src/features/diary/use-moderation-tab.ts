@@ -1,6 +1,6 @@
 import { useBranchPicker } from "@/features/branches/use-branch-picker";
 import { useDialogState } from "@/lib/use-dialog-state";
-import { useDiaryEntries, usePublishDiary, useReturnDiary } from "./api";
+import { useApproveDiary, useDiaryEntries, useReturnDiary } from "./api";
 import { notifyPublishResult, toastDiaryError } from "./options";
 import type { DiaryEntry } from "./types";
 
@@ -8,7 +8,7 @@ import type { DiaryEntry } from "./types";
 export function useModerationTab() {
   const picker = useBranchPicker();
   const query = useDiaryEntries({ status: "SUBMITTED", branchId: picker.branchId }, !!picker.branchId);
-  const publish = usePublishDiary();
+  const approve = useApproveDiary();
   const returnEntry = useReturnDiary();
   const returning = useDialogState<DiaryEntry>();
 
@@ -16,9 +16,9 @@ export function useModerationTab() {
     picker,
     query,
     rows: (query.data ?? []).filter((entry) => entry.status === "SUBMITTED"),
-    publishingId: publish.isPending ? publish.variables : undefined,
+    publishingId: approve.isPending ? approve.variables?.id : undefined,
     approve: (entry: DiaryEntry) =>
-      publish.mutate(entry.id, { onSuccess: notifyPublishResult, onError: toastDiaryError }),
+      approve.mutate(entry, { onSuccess: notifyPublishResult, onError: toastDiaryError }),
     returning,
     returnPending: returnEntry.isPending,
     confirmReturn: (comment: string) => {

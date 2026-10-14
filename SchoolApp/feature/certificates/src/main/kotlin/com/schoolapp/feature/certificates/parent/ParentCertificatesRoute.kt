@@ -3,12 +3,10 @@ package com.schoolapp.feature.certificates.parent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CardMembership
-import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.FamilyRestroom
 import androidx.compose.material.icons.outlined.PostAdd
 import androidx.compose.runtime.Composable
@@ -28,13 +26,13 @@ import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.LoadingState
 import com.schoolapp.core.designsystem.component.ScreenColumn
-import com.schoolapp.core.designsystem.component.SecondaryButton
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.model.certificates.CertificateStatus
 import com.schoolapp.core.ui.appErrorMessage
-import com.schoolapp.core.ui.rememberExternalActions
 import com.schoolapp.feature.certificates.R
 import com.schoolapp.feature.certificates.components.CertificateCard
+import com.schoolapp.feature.certificates.components.CertificatePdfActions
+import com.schoolapp.feature.certificates.components.pdfOf
 
 /**
  * Parent certificates for the active child. [onBack] non-null = pushed screen with its own top bar
@@ -47,7 +45,6 @@ internal fun ParentCertificatesRoute(
     viewModel: ParentCertificatesViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val external = rememberExternalActions()
     val fab: @Composable () -> Unit = {
         if (state.canRequest && state.childId != null) {
             AppFloatingButton(stringResource(R.string.certificates_request), Icons.Outlined.PostAdd, viewModel::openForm)
@@ -65,11 +62,11 @@ internal fun ParentCertificatesRoute(
             },
             floatingActionButton = fab,
         ) { padding ->
-            ParentCertificatesScreen(state, onRetry = viewModel::retry, onDownload = external::open, modifier = Modifier.padding(padding))
+            ParentCertificatesScreen(state, onRetry = viewModel::retry, modifier = Modifier.padding(padding))
         }
     } else {
         Box(modifier.fillMaxSize()) {
-            ParentCertificatesScreen(state, onRetry = viewModel::retry, onDownload = external::open)
+            ParentCertificatesScreen(state, onRetry = viewModel::retry)
             Box(Modifier.align(Alignment.BottomEnd).padding(16.dp)) { fab() }
         }
     }
@@ -79,6 +76,7 @@ internal fun ParentCertificatesRoute(
             childName = state.childName,
             onTypeChange = viewModel::onTypeChange,
             onPurposeChange = viewModel::onPurposeChange,
+            onAchievementChange = viewModel::onAchievementChange,
             onSubmit = viewModel::submit,
             onDismiss = viewModel::dismissForm,
         )
@@ -89,7 +87,6 @@ internal fun ParentCertificatesRoute(
 internal fun ParentCertificatesScreen(
     state: ParentCertificatesUiState,
     onRetry: () -> Unit,
-    onDownload: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when {
@@ -116,14 +113,8 @@ internal fun ParentCertificatesScreen(
             }
             items(state.certificates, key = { it.id }) { certificate ->
                 CertificateCard(certificate) {
-                    val url = certificate.fileUrl
-                    if (certificate.status == CertificateStatus.ISSUED && !url.isNullOrBlank()) {
-                        SecondaryButton(
-                            text = stringResource(R.string.certificates_download),
-                            onClick = { onDownload(url) },
-                            leadingIcon = Icons.Outlined.Download,
-                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                        )
+                    if (certificate.status == CertificateStatus.ISSUED) {
+                        CertificatePdfActions(certificate, pdfOf(certificate, null), onCheckAgain = onRetry)
                     }
                 }
             }

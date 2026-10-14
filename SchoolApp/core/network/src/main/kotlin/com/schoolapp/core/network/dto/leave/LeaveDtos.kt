@@ -28,4 +28,5 @@ data class LeaveBodyDto(
     val from: String,
     val to: String,
     val reason: String,
+    val attachmentFileId: String? = null,
 )

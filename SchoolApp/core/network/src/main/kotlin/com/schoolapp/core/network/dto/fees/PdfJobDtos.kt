@@ -13,7 +13,8 @@ data class JobStatusDto(
     val status: String? = null,
     val result: JobResultDto? = null,
     val fileUrl: String? = null,
+    val error: String? = null,
 )
 
 @Serializable
-data class JobResultDto(val fileUrl: String? = null, val url: String? = null)
+data class JobResultDto(val fileUrl: String? = null, val url: String? = null, val count: Int? = null)

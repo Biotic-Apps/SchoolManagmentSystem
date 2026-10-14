@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppCard
@@ -17,6 +18,7 @@ import com.schoolapp.core.designsystem.component.StatusChip
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.model.activity.Activity
+import com.schoolapp.core.model.activity.ActivityAudience
 import com.schoolapp.core.ui.formatTimestamp
 import com.schoolapp.feature.activities.R
 import com.schoolapp.feature.activities.components.labelRes
@@ -36,16 +38,27 @@ internal fun ActivityInfoCard(activity: Activity, timeRange: String, modifier: M
         Spacer(Modifier.height(8.dp))
         KeyValueRow(stringResource(R.string.activities_when), timeRange)
         KeyValueRow(stringResource(R.string.activities_venue), activity.venue)
-        KeyValueRow(stringResource(R.string.activities_audience), activity.audienceLabel)
+        KeyValueRow(stringResource(R.string.activities_audience), activity.audienceLabel ?: audienceText(activity.audience))
         activity.feeMinor?.takeIf { it > 0 }?.let { KeyValueRow(stringResource(R.string.activities_fee), FeeFormat.format(it)) }
         activity.maxParticipants?.let { KeyValueRow(stringResource(R.string.activities_max_participants), it.toString()) }
         if (activity.consentRequired) {
             KeyValueRow(stringResource(R.string.activities_consent_deadline), formatTimestamp(activity.consentDeadline))
         }
         activity.proposedBy?.takeIf { it.isNotBlank() }?.let { KeyValueRow(stringResource(R.string.activities_proposed_by), it) }
+        activity.reason?.takeIf { it.isNotBlank() }?.let { KeyValueRow(stringResource(R.string.activities_reason), it) }
         activity.description?.takeIf { it.isNotBlank() }?.let {
             Spacer(Modifier.height(8.dp))
             Text(it, style = MaterialTheme.typography.bodyMedium, color = AppColors.TextPrimary)
         }
     }
+}
+
+@Composable
+private fun audienceText(audience: ActivityAudience): String? {
+    if (audience.wholeBranch) return stringResource(R.string.activities_audience_whole_branch)
+    val parts = listOfNotNull(
+        audience.classIds.size.takeIf { it > 0 }?.let { pluralStringResource(R.plurals.activities_classes_count, it, it) },
+        audience.sectionIds.size.takeIf { it > 0 }?.let { pluralStringResource(R.plurals.activities_sections_count, it, it) },
+    )
+    return parts.joinToString(" · ").ifEmpty { null }
 }

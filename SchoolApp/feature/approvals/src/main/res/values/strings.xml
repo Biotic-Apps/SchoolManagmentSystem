@@ -1,6 +1,8 @@
 <resources>
     <string name="approvals_empty_title">Nothing here</string>
     <string name="approvals_empty_message">Requests that need your decision will appear here.</string>
+    <string name="approvals_type_all">All types</string>
+    <string name="approvals_load_more">Load more</string>
     <string name="approvals_status_pending">Pending</string>
     <string name="approvals_status_approved">Approved</string>
     <string name="approvals_status_rejected">Rejected</string>

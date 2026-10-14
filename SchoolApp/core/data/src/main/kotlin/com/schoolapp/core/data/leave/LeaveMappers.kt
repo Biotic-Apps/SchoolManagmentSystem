@@ -31,7 +31,11 @@ internal fun LeaveDto.toModel(): LeaveRequest {
     )
 }
 
-internal fun LeaveInput.toBody(): LeaveBodyDto = when (this) {
-    is LeaveInput.ForStudent -> LeaveBodyDto(studentId = studentId, from = from, to = to, reason = reason.trim())
-    is LeaveInput.ForSelf -> LeaveBodyDto(type = type.name, from = from, to = to, reason = reason.trim())
-}
+internal fun LeaveInput.toBody(): LeaveBodyDto = LeaveBodyDto(
+    studentId = (this as? LeaveInput.ForStudent)?.studentId,
+    type = (this as? LeaveInput.ForSelf)?.type?.name,
+    from = from,
+    to = to,
+    reason = reason.trim(),
+    attachmentFileId = attachmentFileId,
+)

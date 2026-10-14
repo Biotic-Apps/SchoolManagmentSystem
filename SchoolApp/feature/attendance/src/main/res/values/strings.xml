@@ -124,7 +124,6 @@
     <string name="attendance_my_days">Days</string>
     <string name="attendance_check_in">Check in %1$s</string>
     <string name="attendance_check_out">Check out %1$s</string>
-    <string name="attendance_salary_note">Salary slips will appear here in a later update.</string>
 
     <!-- Leave -->
     <string name="attendance_my_leave_requests">My leave requests</string>

@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -86,6 +87,16 @@ class DefaultDiaryRepository @Inject constructor(
         return published.map { it.toDiaryOutcome(json) }
     }
 
+    override suspend fun moderationQueue(branchId: String?): AppResult<List<DiaryEntry>> =
+        apiCaller.call {
+            api.entries(branchId = branchId, status = STATUS_SUBMITTED).data.map { it.toModel() }
+                .filter { it.status.name == STATUS_SUBMITTED }
+                .sortedWith(compareBy<DiaryEntry> { it.date }.thenBy { it.className }.thenBy { it.sectionName })
+        }
+
+    override suspend fun publishEntry(id: String): AppResult<DiaryOutcome> =
+        apiCaller.call { api.publish(id, UUID.randomUUID().toString()).data }.map { it.toDiaryOutcome(json) }
+
     override suspend fun returnEntry(id: String, comment: String): AppResult<DiaryEntry> =
         apiCaller.call { api.returnEntry(id, CommentBodyDto(comment.clean())).data.toModel() }
 
@@ -126,6 +137,7 @@ class DefaultDiaryRepository @Inject constructor(
 
     internal companion object {
         const val OUTBOX_PREFIX = "DIARY_"
+        const val STATUS_SUBMITTED = "SUBMITTED"
         const val OUTBOX_SAVE = "DIARY_SAVE"
         const val OUTBOX_PUBLISH = "DIARY_PUBLISH"
 

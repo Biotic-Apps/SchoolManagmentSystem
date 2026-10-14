@@ -2,6 +2,7 @@ package com.schoolapp.core.data.meetings
 
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.common.clean
+import com.schoolapp.core.model.meeting.AcceptMeetingInput
 import com.schoolapp.core.model.meeting.CompleteMeetingInput
 import com.schoolapp.core.model.meeting.FollowUp
 import com.schoolapp.core.model.meeting.Meeting
@@ -10,6 +11,8 @@ import com.schoolapp.core.model.meeting.MeetingRequestInput
 import com.schoolapp.core.model.meeting.MeetingSlot
 import com.schoolapp.core.model.meeting.MeetingTeacher
 import com.schoolapp.core.model.meeting.SlotInput
+import com.schoolapp.core.model.meeting.StaffMeetingInput
+import com.schoolapp.core.model.settings.PagedList
 import com.schoolapp.core.network.ApiCaller
 import com.schoolapp.core.network.api.MeetingsApi
 import com.schoolapp.core.network.dto.common.ReasonBodyDto
@@ -49,8 +52,11 @@ class DefaultMeetingsRepository @Inject constructor(
     override suspend fun request(input: MeetingRequestInput): AppResult<Meeting> =
         apiCaller.call { api.request(input.toBody()).data.toModel() }
 
-    override suspend fun accept(id: String): AppResult<Meeting> =
-        apiCaller.call { api.accept(id, AcceptMeetingBodyDto()).data.toModel() }
+    override suspend fun accept(id: String, change: AcceptMeetingInput?): AppResult<Meeting> =
+        apiCaller.call { api.accept(id, change?.toBody() ?: AcceptMeetingBodyDto()).data.toModel() }
+
+    override suspend fun schedule(input: StaffMeetingInput): AppResult<Meeting> =
+        apiCaller.call { api.schedule(input.toBody()).data.toModel() }
 
     override suspend fun decline(id: String, reason: String?): AppResult<Meeting> =
         apiCaller.call { api.decline(id, ReasonBodyDto(reason.clean())).data.toModel() }
@@ -59,6 +65,15 @@ class DefaultMeetingsRepository @Inject constructor(
         val list = api.meetings(box.name.lowercase(), studentId).data.map { it.toModel() }.chronological()
         if (box == MeetingBox.PAST) list.reversed() else list
     }
+
+    override suspend fun meetingsPage(box: MeetingBox, studentId: String?, page: Int, pageSize: Int): AppResult<PagedList<Meeting>> =
+        apiCaller.call {
+            val envelope = api.meetings(box.name.lowercase(), studentId, page, pageSize)
+            val items = envelope.data.map { it.toModel() }
+            PagedList(items, envelope.meta?.page ?: page, envelope.meta?.pageSize ?: pageSize, envelope.meta?.total ?: items.size)
+        }
+
+    override suspend fun meeting(id: String): AppResult<Meeting> = apiCaller.call { api.meeting(id).data.toModel() }
 
     override suspend fun cancel(id: String, reason: String?): AppResult<Meeting> =
         apiCaller.call { api.cancel(id, ReasonBodyDto(reason.clean())).data.toModel() }

@@ -53,4 +53,24 @@
     <string name="messages_pick_child">Pick a child</string>
     <string name="messages_compose_hint">Messages sent outside office hours are delivered silently.</string>
     <string name="messages_no_children">No linked children on your account.</string>
+
+    <string name="messages_search">Search messages</string>
+    <string name="messages_filter_all">All</string>
+    <string name="messages_filter_unread">Unread only</string>
+    <string name="messages_scope_mine">Mine</string>
+    <string name="messages_scope_branch">Branch (read-only)</string>
+    <string name="messages_branch_note">Every conversation in your branch. Read-only; opening a conversation is recorded in the audit log.</string>
+    <string name="messages_empty_filtered_title">No matching conversations</string>
+    <string name="messages_empty_filtered_message">Try adjusting your search or filters.</string>
+    <string name="messages_empty_branch_message">Conversations in your branch will appear here.</string>
+    <string name="messages_retry">Retry</string>
+    <string name="messages_read_only_note">You are viewing this conversation as a branch manager. It is read-only.</string>
+    <string name="messages_to">To</string>
+    <string name="messages_to_default">Class teacher (default)</string>
+    <string name="messages_to_default_hint">Leave as the class teacher, or pick a subject teacher or the principal.</string>
+    <string name="messages_role_class_teacher">Class teacher</string>
+    <string name="messages_role_teacher">Teacher</string>
+    <string name="messages_role_principal">Principal</string>
+    <string name="messages_recipients_error">Could not load teachers. The message will go to the class teacher.</string>
+    <string name="messages_target_denied">You can\'t message this person.</string>
 </resources>

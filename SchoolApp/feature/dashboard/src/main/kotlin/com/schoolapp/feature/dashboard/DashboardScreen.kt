@@ -20,6 +20,9 @@ import com.schoolapp.feature.dashboard.components.SupervisorGrid
 import com.schoolapp.feature.dashboard.components.TeacherTodayContent
 import com.schoolapp.feature.dashboard.components.WelcomeCard
 import com.schoolapp.feature.dashboard.supervisor.pendingTiles
+import com.schoolapp.feature.dashboard.scope.DashboardScopeBar
+import com.schoolapp.feature.dashboard.scope.DashboardScopeState
+import com.schoolapp.feature.dashboard.scope.ScopeActions
 
 @Composable
 fun DashboardScreen(
@@ -31,6 +34,8 @@ fun DashboardScreen(
     canOpenMenu: (String) -> Boolean = { true },
     challan: ChallanState = ChallanState(),
     onDownloadChallan: (String) -> Unit = {},
+    scope: DashboardScopeState = DashboardScopeState(),
+    scopeActions: ScopeActions = ScopeActions(),
 ) {
     when (state) {
         DashboardUiState.Loading -> LoadingState(modifier)
@@ -44,7 +49,19 @@ fun DashboardScreen(
             }
         }
         is DashboardUiState.Supervisor -> RefreshBox(state.isRefreshing, onRefresh, modifier) {
-            SupervisorGrid(state, onOpenMenu, onOpen, canOpenMenu)
+            SupervisorGrid(
+                state,
+                onOpenMenu,
+                onOpen,
+                canOpenMenu,
+                scopeBar = if (scope.showPicker) {
+                    {
+                        DashboardScopeBar(scope, scopeActions.onSchool, scopeActions.onBranch, scopeActions.onSession, scopeActions.onReset)
+                    }
+                } else {
+                    null
+                },
+            )
         }
         is DashboardUiState.Teacher -> RefreshBox(state.isRefreshing, onRefresh, modifier) {
             TeacherTodayContent(state, onOpenMenu, onOpen, canOpenMenu)

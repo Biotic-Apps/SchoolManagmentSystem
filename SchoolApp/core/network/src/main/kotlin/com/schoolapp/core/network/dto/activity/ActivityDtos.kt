@@ -7,6 +7,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ActivityDto(
     val id: String,
+    val branchId: String? = null,
+    val reason: String? = null,
+    val createdAt: String? = null,
     val type: String? = null,
     val title: String = "",
     val description: String? = null,
@@ -41,7 +44,7 @@ data class ActivityAudienceDto(
 @Serializable
 data class ConsentRefDto(val status: String? = null, val respondedAt: String? = null)
 
-/** `POST /activities`. */
+/** `POST /activities`; also `PATCH /activities/{id}` with [branchId] left null (omitted). */
 @Serializable
 data class ActivityBodyDto(
     val branchId: String? = null,
@@ -54,11 +57,14 @@ data class ActivityBodyDto(
     val audience: ActivityAudienceBodyDto,
     val consentRequired: Boolean,
     val consentDeadline: String? = null,
+    val feeMinor: Long? = null,
+    val maxParticipants: Int? = null,
 )
 
 @Serializable
 data class ActivityAudienceBodyDto(
     val sectionIds: List<String>? = null,
+    val classIds: List<String>? = null,
     val wholeBranch: Boolean? = null,
 )
 
@@ -80,6 +86,23 @@ data class ParticipantDto(
     val student: IdNameDto? = null,
     val studentId: String? = null,
     val studentName: String? = null,
+    val role: String? = null,
+    val result: String? = null,
+    val position: Int? = null,
+    val remarks: String? = null,
+)
+
+/** `POST /activities/{id}/status`: ONGOING, COMPLETED or CANCELLED (with a reason). */
+@Serializable
+data class ActivityStatusBodyDto(val status: String, val reason: String? = null)
+
+/** `PUT /activities/{id}/participants` replaces the whole roster. */
+@Serializable
+data class ParticipantsBodyDto(val participants: List<ParticipantInputDto>)
+
+@Serializable
+data class ParticipantInputDto(
+    val studentId: String,
     val role: String? = null,
     val result: String? = null,
     val position: Int? = null,

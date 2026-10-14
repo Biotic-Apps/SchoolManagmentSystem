@@ -25,6 +25,8 @@ import com.schoolapp.core.designsystem.component.SectionHeader
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.meetings.R
+import com.schoolapp.core.model.meeting.MeetingBox
+import com.schoolapp.feature.meetings.components.LoadMoreRow
 import com.schoolapp.feature.meetings.components.MeetingCard
 
 @Composable
@@ -33,6 +35,8 @@ internal fun ParentMeetingsScreen(
     onBook: () -> Unit,
     onRefresh: () -> Unit,
     onRetry: () -> Unit,
+    onLoadMore: (MeetingBox) -> Unit,
+    onRetryMore: (MeetingBox) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier.fillMaxSize()) {
@@ -40,19 +44,27 @@ internal fun ParentMeetingsScreen(
             when {
                 state.isLoading -> LoadingState()
                 state.noChild -> PullableState { EmptyState(stringResource(R.string.meetings_no_child), icon = Icons.Outlined.Groups) }
-                state.error != null && state.upcoming.isEmpty() && state.past.isEmpty() -> PullableState { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
+                state.error != null && state.upcoming.items.isEmpty() && state.past.items.isEmpty() -> PullableState { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
                 else -> ScreenColumn(contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 88.dp)) {
                     state.error?.let { item(key = "refresh_error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
                     item(key = "upcoming_header") { SectionHeader(stringResource(R.string.meetings_upcoming)) }
-                    if (state.upcoming.isEmpty()) {
+                    if (state.upcoming.items.isEmpty()) {
                         item(key = "upcoming_empty") {
                             EmptyState(stringResource(R.string.meetings_empty_upcoming), message = stringResource(R.string.meetings_empty_upcoming_hint), icon = Icons.Outlined.EventAvailable)
                         }
                     }
-                    items(state.upcoming, key = { "u_${it.id}" }) { MeetingCard(it, forStaff = false) }
-                    if (state.past.isNotEmpty()) {
+                    items(state.upcoming.items, key = { "u_${it.id}" }) { MeetingCard(it, forStaff = false) }
+                    if (state.upcoming.hasMore) {
+                        item(key = "u_more") {
+                            LoadMoreRow(state.upcoming, { onLoadMore(MeetingBox.UPCOMING) }, { onRetryMore(MeetingBox.UPCOMING) })
+                        }
+                    }
+                    if (state.past.items.isNotEmpty()) {
                         item(key = "past_header") { SectionHeader(stringResource(R.string.meetings_past)) }
-                        items(state.past, key = { "p_${it.id}" }) { MeetingCard(it, forStaff = false, showSummary = true) }
+                        items(state.past.items, key = { "p_${it.id}" }) { MeetingCard(it, forStaff = false, showSummary = true) }
+                        if (state.past.hasMore) {
+                            item(key = "p_more") { LoadMoreRow(state.past, { onLoadMore(MeetingBox.PAST) }, { onRetryMore(MeetingBox.PAST) }) }
+                        }
                     }
                 }
             }

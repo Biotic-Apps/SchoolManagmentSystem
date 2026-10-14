@@ -136,6 +136,11 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideOrganisationEditApi(retrofit: Retrofit): com.schoolapp.core.network.api.OrganisationEditApi =
+        retrofit.create(com.schoolapp.core.network.api.OrganisationEditApi::class.java)
+
+    @Provides
+    @Singleton
     fun provideStudentsApi(retrofit: Retrofit): StudentsApi = retrofit.create(StudentsApi::class.java)
 
     @Provides
@@ -185,6 +190,11 @@ internal object NetworkModule {
     @Provides
     @Singleton
     fun provideLeaveApi(retrofit: Retrofit): LeaveApi = retrofit.create(LeaveApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideQrScanApi(retrofit: Retrofit): com.schoolapp.core.network.api.QrScanApi =
+        retrofit.create(com.schoolapp.core.network.api.QrScanApi::class.java)
 
     @Provides
     @Singleton

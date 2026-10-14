@@ -9,6 +9,8 @@ import com.schoolapp.feature.students.manage.ManageSheet
 /**
  * Student profile. Like the web: placement actions and editing need `students.edit` while the student is
  * enrolled (ACTIVE); linking a guardian needs `students.edit`, editing a guardian `guardians.edit`.
+ * The Attendance / Health / Pickup tabs show only with their `.view` permission; documents, ID cards and
+ * bulk ID card printing are managed with `students.edit`.
  */
 @Immutable
 data class StudentDetailUiState(
@@ -18,6 +20,11 @@ data class StudentDetailUiState(
     val canEditStudent: Boolean = false,
     val canEditGuardians: Boolean = false,
     val canLinkGuardian: Boolean = false,
+    val canViewAttendance: Boolean = false,
+    val canViewHealth: Boolean = false,
+    val canEditHealth: Boolean = false,
+    val canViewPickup: Boolean = false,
+    val canEditPickup: Boolean = false,
     val today: String = "",
     val sheet: ManageSheet? = null,
     val notice: ManageNotice? = null,

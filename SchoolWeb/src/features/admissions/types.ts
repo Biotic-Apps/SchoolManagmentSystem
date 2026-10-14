@@ -1,6 +1,6 @@
 import type { ParentLogin } from "@/features/guardians/types";
 import type { SchoolDocument } from "@/features/documents/types";
-import type { ChildInput, GuardianEntry, MedicalInfo } from "@/features/people/types";
+import type { ChildInput, Gender, GuardianEntry, MedicalInfo } from "@/features/people/types";
 
 export type EnquiryStatus = "NEW" | "CONTACTED" | "CONVERTED" | "CLOSED";
 
@@ -47,6 +47,11 @@ export interface EnquiryInput {
   source?: string;
   notes?: string;
   followUpDate?: string;
+}
+
+export interface ConvertEnquiryInput {
+  gender: Gender;
+  dob?: string;
 }
 
 export interface EnquiryUpdate {

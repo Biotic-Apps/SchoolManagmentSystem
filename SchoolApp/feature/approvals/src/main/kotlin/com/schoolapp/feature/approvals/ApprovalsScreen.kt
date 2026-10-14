@@ -1,16 +1,22 @@
 package com.schoolapp.feature.approvals
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.TaskAlt
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.schoolapp.core.designsystem.component.AppTextButton
 import com.schoolapp.core.designsystem.component.EmptyState
+import com.schoolapp.core.designsystem.component.InlineMessage
+import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.FilterChipRow
 import com.schoolapp.core.designsystem.component.LoadingState
@@ -23,12 +29,15 @@ import com.schoolapp.core.model.approval.ApprovalRequest
 import com.schoolapp.core.model.approval.ApprovalStatus
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.approvals.components.ApprovalRow
+import com.schoolapp.feature.approvals.components.ApprovalTypeFilter
 import com.schoolapp.feature.approvals.components.statusLabel
 
 @Composable
 fun ApprovalsScreen(
     state: ApprovalsUiState,
     onFilterSelected: (ApprovalStatus) -> Unit,
+    onTypeSelected: (String?) -> Unit,
+    onLoadMore: () -> Unit,
     onRefresh: () -> Unit,
     onOpen: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -42,6 +51,9 @@ fun ApprovalsScreen(
                     onSelect = { onFilterSelected(ApprovalStatus.fromKey(it)) },
                     modifier = Modifier.padding(bottom = 8.dp),
                 )
+            }
+            item(key = "type") {
+                ApprovalTypeFilter(ApprovalsUiState.Types, state.type, onTypeSelected, Modifier.padding(bottom = 8.dp))
             }
             when {
                 state.isLoading -> item(key = "loading") { LoadingState() }
@@ -58,6 +70,14 @@ fun ApprovalsScreen(
                     },
                 ) { item -> ApprovalRow(item, onClick = { onOpen(item.id) }) }
             }
+            if (!state.isLoading && state.error == null) {
+                state.moreError?.let { item(key = "more_error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
+                if (state.hasMore) item(key = "more") {
+                    Box(Modifier.fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.Center) {
+                        AppTextButton(stringResource(R.string.approvals_load_more), onLoadMore, loading = state.isLoadingMore)
+                    }
+                }
+            }
         }
     }
 }
@@ -72,6 +92,6 @@ private fun ApprovalsScreenPreview() = SchoolTheme {
                 ApprovalRequest("1", "LEAVE", null, "Leave request: 2 days", "u2", "Bilal Ahmed", ApprovalStatus.PENDING, 1, "2026-10-04T09:00:00Z"),
             ),
         ),
-        onFilterSelected = {}, onRefresh = {}, onOpen = {},
+        onFilterSelected = {}, onTypeSelected = {}, onLoadMore = {}, onRefresh = {}, onOpen = {},
     )
 }

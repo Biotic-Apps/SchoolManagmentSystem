@@ -1,14 +1,16 @@
 package com.schoolapp.feature.admissions.create
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
+import com.schoolapp.core.common.result.map
 import com.schoolapp.core.common.time.AppClock
+import com.schoolapp.core.data.admissions.AdmissionsRepository
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.data.common.toActionError
-import com.schoolapp.core.data.organisation.OrganisationRepository
-import com.schoolapp.core.data.people.StudentAdminRepository
+import com.schoolapp.core.model.admissions.ApplicationFormInput
 import com.schoolapp.core.model.people.ApplicationInput
 import com.schoolapp.core.model.people.PersonProblem
 import com.schoolapp.core.ui.people.ChildForm
@@ -19,6 +21,8 @@ import com.schoolapp.core.ui.people.problems
 import com.schoolapp.core.ui.people.toEntries
 import com.schoolapp.core.ui.people.withPrimary
 import com.schoolapp.core.ui.people.without
+import com.schoolapp.feature.admissions.common.AdmissionPermissions
+import com.schoolapp.feature.admissions.common.AdmissionScopeLoader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,14 +33,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/** Creates an application with `POST /admissions/applications` (same payload as the web form). */
+/** `POST /admissions/applications` (new) or `PATCH /admissions/applications/:id` (edit, when an `id` is in the route). */
 @HiltViewModel
 class NewApplicationViewModel @Inject constructor(
-    private val repository: StudentAdminRepository,
-    private val organisation: OrganisationRepository,
+    savedStateHandle: SavedStateHandle,
+    private val repository: AdmissionsRepository,
+    private val scopeLoader: AdmissionScopeLoader,
     private val authRepository: AuthRepository,
     private val clock: AppClock,
 ) : ViewModel() {
+
+    private val editId: String? = savedStateHandle["id"]
 
     private val _uiState = MutableStateFlow(NewApplicationUiState())
     val uiState: StateFlow<NewApplicationUiState> = _uiState.asStateFlow()
@@ -52,18 +59,22 @@ class NewApplicationViewModel @Inject constructor(
         _uiState.update { it.copy(isLoading = true, loadError = null, today = clock.now().toLocalDate().toString()) }
         viewModelScope.launch {
             val session = authRepository.session.filterNotNull().first()
-            if (!session.has(ADMISSIONS_ADD)) return@launch _uiState.update { it.copy(isLoading = false, canAdd = false) }
-            val branch = session.activeBranchId?.let { id -> id to session.activeAssignments.firstNotNullOfOrNull { it.schoolId } }
-                ?: (organisation.branches() as? AppResult.Success)?.data?.firstOrNull()?.let { it.id to it.schoolId }
-            branchId = branch?.first
-            val active = branch?.let { (organisation.sessions(it.first) as? AppResult.Success)?.data?.firstOrNull { s -> s.isActive } }
-            sessionId = active?.id
-            when (val classes = organisation.classes(branch?.second)) {
-                is AppResult.Failure -> _uiState.update { it.copy(isLoading = false, canAdd = true, loadError = classes.error) }
-                is AppResult.Success -> _uiState.update {
-                    it.copy(isLoading = false, canAdd = true, noSession = active == null, classes = classes.data.map { c -> ClassChoice(c.id, c.name) })
-                }
+            val needed = if (editId != null) AdmissionPermissions.EDIT else AdmissionPermissions.ADD
+            if (!session.has(needed)) return@launch _uiState.update { it.copy(isLoading = false, canAdd = false) }
+            if (editId != null) return@launch loadForEdit(editId)
+            val scope = scopeLoader.load()
+            branchId = scope.branchId
+            sessionId = scope.sessionId
+            _uiState.update {
+                it.copy(isLoading = false, canAdd = true, loadError = scope.error, noSession = scope.sessionId == null, classes = scope.classes)
             }
+        }
+    }
+
+    private suspend fun loadForEdit(id: String) {
+        when (val result = repository.application(id)) {
+            is AppResult.Failure -> _uiState.update { it.copy(isLoading = false, canAdd = true, loadError = result.error) }
+            is AppResult.Success -> _uiState.update { it.copy(isLoading = false, canAdd = true).filledFrom(result.data) }
         }
     }
 
@@ -83,6 +94,10 @@ class NewApplicationViewModel @Inject constructor(
 
     fun makePrimary(index: Int) = _uiState.update { it.copy(guardians = it.guardians.withPrimary(index)) }
 
+    fun onMedical(medical: MedicalForm) = _uiState.update {
+        it.copy(medical = medical.copy(allergies = medical.allergies.take(MEDICAL_MAX), conditions = medical.conditions.take(MEDICAL_MAX), notes = medical.notes.take(NOTES_MAX)))
+    }
+
     fun onNotes(notes: String) = _uiState.update { it.copy(notes = notes.take(NOTES_MAX)) }
 
     fun dismissError() = _uiState.update { it.copy(submitError = null) }
@@ -96,13 +111,17 @@ class NewApplicationViewModel @Inject constructor(
             if (s.classId == null) put(CLASS, PersonProblem.REQUIRED)
         }
         if (problems.isNotEmpty()) return _uiState.update { it.copy(errors = FormErrors(problems)) }
-        val branch = branchId
-        val session = sessionId
-        if (branch == null || session == null) return _uiState.update { it.copy(noSession = true) }
+        if (editId == null && (branchId == null || sessionId == null)) return _uiState.update { it.copy(noSession = true) }
         _uiState.update { it.copy(submitting = true, submitError = null, errors = FormErrors()) }
         viewModelScope.launch {
-            val input = ApplicationInput(branch, session, s.classId!!, s.child.toInput(), s.guardians.toEntries(), s.notes.ifBlank { null })
-            when (val result = repository.createApplication(input)) {
+            val notes = s.notes.ifBlank { null }
+            val result = if (editId != null) {
+                repository.updateApplication(editId, ApplicationFormInput(s.child.toInput(), s.guardians.toEntries(), s.medical.toInfo(), notes)).map { it.id }
+            } else {
+                val input = ApplicationInput(branchId!!, sessionId!!, s.classId!!, s.child.toInput(), s.guardians.toEntries(), notes)
+                repository.createApplication(input, s.medical.toInfo())
+            }
+            when (result) {
                 is AppResult.Success -> _uiState.update { it.copy(submitting = false, createdId = result.data) }
                 is AppResult.Failure -> _uiState.update {
                     val fields = FormErrors.fromServer(result.error)
@@ -120,8 +139,8 @@ class NewApplicationViewModel @Inject constructor(
         FormErrors(problems.filterKeys { !it.startsWith(prefix) }, server.filterKeys { !it.startsWith(prefix) })
 
     internal companion object {
-        const val ADMISSIONS_ADD = "admissions.add"
         const val CLASS = "classId"
         const val NOTES_MAX = 2000
+        const val MEDICAL_MAX = 1000
     }
 }

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="homework_title">Homework Submissions</string>
+    <string name="homework_parent_title">Homework</string>
+    <string name="homework_branch">Branch</string>
+    <string name="homework_section_label">%1$s %2$s</string>
+    <string name="homework_no_sections">No sections</string>
+    <string name="homework_no_sections_message">You have no class sections in this branch yet.</string>
+    <string name="homework_assign">Assign homework</string>
+    <string name="homework_empty">No homework yet</string>
+    <string name="homework_empty_staff_message">Assign homework to this section using the button above.</string>
+    <string name="homework_empty_staff_readonly">Homework assigned to this section will appear here.</string>
+    <string name="homework_empty_parent">No homework assigned</string>
+    <string name="homework_empty_parent_message">Homework from teachers will appear here.</string>
+    <string name="homework_no_child">No child linked</string>
+    <string name="homework_no_child_message">Once your child link is verified, their homework appears here.</string>
+    <string name="homework_view_submissions">View submissions</string>
+    <string name="homework_view_submit">View / Submit</string>
+    <string name="homework_due_on">Due %1$s</string>
+    <string name="homework_overdue_by">Overdue by %1$d day(s)</string>
+    <string name="homework_due_today">Due today</string>
+    <string name="homework_due_tomorrow">Due tomorrow</string>
+    <string name="homework_due_in">Due in %1$d days</string>
+    <string name="homework_max_marks">Max: %1$d</string>
+    <string name="homework_counts">%1$d submitted · %2$d graded</string>
+    <string name="homework_status_active">Active</string>
+    <string name="homework_status_archived">Archived</string>
+    <string name="homework_status_submitted">Submitted</string>
+    <string name="homework_status_late">Late</string>
+    <string name="homework_status_graded">Graded</string>
+    <string name="homework_status_returned">Returned</string>
+    <string name="homework_status_unknown">Unknown</string>
+    <string name="homework_assigned_toast">Homework assigned</string>
+    <string name="homework_graded_toast">Submission graded</string>
+    <string name="homework_returned_toast">Submission returned for revision</string>
+    <string name="homework_submitted_toast">Homework submitted</string>
+
+    <!-- Assign form -->
+    <string name="homework_assign_subtitle">Create a new homework assignment for %1$s.</string>
+    <string name="homework_subject">Subject</string>
+    <string name="homework_no_subjects">No subjects are set up for this class.</string>
+    <string name="homework_field_title">Title</string>
+    <string name="homework_field_description">Description</string>
+    <string name="homework_field_due">Due date</string>
+    <string name="homework_field_max_marks">Max marks (optional)</string>
+    <string name="homework_assign_button">Assign</string>
+    <string name="homework_error_subject">Choose a subject.</string>
+    <string name="homework_error_title">Enter a title.</string>
+    <string name="homework_error_description">Enter a description.</string>
+    <string name="homework_error_due">Choose a due date.</string>
+    <string name="homework_error_marks">Enter a whole number from 0 to 1000.</string>
+    <string name="homework_error_too_long">Too long (max %1$d characters).</string>
+
+    <!-- Submissions -->
+    <string name="homework_submissions_subtitle">%1$s · Due %2$s · %3$d submissions</string>
+    <string name="homework_no_submissions">No submissions yet</string>
+    <string name="homework_no_submissions_message">Students have not submitted homework.</string>
+    <string name="homework_submitted_at">Submitted %1$s</string>
+    <string name="homework_marks">Marks</string>
+    <string name="homework_marks_of">%1$d / %2$d</string>
+    <string name="homework_grade">Grade</string>
+    <string name="homework_feedback">Feedback</string>
+    <string name="homework_grade_button">Grade</string>
+    <string name="homework_return_button">Return</string>
+    <string name="homework_grade_title">Grade %1$s</string>
+    <string name="homework_max_marks_hint">Maximum marks: %1$d</string>
+    <string name="homework_marks_label">Marks</string>
+    <string name="homework_marks_out_of">Marks (out of %1$d)</string>
+    <string name="homework_grade_label">Grade (optional)</string>
+    <string name="homework_feedback_label">Feedback (optional)</string>
+    <string name="homework_save_grade">Save grade</string>
+    <string name="homework_error_marks_max">Enter a whole number from 0 to %1$d.</string>
+    <string name="homework_return_title">Return for revision</string>
+    <string name="homework_return_message">%1$s will be asked to revise and resubmit.</string>
+    <string name="homework_return_note">Note to the student</string>
+    <string name="homework_return_default">Please revise and resubmit.</string>
+    <string name="homework_error_note">Enter a note.</string>
+    <string name="homework_cancel">Cancel</string>
+
+    <!-- Parent submit -->
+    <string name="homework_your_submission">Your submission</string>
+    <string name="homework_returned_title">Returned for revision</string>
+    <string name="homework_answer">Your answer</string>
+    <string name="homework_attach_files">Attach files</string>
+    <string name="homework_submit">Submit</string>
+    <string name="homework_resubmit">Resubmit</string>
+    <string name="homework_error_empty_submission">Write an answer or attach a file.</string>
+    <string name="homework_no_submit_permission">You can view this homework but not submit it.</string>
+    <string name="homework_not_found">This homework is no longer available.</string>
+    <string name="homework_upload_offline">You are offline. Connect to the internet to attach files.</string>
+</resources>

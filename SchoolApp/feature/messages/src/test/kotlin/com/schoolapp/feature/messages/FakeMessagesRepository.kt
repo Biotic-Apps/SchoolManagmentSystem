@@ -7,7 +7,10 @@ import com.schoolapp.core.data.messages.MessagesRepository
 import com.schoolapp.core.model.files.FilePurpose
 import com.schoolapp.core.model.files.UploadedFile
 import com.schoolapp.core.model.message.ChatMessage
+import com.schoolapp.core.model.message.MessageRecipient
 import com.schoolapp.core.model.message.MessageThread
+import com.schoolapp.core.model.message.ThreadQuery
+import com.schoolapp.core.model.settings.PagedList
 import com.schoolapp.core.model.message.NewThreadInput
 import com.schoolapp.core.model.message.SentMessage
 import com.schoolapp.core.model.message.ThreadDetail
@@ -36,6 +39,17 @@ class FakeMessagesRepository : MessagesRepository {
         threadRequests += studentId
         return AppResult.Success(listOf(testThread(id = "thread-${studentId ?: "all"}", studentId = studentId ?: "x")))
     }
+
+    val pageRequests = mutableListOf<Pair<ThreadQuery, Int>>()
+
+    override suspend fun threadsPage(query: ThreadQuery, page: Int, pageSize: Int): AppResult<PagedList<MessageThread>> {
+        pageRequests += query to page
+        threadRequests += query.studentId
+        val id = "thread-${query.studentId ?: "all"}"
+        return AppResult.Success(PagedList(listOf(testThread(id = id, studentId = query.studentId ?: "x")), page, pageSize, 1))
+    }
+
+    override suspend fun recipients(studentId: String): AppResult<List<MessageRecipient>> = AppResult.Success(emptyList())
 
     override suspend fun thread(id: String, before: String?): AppResult<ThreadDetail> =
         AppResult.Success(ThreadDetail(testThread(id), listOf(testMessage("m1")), olderCursor = null))

@@ -50,6 +50,11 @@ class StudentDetailViewModel @Inject constructor(
                     canEditStudent = session.has(STUDENTS_EDIT),
                     canLinkGuardian = session.has(STUDENTS_EDIT),
                     canEditGuardians = session.has(GUARDIANS_EDIT),
+                    canViewAttendance = session.has(ATTENDANCE_VIEW),
+                    canViewHealth = session.has(HEALTH_VIEW),
+                    canEditHealth = session.has(HEALTH_EDIT),
+                    canViewPickup = session.has(PICKUP_VIEW),
+                    canEditPickup = session.has(PICKUP_EDIT),
                 )
             }
         }
@@ -71,5 +76,10 @@ class StudentDetailViewModel @Inject constructor(
     private companion object {
         const val STUDENTS_EDIT = "students.edit"
         const val GUARDIANS_EDIT = "guardians.edit"
+        const val ATTENDANCE_VIEW = "attendance.view"
+        const val HEALTH_VIEW = "health.view"
+        const val HEALTH_EDIT = "health.edit"
+        const val PICKUP_VIEW = "pickup.view"
+        const val PICKUP_EDIT = "pickup.edit"
     }
 }

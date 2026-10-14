@@ -1,0 +1,52 @@
+<resources>
+    <string name="payroll_rules_defaults">These are the default rules. Change anything and save to make them your school\'s own.</string>
+    <string name="payroll_rules_read_only">Only the principal or an admin can change pay rules.</string>
+    <string name="payroll_rules_working_days">Working days</string>
+    <string name="payroll_rules_working_days_help">A day\'s salary = monthly salary ÷ working days. Used for absences and lates.</string>
+    <string name="payroll_rules_count_from">Count working days from</string>
+    <string name="payroll_rules_mode_calendar">School calendar</string>
+    <string name="payroll_rules_mode_fixed">Fixed number</string>
+    <string name="payroll_rules_mode_calendar_hint">Working days of the month on the school calendar (weekly offs and holidays left out).</string>
+    <string name="payroll_rules_mode_fixed_hint">Every month uses the same number of days.</string>
+    <string name="payroll_rules_fixed_days">Working days a month</string>
+    <string name="payroll_rules_per_day">A day\'s salary is based on</string>
+    <string name="payroll_rules_per_day_gross">Gross salary</string>
+    <string name="payroll_rules_per_day_basic">Basic only</string>
+    <string name="payroll_rules_per_day_gross_hint">Basic salary + allowances.</string>
+    <string name="payroll_rules_per_day_basic_hint">Basic salary only.</string>
+    <string name="payroll_rules_lates">Late arrivals</string>
+    <string name="payroll_rules_lates_help">Lates marked in staff attendance add up during the month.</string>
+    <string name="payroll_rules_lates_allowed">Lates allowed before a deduction</string>
+    <string name="payroll_rules_lates_allowed_hint">0 = lates are never deducted.</string>
+    <string name="payroll_rules_each_time">Each time, deduct</string>
+    <string name="payroll_rules_half_day">Half day</string>
+    <string name="payroll_rules_one_day">1 day</string>
+    <string name="payroll_rules_two_days">2 days</string>
+    <string name="payroll_rules_overtime">Overtime</string>
+    <string name="payroll_rules_overtime_help">Extra time after the staff leave time, or added by hand. Paid only after approval.</string>
+    <string name="payroll_rules_pay_overtime">Pay overtime</string>
+    <string name="payroll_rules_pay_overtime_hint">Off = overtime is recorded but not paid.</string>
+    <string name="payroll_rules_overtime_pays">Overtime pays</string>
+    <string name="payroll_rules_overtime_pays_hint">Times the normal hourly pay (basic ÷ working days ÷ hours a day).</string>
+    <string name="payroll_rules_grace">Minutes after leave time before overtime counts</string>
+    <string name="payroll_rules_grace_hint">Staying a few minutes late is not overtime.</string>
+    <string name="payroll_rules_daily_hours">Paid hours a day</string>
+    <string name="payroll_rules_daily_hours_branch">Leave empty to use the branch staff timings (%1$s – %2$s = %3$s h).</string>
+    <string name="payroll_rules_daily_hours_default">Leave empty to use 8 hours.</string>
+    <string name="payroll_rules_daily_hours_invalid">Enter hours between 1 and 16, or leave empty</string>
+    <string name="payroll_rules_fixed_rate_note">A fixed hourly rate can also be set on one person\'s salary.</string>
+    <string name="payroll_rules_example">Example</string>
+    <string name="payroll_rules_example_intro_calendar">A teacher on %1$s basic + %2$s allowances in a month with %3$d working days:</string>
+    <string name="payroll_rules_example_intro_fixed">A teacher on %1$s basic + %2$s allowances (%3$d working days):</string>
+    <string name="payroll_rules_example_absent">• One absent day costs %1$s.</string>
+    <string name="payroll_rules_example_lates">• Every %1$d late arrivals cost %2$s (%3$s).</string>
+    <string name="payroll_rules_example_no_lates">• Late arrivals are not deducted.</string>
+    <string name="payroll_rules_example_leave">• Approved paid leave is never deducted; approved unpaid leave costs a day like an absence.</string>
+    <string name="payroll_rules_example_overtime">• One hour of approved overtime pays %1$s (%2$s paid hours a day × %3$s).</string>
+    <string name="payroll_rules_example_no_overtime">• Overtime is not paid.</string>
+    <string name="payroll_rules_half_day_text">half a day</string>
+    <string name="payroll_rules_days_text">%1$s days</string>
+    <string name="payroll_rules_day_text">1 day</string>
+    <string name="payroll_rules_save">Save pay rules</string>
+    <string name="payroll_rules_saved">Pay rules saved. Recalculate open payroll runs to apply them.</string>
+</resources>

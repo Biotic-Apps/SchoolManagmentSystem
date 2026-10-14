@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -41,6 +42,9 @@ import com.schoolapp.feature.attendance.components.CountItem
 import com.schoolapp.feature.attendance.components.CountsGrid
 import com.schoolapp.feature.attendance.components.LeaveReviewEntry
 import com.schoolapp.feature.attendance.components.attendanceStatusLabel
+import com.schoolapp.feature.attendance.qr.QrScanEntry
+import com.schoolapp.feature.attendance.qr.QrScanScreen
+import com.schoolapp.feature.attendance.qr.QrScanViewModel
 import com.schoolapp.feature.attendance.supervisor.components.SectionSummaryCard
 
 @Composable
@@ -48,8 +52,11 @@ internal fun BranchTodayRoute(
     onOpen: (Any) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BranchTodayViewModel = hiltViewModel(),
+    qrViewModel: QrScanViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val qr by qrViewModel.uiState.collectAsStateWithLifecycle()
+    var scanning by rememberSaveable { mutableStateOf(false) }
     var resumedOnce by remember { mutableStateOf(false) }
     LifecycleResumeEffect(viewModel) {
         if (resumedOnce) viewModel.refresh()
@@ -63,8 +70,10 @@ internal fun BranchTodayRoute(
             onRetry = viewModel::load,
             onSectionClick = { row -> onOpen(AttendanceRegisterDestination(row.sectionId, state.date, row.title)) },
             onLeaveReview = { onOpen(LeaveReviewDestination) },
+            onQrScan = if (qr.canScan) ({ scanning = true }) else null,
         )
     }
+    if (scanning) QrScanScreen(qrViewModel, onDismiss = { scanning = false })
 }
 
 @Composable
@@ -75,6 +84,7 @@ internal fun BranchTodayScreen(
     onSectionClick: (SectionSummaryRow) -> Unit,
     onLeaveReview: () -> Unit,
     modifier: Modifier = Modifier,
+    onQrScan: (() -> Unit)? = null,
 ) {
     when {
         state.isLoading -> LoadingState(modifier)
@@ -84,6 +94,7 @@ internal fun BranchTodayScreen(
             item(key = "date") { AttendanceDateField(state.date, state.today, onDateSelected) }
             item(key = "totals") { TotalsCard(state.totals) }
             item(key = "leave") { LeaveReviewEntry(onLeaveReview, pendingCount = state.pendingLeaves) }
+            onQrScan?.let { item(key = "qr") { QrScanEntry(it) } }
             if (state.rows.isEmpty()) {
                 item(key = "empty") { EmptyState(stringResource(R.string.attendance_no_sections), icon = Icons.Outlined.Groups) }
             }

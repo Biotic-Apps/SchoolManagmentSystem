@@ -36,6 +36,13 @@ data class ConversationUiState(
 ) {
     val closed: Boolean get() = thread?.closed == true
 
+    /** Branch manager reading someone else's thread (audited, cannot reply). */
+    val readOnly: Boolean
+        get() {
+            val participants = thread?.participants.orEmpty()
+            return myUserId != null && participants.isNotEmpty() && participants.none { it.userId == myUserId }
+        }
+
     val canSend: Boolean
-        get() = !closed && uploadingCount == 0 && (draft.isNotBlank() || draftAttachments.isNotEmpty())
+        get() = !closed && !readOnly && uploadingCount == 0 && (draft.isNotBlank() || draftAttachments.isNotEmpty())
 }

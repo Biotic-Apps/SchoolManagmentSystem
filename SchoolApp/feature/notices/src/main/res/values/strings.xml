@@ -29,7 +29,7 @@
     <string name="notices_audience_branch">Whole branch</string>
     <string name="notices_audience_classes">Classes</string>
     <string name="notices_audience_sections">Sections</string>
-    <string name="notices_audience_required">Choose at least one class or section.</string>
+    <string name="notices_audience_required">Choose who receives this notice.</string>
     <string name="notices_expires_on_optional">Expires on (optional)</string>
     <string name="notices_expiry_invalid">The expiry date cannot be in the past.</string>
     <string name="notices_clear_expiry">Remove expiry date</string>
@@ -38,4 +38,53 @@
     <string name="notices_publish">Publish</string>
     <string name="notices_result_published">Notice published.</string>
     <string name="notices_result_sent_for_approval">Sent for approval.</string>
+    <string name="notices_result_draft_saved">Draft saved.</string>
+    <string name="notices_save_draft">Save as draft</string>
+    <string name="notices_edit_draft">Edit draft</string>
+    <string name="notices_publish_failed_saved">Saved as a draft, but publishing failed. Try publishing again.</string>
+    <string name="notices_publish_confirm_title">Publish this notice?</string>
+    <string name="notices_publish_confirm_message">Everyone in the audience will be notified. A published notice can no longer be edited.</string>
+    <string name="notices_whole_school">Whole school</string>
+    <string name="notices_whole_school_supporting">Every branch, class and section.</string>
+    <string name="notices_staff_only">Staff only</string>
+    <string name="notices_staff_only_supporting">Parents will not see it.</string>
+    <string name="notices_school_wide">School-wide</string>
+    <string name="notices_no_audience">No audience</string>
+    <string name="notices_branches">Branches</string>
+    <string name="notices_no_options">Nothing to choose here.</string>
+    <string name="notices_sent_to">Sent to: %1$s</string>
+    <string name="notices_attachments">Attachments</string>
+    <string name="notices_has_attachments">Has attachments</string>
+
+    <!-- Manage -->
+    <string name="notices_tab_feed">For me</string>
+    <string name="notices_tab_manage">Manage</string>
+    <string name="notices_filter_all">All</string>
+    <string name="notices_manage_empty">No notices yet</string>
+    <string name="notices_manage_empty_message">Compose a notice to reach parents and staff.</string>
+    <string name="notices_retry">Retry</string>
+
+    <!-- Read receipts -->
+    <string name="notices_reads_title">Read receipts</string>
+    <string name="notices_reads_refresh">Refresh</string>
+    <string name="notices_reads_summary">%1$d of %2$d recipients have read it.</string>
+    <string name="notices_reads_read">Read</string>
+    <string name="notices_reads_unread">%1$d not read yet</string>
+
+    <plurals name="notices_branches_count">
+        <item quantity="one">%1$d branch</item>
+        <item quantity="other">%1$d branches</item>
+    </plurals>
+    <plurals name="notices_classes_count">
+        <item quantity="one">%1$d class</item>
+        <item quantity="other">%1$d classes</item>
+    </plurals>
+    <plurals name="notices_sections_count">
+        <item quantity="one">%1$d section</item>
+        <item quantity="other">%1$d sections</item>
+    </plurals>
+    <plurals name="notices_parents_count">
+        <item quantity="one">%1$d parent</item>
+        <item quantity="other">%1$d parents</item>
+    </plurals>
 </resources>

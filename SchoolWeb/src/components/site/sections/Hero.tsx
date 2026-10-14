@@ -1,71 +1,79 @@
-import { ArrowRight, Check, LogIn } from "lucide-react";
-import { Button } from "@/components/site/ui/Button";
+import { ArrowRight, Check } from "lucide-react";
 import { Reveal } from "@/components/site/motion/Reveal";
-import { AnimatedHeading } from "@/components/site/motion/AnimatedHeading";
-import { HeroDevice } from "@/components/site/motion/HeroDevice";
-import { FloatingIcons } from "@/components/site/motion/FloatingIcons";
-import { HERO_CAPABILITY, HERO_COPY, HERO_PROOFS } from "@/lib/site/content";
+import { HeroBackground } from "@/components/site/hero/HeroBackground";
+import { HeroCapability } from "@/components/site/hero/HeroCapability";
+import { HeroHeadline } from "@/components/site/hero/HeroHeadline";
+import { HeroVisual } from "@/components/site/hero/HeroVisual";
+import { MagneticLink } from "@/components/site/hero/MagneticLink";
+import { HERO_COPY, HERO_PROOFS } from "@/lib/site/content";
 import { SIGN_IN_URL } from "@/lib/site/links";
+import "@/components/site/hero/hero.css";
 
 /**
- * The product is the hero, not the gradient.
- *
- * Type is deliberately held back from the size it wants to be. A headline big
- * enough to fill the screen pushes the software below the fold, and a visitor
- * who has to scroll to find out what they are buying has already been given a
- * reason to leave. The screen has to be visible before the first scroll.
+ * A split hero: the pitch on the left with a headline that keeps naming what
+ * the school runs, and on the right a layered product composition that
+ * answers the pointer and separates as the page scrolls. On phones the two
+ * stack, copy first, and the composition drops its orbit and mouse response.
  */
 export function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden border-b border-line">
-      <div aria-hidden className="hero-canvas absolute inset-0" />
-      <div aria-hidden className="grid-fade absolute inset-0" />
+    <section id="top" className="relative overflow-hidden">
+      <HeroBackground />
 
-      {/* Full-bleed, not inside the container: the tiles are meant to use the
-          whole width of the window, and a 1280px box would pin them all into
-          two narrow strips. The extra top padding at xl opens the band above
-          the badge where the highest tiles sit. */}
-      <FloatingIcons />
-
-      <div className="stage-3d relative mx-auto max-w-7xl px-5 pb-20 pt-28 sm:px-8 sm:pb-24 sm:pt-32 xl:pt-[13rem]">
-        <div className="relative mx-auto max-w-2xl text-center">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-x-10 gap-y-16 px-5 pb-24 pt-28 sm:px-8 sm:pt-32 lg:min-h-[min(100svh,860px)] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:pb-28 lg:pt-36 xl:gap-x-16">
+        <div className="relative z-10 max-w-xl">
           <Reveal>
-            <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-[0.7rem] font-medium text-muted shadow-[var(--shadow-card)]">
-              <span className="size-1.5 rounded-full bg-brand-500" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-brand-200/70 bg-white/70 px-3 py-1 text-[0.72rem] font-medium text-brand-800">
+              <span className="relative flex size-2">
+                <span className="absolute inset-0 animate-ping rounded-full bg-accent-400 opacity-60" />
+                <span className="relative size-2 rounded-full bg-gradient-to-br from-brand-500 to-accent-500" />
+              </span>
               {HERO_COPY.badge}
             </span>
           </Reveal>
 
-          <AnimatedHeading
-            as="h1"
-            text={HERO_COPY.headline}
-            delay={0.08}
-            className="mt-5 text-balance text-[2.1rem] font-semibold leading-[1.06] tracking-[-0.035em] text-foreground sm:text-[2.7rem] lg:text-[3.1rem]"
+          <HeroHeadline
+            label={HERO_COPY.headline}
+            lead={HERO_COPY.headlineLead}
+            rotating={HERO_COPY.rotating}
+            className="mt-6 text-[2.35rem] font-semibold leading-[1.06] tracking-[-0.04em] text-foreground sm:text-[3.1rem] lg:text-[3.4rem] xl:text-[3.85rem]"
           />
 
-          <Reveal delay={0.34}>
-            <p className="mx-auto mt-4 max-w-xl text-pretty text-[1rem] leading-[1.6] text-muted">
+          <Reveal delay={0.5}>
+            <p className="mt-6 max-w-lg text-pretty text-[1.02rem] leading-[1.65] text-muted">
               {HERO_COPY.subline}
             </p>
           </Reveal>
 
-          <Reveal delay={0.42}>
-            <div className="mt-7 flex flex-col items-center justify-center gap-2.5 sm:flex-row">
-              <Button href={SIGN_IN_URL} size="lg">
-                <LogIn className="size-4" strokeWidth={2.2} />
+          <Reveal delay={0.6}>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <MagneticLink
+                href={SIGN_IN_URL}
+                className="gradient-button text-white shadow-[0_14px_30px_-12px_rgb(123_104_238/0.7)] hover:shadow-[0_18px_38px_-12px_rgb(236_72_153/0.55)]"
+              >
                 {HERO_COPY.signIn}
-              </Button>
-              <Button href="/#how-it-works" variant="secondary" size="lg">
+                <ArrowRight
+                  className="size-4 transition-transform duration-300 group-hover:translate-x-1"
+                  strokeWidth={2.4}
+                />
+              </MagneticLink>
+              <MagneticLink
+                href="/#how-it-works"
+                strength={0.18}
+                className="border border-line-strong bg-white/70 text-foreground hover:border-brand-300 hover:bg-white"
+              >
                 {HERO_COPY.secondary}
-                <ArrowRight className="size-4" strokeWidth={2.2} />
-              </Button>
+              </MagneticLink>
             </div>
           </Reveal>
 
-          <Reveal delay={0.5}>
-            <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+          <Reveal delay={0.7}>
+            <ul className="mt-8 flex flex-wrap gap-2">
               {HERO_PROOFS.map((proof) => (
-                <li key={proof} className="flex items-center gap-1.5 text-[0.82rem] text-faint">
+                <li
+                  key={proof}
+                  className="flex items-center gap-1.5 rounded-full bg-brand-50/80 px-3 py-1.5 text-[0.78rem] font-medium text-brand-800"
+                >
                   <Check className="size-3.5 shrink-0 text-brand-600" strokeWidth={2.8} />
                   {proof}
                 </li>
@@ -74,26 +82,10 @@ export function Hero() {
           </Reveal>
         </div>
 
-        <div className="relative mt-12 sm:mt-14">
-          <HeroDevice />
-        </div>
+        <HeroVisual />
       </div>
 
-      <div className="relative border-t border-line bg-surface/70 backdrop-blur-sm">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-line px-5 sm:px-8 lg:grid-cols-4">
-          {HERO_CAPABILITY.map((item, index) => (
-            <div
-              key={item.label}
-              className={index < 2 ? "border-b border-line px-6 py-5 lg:border-b-0" : "px-6 py-5"}
-            >
-              <p className="text-[1.35rem] font-semibold leading-none tracking-[-0.03em] text-brand-700">
-                {item.figure}
-              </p>
-              <p className="mt-1.5 text-[0.8rem] text-muted">{item.label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+      <HeroCapability />
     </section>
   );
 }

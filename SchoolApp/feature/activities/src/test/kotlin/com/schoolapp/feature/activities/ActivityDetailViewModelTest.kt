@@ -91,4 +91,28 @@ class ActivityDetailViewModelTest {
         assertEquals(ActivityMessage.APPROVED, state.message)
         assertFalse(state.showGrant)
     }
+
+    @Test
+    fun editor_starts_and_cancels_with_a_reason() {
+        repository.items = listOf(activity(status = ActivityStatus.ANNOUNCED))
+        val auth = FakeAuthRepository(TestSessions.session(RoleKey.PRINCIPAL, "activities.view", "activities.edit"))
+        val vm = viewModel(LocalDateTime.of(2026, 10, 9, 10, 0), auth)
+        val actions = vm.uiState.value.actions
+        assertTrue(actions.canStart)
+        assertTrue(actions.canCancel)
+        assertTrue(actions.canEditParticipants)
+        assertFalse(actions.canComplete)
+
+        vm.status.start()
+        assertEquals(ActivityStatus.ONGOING, vm.uiState.value.activity?.status)
+        assertTrue(vm.uiState.value.actions.canComplete)
+
+        vm.status.openCancel()
+        vm.status.confirmCancel()
+        assertTrue(vm.uiState.value.actions.cancelReasonMissing)
+        vm.status.onCancelReasonChange("Rain")
+        vm.status.confirmCancel()
+        assertEquals(ActivityStatus.CANCELLED to "Rain", repository.statusChanges.last())
+        assertEquals(ActivityMessage.CANCELLED, vm.uiState.value.message)
+    }
 }

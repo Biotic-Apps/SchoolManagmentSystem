@@ -6,6 +6,7 @@ import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.material.icons.automirrored.outlined.DirectionsWalk
 import androidx.compose.material.icons.automirrored.outlined.FactCheck
 import androidx.compose.material.icons.automirrored.outlined.Grading
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.AccountBalance
@@ -13,7 +14,9 @@ import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.AdminPanelSettings
 import androidx.compose.material.icons.outlined.Apartment
+import androidx.compose.material.icons.outlined.AssignmentTurnedIn
 import androidx.compose.material.icons.outlined.Badge
+import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Campaign
@@ -54,15 +57,18 @@ internal val CatalogEntries: List<MenuItem> = listOf(
     item(MenuIds.STAFF, "Teachers & Helpers", "staff.view", Icons.Outlined.Badge),
     item(MenuIds.TIMETABLE, "Timetable", "timetable.view", Icons.Outlined.Schedule),
     item(MenuIds.DIARY, "Daily Diary & Homework", "diary.view", Icons.Outlined.EditNote),
+    item(MenuIds.HOMEWORK, "Homework Submissions", "homework.view", Icons.Outlined.AssignmentTurnedIn),
     item(MenuIds.ACTIVITIES, "Activities & Events", "activities.view", Icons.Outlined.EmojiEvents),
     item(MenuIds.NOTICES, "Notices", "notices.view", Icons.Outlined.Campaign),
     item(MenuIds.ATTENDANCE, "Attendance & Leave", "attendance.view", Icons.AutoMirrored.Outlined.FactCheck),
     item(MenuIds.EXAMS, "Exams & Results", "exams.view", Icons.AutoMirrored.Outlined.Grading),
+    item(MenuIds.QUESTION_BANK, "Question Bank & Papers", "questions.view", Icons.AutoMirrored.Outlined.MenuBook),
     item(MenuIds.PROGRESS, "Student Progress", "progress.view", Icons.AutoMirrored.Outlined.TrendingUp),
     item(MenuIds.FEES, "Fees & Dues", "fees.view", Icons.Outlined.AccountBalanceWallet),
     item(MenuIds.PAYROLL, "Salary & Payroll", "payroll.view", Icons.Outlined.Payments),
     item(MenuIds.EXPENSES, "Expenses & Vendors", "expenses.view", Icons.AutoMirrored.Outlined.ReceiptLong),
     item(MenuIds.INVENTORY, "Inventory & Purchasing", "inventory.view", Icons.Outlined.Inventory2),
+    item(MenuIds.ACCOUNTS, "Accounts", "expenses.view", Icons.Outlined.Calculate),
     item(MenuIds.HEALTH, "Health & Safety", "health.view", Icons.Outlined.HealthAndSafety),
     item(MenuIds.PICKUP, "Pickup & Departure", "pickup.view", Icons.AutoMirrored.Outlined.DirectionsWalk),
     item(MenuIds.MESSAGES, "Messages", "messages.view", Icons.AutoMirrored.Outlined.Chat),

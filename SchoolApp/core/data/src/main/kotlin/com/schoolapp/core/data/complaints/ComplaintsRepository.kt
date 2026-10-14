@@ -3,11 +3,23 @@ package com.schoolapp.core.data.complaints
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.model.complaint.Complaint
 import com.schoolapp.core.model.complaint.ComplaintBox
+import com.schoolapp.core.model.complaint.ComplaintCategory
 import com.schoolapp.core.model.complaint.ComplaintInput
 import com.schoolapp.core.model.complaint.ComplaintStatus
+import com.schoolapp.core.model.settings.PagedList
 
 interface ComplaintsRepository {
     suspend fun complaints(box: ComplaintBox, status: ComplaintStatus? = null): AppResult<List<Complaint>>
+
+    /** One server page (newest first) of a box, optionally filtered by status and category. */
+    suspend fun complaintsPage(
+        box: ComplaintBox,
+        status: ComplaintStatus?,
+        category: ComplaintCategory?,
+        page: Int,
+        pageSize: Int,
+    ): AppResult<PagedList<Complaint>>
+
     suspend fun complaint(id: String): AppResult<Complaint>
     suspend fun file(input: ComplaintInput): AppResult<Complaint>
 

@@ -59,7 +59,7 @@ class DashboardViewModelTest {
         val scoped = ScopedSections(auth, organisationWith(sections))
         return DashboardViewModel(
             auth, repository, SupervisorLoader(repository, FinanceLoader(fees.repository), SetupChecklistLoader(setup)),
-            TeacherDayLoader(repository, periods, scoped, clock), FinanceLoader(fees.repository), clock, InvoicePdfDownloader(fees.repository),
+            TeacherDayLoader(repository, periods, scoped, clock), FinanceLoader(fees.repository), clock, InvoicePdfDownloader(fees.repository), emptyScopeController(),
         )
     }
 
@@ -131,8 +131,8 @@ class DashboardViewModelTest {
         assertFalse(tiles.getValue("todayIncidents").link.isOpenable(attendanceOnly))
         assertTrue(tiles.getValue("pendingLeave").link is DashboardLink.Screen)
         assertTrue(tiles.getValue("pendingLeave").link.isOpenable(attendanceOnly))
-        assertNull(tiles.getValue("staffAbsentToday").link)
-        assertFalse(tiles.getValue("staffAbsentToday").link.isOpenable { true })
+        assertEquals(DashboardLink.Menu("attendance"), tiles.getValue("staffAbsentToday").link)
+        assertTrue(tiles.getValue("staffAbsentToday").link.isOpenable(attendanceOnly))
     }
 
     // Teacher / helper

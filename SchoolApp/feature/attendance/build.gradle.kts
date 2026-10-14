@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "com.schoolapp.feature.attendance"
 }
+
+dependencies {
+    implementation(libs.gms.code.scanner)
+}

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shared by the Schools, school setup and Users screens (feature.admin.common). -->
+    <string name="admin_temp_password">Temporary password</string>
+    <string name="admin_temp_password_copied">Password copied</string>
+    <string name="admin_temp_password_once">Share it with them privately. It is shown only once and must be changed at first sign-in.</string>
+    <string name="admin_sign_in_with">Sign in with</string>
+    <string name="admin_copy">Copy</string>
+    <string name="admin_share">Share</string>
+    <string name="admin_share_title">Share sign-in details</string>
+    <string name="admin_share_text">Hello %1$s, your eSchool sign-in:\nEmail/phone: %2$s\nTemporary password: %3$s\nYou will be asked to set a new password at first sign-in.</string>
+    <string name="admin_share_text_no_id">Hello %1$s, your eSchool temporary password: %2$s\nYou will be asked to set a new password at first sign-in.</string>
+
+    <string name="admin_notice_school_updated">School updated</string>
+    <string name="admin_notice_school_archived">School archived</string>
+    <string name="admin_notice_school_restored">School restored</string>
+    <string name="admin_notice_school_deleted">%1$s was deleted permanently</string>
+    <string name="admin_notice_school_created">%1$s was created</string>
+    <string name="admin_notice_user_created">User created</string>
+    <string name="admin_notice_user_updated">User updated</string>
+    <string name="admin_notice_user_disabled">User disabled and signed out</string>
+    <string name="admin_notice_user_enabled">User enabled</string>
+    <string name="admin_notice_user_unlocked">Account unlocked. The user can sign in again.</string>
+    <string name="admin_notice_role_assigned">Role assigned</string>
+    <string name="admin_notice_assignment_ended">Assignment ended</string>
+    <string name="admin_load_more">Load more</string>
+    <string name="admin_all">All</string>
+    <string name="admin_edit">Edit</string>
+    <string name="admin_save_changes">Save changes</string>
+    <string name="admin_discard_title">Discard changes?</string>
+    <string name="admin_discard_message">What you entered here will be lost.</string>
+    <string name="admin_discard">Discard</string>
+
+    <string name="admin_error_required">This field is required</string>
+    <string name="admin_error_too_short">Use at least 2 characters</string>
+    <string name="admin_error_too_long">This is too long</string>
+    <string name="admin_error_code">Use 2–12 letters or digits, e.g. BSS</string>
+    <string name="admin_error_email">Enter a valid email address</string>
+    <string name="admin_error_phone">Enter a valid phone number</string>
+    <string name="admin_error_url">Enter a full web address, e.g. https://school.edu.pk</string>
+    <string name="admin_error_contact">Enter an email or phone number so they can sign in</string>
+    <string name="admin_error_password">At least 8 characters with a letter and a digit</string>
+</resources>

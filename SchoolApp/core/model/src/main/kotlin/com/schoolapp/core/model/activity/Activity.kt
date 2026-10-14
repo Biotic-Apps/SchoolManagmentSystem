@@ -25,4 +25,9 @@ data class Activity(
     /** Parent view (`/activities/mine`): the child's consent, null when not asked. */
     val myConsent: ConsentStatus? = null,
     val studentId: String? = null,
+    val audience: ActivityAudience = ActivityAudience(),
+    val branchId: String? = null,
+    /** Cancel / reject reason. */
+    val reason: String? = null,
+    val proposedById: String? = null,
 )

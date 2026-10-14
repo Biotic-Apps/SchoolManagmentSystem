@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- New school wizard (feature.admin.schools.setup) -->
+    <string name="setup_title">New school</string>
+    <string name="setup_created_title">School created</string>
+    <string name="setup_no_permission">Only a super admin who can add schools, branches and users can set up a new school.</string>
+    <string name="setup_discard_title">Discard this school?</string>
+    <string name="setup_discard_message">Nothing has been saved yet. What you entered will be lost.</string>
+    <string name="setup_back">Back</string>
+    <string name="setup_next">Next</string>
+    <string name="setup_create">Create school</string>
+
+    <string name="setup_step_school">School</string>
+    <string name="setup_step_branch">Branch</string>
+    <string name="setup_step_people">Principal</string>
+    <string name="setup_step_classes">Classes</string>
+    <string name="setup_step_bell">Bell</string>
+    <string name="setup_step_review">Review</string>
+    <string name="setup_title_school">About the school</string>
+    <string name="setup_title_branch">Main branch</string>
+    <string name="setup_title_people">Principal and academic year</string>
+    <string name="setup_title_classes">Classes &amp; subjects</string>
+    <string name="setup_title_bell">Bell schedule</string>
+    <string name="setup_title_review">Review and create</string>
+    <string name="setup_helper_school">Only the name and code are needed now; everything else can be added later.</string>
+    <string name="setup_helper_branch">We\'ve filled in common defaults. Change anything that differs.</string>
+    <string name="setup_helper_people">Who runs the branch, and the school year to start with.</string>
+    <string name="setup_helper_classes">Pick the classes, their sections and what each class studies. You can change all of this later in Classes.</string>
+    <string name="setup_helper_bell">When periods start and end. Periods are time slots; subjects are chosen when you build the timetable.</string>
+    <string name="setup_helper_review">Check everything once. Nothing is saved until you press Create school.</string>
+
+    <string name="setup_panel_school">School</string>
+    <string name="setup_panel_school_desc">The name and a short code identify the school everywhere.</string>
+    <string name="setup_school_name">School name</string>
+    <string name="setup_school_name_hint">e.g. Bright Star School</string>
+    <string name="setup_school_code">Short code</string>
+    <string name="setup_school_code_hint">2–12 letters or digits, used on receipts and IDs. Can\'t be changed later.</string>
+    <string name="setup_panel_contact">Contact</string>
+    <string name="setup_panel_contact_desc">Optional. Shown on receipts and letters.</string>
+    <string name="setup_phone">Phone</string>
+    <string name="setup_email">Email</string>
+    <string name="setup_website">Website</string>
+    <string name="setup_address">Address</string>
+    <string name="setup_phone_optional">Phone (optional)</string>
+    <string name="setup_email_optional">Email (optional)</string>
+
+    <string name="setup_panel_branch">Branch</string>
+    <string name="setup_panel_branch_desc">Most schools start with one branch. You can add more later.</string>
+    <string name="setup_branch_name">Branch name</string>
+    <string name="setup_branch_code">Branch code</string>
+    <string name="setup_panel_timings">Timings &amp; working days</string>
+    <string name="setup_panel_timings_desc">Used for attendance, the timetable and the diary.</string>
+    <string name="setup_opens">School opens</string>
+    <string name="setup_opens_hint">Students arrive</string>
+    <string name="setup_closes">School closes</string>
+    <string name="setup_closes_hint">Students leave</string>
+    <string name="setup_lock">Attendance locks at</string>
+    <string name="setup_lock_hint">Teachers mark attendance before this</string>
+    <string name="setup_staff_arrives">Teachers arrive</string>
+    <string name="setup_staff_arrives_hint">At or before school opens</string>
+    <string name="setup_staff_leaves">Teachers leave</string>
+    <string name="setup_staff_leaves_hint">At or after school closes</string>
+    <string name="setup_working_days">Working days</string>
+
+    <string name="setup_panel_principal">Principal</string>
+    <string name="setup_panel_principal_desc">Runs this branch and adds teachers and students. Needs an email or phone number to sign in.</string>
+    <string name="setup_full_name">Full name</string>
+    <string name="setup_generate_password">Create a temporary password</string>
+    <string name="setup_generate_password_hint">Recommended. You\'ll see it once after creating; they choose their own at first sign-in.</string>
+    <string name="setup_password">Password</string>
+    <string name="setup_password_hint">At least 8 characters with a letter and a digit</string>
+    <string name="setup_panel_year">Academic year</string>
+    <string name="setup_panel_year_desc">Creates the session so the principal can start admitting students. Classes and periods come next.</string>
+    <string name="setup_create_session">Set up the academic year now</string>
+    <string name="setup_starts_on">Starts on</string>
+    <string name="setup_ends_on">Ends on</string>
+    <string name="setup_session_name">Session name</string>
+    <string name="setup_session_name_hint">Filled in from the dates</string>
+
+    <string name="setup_classes_need_session">Classes are added with the academic year. Go back one step and turn on “Set up the academic year now”, or skip this.</string>
+    <string name="setup_presets_title">Reset the subjects of a level to its usual list:</string>
+    <string name="setup_use_preset">Use %1$s preset</string>
+    <string name="setup_add_class_label">Another class, e.g. O Level 1</string>
+    <string name="setup_add_class">Add class</string>
+    <string name="setup_subjects_title">Subjects</string>
+    <string name="setup_subjects_desc">Subjects each class can pick from. Add one here, then tick it in a class\'s subjects.</string>
+    <string name="setup_add_subject_label">Another subject, e.g. Arabic</string>
+    <string name="setup_add_subject">Add subject</string>
+    <string name="setup_class_name">Class name</string>
+    <string name="setup_remove_class">Remove %1$s</string>
+    <string name="setup_level">Level</string>
+    <string name="setup_edit_subjects">Edit subjects</string>
+    <string name="setup_level_early">Early years</string>
+    <string name="setup_level_primary">Primary</string>
+    <string name="setup_level_middle">Middle</string>
+    <string name="setup_level_matric">Matric</string>
+    <string name="setup_level_other">Other</string>
+    <string name="setup_sections_of">Sections of %1$s</string>
+    <string name="setup_add_section">Add section</string>
+    <string name="setup_no_group">No group</string>
+    <string name="setup_group_of_section">Group of section %1$s</string>
+    <string name="setup_subjects_of">Subjects of %1$s</string>
+    <string name="setup_periods_hint">Tick what this class studies. The number is periods per week.</string>
+    <string name="setup_periods_of">%1$s periods per week</string>
+
+    <string name="setup_panel_every_day">Every working day</string>
+    <string name="setup_first_period">First period starts</string>
+    <string name="setup_period_length">Period length (min)</string>
+    <string name="setup_periods_per_day">Periods per day</string>
+    <string name="setup_periods">Periods</string>
+    <string name="setup_break_after">Break after period</string>
+    <string name="setup_break_after_hint">0 = no break</string>
+    <string name="setup_break_length">Break length (min)</string>
+    <string name="setup_preview">Preview</string>
+    <string name="setup_panel_friday">Friday</string>
+    <string name="setup_short_friday">Friday is shorter</string>
+    <string name="setup_short_friday_hint">Same start time and break position, fewer or shorter periods.</string>
+    <string name="setup_friday_preview">Friday preview</string>
+    <string name="setup_break">Break</string>
+    <string name="setup_period_n">Period %1$d</string>
+
+    <string name="setup_not_given">Not given</string>
+    <string name="setup_we_will_create">We\'ll create: %1$s.</string>
+    <string name="setup_sum_one_school">1 school</string>
+    <string name="setup_sum_one_branch">1 branch</string>
+    <string name="setup_sum_principal">principal account for %1$s</string>
+    <string name="setup_sum_the_principal">the principal</string>
+    <string name="setup_sum_session">session %1$s</string>
+    <string name="setup_sum_bell">a bell schedule</string>
+    <string name="setup_sum_name">Name</string>
+    <string name="setup_sum_contact">Contact</string>
+    <string name="setup_sum_school_hours">School hours</string>
+    <string name="setup_sum_teacher_hours">Teacher hours</string>
+    <string name="setup_sum_lock">Attendance locks</string>
+    <string name="setup_sum_signs_in">Signs in with</string>
+    <string name="setup_sum_password_generated">A temporary password is shown after creating; they change it at first sign-in</string>
+    <string name="setup_sum_password_set">The password you set</string>
+    <string name="setup_sum_session_label">Session</string>
+    <string name="setup_sum_no_session">Not now (the principal sets it up later)</string>
+    <string name="setup_sum_none">None</string>
+    <string name="setup_every_day">Every day</string>
+    <string name="setup_bell_line">%1$s of %2$d min, %3$s to %4$s</string>
+    <string name="setup_friday_line">%1$s of %2$d min, ends %3$s</string>
+    <plurals name="setup_class_count">
+        <item quantity="one">%1$d class</item>
+        <item quantity="other">%1$d classes</item>
+    </plurals>
+    <plurals name="setup_section_count">
+        <item quantity="one">%1$d section</item>
+        <item quantity="other">%1$d sections</item>
+    </plurals>
+    <plurals name="setup_subject_count">
+        <item quantity="one">%1$d subject</item>
+        <item quantity="other">%1$d subjects</item>
+    </plurals>
+    <plurals name="setup_period_count">
+        <item quantity="one">%1$d period</item>
+        <item quantity="other">%1$d periods</item>
+    </plurals>
+
+    <string name="setup_ready">%1$s and its %2$s are ready.</string>
+    <string name="setup_session_active">Session %1$s is active with %2$s, %3$s and %4$s.</string>
+    <string name="setup_no_session_yet">No academic year yet; the principal can set it up from Sessions &amp; Calendar.</string>
+    <string name="setup_principal_sign_in">Principal sign-in for %1$s</string>
+    <string name="setup_password_you_set">%1$s signs in with %2$s and the password you set.</string>
+    <string name="setup_welcome_sent">A welcome message with sign-in steps was also sent to the principal (without the password).</string>
+    <string name="setup_done">Done</string>
+
+    <string name="setup_error_closes">Closing time must be after opening time</string>
+    <string name="setup_error_lock">Attendance lock must fall within school hours</string>
+    <string name="setup_error_staff_arrives">Teachers must arrive by the time school opens</string>
+    <string name="setup_error_staff_leaves">Teachers can\'t leave before school closes</string>
+    <string name="setup_error_working_days">Pick at least one working day</string>
+    <string name="setup_error_principal_contact">Enter an email or phone number so the principal can sign in</string>
+    <string name="setup_error_start_date">Pick the start date</string>
+    <string name="setup_error_end_date">Pick the end date</string>
+    <string name="setup_error_end_after_start">The session must end after it starts</string>
+    <string name="setup_error_session_name">Enter the session name, e.g. 2026-27</string>
+    <string name="setup_error_session_name_long">Use at most 30 characters</string>
+    <string name="setup_error_no_classes">Tick at least one class</string>
+    <string name="setup_error_class_name">Use 1–40 characters</string>
+    <string name="setup_error_class_duplicate">Another class has this name</string>
+    <string name="setup_error_class_sections">Pick at least one section</string>
+    <string name="setup_error_break_after">Pick a period before the last one (0 = no break)</string>
+    <string name="setup_error_code_taken">Another school already uses this code. Pick a different one.</string>
+    <string name="setup_error_email_taken">An account with this email already exists.</string>
+    <string name="setup_error_phone_taken">An account with this phone number already exists.</string>
+    <string name="setup_error_unreachable">Couldn\'t create the school: the server isn\'t reachable or is out of date. Nothing was saved; please try again.</string>
+    <string name="setup_error_outdated">The server hasn\'t been updated for classes, sections and the bell schedule yet. Nothing was saved; please try again in a few minutes.</string>
+    <string name="setup_error_generic">Couldn\'t create the school. Nothing was saved; please try again.</string>
+</resources>

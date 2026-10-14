@@ -14,8 +14,8 @@ data class NavigationSplit(val primary: List<MenuItem>, val overflow: List<MenuI
 object PrimaryNavigation {
     const val MAX_PRIMARY = 4
 
-    /** Modules managed on the web panel only; they open a placeholder in the app, so never fill a bottom-bar slot. */
-    val WebOnly: Set<String> = setOf(
+    /** Rarely used admin modules: reachable from the drawer, never given a bottom-bar slot. */
+    val DrawerOnly: Set<String> = setOf(
         MenuIds.SCHOOLS, MenuIds.USERS, MenuIds.ROLES, MenuIds.EXPENSES, MenuIds.INVENTORY, MenuIds.REPORTS,
         MenuIds.SETTINGS,
     )
@@ -34,10 +34,10 @@ object PrimaryNavigation {
     fun preferred(role: RoleRef): List<String> = (role as? RoleKey)?.let(Preferred::get).orEmpty()
 
     fun split(menu: List<MenuItem>, role: RoleRef, max: Int = MAX_PRIMARY): NavigationSplit {
-        if (menu.size <= max && menu.none { it.id in WebOnly }) return NavigationSplit(menu, emptyList())
+        if (menu.size <= max && menu.none { it.id in DrawerOnly }) return NavigationSplit(menu, emptyList())
         val byId = menu.associateBy { it.id }
-        val chosen = preferred(role).filterNot(WebOnly::contains).mapNotNull(byId::get).take(max).toMutableList()
-        menu.forEach { if (chosen.size < max && it !in chosen && it.id !in WebOnly) chosen += it }
+        val chosen = preferred(role).filterNot(DrawerOnly::contains).mapNotNull(byId::get).take(max).toMutableList()
+        menu.forEach { if (chosen.size < max && it !in chosen && it.id !in DrawerOnly) chosen += it }
         // Keep the bar in menu order so Home stays first.
         val primary = menu.filter { it in chosen }
         return NavigationSplit(primary, menu.filterNot { it in chosen })

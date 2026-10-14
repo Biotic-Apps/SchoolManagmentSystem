@@ -5,8 +5,10 @@ import com.schoolapp.core.data.common.clean
 import com.schoolapp.core.data.common.orNullIfEmpty
 import com.schoolapp.core.model.complaint.Complaint
 import com.schoolapp.core.model.complaint.ComplaintBox
+import com.schoolapp.core.model.complaint.ComplaintCategory
 import com.schoolapp.core.model.complaint.ComplaintInput
 import com.schoolapp.core.model.complaint.ComplaintStatus
+import com.schoolapp.core.model.settings.PagedList
 import com.schoolapp.core.network.ApiCaller
 import com.schoolapp.core.network.api.ComplaintsApi
 import com.schoolapp.core.network.dto.common.ReasonBodyDto
@@ -30,6 +32,18 @@ class DefaultComplaintsRepository @Inject constructor(
             api.complaints(box.name.lowercase(), status?.name).data.map { it.toModel() }
                 .sortedByDescending { it.createdAt.orEmpty() }
         }
+
+    override suspend fun complaintsPage(
+        box: ComplaintBox,
+        status: ComplaintStatus?,
+        category: ComplaintCategory?,
+        page: Int,
+        pageSize: Int,
+    ): AppResult<PagedList<Complaint>> = apiCaller.call {
+        val envelope = api.complaints(box.name.lowercase(), status?.name, category?.name, page, pageSize)
+        val items = envelope.data.map { it.toModel() }
+        PagedList(items, envelope.meta?.page ?: page, envelope.meta?.pageSize ?: pageSize, envelope.meta?.total ?: items.size)
+    }
 
     override suspend fun complaint(id: String): AppResult<Complaint> = apiCaller.call { api.complaint(id).data.toModel() }
 

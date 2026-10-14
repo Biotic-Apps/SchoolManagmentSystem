@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { isRoleKey, type RoleKey } from "@/config/roles";
 import { moneyText, toMinor, toMoneyText } from "@/lib/money";
-import { blankToNull, optionalText, timeOfDay } from "@/lib/validation";
+import { blankToNull, timeOfDay } from "@/lib/validation";
 import { APPROVAL_LIMIT_TYPES, type ApprovalLimitType, type PolicySettings } from "./types";
 
 const DEFAULT_LOCK_TIME = "11:00";
@@ -31,7 +31,8 @@ export const policySettingsSchema = z
     twoFactorRequiredFor: z.array(z.string()),
     attendanceLockTime: timeOfDay,
     diaryModeration: z.boolean(),
-    gradingDefault: optionalText(60),
+    // A grading scheme id (UUID) or "" for no default.
+    gradingDefault: z.string(),
     lateFeeAmount: moneyText("the late fee", { required: false }),
     lateFeeAfterDays: z.string().trim(),
     approvalLimits,

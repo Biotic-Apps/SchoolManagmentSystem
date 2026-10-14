@@ -9,6 +9,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.model.RoleRef
 import com.schoolapp.core.model.complaint.ComplaintBox
+import com.schoolapp.feature.complaints.list.ComplaintsActions
 import com.schoolapp.feature.complaints.list.ComplaintsScreen
 import com.schoolapp.feature.complaints.list.ComplaintsViewModel
 
@@ -24,10 +25,18 @@ fun ComplaintsMenuScreen(
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.onResume() }
     ComplaintsScreen(
         state = state,
-        onTabSelected = viewModel::onTabSelected,
-        onRefresh = viewModel::refresh,
-        onOpenComplaint = { onOpen(ComplaintDetailDestination(it.id, mine = state.box == ComplaintBox.MINE)) },
-        onFile = { onOpen(FileComplaintDestination) },
+        actions = ComplaintsActions(
+            onTabSelected = viewModel::onTabSelected,
+            onRefresh = viewModel::refresh,
+            onOpenComplaint = { onOpen(ComplaintDetailDestination(it.id, mine = state.box == ComplaintBox.MINE)) },
+            onFile = { onOpen(FileComplaintDestination) },
+            onSearchChange = viewModel::onSearchChange,
+            onStatus = viewModel::onStatusSelected,
+            onCategory = viewModel::onCategorySelected,
+            onClearFilters = viewModel::onClearFilters,
+            onLoadMore = viewModel::loadMore,
+            onRetryMore = viewModel::retryMore,
+        ),
         modifier = modifier,
     )
 }

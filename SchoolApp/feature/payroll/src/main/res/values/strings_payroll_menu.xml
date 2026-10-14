@@ -1,0 +1,9 @@
+<resources>
+    <string name="payroll_tab_monthly">Monthly payroll</string>
+    <string name="payroll_tab_setup">Salary setup</string>
+    <string name="payroll_tab_overtime">Overtime</string>
+    <string name="payroll_tab_adjustments">Bonus &amp; deductions</string>
+    <string name="payroll_tab_rules">Pay rules</string>
+    <string name="payroll_no_branch">No branch yet</string>
+    <string name="payroll_no_branch_message">Add a branch first; payroll runs for each branch.</string>
+</resources>

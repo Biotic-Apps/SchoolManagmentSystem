@@ -7,8 +7,9 @@ type Variant = "primary" | "secondary" | "ghost" | "onDark" | "outlineOnDark";
 type Size = "md" | "lg";
 
 const base =
-  "inline-flex items-center justify-center gap-2 font-semibold whitespace-nowrap rounded-lg " +
-  "transition-[background-color,border-color,box-shadow,color] duration-150 active:translate-y-px";
+  "inline-flex items-center justify-center gap-2 font-semibold whitespace-nowrap rounded-full " +
+  "transition-[background-color,border-color,box-shadow,color,transform] duration-200 " +
+  "hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]";
 
 const variants: Record<Variant, string> = {
   // The app's own Sign in gradient, kept for the one action that leads there.

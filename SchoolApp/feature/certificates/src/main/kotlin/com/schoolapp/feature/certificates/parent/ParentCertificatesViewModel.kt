@@ -62,6 +62,8 @@ class ParentCertificatesViewModel @Inject constructor(
 
     fun onPurposeChange(purpose: String) = updateForm { it.copy(purpose = purpose) }
 
+    fun onAchievementChange(text: String) = updateForm { it.copy(achievement = text, achievementMissing = false) }
+
     fun dismissRequested() = _uiState.update { it.copy(requested = false) }
 
     fun submit() {
@@ -70,13 +72,15 @@ class ParentCertificatesViewModel @Inject constructor(
         val childId = state.childId ?: return
         if (form.isSaving) return
         val type = form.type
-        if (type == null) {
-            updateForm { it.copy(typeMissing = true) }
+        val achievementMissing = type == CertificateType.ACHIEVEMENT && form.achievement.isBlank()
+        if (type == null || achievementMissing) {
+            updateForm { it.copy(typeMissing = type == null, achievementMissing = achievementMissing) }
             return
         }
+        val achievement = form.achievement.trim().takeIf { type == CertificateType.ACHIEVEMENT }
         updateForm { it.copy(isSaving = true, error = null) }
         viewModelScope.launch {
-            val result = repository.request(CertificateInput(childId, type, form.purpose.trim().ifEmpty { null }))
+            val result = repository.request(CertificateInput(childId, type, form.purpose.trim().ifEmpty { null }, achievement))
             _uiState.update { current ->
                 when (result) {
                     is AppResult.Failure -> current.form?.let { current.copy(form = it.copy(isSaving = false, error = result.error)) } ?: current

@@ -2,7 +2,6 @@ package com.schoolapp.feature.timetable
 
 import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
-import com.schoolapp.core.data.organisation.ScopedSections
 import com.schoolapp.core.data.staff.StaffRepository
 import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.RoleRef
@@ -12,6 +11,7 @@ import com.schoolapp.core.model.timetable.TimetableOverride
 import com.schoolapp.core.testing.FakeAuthRepository
 import com.schoolapp.core.testing.MainDispatcherRule
 import com.schoolapp.core.testing.TestSessions
+import com.schoolapp.feature.timetable.scope.TimetableBranchScope
 import com.schoolapp.feature.timetable.substitutions.SubstitutionNotice
 import com.schoolapp.feature.timetable.substitutions.SubstitutionsLoader
 import com.schoolapp.feature.timetable.substitutions.SubstitutionsViewModel
@@ -41,7 +41,7 @@ class SubstitutionsViewModelTest {
 
     private fun viewModel(role: RoleRef, vararg permissions: String): SubstitutionsViewModel {
         val auth = FakeAuthRepository(TestSessions.session(role, *permissions))
-        val loader = SubstitutionsLoader(timetables, org.repository, ScopedSections(auth, org.repository), FakeBell(), staffRepository())
+        val loader = SubstitutionsLoader(timetables, org.repository, TimetableBranchScope(org.repository), FakeBell(), staffRepository())
         // Thursday 8 Oct 2026.
         return SubstitutionsViewModel(auth, loader, timetables, clockAt(4, 9, 0)).also { it.onOpened() }
     }

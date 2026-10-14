@@ -1,0 +1,22 @@
+<resources>
+    <string name="exams_skillsetup_open">Set up behaviour &amp; skills</string>
+    <string name="exams_skillsetup_title">Behaviour &amp; skills setup</string>
+    <string name="exams_skillsetup_hint">These items and the rating scale are used for every class in this branch.</string>
+    <string name="exams_skillsetup_affective">Affective (behaviour and attitudes)</string>
+    <string name="exams_skillsetup_psychomotor">Psychomotor (physical and creative skills)</string>
+    <string name="exams_skillsetup_item">Item name</string>
+    <string name="exams_skillsetup_item_invalid">Use 2–60 characters, not repeated</string>
+    <string name="exams_skillsetup_add_item">Add item</string>
+    <string name="exams_skillsetup_move_up">Move up</string>
+    <string name="exams_skillsetup_move_down">Move down</string>
+    <string name="exams_skillsetup_remove">Remove</string>
+    <string name="exams_skillsetup_scale">Rating scale (highest first)</string>
+    <string name="exams_skillsetup_code">Code</string>
+    <string name="exams_skillsetup_label">Meaning</string>
+    <string name="exams_skillsetup_level_invalid">Give a code (1–4 letters, not repeated) and its meaning</string>
+    <string name="exams_skillsetup_levels_count">The scale needs 2 to 10 levels</string>
+    <string name="exams_skillsetup_add_level">Add level</string>
+    <string name="exams_skillsetup_save">Save setup</string>
+    <string name="exams_skillsetup_saved">Behaviour &amp; skills updated</string>
+    <string name="exams_skillsetup_legend">Scale: %1$s</string>
+</resources>

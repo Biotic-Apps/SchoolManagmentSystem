@@ -20,6 +20,8 @@ interface ComplaintsApi {
         @Query("box") box: String,
         @Query("status") status: String? = null,
         @Query("category") category: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("pageSize") pageSize: Int? = null,
     ): ApiEnvelope<List<ComplaintDto>>
 
     @GET("complaints/{id}")

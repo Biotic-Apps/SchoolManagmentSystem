@@ -1,6 +1,6 @@
 import { useServerForm } from "@/lib/use-server-form";
 import { useSaveQuestion } from "./api";
-import { questionDefaults, questionSchema, toQuestionInput, type QuestionFormValues } from "./schemas";
+import { questionDefaults, questionSchema, toQuestionInput, toQuestionUpdate, type QuestionFormValues } from "./schemas";
 import type { Question } from "./types";
 
 export function useQuestionForm(question: Question | null, schoolId: string, onDone: () => void) {
@@ -8,7 +8,12 @@ export function useQuestionForm(question: Question | null, schoolId: string, onD
   const server = useServerForm<QuestionFormValues, Question>({
     schema: questionSchema,
     defaultValues: questionDefaults(question),
-    onSubmit: (values) => save.mutateAsync({ id: question?.id, input: toQuestionInput(values, schoolId) }),
+    onSubmit: (values) =>
+      save.mutateAsync(
+        question
+          ? { id: question.id, input: toQuestionUpdate(values) }
+          : { input: toQuestionInput(values, schoolId) },
+      ),
     onSuccess: onDone,
   });
   return server;

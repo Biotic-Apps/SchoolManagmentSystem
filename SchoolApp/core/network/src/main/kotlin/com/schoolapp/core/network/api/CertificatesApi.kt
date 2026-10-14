@@ -2,6 +2,7 @@ package com.schoolapp.core.network.api
 
 import com.schoolapp.core.network.dto.certificates.CertificateBodyDto
 import com.schoolapp.core.network.dto.certificates.CertificateDto
+import com.schoolapp.core.network.dto.certificates.IssueCertificateBodyDto
 import com.schoolapp.core.network.dto.common.CommentBodyDto
 import com.schoolapp.core.network.dto.common.ReasonBodyDto
 import com.schoolapp.core.network.model.ApiEnvelope
@@ -29,4 +30,15 @@ interface CertificatesApi {
 
     @POST("certificates/{id}/reject")
     suspend fun reject(@Path("id") id: String, @Body body: ReasonBodyDto): ApiEnvelope<CertificateDto>
+
+    @GET("certificates/{id}")
+    suspend fun certificate(@Path("id") id: String): ApiEnvelope<CertificateDto>
+
+    /** APPROVED -> ISSUED with a serial; starts the PDF job (`jobId`). Leaving certificates withdraw the student. */
+    @POST("certificates/{id}/issue")
+    suspend fun issue(@Path("id") id: String, @Body body: IssueCertificateBodyDto): ApiEnvelope<CertificateDto>
+
+    /** A DUPLICATE copy of an issued original (same serial); starts its PDF job. */
+    @POST("certificates/{id}/reissue")
+    suspend fun reissue(@Path("id") id: String, @Body body: ReasonBodyDto): ApiEnvelope<CertificateDto>
 }

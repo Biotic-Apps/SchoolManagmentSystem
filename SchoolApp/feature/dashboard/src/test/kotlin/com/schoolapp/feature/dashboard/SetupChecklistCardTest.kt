@@ -45,7 +45,7 @@ class SetupChecklistCardTest {
         val vm = DashboardViewModel(
             auth, repository, SupervisorLoader(repository, FinanceLoader(fees.repository), SetupChecklistLoader(setup)),
             TeacherDayLoader(repository, periods, ScopedSections(auth, organisationWith(emptyList())), clock),
-            FinanceLoader(fees.repository), clock, InvoicePdfDownloader(fees.repository),
+            FinanceLoader(fees.repository), clock, InvoicePdfDownloader(fees.repository), emptyScopeController(),
         )
         return vm.uiState.value as DashboardUiState.Supervisor
     }

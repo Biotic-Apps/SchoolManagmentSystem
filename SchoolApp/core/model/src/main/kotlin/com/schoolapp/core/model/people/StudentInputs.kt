@@ -72,4 +72,10 @@ data class LinkGuardianInput(
 )
 
 /** Result of a registration: the new student's id, name and admission number. */
-data class RegisteredStudent(val id: String, val name: String, val admissionNo: String?)
+data class RegisteredStudent(
+    val id: String,
+    val name: String,
+    val admissionNo: String?,
+    /** Each guardian's parent sign-in; CREATED ones carry a one-time temporary password. */
+    val parentLogins: List<com.schoolapp.core.model.admissions.ParentLogin> = emptyList(),
+)

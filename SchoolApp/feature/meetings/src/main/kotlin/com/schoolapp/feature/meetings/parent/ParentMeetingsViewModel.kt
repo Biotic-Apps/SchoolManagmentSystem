@@ -6,8 +6,7 @@ import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.data.meetings.MeetingsRepository
 import com.schoolapp.core.model.meeting.MeetingBox
-import com.schoolapp.feature.meetings.domain.chronological
-import com.schoolapp.feature.meetings.domain.newestFirst
+import com.schoolapp.feature.meetings.domain.MeetingPage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -23,7 +22,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/** Parent: upcoming and past meetings of the child selected in the top bar (reloaded on switch). */
+/** Parent: upcoming and past meetings (server-paged) of the child selected in the top bar (reloaded on switch). */
 @HiltViewModel
 class ParentMeetingsViewModel @Inject constructor(
     private val repository: MeetingsRepository,
@@ -36,6 +35,7 @@ class ParentMeetingsViewModel @Inject constructor(
     private var childId: String? = null
     private var loadedOnce = false
     private var loadJob: Job? = null
+    private val moreJobs = mutableMapOf<MeetingBox, Job>()
 
     init {
         viewModelScope.launch {
@@ -44,6 +44,7 @@ class ParentMeetingsViewModel @Inject constructor(
                 .distinctUntilChanged()
                 .collectLatest { id ->
                     childId = id
+                    cancelMore()
                     _uiState.value = ParentMeetingsUiState(isLoading = true)
                     load()
                 }
@@ -58,8 +59,36 @@ class ParentMeetingsViewModel @Inject constructor(
         if (loadedOnce) reload(refreshing = false)
     }
 
+    fun loadMore(box: MeetingBox) {
+        val id = childId ?: return
+        val current = _uiState.value.page(box)
+        if (!current.canLoadMore || _uiState.value.isLoading || loadJob?.isActive == true) return
+        setPage(box) { it.copy(isLoadingMore = true, loadMoreError = null) }
+        moreJobs[box] = viewModelScope.launch {
+            when (val result = repository.meetingsPage(box, id, current.page + 1, MeetingPage.PAGE_SIZE)) {
+                is AppResult.Success -> setPage(box) { it.with(result.data) }
+                is AppResult.Failure -> setPage(box) { it.copy(isLoadingMore = false, loadMoreError = result.error) }
+            }
+        }
+    }
+
+    fun retryMore(box: MeetingBox) {
+        setPage(box) { it.copy(loadMoreError = null) }
+        loadMore(box)
+    }
+
+    private fun setPage(box: MeetingBox, transform: (MeetingPage) -> MeetingPage) = _uiState.update {
+        if (box == MeetingBox.UPCOMING) it.copy(upcoming = transform(it.upcoming)) else it.copy(past = transform(it.past))
+    }
+
+    private fun cancelMore() {
+        moreJobs.values.forEach { it.cancel() }
+        moreJobs.clear()
+    }
+
     private fun reload(refreshing: Boolean) {
         loadJob?.cancel()
+        cancelMore()
         loadJob = viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = refreshing, error = null) }
             load()
@@ -73,8 +102,8 @@ class ParentMeetingsViewModel @Inject constructor(
             return
         }
         val (upcoming, past) = coroutineScope {
-            val upcoming = async { repository.meetings(MeetingBox.UPCOMING, id) }
-            val past = async { repository.meetings(MeetingBox.PAST, id) }
+            val upcoming = async { repository.meetingsPage(MeetingBox.UPCOMING, id, 1, MeetingPage.PAGE_SIZE) }
+            val past = async { repository.meetingsPage(MeetingBox.PAST, id, 1, MeetingPage.PAGE_SIZE) }
             upcoming.await() to past.await()
         }
         val failure = (upcoming as? AppResult.Failure) ?: (past as? AppResult.Failure)
@@ -88,8 +117,8 @@ class ParentMeetingsViewModel @Inject constructor(
                 isLoading = false,
                 isRefreshing = false,
                 error = null,
-                upcoming = (upcoming as AppResult.Success).data.chronological(),
-                past = (past as AppResult.Success).data.newestFirst(),
+                upcoming = MeetingPage().with((upcoming as AppResult.Success).data),
+                past = MeetingPage().with((past as AppResult.Success).data),
             )
         }
     }

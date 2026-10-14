@@ -1,5 +1,6 @@
 package com.schoolapp.core.network.api
 
+import com.schoolapp.core.network.dto.message.MessageRecipientDto
 import com.schoolapp.core.network.dto.message.NewThreadBodyDto
 import com.schoolapp.core.network.dto.message.SendMessageBodyDto
 import com.schoolapp.core.network.dto.message.ThreadDetailDto
@@ -15,7 +16,17 @@ import retrofit2.http.Query
 /** Parent-staff messaging (phase 3 contract section 7). */
 interface MessagesApi {
     @GET("messages/threads")
-    suspend fun threads(@Query("studentId") studentId: String? = null): ApiEnvelope<List<ThreadDto>>
+    suspend fun threads(
+        @Query("studentId") studentId: String? = null,
+        @Query("unread") unread: String? = null,
+        @Query("scope") scope: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("pageSize") pageSize: Int? = null,
+    ): ApiEnvelope<List<ThreadDto>>
+
+    /** Staff a parent may write to about [studentId]: class teacher, subject teachers, principal. */
+    @GET("messages/recipients")
+    suspend fun recipients(@Query("studentId") studentId: String): ApiEnvelope<List<MessageRecipientDto>>
 
     @GET("messages/threads/{id}")
     suspend fun thread(@Path("id") id: String, @Query("before") before: String? = null): ApiEnvelope<ThreadDetailDto>

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { requiredText } from "@/lib/validation";
-import type { Question, QuestionInput, QuestionType, DifficultyLevel } from "./types";
+import type { Question, QuestionInput, QuestionType, QuestionUpdate, DifficultyLevel } from "./types";
 
 const QUESTION_TYPES: QuestionType[] = ["MCQ", "SHORT", "LONG", "TRUE_FALSE", "FILL_BLANK"];
 const DIFFICULTY_LEVELS: DifficultyLevel[] = ["EASY", "MEDIUM", "HARD"];
@@ -34,10 +34,12 @@ export function questionDefaults(question: Question | null): QuestionFormValues 
 }
 
 export function toQuestionInput(values: QuestionFormValues, schoolId: string): QuestionInput {
+  return { schoolId, subjectId: values.subjectId, classId: values.classId, ...toQuestionUpdate(values) };
+}
+
+/** UpdateQuestionDto rejects schoolId/subjectId/classId, so an edit sends only the editable fields. */
+export function toQuestionUpdate(values: QuestionFormValues): QuestionUpdate {
   return {
-    schoolId,
-    subjectId: values.subjectId,
-    classId: values.classId,
     chapterName: values.chapterName.trim(),
     questionType: values.questionType as QuestionType,
     difficultyLevel: values.difficultyLevel as DifficultyLevel,
@@ -55,7 +57,10 @@ export const generatePaperSchema = z.object({
   classId: z.string().min(1, "Choose a class"),
   title: requiredText("a title", 200),
   totalMarks: z.string().regex(/^[1-9]\d{0,2}$/, "Enter total marks (1-500)"),
-  duration: z.string().regex(/^[1-9]\d{0,2}$/, "Enter duration in minutes"),
+  duration: z
+    .string()
+    .regex(/^\d{1,3}$/, "Enter duration in minutes")
+    .refine((v) => Number(v) >= 10 && Number(v) <= 300, "Duration must be 10-300 minutes"),
   sections: z.array(
     z.object({
       title: requiredText("section title", 100),

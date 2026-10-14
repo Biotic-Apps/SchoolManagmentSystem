@@ -1,0 +1,19 @@
+<resources>
+    <string name="exams_print_report_cards">Report cards</string>
+    <string name="exams_print_report_cards_hint">One card per student, with marks, grade, position, remarks and behaviour &amp; skills.</string>
+    <string name="exams_print_report_cards_need_results">Compute results first; report cards use the computed results.</string>
+    <string name="exams_print_date_sheet">Date sheet</string>
+    <string name="exams_print_date_sheet_hint">Papers with dates and 12-hour times, per class.</string>
+    <string name="exams_print_award_list">Award list</string>
+    <string name="exams_print_award_list_hint">Blank marks sheet of one subject per section, for teachers to fill in.</string>
+    <string name="exams_print_scope">Print for</string>
+    <string name="exams_print_all_classes">All classes</string>
+    <string name="exams_print_class_all_sections">%1$s · all sections</string>
+    <string name="exams_print_subject">Subject</string>
+    <string name="exams_print_subject_required">Choose the subject</string>
+    <string name="exams_print_template">Template</string>
+    <string name="exams_print_default_template">%1$s (default)</string>
+    <string name="exams_print_generate">Generate PDF</string>
+    <string name="exams_print_ready">PDF ready</string>
+    <string name="exams_print_no_papers">Add papers to the date sheet first.</string>
+</resources>

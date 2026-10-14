@@ -46,6 +46,10 @@ export const NAV_COPY = {
   footerBlurb:
     "School management for Pakistani schools, from admissions to report cards, fees to payroll, and a portal for every parent.",
   madeBy: "Made by",
+  backToTop: "Back to top",
+  /** Footer: the short line beside the columns, above the wordmark. */
+  footerNote: "One system for the whole school.",
+  writeToUs: "Write to us",
 } as const;
 
 /** The three proof points printed under the hero buttons. */
@@ -62,6 +66,13 @@ export const HERO_PROOFS = [
 export const HERO_COPY = {
   badge: "Built for schools in Pakistan",
   headline: "Run your whole school from one place.",
+  /** Static first line of the visual headline; the second line rotates. */
+  headlineLead: "Run your whole school",
+  rotating: ["attendance.", "fees & challans.", "exams & results.", "parent messages."],
+  chipAttendance: "Attendance saved · 5-A",
+  chipAttendanceMeta: "38 present · 2 absent",
+  chipFee: "Fee received Rs 8,500",
+  chipFeeMeta: "Challan FC-10482 · Paid",
   subline:
     "Admissions, attendance, timetable, homework, exams and report cards, fees and payroll, on the web and on Android, with a portal for every role.",
   signIn: "Sign in",
@@ -93,12 +104,40 @@ export const STATS_COPY = {
   panelTitle: "School overview",
   panelMeta: "Session 2026-27 · All branches · Updated 9:30 AM",
   disclaimer: "Figures shown are illustrative. Your dashboard reads your own school's records.",
+  ringTitle: "Attendance today",
+  ringCaption: "Marked from classrooms on phones and the web, synced the moment it is saved.",
+  ringPresent: "Present",
+  ringPresentValue: "1,198",
+  ringAbsent: "Absent or on leave",
+  ringAbsentValue: "50",
+  tickerTitle: "Live activity",
+  tickerLive: "Live",
 } as const;
+
+/** Recent events cycled through the stats ticker card, newest last. */
+export const STATS_TICKER = [
+  { text: "Class 5-A attendance saved", meta: "Ms. Hina · 8:05 AM", kind: "attendance" },
+  { text: "Challan FC-10482 paid", meta: "Rs 8,500 · Khan family", kind: "fees" },
+  { text: "Report cards published for Grade 7", meta: "Mid-term · 124 students", kind: "results" },
+  { text: "Homework posted for Class 3-B", meta: "Mathematics · Daily diary", kind: "homework" },
+  { text: "Admission approved, Hamza Ali", meta: "Class 1 · Main Campus", kind: "admissions" },
+  { text: "Absence alert sent to 6 parents", meta: "SMS and app · 8:20 AM", kind: "messages" },
+] as const;
 
 export const HOW_COPY = {
   eyebrow: "How it works",
   title: "Three steps, and your school is running",
   body: "No long setup project and no training course. Fill in one form, bring in your people, and everyone signs in to the part of the school that is theirs.",
+  /** Labels for the small illustrations inside each timeline card. */
+  setupItems: ["School name & logo", "Branches", "Session: April to March", "Fee basics"],
+  importFile: "students.xlsx",
+  importRows: [
+    { name: "Ayesha Khan", cls: "5-B", guardian: "Imran Khan" },
+    { name: "Hamza Ali", cls: "5-B", guardian: "Sajid Ali" },
+    { name: "Fatima Noor", cls: "6-A", guardian: "Noor Ahmed" },
+    { name: "Usman Tariq", cls: "7-C", guardian: "Tariq Mehmood" },
+  ],
+  roles: ["Principal", "Teacher", "Accountant", "Parent"],
 } as const;
 
 export const TRUST_COPY = {
@@ -111,6 +150,8 @@ export const PAKISTAN_COPY = {
   eyebrow: "Built for Pakistan",
   title: "Made for how Pakistani schools actually run",
   body: "Not a foreign package with the currency swapped. Fees in rupees, a session that starts in April, SMS for parents on basic phones, and an Android app that keeps working when the internet does not.",
+  /** The local touches that scroll past in the marquee strip. */
+  touches: ["Rs", "JazzCash", "Easypaisa", "Bank challans", "Urdu-friendly names", "April-March session", "12-hour time", "SMS alerts"],
 } as const;
 
 export const FLOW_COPY = {
@@ -145,15 +186,32 @@ export const MODULES_COPY = {
   body: "Not a bundle of separate apps stitched together. Every module shares the same students, families, staff and sessions, and respects the same roles and branches.",
   onTheWay: "On the way",
   soon: "Soon",
+  filterLabel: "Show modules for",
+  filters: [
+    { id: "all", label: "All" },
+    { id: "principal", label: "Principal" },
+    { id: "teacher", label: "Teacher" },
+    { id: "accountant", label: "Accountant" },
+    { id: "parent", label: "Parent" },
+  ],
+  /** Read out after a filter changes, e.g. "10 modules shown". */
+  shown: "modules shown",
 } as const;
 
 export const FAQ_COPY = {
   eyebrow: "Questions",
   title: "Answers before you ask",
   body: `What principals, accountants and parents usually want to know before a school moves onto ${BRAND}.`,
+  /** The little chat beside the questions. */
+  chatFrom: "A parent",
+  chatQuestion: "Can I see my son's attendance and fees on my phone?",
+  chatReplyFrom: BRAND,
+  chatReply: "Yes, every day. Sign in with his admission number.",
+  chatMore: "More answers are right here",
 } as const;
 
 export const CTA_COPY = {
+  eyebrow: "Get started",
   title: "Ready to open your school's portal?",
   body: "Already set up? Sign in to your school's portal. New to eSchool? Get in touch and we will set it up with your branches, classes, staff and fee structure.",
   signIn: "Sign in",
@@ -237,14 +295,14 @@ export const STAT_TILES: StatTile[] = [
   },
   {
     label: "Attendance today",
-    value: 94.6,
+    value: 96,
     prefix: "",
     suffix: "%",
-    decimals: 1,
-    caption: "1,181 present · 67 absent or on leave",
+    decimals: 0,
+    caption: "1,198 present · 50 absent or on leave",
     tone: "sky",
     icon: "attendance",
-    trend: [92.1, 93.4, 91.8, 95.2, 93.9, 94.1, 94.6],
+    trend: [92.1, 93.4, 91.8, 95.2, 93.9, 94.1, 96],
   },
   {
     label: "Fees collected",
@@ -360,6 +418,9 @@ export type ModuleIcon =
   | "UserRound"
   | "Smartphone";
 
+/** The roles the module map can be filtered by. */
+export type ModuleRole = "principal" | "teacher" | "accountant" | "parent";
+
 /** The six tile colours the module map draws its icons in. */
 export type ModuleTone = "purple" | "indigo" | "rose" | "blue" | "sky" | "violet";
 
@@ -369,27 +430,29 @@ export type ModuleEntry = {
   tone: ModuleTone;
   icon: ModuleIcon;
   status: "live" | "soon";
+  /** Who uses it day to day; drives the role chips above the module grid. */
+  roles: ModuleRole[];
 };
 
 export const MODULES: ModuleEntry[] = [
-  { name: "Admissions", detail: "Online form · Approvals · Enrolment", tone: "purple", icon: "ClipboardList", status: "live" },
-  { name: "Students & families", detail: "Profiles · Guardians · Siblings", tone: "blue", icon: "Users", status: "live" },
-  { name: "Staff & HR", detail: "Staff · Probation reviews · Letters", tone: "indigo", icon: "Briefcase", status: "live" },
-  { name: "Attendance", detail: "Students · Staff · Offline on Android", tone: "sky", icon: "CalendarCheck", status: "live" },
-  { name: "Timetable", detail: "Draft · Publish · Classes & subjects", tone: "violet", icon: "CalendarClock", status: "live" },
-  { name: "Diary & homework", detail: "Daily diary · Homework · Syllabus", tone: "rose", icon: "NotebookPen", status: "live" },
-  { name: "Exams & results", detail: "Question bank · Marks · Results", tone: "purple", icon: "FileCheck", status: "live" },
-  { name: "Report cards & certificates", detail: "Printable cards · Skills · Certificates", tone: "indigo", icon: "Award", status: "live" },
-  { name: "Fees & challans", detail: "Structures · Family fees · Receipts", tone: "blue", icon: "Receipt", status: "live" },
-  { name: "Payroll", detail: "Salaries · Deductions · Payslips", tone: "rose", icon: "Wallet", status: "live" },
-  { name: "Expenses & accounts", detail: "Expenses · Income · Payment proofs", tone: "sky", icon: "Landmark", status: "live" },
-  { name: "Inventory", detail: "Items · Stock · Issue & return", tone: "violet", icon: "Package", status: "live" },
-  { name: "Messaging & notifications", detail: "Parent-teacher chat · Email · SMS", tone: "purple", icon: "MessageSquare", status: "live" },
-  { name: "Complaints & meetings", detail: "Complaints for every role · Meetings", tone: "rose", icon: "MessageSquareWarning", status: "live" },
-  { name: "Health & pickup", detail: "Health records · Gate pass · Events", tone: "sky", icon: "HeartPulse", status: "live" },
-  { name: "Reports", detail: "Fees · Attendance · Results · Audit", tone: "indigo", icon: "BarChart3", status: "live" },
-  { name: "Parent portal", detail: "Child switcher · Fees · Diary · Results", tone: "blue", icon: "UserRound", status: "live" },
-  { name: "Android app", detail: "Every role · Works on patchy internet", tone: "violet", icon: "Smartphone", status: "live" },
+  { name: "Admissions", detail: "Online form · Approvals · Enrolment", tone: "purple", icon: "ClipboardList", status: "live", roles: ["principal"] },
+  { name: "Students & families", detail: "Profiles · Guardians · Siblings", tone: "blue", icon: "Users", status: "live", roles: ["principal", "teacher", "accountant"] },
+  { name: "Staff & HR", detail: "Staff · Probation reviews · Letters", tone: "indigo", icon: "Briefcase", status: "live", roles: ["principal", "accountant"] },
+  { name: "Attendance", detail: "Students · Staff · Offline on Android", tone: "sky", icon: "CalendarCheck", status: "live", roles: ["principal", "teacher", "parent"] },
+  { name: "Timetable", detail: "Draft · Publish · Classes & subjects", tone: "violet", icon: "CalendarClock", status: "live", roles: ["principal", "teacher", "parent"] },
+  { name: "Diary & homework", detail: "Daily diary · Homework · Syllabus", tone: "rose", icon: "NotebookPen", status: "live", roles: ["teacher", "parent"] },
+  { name: "Exams & results", detail: "Question bank · Marks · Results", tone: "purple", icon: "FileCheck", status: "live", roles: ["principal", "teacher", "parent"] },
+  { name: "Report cards & certificates", detail: "Printable cards · Skills · Certificates", tone: "indigo", icon: "Award", status: "live", roles: ["principal", "teacher", "parent"] },
+  { name: "Fees & challans", detail: "Structures · Family fees · Receipts", tone: "blue", icon: "Receipt", status: "live", roles: ["principal", "accountant", "parent"] },
+  { name: "Payroll", detail: "Salaries · Deductions · Payslips", tone: "rose", icon: "Wallet", status: "live", roles: ["principal", "accountant"] },
+  { name: "Expenses & accounts", detail: "Expenses · Income · Payment proofs", tone: "sky", icon: "Landmark", status: "live", roles: ["principal", "accountant"] },
+  { name: "Inventory", detail: "Items · Stock · Issue & return", tone: "violet", icon: "Package", status: "live", roles: ["principal", "accountant"] },
+  { name: "Messaging & notifications", detail: "Parent-teacher chat · Email · SMS", tone: "purple", icon: "MessageSquare", status: "live", roles: ["principal", "teacher", "parent"] },
+  { name: "Complaints & meetings", detail: "Complaints for every role · Meetings", tone: "rose", icon: "MessageSquareWarning", status: "live", roles: ["principal", "teacher", "parent"] },
+  { name: "Health & pickup", detail: "Health records · Gate pass · Events", tone: "sky", icon: "HeartPulse", status: "live", roles: ["principal", "teacher", "parent"] },
+  { name: "Reports", detail: "Fees · Attendance · Results · Audit", tone: "indigo", icon: "BarChart3", status: "live", roles: ["principal", "accountant"] },
+  { name: "Parent portal", detail: "Child switcher · Fees · Diary · Results", tone: "blue", icon: "UserRound", status: "live", roles: ["parent"] },
+  { name: "Android app", detail: "Every role · Works on patchy internet", tone: "violet", icon: "Smartphone", status: "live", roles: ["principal", "teacher", "accountant", "parent"] },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -397,12 +460,12 @@ export const MODULES: ModuleEntry[] = [
 /* ------------------------------------------------------------------ */
 
 export const PAKISTAN_FACTS = [
-  { value: "Rs", label: "Rupees and local challans", body: "Fees, receipts and payroll in Rs, with printable bank-style fee challans and family challans for siblings." },
-  { value: "Apr-Mar", label: "Your academic session", body: "Sessions run April to March by default, and classes, fees and results all follow the session you set." },
-  { value: "12-hour", label: "Times the way you say them", body: "Timetables, attendance and gate passes read 8:00 AM and 1:30 PM, never a 24‑hour clock." },
-  { value: "SMS", label: "Reaches every parent", body: "Fee reminders and absence alerts go by SMS too, so parents on basic phones are never left out." },
-  { value: "Offline", label: "Low-end Android, patchy internet", body: "Teachers mark attendance with no signal; it saves on the phone and syncs once the connection is back." },
-  { value: "Branches", label: "Built for school chains", body: "Run every campus from one account, with each branch keeping its own classes, staff, fees and reports." },
+  { value: "Rs", icon: "Banknote", label: "Rupees and local challans", body: "Fees, receipts and payroll in Rs, with printable bank-style fee challans and family challans for siblings." },
+  { value: "Apr-Mar", icon: "CalendarRange", label: "Your academic session", body: "Sessions run April to March by default, and classes, fees and results all follow the session you set." },
+  { value: "12-hour", icon: "Clock", label: "Times the way you say them", body: "Timetables, attendance and gate passes read 8:00 AM and 1:30 PM, never a 24‑hour clock." },
+  { value: "SMS", icon: "MessageSquareText", label: "Reaches every parent", body: "Fee reminders and absence alerts go by SMS too, so parents on basic phones are never left out." },
+  { value: "Offline", icon: "WifiOff", label: "Low-end Android, patchy internet", body: "Teachers mark attendance with no signal; it saves on the phone and syncs once the connection is back." },
+  { value: "Branches", icon: "Building2", label: "Built for school chains", body: "Run every campus from one account, with each branch keeping its own classes, staff, fees and reports." },
 ] as const;
 
 /* ------------------------------------------------------------------ */

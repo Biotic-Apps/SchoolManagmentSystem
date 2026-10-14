@@ -1,10 +1,12 @@
 package com.schoolapp.feature.attendance.leave
 
 import com.schoolapp.core.common.result.AppResult
+import com.schoolapp.core.data.files.FilesRepository
 import com.schoolapp.core.data.leave.LeaveRepository
 import com.schoolapp.core.model.leave.LeaveInput
 import com.schoolapp.core.model.leave.LeaveRequest
 import com.schoolapp.core.model.leave.LeaveScope
+import com.schoolapp.core.model.leave.LeaveStatus
 import com.schoolapp.core.model.leave.LeaveType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +17,8 @@ import kotlinx.coroutines.launch
 
 /**
  * Shared by the parent (child leave) and staff (own leave) screens: lists MINE requests, validates and
- * sends the request sheet, cancels SUBMITTED ones. [inputFor] returns null when there is no subject.
+ * sends the request form (with an optional uploaded document), cancels SUBMITTED ones after confirmation.
+ * [inputFor] returns null when there is no subject.
  */
 class MyLeavesController(
     private val repository: LeaveRepository,
@@ -24,20 +27,26 @@ class MyLeavesController(
     private val defaultDate: () -> String,
     private val inputFor: (LeaveForm) -> LeaveInput?,
     private val include: (LeaveRequest) -> Boolean = { true },
+    private val files: FilesRepository? = null,
 ) {
-    private val _state = MutableStateFlow(MyLeavesState())
+    private val _state = MutableStateFlow(MyLeavesState(year = defaultDate().take(YEAR_LENGTH).toIntOrNull() ?: 0))
     val state: StateFlow<MyLeavesState> = _state.asStateFlow()
 
     private var all: List<LeaveRequest> = emptyList()
 
+    val form = LeaveFormActions(::editForm)
+
+    /** Default day of a new request (today). */
+    val today: String get() = defaultDate()
+
     suspend fun load() {
-        _state.update { it.copy(isLoading = it.items.isEmpty(), error = null) }
+        _state.update { it.copy(isLoading = it.items.isEmpty() && !it.isRefreshing, error = null) }
         when (val result = repository.leaves(LeaveScope.MINE)) {
             is AppResult.Success -> {
                 all = result.data.sortedByDescending { it.createdAt ?: it.from }
-                _state.update { it.copy(isLoading = false, items = all.filter(include)) }
+                _state.update { it.copy(isLoading = false, isRefreshing = false, items = all.filter(include)) }
             }
-            is AppResult.Failure -> _state.update { it.copy(isLoading = false, error = result.error) }
+            is AppResult.Failure -> _state.update { it.copy(isLoading = false, isRefreshing = false, error = result.error) }
         }
     }
 
@@ -45,8 +54,15 @@ class MyLeavesController(
         scope.launch { load() }
     }
 
+    fun pullRefresh() {
+        _state.update { it.copy(isRefreshing = true) }
+        refresh()
+    }
+
     /** Re-applies [include] after the subject (active child) changed. */
     fun refilter() = _state.update { it.copy(items = all.filter(include)) }
+
+    fun onFilter(status: LeaveStatus?) = _state.update { it.copy(filter = status) }
 
     fun openForm() {
         val date = defaultDate()
@@ -58,19 +74,32 @@ class MyLeavesController(
         _state.update { it.copy(form = null) }
     }
 
-    fun onTypeChange(type: LeaveType) = editForm { it.copy(type = type) }
+    fun onTypeChange(type: LeaveType) = form.onTypeChange(type)
 
-    fun onFromChange(date: String) = editForm {
-        it.copy(from = date, to = if (it.to.isBlank() || it.to < date) date else it.to, fromMissing = false, rangeInvalid = false)
+    fun onFromChange(date: String) = form.onFromChange(date)
+
+    fun onToChange(date: String) = form.onToChange(date)
+
+    fun onReasonChange(reason: String) = form.onReasonChange(reason)
+
+    fun onAttach(uri: String) {
+        val current = _state.value.form ?: return
+        val repo = files ?: return
+        if (current.isSaving || !current.attachments.canAdd(LeaveForm.MAX_ATTACHMENTS)) return
+        editForm { it.copy(attachments = it.attachments.started(), error = null) }
+        scope.launch {
+            when (val result = repo.upload(uri)) {
+                is AppResult.Success -> editForm { it.copy(attachments = it.attachments.added(result.data.toAttachment())) }
+                is AppResult.Failure -> editForm { it.copy(attachments = it.attachments.failed(), error = result.error) }
+            }
+        }
     }
 
-    fun onToChange(date: String) = editForm { it.copy(to = date, toMissing = false, rangeInvalid = false) }
-
-    fun onReasonChange(reason: String) = editForm { it.copy(reason = reason, reasonMissing = false) }
+    fun onRemoveAttachment(id: String) = editForm { it.copy(attachments = it.attachments.removed(id)) }
 
     fun submit() {
         val current = _state.value.form ?: return
-        if (current.isSaving) return
+        if (current.isSaving || current.attachments.isUploading) return
         val form = LeaveFormValidator.validate(current)
         val input = inputFor(form)
         if (form.hasErrors || input == null) {
@@ -83,10 +112,23 @@ class MyLeavesController(
                 is AppResult.Failure -> editForm { it.copy(isSaving = false, error = result.error) }
                 is AppResult.Success -> {
                     all = listOf(result.data) + all.filterNot { it.id == result.data.id }
-                    _state.update { it.copy(form = null, items = all.filter(include), message = LeaveMessage.SENT) }
+                    _state.update { it.copy(form = null, items = all.filter(include), message = LeaveMessage.SENT, filter = null) }
                 }
             }
         }
+    }
+
+    /** Asks for confirmation first; [confirmCancel] performs it. */
+    fun askCancel(id: String) = _state.update { state ->
+        state.copy(confirmCancel = state.items.firstOrNull { it.id == id && it.status == LeaveStatus.SUBMITTED })
+    }
+
+    fun dismissCancel() = _state.update { it.copy(confirmCancel = null) }
+
+    fun confirmCancel() {
+        val leave = _state.value.confirmCancel ?: return
+        _state.update { it.copy(confirmCancel = null) }
+        cancel(leave.id)
     }
 
     fun cancel(id: String) {
@@ -103,6 +145,12 @@ class MyLeavesController(
         }
     }
 
+    fun clearMessage() = _state.update { it.copy(message = null, actionError = null) }
+
     private fun editForm(transform: (LeaveForm) -> LeaveForm) =
         _state.update { state -> state.copy(form = state.form?.let(transform)) }
+
+    private companion object {
+        const val YEAR_LENGTH = 4
+    }
 }

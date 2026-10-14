@@ -1,278 +1,106 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { LogIn, Menu, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { LogIn } from "lucide-react";
 import { cn } from "@/lib/site/cn";
-import { NAV_LINKS, NAV_MENUS, SIGN_IN_URL } from "@/lib/site/links";
+import { SIGN_IN_URL } from "@/lib/site/links";
 import { NAV_COPY } from "@/lib/site/content";
-import { Button } from "@/components/site/ui/Button";
-import { Logo } from "@/components/site/layout/Logo";
-import { NavMenu } from "@/components/site/layout/NavMenu";
 import { lockScroll } from "@/lib/site/scroll";
+import { Logo } from "@/components/site/layout/Logo";
+import { DesktopNav } from "@/components/site/layout/DesktopNav";
+import { MenuToggle } from "@/components/site/layout/MenuToggle";
+import { MobileMenu } from "@/components/site/layout/MobileMenu";
+import { useNavScroll } from "@/components/site/layout/useNavScroll";
+import { useFocusTrap } from "@/components/site/layout/useFocusTrap";
 
-/** Matches `--header-height` in `globals.css`. */
-const ELEVATE_AT = 8;
+const spring = { type: "spring", stiffness: 320, damping: 34, mass: 0.8 } as const;
 
 /**
- * Sticky bar that picks up a backdrop once anything scrolls behind it.
+ * A floating glass pill, detached from the top edge.
  *
- * Two things here are deliberate and easy to undo by accident.
+ * Its footprint (14px gap + 56px pill) matches `--site-header-height` (4.5rem),
+ * which the anchor `scroll-margin-top`, the Lenis `HEADER_OFFSET` and the sticky
+ * scroll sections all measure from, so anchors still clear it.
  *
- * The bar keeps **one height** at all times. Transitioning `height` on scroll
- * looks lively in a demo and costs a layout pass on the header every frame of
- * the transition, at exactly the moment the browser is busiest — and it walks
- * the anchor offsets out of step with `scroll-margin-top`, so jumping to a
- * section lands a few pixels wrong depending on where you were. Only the
- * backdrop changes now, which is compositor work.
- *
- * The elevated state is written **straight to the DOM**, not held in React
- * state. `scroll` fires at whatever rate the device can manage, and a setState
- * per event means re-rendering the logo, both dropdowns and the sign-in button
- * on the way past the threshold.
+ * Every scroll-driven change is a transform or an opacity: the pill drops in
+ * on load, eases a touch smaller once the page is under way (scale, not
+ * height, so nothing reflows), slides out while reading down and back on the
+ * first scroll up.
  */
 export function Header() {
-  const barRef = useRef<HTMLElement>(null);
+  const reduced = useReducedMotion();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const { compact, hidden } = useNavScroll(!reduced);
+  const headerRef = useRef<HTMLElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    const bar = barRef.current;
-    if (!bar) return;
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+  useFocusTrap(menuOpen, [headerRef, sheetRef], closeMenu);
 
-    let frame = 0;
-    let elevated: boolean | null = null;
-
-    const apply = () => {
-      frame = 0;
-      const next = window.scrollY > ELEVATE_AT;
-      if (next === elevated) return;
-      elevated = next;
-      bar.toggleAttribute("data-elevated", next);
-    };
-
-    const onScroll = () => {
-      if (frame) return;
-      frame = requestAnimationFrame(apply);
-    };
-
-    apply();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (frame) cancelAnimationFrame(frame);
-    };
-  }, []);
-
-  // The sheet covers the page, so the page behind it must not scroll. Lenis
-  // drives `documentElement` itself, so this has to go through `lockScroll`
-  // rather than setting `overflow` on the body and hoping.
+  // Lenis drives `documentElement`, so the page behind the overlay has to be
+  // frozen through `lockScroll`, not `overflow: hidden` on the body.
   useEffect(() => {
     if (!menuOpen) return;
     lockScroll(true);
     return () => lockScroll(false);
   }, [menuOpen]);
 
-  // A full-screen sheet is a dialog whether or not it is built from one: focus
-  // moves into it, stays inside it, and comes back to the button that opened it.
-  useEffect(() => {
-    if (!menuOpen) return;
-    const sheet = sheetRef.current;
-    if (!sheet) return;
-
-    const opener = document.activeElement as HTMLElement | null;
-    const trigger = triggerRef.current;
-    const focusables = () =>
-      Array.from(
-        sheet.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        ),
-      ).filter((node) => node.offsetParent !== null);
-
-    focusables()[0]?.focus();
-
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setMenuOpen(false);
-        return;
-      }
-      if (event.key !== "Tab") return;
-
-      const nodes = focusables();
-      if (nodes.length === 0) return;
-      const first = nodes[0];
-      const last = nodes[nodes.length - 1];
-
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      (opener ?? trigger)?.focus();
-    };
-  }, [menuOpen]);
+  const tucked = hidden && !menuOpen && openMenu === null;
 
   return (
     <>
-      <header
-        ref={barRef}
+      <motion.header
+        ref={headerRef}
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: tucked ? -110 : 0, opacity: tucked ? 0 : 1 }}
+        transition={{ ...spring, opacity: { duration: 0.25 } }}
         className={cn(
-          "fixed inset-x-0 top-0 z-50 border-b border-transparent bg-transparent",
-          "transition-[background-color,border-color,box-shadow] duration-300",
-          "data-[elevated]:border-line data-[elevated]:bg-background/85",
-          "data-[elevated]:shadow-[var(--shadow-card)] data-[elevated]:backdrop-blur-xl",
+          "pointer-events-none fixed inset-x-0 top-3.5 px-3 sm:px-5",
+          menuOpen ? "z-[70]" : "z-50",
         )}
       >
-        <div className="mx-auto flex h-[var(--header-height)] max-w-7xl items-center gap-4 px-5 sm:px-8">
-          <Link href="/#top" aria-label={NAV_COPY.homeLabel}>
+        <motion.div
+          animate={{ scale: compact && !menuOpen ? 0.975 : 1 }}
+          transition={spring}
+          className="pointer-events-auto relative mx-auto flex h-14 max-w-[1100px] items-center gap-3 rounded-full border border-white/80 bg-white/85 pl-4 pr-2 shadow-[0_10px_30px_-14px_rgb(91_75_199/0.35),0_1px_2px_rgb(42_31_107/0.05)] backdrop-blur-md sm:pl-5"
+        >
+          {/* A deeper shadow faded in once scrolled: opacity, not box-shadow. */}
+          <span
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute inset-0 -z-10 rounded-full shadow-[0_18px_44px_-16px_rgb(91_75_199/0.5)] transition-opacity duration-500",
+              compact ? "opacity-100" : "opacity-0",
+            )}
+          />
+          <Link href="/#top" aria-label={NAV_COPY.homeLabel} onClick={closeMenu} className="shrink-0">
             <Logo />
           </Link>
 
-          <nav aria-label={NAV_COPY.primaryLabel} className="ml-6 hidden items-center gap-0.5 lg:flex">
-            {NAV_MENUS.map((menu) => (
-              <NavMenu key={menu.label} menu={menu} />
-            ))}
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="rounded-lg px-3 py-2 text-[0.86rem] font-medium text-muted transition-colors hover:text-foreground"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+          <div className="flex flex-1 justify-center">
+            <DesktopNav openMenu={openMenu} onOpenMenu={setOpenMenu} />
+          </div>
 
-          <div className="ml-auto flex items-center gap-1.5">
-            {/* Not `external` any more. The site and the application are one
-                deployment now, so `SIGN_IN_URL` is the in-app path `/login`
-                rather than another origin — opening it in a new tab would leave
-                the visitor with the marketing page still sitting behind their
-                session. A signed-in visitor is not a special case here either:
-                `middleware.ts` sends them from `/login` to `/dashboard`, which
-                is deliberately server-side. Reading the session client-side to
-                relabel this button would decide its appearance from JavaScript
-                state on first render, which is a hydration mismatch. */}
-            <Button href={SIGN_IN_URL} className="hidden sm:inline-flex">
-              <LogIn className="size-4" strokeWidth={2.2} />
-              {NAV_COPY.signIn}
-            </Button>
-            <button
-              ref={triggerRef}
-              type="button"
-              onClick={() => setMenuOpen(true)}
-              aria-label={NAV_COPY.openMenu}
-              aria-expanded={menuOpen}
-              aria-controls="mobile-menu"
-              className="grid size-10 place-items-center rounded-lg text-muted transition-colors hover:bg-surface-sunken hover:text-foreground lg:hidden"
+          <div className="flex items-center gap-1.5">
+            {/* `/login` is the one account action. A signed-in visitor is sent
+                on to the dashboard server-side by `middleware.ts`. */}
+            <Link
+              href={SIGN_IN_URL}
+              className="gradient-button inline-flex h-10 items-center gap-2 rounded-full px-4 text-[0.84rem] font-semibold text-white shadow-[0_6px_16px_-8px_rgb(91_75_199/0.8)] transition-[filter] hover:brightness-110 sm:px-5"
             >
-              <Menu className="size-5" strokeWidth={1.9} />
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile sheet */}
-      <div
-        ref={sheetRef}
-        id="mobile-menu"
-        role="dialog"
-        aria-modal="true"
-        aria-label={NAV_COPY.menuLabel}
-        // `inert` keeps the closed sheet out of the accessibility tree and out
-        // of the tab order, which `opacity-0` alone never did. React 19 takes
-        // it as a real boolean; the old empty-string form now warns.
-        inert={!menuOpen}
-        className={cn(
-          "fixed inset-0 z-[60] overflow-y-auto overscroll-contain bg-background lg:hidden",
-          "transition-[opacity,visibility] duration-300",
-          menuOpen ? "visible opacity-100" : "invisible opacity-0",
-        )}
-      >
-        <div className="sticky top-0 flex h-[var(--header-height)] items-center justify-between bg-background px-5 sm:px-8">
-          <Logo />
-          <button
-            type="button"
-            onClick={() => setMenuOpen(false)}
-            aria-label={NAV_COPY.closeMenu}
-            className="grid size-10 place-items-center rounded-lg text-muted transition-colors hover:bg-surface-sunken hover:text-foreground"
-          >
-            <X className="size-5" strokeWidth={1.9} />
-          </button>
-        </div>
-
-        <div className="px-5 pb-16 sm:px-8">
-          {NAV_MENUS.map((menu, menuIndex) => (
-            <section key={menu.label} aria-label={menu.label} className="border-t border-line py-6">
-              {/* A group label inside a navigation sheet, not a heading. As
-                  `<h2>` these two sat in front of the page's `<h1>` in document
-                  order, so every page on the site opened its outline with two
-                  headings belonging to a menu that is closed. */}
-              <p
-                aria-hidden
-                className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-faint"
-              >
-                {menu.label}
-              </p>
-              <ul className="mt-4 space-y-1">
-                {menu.items.map((item, index) => (
-                  <li key={item.label}>
-                    <Link
-                      href={item.href}
-                      onClick={() => setMenuOpen(false)}
-                      className={cn(
-                        "block py-2 text-[1.1rem] font-medium transition-[opacity,transform] duration-500",
-                        menuOpen ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0",
-                      )}
-                      style={{
-                        transitionDelay: menuOpen
-                          ? `${60 + (menuIndex * 5 + index) * 30}ms`
-                          : "0ms",
-                      }}
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))}
-
-          <section className="border-t border-line py-6">
-            <ul className="space-y-1">
-              {NAV_LINKS.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    onClick={() => setMenuOpen(false)}
-                    className="block py-2 text-[1.1rem] font-medium"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          <div className="flex flex-col gap-3 border-t border-line pt-6">
-            <Button href={SIGN_IN_URL} size="lg" className="w-full">
-              <LogIn className="size-4" strokeWidth={2.2} />
+              <LogIn aria-hidden className="size-4" strokeWidth={2.2} />
               {NAV_COPY.signIn}
-            </Button>
-            <Button href="/contact" variant="secondary" size="lg" className="w-full">
-              {NAV_COPY.contact}
-            </Button>
+            </Link>
+            <MenuToggle open={menuOpen} onToggle={() => setMenuOpen((value) => !value)} />
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.header>
+
+      <AnimatePresence>
+        {menuOpen ? <MobileMenu ref={sheetRef} onNavigate={closeMenu} /> : null}
+      </AnimatePresence>
     </>
   );
 }

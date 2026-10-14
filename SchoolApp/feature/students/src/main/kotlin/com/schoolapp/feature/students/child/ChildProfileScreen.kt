@@ -20,6 +20,7 @@ import com.schoolapp.core.designsystem.component.SecondaryButton
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.core.ui.rememberExternalActions
 import com.schoolapp.feature.students.R
+import com.schoolapp.feature.students.detail.idcard.ChildIdCardItem
 import com.schoolapp.feature.students.profile.studentProfileItems
 
 @Composable
@@ -41,6 +42,7 @@ fun ChildProfileScreen(
         )
         state.detail != null -> ScreenColumn(modifier) {
             studentProfileItems(state.detail, actions)
+            item(key = "id-card") { ChildIdCardItem(state.detail.summary.id) }
             item(key = "actions") { ParentActions(onRequestCorrection, onLinkChild) }
         }
         state.isLoading -> LoadingState(modifier)

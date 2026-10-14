@@ -61,7 +61,7 @@ private val Specs: Map<String, TileSpec> = linkedMapOf(
     "earlyLeavesToday" to TileSpec(
         R.string.dashboard_pending_early_leaves, Icons.AutoMirrored.Outlined.DirectionsWalk, StatusTone.Warning, DashboardLink.Menu(MenuIds.PICKUP),
     ),
-    "staffAbsentToday" to TileSpec(R.string.dashboard_pending_staff_absent, Icons.Outlined.PersonOff, StatusTone.Warning, null),
+    "staffAbsentToday" to TileSpec(R.string.dashboard_pending_staff_absent, Icons.Outlined.PersonOff, StatusTone.Warning, DashboardLink.Menu(MenuIds.ATTENDANCE)),
 )
 
 /** Known keys in a fixed order (unknown ones last); zero counts are neutral, others take the key's alert tone. */

@@ -1,0 +1,7 @@
+<resources>
+    <string name="fees_tab_invoices">Invoices</string>
+    <string name="fees_tab_payments">Payments</string>
+    <string name="fees_tab_concessions">Concessions</string>
+    <string name="fees_tab_structure">Fee structure</string>
+    <string name="fees_no_branch">Add a branch first; fees are kept per branch.</string>
+</resources>

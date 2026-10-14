@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="staff_docs_empty_title">No documents yet</string>
+    <string name="staff_docs_empty_message">Upload CNIC, degree or other records.</string>
+    <string name="staff_docs_upload">Upload</string>
+    <string name="staff_docs_upload_title">Upload document</string>
+    <string name="staff_docs_type">Document type</string>
+    <string name="staff_docs_type_required">Choose a document type</string>
+    <string name="staff_docs_file">File</string>
+    <string name="staff_docs_pick_file">Choose image or PDF</string>
+    <string name="staff_docs_replace_file">Replace file</string>
+    <string name="staff_docs_uploading_file">Uploading file…</string>
+    <string name="staff_docs_file_ready">Uploaded: %1$s</string>
+    <string name="staff_docs_file_required">Choose a file to upload</string>
+    <string name="staff_docs_file_wait">Wait for the file to finish uploading</string>
+    <string name="staff_docs_file_type">Only images or PDF files can be uploaded</string>
+    <string name="staff_docs_note">Note (optional)</string>
+    <string name="staff_docs_note_too_long">Note must be 255 characters or fewer</string>
+    <string name="staff_docs_uploaded">Document uploaded</string>
+    <string name="staff_docs_verified">Document verified</string>
+    <string name="staff_docs_rejected">Document rejected</string>
+    <string name="staff_docs_verify">Verify</string>
+    <string name="staff_docs_reject">Reject</string>
+    <string name="staff_docs_verify_title">Verify document?</string>
+    <string name="staff_docs_reject_title">Reject document?</string>
+    <string name="staff_docs_verify_note">Note (optional)</string>
+    <string name="staff_docs_reject_reason">Reason</string>
+    <string name="staff_docs_reason_length">Reason must be 3 to 500 characters</string>
+    <string name="staff_docs_verify_note_too_long">Note must be 500 characters or fewer</string>
+    <string name="staff_docs_checked_by">Checked by %1$s · %2$s</string>
+    <string name="staff_docs_open">Open file</string>
+    <string name="staff_docs_status_uploaded">Pending</string>
+    <string name="staff_docs_status_verified">Verified</string>
+    <string name="staff_docs_status_rejected">Rejected</string>
+    <string name="staff_docs_cancel">Cancel</string>
+</resources>

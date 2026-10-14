@@ -1,0 +1,144 @@
+/* Hero-only motion for the eSchool marketing home page.
+   Everything here animates transform or opacity, so it stays on the
+   compositor. The site-wide reduced-motion reset in site.css shortens these to
+   a single instant pass, and the rules at the bottom stop the loops outright. */
+
+/* ---------- Mesh gradient ground ---------- */
+.hero-mesh {
+  position: absolute;
+  inset: -20%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-mesh__blob {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+}
+
+.hero-mesh__blob--a {
+  width: 46vw;
+  height: 46vw;
+  left: 8%;
+  top: 6%;
+  background: radial-gradient(circle, rgb(123 104 238 / 0.32), transparent 68%);
+  animation: hero-mesh-a 22s ease-in-out infinite alternate;
+}
+
+.hero-mesh__blob--b {
+  width: 40vw;
+  height: 40vw;
+  right: 4%;
+  top: 0;
+  background: radial-gradient(circle, rgb(236 72 153 / 0.2), transparent 68%);
+  animation: hero-mesh-b 26s ease-in-out infinite alternate;
+}
+
+.hero-mesh__blob--c {
+  width: 36vw;
+  height: 36vw;
+  left: 38%;
+  top: 34%;
+  background: radial-gradient(circle, rgb(167 139 250 / 0.24), transparent 70%);
+  animation: hero-mesh-c 30s ease-in-out infinite alternate;
+}
+
+@keyframes hero-mesh-a {
+  to {
+    transform: translate3d(14%, 12%, 0) scale(1.15);
+  }
+}
+
+@keyframes hero-mesh-b {
+  to {
+    transform: translate3d(-18%, 16%, 0) scale(0.9);
+  }
+}
+
+@keyframes hero-mesh-c {
+  to {
+    transform: translate3d(-12%, -14%, 0) scale(1.2);
+  }
+}
+
+/* Faint grid, strongest top-left behind the copy, gone by the fold. */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgb(42 31 107 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(42 31 107 / 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgb(0 0 0 / 0.5) 45%, transparent 85%);
+  mask-image: linear-gradient(180deg, #000 0%, rgb(0 0 0 / 0.5) 45%, transparent 85%);
+}
+
+/* ---------- Orbit ---------- */
+.hero-orbit-ring {
+  position: absolute;
+  border-radius: 9999px;
+  border: 1px solid rgb(123 104 238 / 0.22);
+  will-change: transform;
+}
+
+.hero-orbit-ring--outer {
+  animation: hero-spin 90s linear infinite;
+}
+
+.hero-orbit-ring--inner {
+  border-style: dashed;
+  border-color: rgb(236 72 153 / 0.22);
+  animation: hero-spin 64s linear infinite reverse;
+}
+
+/* Keeps a rider upright while its ring turns. */
+.hero-orbit-ring--outer .hero-orbit-upright {
+  animation: hero-spin 90s linear infinite reverse;
+}
+
+.hero-orbit-ring--inner .hero-orbit-upright {
+  animation: hero-spin 64s linear infinite;
+}
+
+@keyframes hero-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Notification chips: a slow bob once they have landed ---------- */
+.hero-bob {
+  animation: hero-bob 5.5s ease-in-out infinite;
+}
+
+.hero-bob--late {
+  animation-delay: -2.4s;
+}
+
+@keyframes hero-bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -7px, 0);
+  }
+}
+
+/* Mouse depth layers glide to the pointer rather than snapping. */
+.hero-depth {
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-mesh__blob,
+  .hero-orbit-ring,
+  .hero-orbit-upright,
+  .hero-bob {
+    animation: none !important;
+  }
+}

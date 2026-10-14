@@ -12,8 +12,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,7 +26,6 @@ import com.schoolapp.core.designsystem.component.ContentMaxWidth
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.SegmentedChoice
 import com.schoolapp.core.designsystem.component.StatusTone
-import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.timetable.R
 import com.schoolapp.feature.timetable.ScheduleRow
@@ -111,12 +108,6 @@ internal fun ScrollableState(content: @Composable () -> Unit) {
     Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), contentAlignment = Alignment.TopCenter) {
         Column(Modifier.padding(top = 32.dp)) {
             content()
-            Text(
-                stringResource(R.string.timetable_read_only),
-                style = MaterialTheme.typography.bodySmall,
-                color = AppColors.TextSecondary,
-                modifier = Modifier.padding(16.dp),
-            )
         }
     }
 }

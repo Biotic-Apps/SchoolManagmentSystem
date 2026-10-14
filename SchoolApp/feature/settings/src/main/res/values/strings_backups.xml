@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_backups_title">Backups</string>
+    <string name="settings_backups_retention">Nightly backups are kept 30 days, plus one per month for 12 months. The latest backup is restore-checked weekly.</string>
+    <string name="settings_backups_run">Run backup</string>
+    <string name="settings_backups_confirm_title">Run a backup now?</string>
+    <string name="settings_backups_confirm_message">A full encrypted copy of the database is taken in the background. The app stays available while it runs.</string>
+    <string name="settings_backups_running">Backing up the database… This list updates on its own.</string>
+    <string name="settings_backups_finished">Backup finished.</string>
+    <string name="settings_backups_verifying">Verifying backup (restoring into a scratch database)… This list updates on its own.</string>
+    <string name="settings_backups_verify_done">Restore check finished. Open the backup\'s checks for details.</string>
+    <string name="settings_backups_empty">No backups yet</string>
+    <string name="settings_backups_empty_message">The first nightly backup appears here, or run one now.</string>
+    <string name="settings_backups_duration">Duration</string>
+    <string name="settings_backups_size">Size</string>
+    <string name="settings_backups_encrypted">Encrypted</string>
+    <string name="settings_backups_yes">Yes</string>
+    <string name="settings_backups_no">No</string>
+    <string name="settings_backups_checksum">Checksum</string>
+    <string name="settings_backups_copy_checksum">Copy full checksum</string>
+    <string name="settings_backups_restore_check">Restore check</string>
+    <string name="settings_backups_verify">Verify restore</string>
+    <string name="settings_backups_download">Download</string>
+    <string name="settings_backups_view_checks">View checks</string>
+    <string name="settings_backups_status_done">Done</string>
+    <string name="settings_backups_status_running">Running</string>
+    <string name="settings_backups_status_failed">Failed</string>
+    <string name="settings_backups_verify_passed">Passed</string>
+    <string name="settings_backups_verify_not_run">Not run</string>
+    <string name="settings_backups_checks_title">Restore check</string>
+    <string name="settings_backups_checks_started">Backup started %1$s</string>
+    <string name="settings_backups_checked_at">Checked %1$s</string>
+    <string name="settings_backups_checks_empty">No checks recorded</string>
+    <string name="settings_backups_checks_empty_message">Run a restore check to compare this backup against the live database.</string>
+    <string name="settings_backups_check_ok">OK</string>
+    <string name="settings_backups_expected">Expected</string>
+    <string name="settings_backups_actual">Actual</string>
+</resources>

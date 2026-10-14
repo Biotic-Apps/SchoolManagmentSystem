@@ -1,0 +1,8 @@
+<resources>
+    <string name="exams_rc_heading">Report card</string>
+    <string name="exams_report_card_preparing">The report card is being prepared…</string>
+    <string name="exams_report_card_missing">Report cards are generated when results are published. Before that, print them from the exam\'s Print tab.</string>
+    <string name="exams_rc_failed">The report card could not be prepared.</string>
+    <string name="exams_report_card_retry">Try again</string>
+    <string name="exams_report_card_title">%1$s – %2$s report card</string>
+</resources>

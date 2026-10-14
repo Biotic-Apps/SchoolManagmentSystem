@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="staff_idcard_title">ID card</string>
+    <string name="staff_idcard_status">Status</string>
+    <string name="staff_idcard_version">Version</string>
+    <string name="staff_idcard_generated">Generated</string>
+    <string name="staff_idcard_status_pending">Rendering</string>
+    <string name="staff_idcard_status_ready">Ready</string>
+    <string name="staff_idcard_status_failed">Failed</string>
+    <string name="staff_idcard_status_unknown">Unknown</string>
+    <string name="staff_idcard_rendering">Rendering… this takes a few seconds.</string>
+    <string name="staff_idcard_failed">The ID card could not be rendered.</string>
+    <string name="staff_idcard_download">Download</string>
+    <string name="staff_idcard_generate">Generate ID card</string>
+    <string name="staff_idcard_reprint">Reprint ID card</string>
+    <string name="staff_idcard_try_again">Try again</string>
+    <string name="staff_idcard_empty">No ID card yet</string>
+    <string name="staff_idcard_empty_can_generate">Generate a printable ID card for this staff member.</string>
+    <string name="staff_idcard_empty_view_only">The school has not issued an ID card yet.</string>
+    <string name="staff_idcard_queued">ID card is being generated</string>
+    <string name="staff_idcard_ready">ID card is ready</string>
+</resources>

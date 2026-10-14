@@ -10,7 +10,14 @@ import com.schoolapp.core.ui.people.GuardianForm
 
 /** A section the student can be placed in: "Class 5 · A", seats used / capacity. */
 @Immutable
-data class SectionOption(val id: String, val label: String, val studentCount: Int, val capacity: Int?) {
+data class SectionOption(
+    val id: String,
+    val label: String,
+    val studentCount: Int,
+    val capacity: Int?,
+    val classId: String? = null,
+    val className: String? = null,
+) {
     val isFull: Boolean get() = capacity != null && studentCount >= capacity
 }
 

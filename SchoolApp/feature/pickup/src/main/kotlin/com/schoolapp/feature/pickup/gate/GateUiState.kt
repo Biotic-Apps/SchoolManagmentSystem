@@ -12,6 +12,8 @@ data class GateUiState(
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,
     val today: String = "",
+    /** `YYYY-MM-DD` shown in the lists; defaults to [today]. */
+    val date: String = "",
     val canEdit: Boolean = false,
     val earlyLeaves: List<EarlyLeave> = emptyList(),
     val departures: List<Departure> = emptyList(),
@@ -20,6 +22,8 @@ data class GateUiState(
     val busyLeaveId: String? = null,
     val search: StudentSearchState = StudentSearchState(),
 ) {
+    val isToday: Boolean get() = date == today
+
     /** ISO time the student left today, if a departure was recorded. */
     fun departedAt(studentId: String): String? = departures.firstOrNull { it.studentId == studentId }?.at
 }

@@ -4,9 +4,9 @@ import type { AcademicScope } from "@/features/classes/use-academic-scope";
 import { paginationFrom } from "@/lib/pagination";
 import { useDialogState } from "@/lib/use-dialog-state";
 import { useListState } from "@/lib/use-list-state";
-import { useConvertEnquiry, useEnquiries } from "./api";
+import { useEnquiries } from "./api";
 import { enquiryColumns } from "./enquiry-columns";
-import type { Enquiry } from "./types";
+import type { Application, Enquiry } from "./types";
 
 type EnquiryFilters = { status?: string };
 
@@ -19,7 +19,6 @@ export function useEnquiriesTab(scope: AcademicScope, onConverted: (applicationI
   const form = useDialogState<true>();
   const update = useDialogState<Enquiry>();
   const convertTarget = useDialogState<Enquiry>();
-  const convert = useConvertEnquiry();
 
   const canEdit = can("admissions.edit");
   const canConvert = can("admissions.add");
@@ -33,15 +32,9 @@ export function useEnquiriesTab(scope: AcademicScope, onConverted: (applicationI
     [canEdit, canConvert, update.show, convertTarget.show],
   );
 
-  const confirmConvert = () => {
-    const target = convertTarget.item;
-    if (!target) return;
-    convert.mutate(target.id, {
-      onSuccess: (application) => {
-        convertTarget.close();
-        onConverted(application.id);
-      },
-    });
+  const handleConverted = (application: Application) => {
+    convertTarget.close();
+    onConverted(application.id);
   };
 
   return {
@@ -54,7 +47,6 @@ export function useEnquiriesTab(scope: AcademicScope, onConverted: (applicationI
     form,
     update,
     convertTarget,
-    confirmConvert,
-    converting: convert.isPending,
+    handleConverted,
   };
 }

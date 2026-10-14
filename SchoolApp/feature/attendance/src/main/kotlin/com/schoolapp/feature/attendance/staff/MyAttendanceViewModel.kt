@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.common.time.AppClock
 import com.schoolapp.core.data.attendance.AttendanceRepository
+import com.schoolapp.core.data.files.FilesRepository
 import com.schoolapp.core.data.leave.LeaveRepository
 import com.schoolapp.core.model.leave.LeaveInput
 import com.schoolapp.core.model.leave.LeaveType
@@ -25,6 +26,7 @@ import javax.inject.Inject
 class MyAttendanceViewModel @Inject constructor(
     private val repository: AttendanceRepository,
     leaveRepository: LeaveRepository,
+    filesRepository: FilesRepository,
     clock: AppClock,
 ) : ViewModel() {
 
@@ -37,7 +39,10 @@ class MyAttendanceViewModel @Inject constructor(
         scope = viewModelScope,
         withType = true,
         defaultDate = { todayDate.toString() },
-        inputFor = { form -> LeaveInput.ForSelf(form.type ?: LeaveType.CASUAL, form.from, form.to, form.reason.trim()) },
+        inputFor = { form ->
+            LeaveInput.ForSelf(form.type ?: LeaveType.CASUAL, form.from, form.to, form.reason.trim(), form.attachments.fileIds.firstOrNull())
+        },
+        files = filesRepository,
     )
     val leavesState: StateFlow<MyLeavesState> = leaves.state
 

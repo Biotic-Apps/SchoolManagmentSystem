@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Schools menu (feature.admin.schools) -->
+    <string name="schools_new">New school</string>
+    <string name="schools_search_hint">Search by name or code</string>
+    <string name="schools_filter_all">All</string>
+    <string name="schools_status_active">Active</string>
+    <string name="schools_status_archived">Archived</string>
+    <string name="schools_empty">No schools found</string>
+    <string name="schools_empty_message">Use New school to set up a school, its main branch and principal in one go.</string>
+    <string name="schools_empty_filtered">Try another search or status.</string>
+    <string name="schools_created_on">Created %1$s</string>
+    <plurals name="schools_branch_count">
+        <item quantity="one">%1$d branch</item>
+        <item quantity="other">%1$d branches</item>
+    </plurals>
+    <string name="schools_dash">—</string>
+
+    <string name="schools_detail_title">School</string>
+    <string name="schools_field_code">Code</string>
+    <string name="schools_field_name">Name</string>
+    <string name="schools_field_branches">Branches</string>
+    <string name="schools_field_phone">Phone</string>
+    <string name="schools_field_email">Email</string>
+    <string name="schools_field_website">Website</string>
+    <string name="schools_field_created">Created</string>
+    <string name="schools_field_address">Address</string>
+    <string name="schools_field_logo">Logo</string>
+    <string name="schools_edit">Edit</string>
+    <string name="schools_archive">Archive</string>
+    <string name="schools_restore">Restore</string>
+    <string name="schools_archive_title">Archive %1$s?</string>
+    <string name="schools_restore_title">Restore %1$s?</string>
+    <string name="schools_archive_message">Everyone in this school (principal, staff, parents) will no longer be able to sign in, and it is hidden from day-to-day lists. All records are kept and you can restore it any time.</string>
+    <string name="schools_restore_message">The school becomes active again and its users can sign in as before.</string>
+
+    <string name="schools_edit_title">Edit school</string>
+    <string name="schools_code_fixed">The code can\'t be changed.</string>
+    <string name="schools_no_permission">You don\'t have permission to edit schools.</string>
+    <string name="schools_logo_pick">Upload logo</string>
+    <string name="schools_logo_change">Change logo</string>
+    <string name="schools_logo_remove">Remove logo</string>
+    <string name="schools_logo_hint">PNG, JPG or WebP up to 5 MB.</string>
+
+    <string name="schools_delete_permanently">Delete permanently</string>
+    <string name="schools_delete_title">Delete %1$s permanently?</string>
+    <string name="schools_delete_message">Everything in this school is removed from eSchool for good: branches, people, classes, attendance, fees and files. People who only belong to this school lose their accounts.</string>
+    <string name="schools_delete_no_records">This school has no records yet.</string>
+    <string name="schools_delete_last_school">This is the last active school. Afterwards only super admins will be able to sign in.</string>
+    <string name="schools_delete_undo">This can\'t be undone.</string>
+    <string name="schools_delete_archive_hint">If you may need this school again, archive it instead.</string>
+    <string name="schools_delete_type_code">Type %1$s to confirm</string>
+    <string name="schools_delete_running">Deleting %1$s… this can take a minute. Keep this screen open.</string>
+    <string name="schools_delete_failed">Deletion failed, nothing was removed. %1$s</string>
+    <plurals name="schools_delete_kept_users">
+        <item quantity="one">%1$d person also works in another school and will keep their account; only their access to this school is removed.</item>
+        <item quantity="other">%1$d people also work in another school and will keep their accounts; only their access to this school is removed.</item>
+    </plurals>
+    <plurals name="schools_del_branches"><item quantity="one">branch</item><item quantity="other">branches</item></plurals>
+    <plurals name="schools_del_users"><item quantity="one">user account</item><item quantity="other">user accounts</item></plurals>
+    <plurals name="schools_del_staff"><item quantity="one">staff member</item><item quantity="other">staff members</item></plurals>
+    <plurals name="schools_del_students"><item quantity="one">student</item><item quantity="other">students</item></plurals>
+    <plurals name="schools_del_guardians"><item quantity="one">guardian</item><item quantity="other">guardians</item></plurals>
+    <plurals name="schools_del_sessions"><item quantity="one">academic session</item><item quantity="other">academic sessions</item></plurals>
+    <plurals name="schools_del_classes"><item quantity="one">class</item><item quantity="other">classes</item></plurals>
+    <plurals name="schools_del_sections"><item quantity="one">section</item><item quantity="other">sections</item></plurals>
+    <plurals name="schools_del_subjects"><item quantity="one">subject</item><item quantity="other">subjects</item></plurals>
+    <plurals name="schools_del_timetables"><item quantity="one">timetable</item><item quantity="other">timetables</item></plurals>
+    <plurals name="schools_del_attendance"><item quantity="one">attendance record</item><item quantity="other">attendance records</item></plurals>
+    <plurals name="schools_del_exams"><item quantity="one">exam</item><item quantity="other">exams</item></plurals>
+    <plurals name="schools_del_invoices"><item quantity="one">fee invoice</item><item quantity="other">fee invoices</item></plurals>
+    <plurals name="schools_del_payments"><item quantity="one">payment</item><item quantity="other">payments</item></plurals>
+    <plurals name="schools_del_files"><item quantity="one">uploaded file</item><item quantity="other">uploaded files</item></plurals>
+</resources>

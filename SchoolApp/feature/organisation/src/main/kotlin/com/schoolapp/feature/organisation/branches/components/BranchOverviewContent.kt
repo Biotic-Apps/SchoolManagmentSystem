@@ -8,9 +8,15 @@ import com.schoolapp.core.model.organisation.BranchOverview
 import com.schoolapp.feature.organisation.components.RefreshErrorBanner
 
 @Composable
-internal fun BranchOverviewContent(overview: BranchOverview, modifier: Modifier = Modifier, refreshError: AppError? = null) {
+internal fun BranchOverviewContent(
+    overview: BranchOverview,
+    modifier: Modifier = Modifier,
+    refreshError: AppError? = null,
+    actions: (@Composable () -> Unit)? = null,
+) {
     ScreenColumn(modifier) {
         if (refreshError != null) item(key = "refresh-error") { RefreshErrorBanner(refreshError) }
+        if (actions != null) item(key = "actions") { actions() }
         item(key = "info") { BranchInfoCard(overview.branch) }
         item(key = "timings") { BranchTimingsCard(overview.branch) }
         item(key = "settings") { BranchSettingsCard(overview.settings) }

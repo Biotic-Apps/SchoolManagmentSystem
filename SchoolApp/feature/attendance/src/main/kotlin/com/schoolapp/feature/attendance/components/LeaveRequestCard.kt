@@ -3,80 +3,87 @@ package com.schoolapp.feature.attendance.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppCard
-import com.schoolapp.core.designsystem.component.AppTextButton
+import com.schoolapp.core.designsystem.component.IconTile
 import com.schoolapp.core.designsystem.component.StatusChip
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.model.leave.LeaveKind
 import com.schoolapp.core.model.leave.LeaveRequest
-import com.schoolapp.core.model.leave.LeaveStatus
 import com.schoolapp.core.ui.formatDateRange
 import com.schoolapp.feature.attendance.R
 
-/** One leave request; [onCancel] shows a cancel action while it is still SUBMITTED. */
+/**
+ * One leave request: type/subject header with a status chip, dates and day count, the reason, the decision
+ * (who decided and their note) and an optional [actions] row (cancel, approve/reject).
+ */
 @Composable
 internal fun LeaveRequestCard(
     leave: LeaveRequest,
     modifier: Modifier = Modifier,
     showSubject: Boolean = false,
     onClick: (() -> Unit)? = null,
-    onCancel: (() -> Unit)? = null,
-    cancelling: Boolean = false,
+    actions: (@Composable RowScope.() -> Unit)? = null,
 ) {
-    val range = formatDateRange(leave.from, leave.to).orEmpty()
-    AppCard(modifier = modifier, onClick = onClick, contentPadding = 12.dp) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Row(verticalAlignment = Alignment.Top) {
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        if (showSubject) leave.subject.name else range,
-                        style = MaterialTheme.typography.titleSmall,
-                        color = AppColors.TextPrimary,
-                    )
-                    val detail = listOfNotNull(
-                        range.takeIf { showSubject },
-                        pluralStringResource(R.plurals.attendance_days, leave.days, leave.days),
-                        leave.type?.let { leaveTypeLabel(it) },
-                        stringResource(R.string.attendance_leave_kind_staff).takeIf { showSubject && leave.kind == LeaveKind.STAFF },
-                    ).joinToString(" · ")
-                    Text(detail, style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)
-                }
-                Spacer(Modifier.width(8.dp))
-                StatusChip(leaveStatusLabel(leave.status), leave.status.tone())
-            }
+    AppCard(modifier = modifier.fillMaxWidth(), onClick = onClick, verticalSpacing = 12.dp) {
+        LeaveCardHeader(leave, showSubject)
+        LeaveFacts(leave, showSubject)
+        Text(
+            leave.reason,
+            style = MaterialTheme.typography.bodyMedium,
+            color = AppColors.TextPrimary,
+            maxLines = if (onClick != null) PREVIEW_LINES else Int.MAX_VALUE,
+            overflow = TextOverflow.Ellipsis,
+        )
+        leave.decidedBy?.let { DecisionNote(it.name, leave.comment) }
+        if (actions != null) {
+            HorizontalDivider(color = AppColors.Border)
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End), content = actions)
+        }
+    }
+}
+
+@Composable
+private fun LeaveCardHeader(leave: LeaveRequest, showSubject: Boolean) {
+    val title = when {
+        showSubject -> leave.subject.name
+        leave.kind == LeaveKind.STAFF && leave.type != null -> leaveTypeLabel(leave.type!!)
+        else -> leave.subject.name.ifBlank { stringResource(R.string.attendance_segment_leave) }
+    }
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        IconTile(leave.displayIcon(), leave.status.tone(), size = 40.dp)
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.titleMedium, color = AppColors.TextPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(
-                leave.reason,
-                style = MaterialTheme.typography.bodyMedium,
-                color = AppColors.TextPrimary,
-                maxLines = if (onClick != null) PREVIEW_LINES else Int.MAX_VALUE,
-                overflow = TextOverflow.Ellipsis,
+                formatDateRange(leave.from, leave.to).orEmpty(),
+                style = MaterialTheme.typography.bodySmall,
+                color = AppColors.TextSecondary,
             )
-            leave.decidedBy?.let { decidedBy ->
-                val text = listOfNotNull(
-                    stringResource(R.string.attendance_leave_decided_by, decidedBy.name),
-                    leave.comment?.takeIf { it.isNotBlank() },
-                ).joinToString(" – ")
-                Text(text, style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)
-            }
-            if (onCancel != null && leave.status == LeaveStatus.SUBMITTED) {
-                AppTextButton(
-                    text = stringResource(R.string.attendance_leave_cancel),
-                    onClick = onCancel,
-                    loading = cancelling,
-                    contentColor = AppColors.Error,
-                )
-            }
+        }
+        StatusChip(leaveStatusLabel(leave.status), leave.status.tone(), icon = leave.status.icon())
+    }
+}
+
+@Composable
+private fun DecisionNote(decidedBy: String, comment: String?) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(
+            stringResource(R.string.attendance_leave_decided_by, decidedBy),
+            style = MaterialTheme.typography.labelMedium,
+            color = AppColors.TextSecondary,
+        )
+        comment?.takeIf { it.isNotBlank() }?.let {
+            Text(stringResource(R.string.leave_decision_comment, it), style = MaterialTheme.typography.bodySmall, color = AppColors.TextPrimary)
         }
     }
 }

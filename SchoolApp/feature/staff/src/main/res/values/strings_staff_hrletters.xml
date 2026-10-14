@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="staff_hr_title">HR letters</string>
+    <string name="staff_hr_count">HR letters (%1$d)</string>
+    <string name="staff_hr_empty">No HR letters yet</string>
+    <string name="staff_hr_empty_can_generate">Generate experience, salary or relieving letters for this staff member.</string>
+    <string name="staff_hr_empty_view_only">No HR letters have been issued yet.</string>
+    <string name="staff_hr_no_templates">No active HR letter templates yet, so letters cannot be generated.</string>
+    <string name="staff_hr_generate">Generate letter</string>
+    <string name="staff_hr_generate_title">Generate HR letter</string>
+    <string name="staff_hr_generate_submit">Generate</string>
+    <string name="staff_hr_template">Template</string>
+    <string name="staff_hr_template_required">Choose a template</string>
+    <string name="staff_hr_subject">Subject (optional)</string>
+    <string name="staff_hr_subject_hint">Auto-generated if left blank</string>
+    <string name="staff_hr_subject_too_short">Subject must be at least 2 characters</string>
+    <string name="staff_hr_subject_too_long">Subject must be at most 200 characters</string>
+    <string name="staff_hr_effective_date">Effective date (optional)</string>
+    <string name="staff_hr_clear_date">Clear date</string>
+    <string name="staff_hr_generated">Letter generated</string>
+    <string name="staff_hr_pdf">PDF</string>
+    <string name="staff_hr_pdf_missing">PDF not available</string>
+    <string name="staff_hr_type_experience">Experience</string>
+    <string name="staff_hr_type_salary">Salary certificate</string>
+    <string name="staff_hr_type_relieving">Relieving</string>
+    <string name="staff_hr_type_custom">Custom</string>
+</resources>

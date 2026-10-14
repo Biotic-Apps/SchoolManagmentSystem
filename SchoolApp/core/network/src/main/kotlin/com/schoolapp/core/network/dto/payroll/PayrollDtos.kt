@@ -39,6 +39,7 @@ data class PayrollLineDto(
     val staffId: String = "",
     val name: String = "",
     val designation: String? = null,
+    val employeeNo: String? = null,
     val basicMinor: Long = 0,
     val allowancesMinor: Long = 0,
     val deductionsMinor: Long = 0,
@@ -67,6 +68,8 @@ data class PayrollRunDto(
     val balanceMinor: Long? = null,
     val approvalId: String? = null,
     val approval: RunApprovalDto? = null,
+    val currency: String? = null,
+    val pendingOvertimeCount: Int? = null,
     val totals: PayrollTotalsDto? = null,
     val lines: List<PayrollLineDto>? = null,
 )

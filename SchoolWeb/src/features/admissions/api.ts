@@ -7,6 +7,7 @@ import type {
   ApplicationInput,
   ConfirmInput,
   ConfirmedAdmission,
+  ConvertEnquiryInput,
   Decision,
   Enquiry,
   EnquiryInput,
@@ -49,9 +50,11 @@ export function useSaveEnquiry() {
 
 export function useConvertEnquiry() {
   return useApiMutation({
-    mutationFn: async (id: string) => (await http.post<Application>(`/admissions/enquiries/${id}/convert`)).data,
+    mutationFn: async ({ id, input }: { id: string; input: ConvertEnquiryInput }) =>
+      (await http.post<Application>(`/admissions/enquiries/${id}/convert`, input)).data,
     invalidate: INVALIDATE,
     success: (application) => `Application ${application.applicationNo} created`,
+    toastError: false,
   });
 }
 

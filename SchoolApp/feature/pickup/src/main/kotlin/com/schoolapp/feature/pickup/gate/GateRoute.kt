@@ -39,6 +39,7 @@ internal fun GateRoute(
                 onApprove = viewModel::approve,
                 onReject = viewModel::reject,
                 onQueryChange = viewModel::onQueryChange,
+                onDateChange = viewModel::onDateChange,
             )
         }
     }

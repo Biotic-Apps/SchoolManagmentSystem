@@ -8,10 +8,10 @@ import com.schoolapp.core.data.academics.AcademicsEvents
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.data.common.serverCode
 import com.schoolapp.core.data.common.toActionError
-import com.schoolapp.core.data.organisation.OrganisationRepository
 import com.schoolapp.core.data.timetable.BellScheduleRepository
 import com.schoolapp.core.data.timetable.TimetableBuilderRepository
 import com.schoolapp.core.model.RoleKey
+import com.schoolapp.feature.timetable.scope.TimetableBranchScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +32,7 @@ class BellScheduleViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val schedules: BellScheduleRepository,
     private val editor: TimetableBuilderRepository,
-    private val organisation: OrganisationRepository,
+    private val scope: TimetableBranchScope,
     private val authRepository: AuthRepository,
     private val events: AcademicsEvents,
 ) : ViewModel() {
@@ -49,8 +49,7 @@ class BellScheduleViewModel @Inject constructor(
         _uiState.update { it.copy(isLoading = true, loadError = null) }
         viewModelScope.launch {
             val session = authRepository.session.filterNotNull().first()
-            val branchId = requestedBranch ?: session.activeBranchId
-                ?: (organisation.branches() as? AppResult.Success)?.data?.firstOrNull()?.id
+            val branchId = requestedBranch ?: (scope.branchId(session) as? AppResult.Success)?.data
             val canEdit = session.has(TIMETABLE_EDIT) && VIEW_ONLY_ROLES.none { it == session.activeRole }
             if (branchId == null) {
                 _uiState.update { it.copy(isLoading = false, canEdit = false) }

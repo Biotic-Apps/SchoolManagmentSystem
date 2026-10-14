@@ -19,7 +19,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import com.schoolapp.core.designsystem.component.AppCard
+import com.schoolapp.core.designsystem.component.AppTextButton
 import com.schoolapp.core.designsystem.component.MoneyText
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.model.fees.DuesAging
@@ -35,6 +38,7 @@ internal fun DuesRowCard(
     modifier: Modifier = Modifier,
     selected: Boolean? = null,
     onToggle: () -> Unit = {},
+    onOpenLedger: (() -> Unit)? = null,
 ) {
     val selectable = if (selected != null) {
         Modifier.toggleable(value = selected, role = Role.Checkbox, onValueChange = { onToggle() })
@@ -59,7 +63,7 @@ internal fun DuesRowCard(
                 }
                 row.guardian?.let { guardian ->
                     Text(
-                        listOfNotNull(guardian.name, guardian.phone).joinToString(" · "),
+                        listOfNotNull(guardian.name, guardian.phone).joinToString(" Â· "),
                         style = MaterialTheme.typography.bodySmall,
                         color = AppColors.TextSecondary,
                     )
@@ -70,6 +74,9 @@ internal fun DuesRowCard(
         row.aging?.let {
             HorizontalDivider(color = AppColors.Border)
             AgingColumns(it, currency)
+        }
+        onOpenLedger?.let {
+            AppTextButton(stringResource(R.string.fees_ledger_view), it, leadingIcon = Icons.AutoMirrored.Outlined.ReceiptLong)
         }
     }
 }

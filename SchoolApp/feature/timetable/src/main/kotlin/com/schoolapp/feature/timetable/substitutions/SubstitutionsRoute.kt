@@ -15,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.designsystem.component.AppTabs
 import com.schoolapp.core.designsystem.component.LoadingState
 import com.schoolapp.feature.timetable.R
+import com.schoolapp.feature.timetable.scope.LocalTimetableBranch
 
 /** Substitutions for the active branch; loads the first time it is shown. */
 @Composable
@@ -27,7 +28,9 @@ fun SubstitutionsRoute(modifier: Modifier = Modifier, viewModel: SubstitutionsVi
 /** "Substitutions" tab for [com.schoolapp.feature.timetable.builder.TimetableAdminRoute]'s `extraTab`. */
 @Composable
 fun substitutionsTab(): Pair<String, @Composable (Modifier) -> Unit> {
-    val content: @Composable (Modifier) -> Unit = { SubstitutionsRoute(it) }
+    val content: @Composable (Modifier) -> Unit = {
+        SubstitutionsRoute(it, viewModel = hiltViewModel(key = "tt-subs-${LocalTimetableBranch.current}"))
+    }
     return stringResource(R.string.timetable_tab_substitutions) to content
 }
 

@@ -26,7 +26,7 @@ import com.schoolapp.feature.timetable.components.WeekContent
 import java.time.LocalDate
 
 /**
- * Read-only timetable for every role: optional "My week / My sections" switch and section chips, then
+ * Week timetable for every role (teachers open their class-teacher section's draft from here): optional "My week / My sections" switch and section chips, then
  * the week (day chips + swipeable day timeline, or a week grid on wide screens), pull-to-refresh, and a
  * lesson sheet with the role's quick actions.
  */
@@ -42,9 +42,15 @@ fun TimetableScreen(
     onLessonSelected: (ScheduleRow?) -> Unit = {},
     lessonActions: LessonActions = LessonActions(),
     onEditSection: ((sectionId: String, title: String) -> Unit)? = null,
+    topContent: @Composable () -> Unit = {},
 ) {
     var weekLayout by rememberSaveable { mutableStateOf(false) }
-    val header: @Composable () -> Unit = { TimetableHeader(state, onTeacherViewSelected, onSectionSelected, onEditSection) }
+    val header: @Composable () -> Unit = {
+        Column {
+            topContent()
+            TimetableHeader(state, onTeacherViewSelected, onSectionSelected, onEditSection)
+        }
+    }
     when {
         state.isLoading -> Column(modifier.fillMaxSize()) {
             header()
@@ -56,7 +62,7 @@ fun TimetableScreen(
         }
         else -> RefreshBox(state.isRefreshing, onRefresh, modifier.fillMaxSize()) {
             if (!state.hasWeek) {
-                CollapsingHeaderLayout(header, Modifier.fillMaxSize()) { ScrollableState { TimetableStatusState(state) } }
+                CollapsingHeaderLayout(header, Modifier.fillMaxSize()) { ScrollableState { TimetableStatusState(state, onEditSection = onEditSection) } }
             } else {
                 BoxWithConstraints(Modifier.fillMaxSize()) {
                     WeekContent(

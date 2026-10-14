@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shared actions -->
+    <string name="org_edit">Edit</string>
+    <string name="org_edit_named">Edit %1$s</string>
+    <string name="org_remove_named">Remove %1$s</string>
+    <string name="org_delete">Delete</string>
+    <string name="org_save_changes">Save changes</string>
+    <string name="org_activate">Activate</string>
+    <string name="org_archive">Archive</string>
+    <string name="org_settings">Settings</string>
+    <string name="org_start_date">Start date</string>
+    <string name="org_end_date">End date</string>
+    <string name="org_pick_start_date">Pick the start date</string>
+    <string name="org_pick_end_date">Pick the end date</string>
+    <string name="org_end_before_start">End date must be on or after the start date</string>
+    <string name="org_phone_invalid">Enter a valid phone number</string>
+    <string name="org_email_invalid">Enter a valid email address</string>
+    <string name="org_address_too_long">Use at most 300 characters</string>
+
+    <!-- Branches -->
+    <string name="org_add_branch">Add branch</string>
+    <string name="org_edit_branch">Edit branch</string>
+    <string name="org_create_branch">Create branch</string>
+    <string name="org_edit_timings">Edit timings</string>
+    <string name="org_edit_timings_of">Edit timings — %1$s</string>
+    <string name="org_school">School</string>
+    <string name="org_branch_name">Name</string>
+    <string name="org_branch_code_hint">2–12 uppercase letters or digits</string>
+    <string name="org_branch_code_locked">The code can\'t be changed.</string>
+    <string name="org_branch_pick_school">Pick a school</string>
+    <string name="org_branch_code_invalid">Use 2–12 uppercase letters or digits</string>
+    <string name="org_branch_name_invalid">Enter the branch name (2–120 characters)</string>
+    <string name="org_closes_after_opens">Closing time must be after opening time</string>
+    <string name="org_lock_within_hours">Attendance lock must fall within school hours</string>
+    <string name="org_staff_arrive_rule">Teachers must arrive by the time school opens</string>
+    <string name="org_staff_leave_rule">Teachers can\'t leave before school closes</string>
+    <string name="org_pick_working_day">Pick at least one working day</string>
+    <string name="org_branch_created">Branch created</string>
+    <string name="org_branch_updated">Branch updated</string>
+    <string name="org_timings_updated">Timings updated</string>
+    <string name="org_branch_archived">Branch archived</string>
+    <string name="org_branch_activated">Branch activated</string>
+    <string name="org_archive_branch_title">Archive %1$s?</string>
+    <string name="org_archive_branch_message">Archived branches are hidden from day-to-day lists. Their history is kept.</string>
+    <string name="org_activate_branch_title">Activate %1$s?</string>
+    <string name="org_activate_branch_message">The branch becomes available again in all lists.</string>
+
+    <!-- Branch settings -->
+    <string name="org_settings_of">Settings — %1$s</string>
+    <string name="org_daily_rules">Daily rules</string>
+    <string name="org_diary_moderation">Moderate diary entries</string>
+    <string name="org_diary_moderation_hint">Teachers\' diary entries wait for approval before parents see them.</string>
+    <string name="org_diary_closes">Diary closes at</string>
+    <string name="org_office_from">Office hours from</string>
+    <string name="org_office_to">Office hours to</string>
+    <string name="org_office_hours_order">Office hours must end after they start</string>
+    <string name="org_bank_title">Fee challan bank details</string>
+    <string name="org_bank_hint">Printed on every challan. Leave empty if parents pay at the school counter.</string>
+    <string name="org_bank_name">Bank name</string>
+    <string name="org_bank_branch_code">Bank branch code</string>
+    <string name="org_bank_account_title">Account title</string>
+    <string name="org_bank_account_number">Account number / IBAN</string>
+    <string name="org_account_number_required">Enter the account number parents deposit into</string>
+    <string name="org_challan_note">Note on challans</string>
+    <string name="org_challan_note_hint">Optional, e.g. late-fee or refund policy. Up to 300 characters.</string>
+    <string name="org_save_settings">Save settings</string>
+    <string name="org_settings_saved">Branch settings saved</string>
+
+    <!-- Principal -->
+    <string name="org_change_principal">Change principal</string>
+    <string name="org_change_principal_of">Change principal — %1$s</string>
+    <string name="org_change_principal_warning">The current principal\'s assignment ends now, their sessions for this role are signed out and their pending approvals move to the new principal.</string>
+    <string name="org_new_principal">New principal</string>
+    <string name="org_pick_principal">Pick the new principal</string>
+    <string name="org_no_principals">No active user holds the Principal role yet. Create the account first in Principals &amp; Admin Users.</string>
+    <string name="org_principal_changed">Principal changed</string>
+
+    <!-- Sessions and terms -->
+    <string name="org_no_branch">No branch available</string>
+    <string name="org_no_branch_hint">Sessions and the calendar are set per branch. Add or activate a branch first.</string>
+    <string name="org_sessions_empty_hint">Create the academic session (e.g. 2026-27), add its terms, then activate it.</string>
+    <string name="org_new_session">New session</string>
+    <string name="org_edit_session">Edit session</string>
+    <string name="org_create_session">Create session</string>
+    <string name="org_session_name">Session name</string>
+    <string name="org_session_name_hint">e.g. 2026-27</string>
+    <string name="org_range_name_invalid">Enter a name (up to 30 characters for a session, 40 for a term)</string>
+    <string name="org_session_draft_hint">New sessions start as a draft. Add the terms, then activate it.</string>
+    <string name="org_session_created">Session created as draft</string>
+    <string name="org_session_updated">Session updated</string>
+    <string name="org_session_activated">Session activated</string>
+    <string name="org_session_closed">Session closed</string>
+    <string name="org_close_session">Close session</string>
+    <string name="org_activate_session_title">Activate %1$s?</string>
+    <string name="org_activate_session_message">This becomes the branch\'s current session. Only one session can be active per branch — close the current one first if needed.</string>
+    <string name="org_close_session_title">Close %1$s?</string>
+    <string name="org_close_session_message">Closing makes this session and its terms read-only — nothing in it can be edited afterwards. There is no way to reopen it.</string>
+    <string name="org_manage_terms">Manage terms</string>
+    <string name="org_view_terms">View terms</string>
+    <string name="org_terms_of">Terms · %1$s</string>
+    <string name="org_session_closed_terms">This session is closed, so its terms are read-only.</string>
+    <string name="org_terms_empty">No terms yet</string>
+    <string name="org_terms_empty_hint">Split the session into terms, e.g. Term 1 and Term 2. Terms can\'t overlap.</string>
+    <string name="org_add_term">Add term</string>
+    <string name="org_term_name">Term name</string>
+    <string name="org_term_name_hint">e.g. Term 1</string>
+    <string name="org_term_outside_session">Keep the term within the session dates</string>
+    <string name="org_term_overlaps">This term overlaps another term</string>
+    <string name="org_term_added">Term added</string>
+    <string name="org_term_updated">Term updated</string>
+    <string name="org_term_removed">Term removed</string>
+    <string name="org_remove_term_title">Remove %1$s?</string>
+    <string name="org_remove_term_message">The term is removed from this session.</string>
+
+    <!-- Calendar -->
+    <string name="org_calendar_empty_hint">Holidays, vacations, deadlines and events you add appear here.</string>
+    <string name="org_previous_month">Previous month</string>
+    <string name="org_next_month">Next month</string>
+    <string name="org_add_event">Add entry</string>
+    <string name="org_edit_event">Edit calendar entry</string>
+    <string name="org_event_title">Title</string>
+    <string name="org_event_title_hint">e.g. Winter vacation</string>
+    <string name="org_event_title_invalid">Enter a title (2–120 characters)</string>
+    <string name="org_event_description">Description (optional)</string>
+    <string name="org_scope_branch">This branch</string>
+    <string name="org_scope_school">Whole school</string>
+    <string name="org_event_added">Entry added</string>
+    <string name="org_event_updated">Entry updated</string>
+    <string name="org_event_deleted">Entry deleted</string>
+    <string name="org_delete_event">Delete entry</string>
+    <string name="org_delete_event_title">Delete “%1$s”?</string>
+    <string name="org_delete_event_branch">It is removed from this branch\'s calendar.</string>
+    <string name="org_delete_event_school">It is removed from the calendar of every branch.</string>
+</resources>

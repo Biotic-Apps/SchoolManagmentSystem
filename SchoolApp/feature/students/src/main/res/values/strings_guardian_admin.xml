@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Parents & Guardians list -->
+    <string name="students_link_requests_hint_decide">Parents ask to link a child after verifying an OTP sent to the phone on the school record. Approve only when you are sure the request is genuine.</string>
+    <string name="students_approve">Approve</string>
+    <string name="students_reject">Reject</string>
+    <string name="students_link_approved">Child link approved</string>
+    <string name="students_link_rejected">Child link rejected</string>
+    <string name="students_reject_link_title">Reject link request</string>
+    <string name="students_reject_link_message">%1$s will not be linked to %2$s.</string>
+    <string name="students_reason_optional">Reason (optional)</string>
+    <string name="students_reject_link_reason_hint">Shown to the parent.</string>
+    <string name="students_guardians_search_hint">Search name, phone or email</string>
+    <string name="students_no_sign_in">No sign-in</string>
+    <string name="students_login_slips">Parent login slips</string>
+
+    <!-- Guardian page -->
+    <string name="students_guardian_details">Details</string>
+    <string name="students_relation">Relation</string>
+    <string name="students_phone">Phone</string>
+    <string name="students_email">email</string>
+    <string name="students_email_label">Email</string>
+    <string name="students_cnic">CNIC</string>
+    <string name="students_occupation">Occupation</string>
+    <string name="students_address_label">Address</string>
+    <string name="students_children">Children</string>
+    <string name="students_no_children">No children are linked to this guardian.</string>
+    <string name="students_unlink">Unlink</string>
+    <string name="students_unlink_title">Unlink %1$s?</string>
+    <string name="students_unlink_message">%1$s will no longer see %2$s in the parent app. The reason is kept in the history.</string>
+    <string name="students_reason_min">Enter at least 3 characters</string>
+    <string name="students_guardian_saved">Guardian updated</string>
+    <string name="students_child_unlinked">Link removed</string>
+    <string name="students_done">Done</string>
+    <string name="students_and">" and "</string>
+
+    <!-- Parent sign-in -->
+    <string name="students_sign_in_active">Signs in</string>
+    <string name="students_sign_in_pending">Not signed in yet</string>
+    <string name="students_sign_in_disabled">Disabled</string>
+    <string name="students_sign_in_hint_none">No parent sign-in yet. Give access so they can see attendance, homework, results and fees in the eSchool app.</string>
+    <string name="students_sign_in_hint_temp">Has a temporary password and has not signed in yet. Username: %1$s</string>
+    <string name="students_sign_in_hint_active">Signs in with their own password. Username: %1$s</string>
+    <string name="students_last_sign_in">Last signed in %1$s</string>
+    <string name="students_give_sign_in">Give sign-in access</string>
+    <string name="students_give_sign_in_title">Give %1$s parent sign-in?</string>
+    <string name="students_give_sign_in_message">Creates their parent sign-in with a temporary password, shown once. They then see their children\'s attendance, homework, results and fees.</string>
+    <string name="students_new_password">New password</string>
+    <string name="students_new_password_title">Make a new password for %1$s?</string>
+    <string name="students_new_password_message">Their old password stops working and they are signed out everywhere. The new temporary password is shown once.</string>
+    <string name="students_send_sign_in">Send sign-in steps</string>
+    <string name="students_sign_in_sent">Sign-in steps sent to %1$s by %2$s</string>
+    <string name="students_can_sign_in">%1$s can now sign in</string>
+    <string name="students_new_password_for">New password for %1$s</string>
+
+    <!-- Login slips -->
+    <string name="students_login_slips_hint">One slip per student for the primary guardian: username, temporary password, sign-in address and a QR code. You review the changes first.</string>
+    <string name="students_print_for">Print for</string>
+    <string name="students_whole_branch">Whole branch (all classes)</string>
+    <string name="students_whole_class">%1$s — all sections</string>
+    <string name="students_review">Review</string>
+    <string name="students_set_passwords_print">Set passwords and print</string>
+    <string name="students_print_slips">Print slips</string>
+    <string name="students_slips_preparing">Preparing login slips… this can take a minute.</string>
+    <string name="students_slips_ready">Login slips are ready. Only you can open this PDF; hand each slip over privately.</string>
+    <string name="students_open_pdf">Open PDF</string>
+    <plurals name="students_slips_summary">
+        <item quantity="one">%1$d slip for %2$d students</item>
+        <item quantity="other">%1$d slips for %2$d students</item>
+    </plurals>
+    <plurals name="students_slips_create">
+        <item quantity="one">%1$d parent gets a new sign-in with a temporary password</item>
+        <item quantity="other">%1$d parents get a new sign-in with a temporary password</item>
+    </plurals>
+    <plurals name="students_slips_reset">
+        <item quantity="one">%1$d parent never signed in: their temporary password is replaced</item>
+        <item quantity="other">%1$d parents never signed in: their temporary passwords are replaced</item>
+    </plurals>
+    <plurals name="students_slips_keep">
+        <item quantity="one">%1$d parent already signs in: password unchanged</item>
+        <item quantity="other">%1$d parents already sign in: passwords unchanged</item>
+    </plurals>
+    <plurals name="students_slips_skip">
+        <item quantity="one">%1$d skipped (no verified guardian, or sign-in disabled)</item>
+        <item quantity="other">%1$d skipped (no verified guardian, or sign-in disabled)</item>
+    </plurals>
+    <plurals name="students_slips_warning">
+        <item quantity="one">%1$d parent will get a new temporary password; slips printed earlier for them stop working.</item>
+        <item quantity="other">%1$d parents will get a new temporary password; slips printed earlier for them stop working.</item>
+    </plurals>
+</resources>

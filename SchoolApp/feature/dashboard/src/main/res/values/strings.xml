@@ -142,4 +142,11 @@
     <string name="dashboard_action_message">Message teacher</string>
     <string name="dashboard_action_leave">Apply leave</string>
     <string name="dashboard_action_meeting">Book meeting</string>
+    <string name="dashboard_scope_school">School</string>
+    <string name="dashboard_scope_branch">Branch</string>
+    <string name="dashboard_scope_session">Session</string>
+    <string name="dashboard_scope_all_schools">All schools</string>
+    <string name="dashboard_scope_all_branches">All branches</string>
+    <string name="dashboard_scope_all_sessions">All sessions</string>
+    <string name="dashboard_scope_reset">Show everything</string>
 </resources>

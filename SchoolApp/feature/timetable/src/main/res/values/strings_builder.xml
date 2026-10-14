@@ -80,4 +80,17 @@
     <string name="tt_gen_break_minutes">Break minutes</string>
     <string name="tt_gen_invalid">Use 1–12 periods of 5–180 minutes; the break comes before the last period (0 = no break).</string>
     <string name="tt_gen_apply">Fill this day</string>
+    <string name="tt_build_timetable">Build timetable</string>
+    <string name="tt_tab_teacher_week">Teacher week</string>
+    <string name="tt_choose_teacher">Choose a teacher</string>
+    <string name="tt_loading_teachers">Loading teachers…</string>
+    <string name="tt_choose_teacher_hint">See a teacher’s week, including substitute periods.</string>
+    <string name="tt_teacher_free_title">No periods this week</string>
+    <string name="tt_teacher_free_message">This teacher has no published periods or substitutions this week.</string>
+    <string name="tt_week_of">Week of %1$s</string>
+    <string name="tt_prev_week">Previous week</string>
+    <string name="tt_next_week">Next week</string>
+    <string name="tt_this_week">This week</string>
+    <string name="tt_no_branch_title">No branch in your scope</string>
+    <string name="tt_no_branch_message">Timetables are set up per branch. Add a branch first.</string>
 </resources>

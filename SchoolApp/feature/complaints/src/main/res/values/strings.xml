@@ -78,4 +78,10 @@
     <string name="complaints_assign_pick">Choose a staff member</string>
     <string name="complaints_assign_current">Current assignee</string>
     <string name="complaints_assign_retry">Retry</string>
+
+    <string name="complaints_search">Search ticket or subject</string>
+    <string name="complaints_all_statuses">All statuses</string>
+    <string name="complaints_all_categories">All categories</string>
+    <string name="complaints_empty_filtered">No complaints match these filters.</string>
+    <string name="complaints_clear_filters">Clear filters</string>
 </resources>

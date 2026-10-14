@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Menu -->
+    <string name="accounts_tab_income">Other Income</string>
+    <string name="accounts_tab_categories">Income Categories</string>
+    <string name="accounts_tab_profit_loss">Profit &amp; Loss</string>
+    <string name="accounts_no_branch">No branch in your scope</string>
+    <string name="accounts_no_branch_message">Accounts are tracked per branch.</string>
+    <string name="accounts_add_income">Add income</string>
+    <string name="accounts_retry">Retry</string>
+
+    <!-- Income list -->
+    <string name="accounts_income_title">Other income</string>
+    <string name="accounts_income_empty">No income records</string>
+    <string name="accounts_income_none_match">No income matches these filters</string>
+    <string name="accounts_income_empty_message">Donations, rent, event fees and other income appear here.</string>
+    <string name="accounts_loaded_total">Total shown</string>
+    <string name="accounts_records_count">%1$d of %2$d records</string>
+    <string name="accounts_filters">Filters</string>
+    <string name="accounts_filters_count">Filters (%1$d)</string>
+    <string name="accounts_all_categories">All categories</string>
+    <string name="accounts_any_date">Any date</string>
+    <string name="accounts_clear_filters">Clear</string>
+    <string name="accounts_apply">Apply</string>
+    <string name="accounts_has_receipt">Has receipt</string>
+    <string name="accounts_income_recorded">Income recorded</string>
+    <string name="accounts_income_updated">Income updated</string>
+    <string name="accounts_income_deleted">Income deleted</string>
+
+    <!-- Income detail -->
+    <string name="accounts_received_on">Date received</string>
+    <string name="accounts_recorded_at">Recorded</string>
+    <string name="accounts_open_receipt">Open receipt</string>
+    <string name="accounts_edit">Edit</string>
+    <string name="accounts_delete">Delete</string>
+    <string name="accounts_delete_title">Delete this income?</string>
+    <string name="accounts_delete_message">“%1$s” will be removed from the branch accounts. This cannot be undone.</string>
+
+    <!-- Income form -->
+    <string name="accounts_record_income">Record income</string>
+    <string name="accounts_edit_income">Edit income</string>
+    <string name="accounts_income_name">Title</string>
+    <string name="accounts_income_name_placeholder">e.g. Hall rental</string>
+    <string name="accounts_category">Category</string>
+    <string name="accounts_amount">Amount</string>
+    <string name="accounts_description">Description</string>
+    <string name="accounts_description_placeholder">Brief description of this income</string>
+    <string name="accounts_receipt">Receipt</string>
+    <string name="accounts_view_current_receipt">View current receipt</string>
+    <string name="accounts_notes">Notes</string>
+    <string name="accounts_save">Save</string>
+    <string name="accounts_no_categories_hint">No income categories yet. Add one in the Income Categories tab first.</string>
+    <string name="accounts_error_required">Required</string>
+    <string name="accounts_error_choose_category">Choose a category</string>
+    <string name="accounts_error_amount">Enter an amount above zero</string>
+    <string name="accounts_error_too_short">Use at least %1$d characters</string>
+    <string name="accounts_error_too_long">Use at most %1$d characters</string>
+    <string name="accounts_error_too_long_plain">This is too long</string>
+
+    <!-- Categories -->
+    <string name="accounts_categories_title">Income categories for this school</string>
+    <string name="accounts_categories_count">%1$d categories</string>
+    <string name="accounts_categories_empty">No categories</string>
+    <string name="accounts_categories_empty_message">Categories group income like donations, rent and event fees.</string>
+    <string name="accounts_add_category">Add category</string>
+    <string name="accounts_category_scope_note">Available to every branch of this school.</string>
+    <string name="accounts_category_name">Name</string>
+    <string name="accounts_category_name_placeholder">e.g. Donations</string>
+    <string name="accounts_category_code">Code</string>
+    <string name="accounts_category_code_hint">Optional short code, e.g. DONATION</string>
+    <string name="accounts_category_added">%1$s added</string>
+    <string name="accounts_error_category_name">Enter the category name</string>
+    <string name="accounts_error_category_code">Start with a letter; use 2–30 letters, digits or underscores</string>
+
+    <!-- Profit & Loss -->
+    <string name="accounts_from">From</string>
+    <string name="accounts_to">To</string>
+    <string name="accounts_preset_this_month">This month</string>
+    <string name="accounts_preset_last_month">Last month</string>
+    <string name="accounts_preset_this_year">This year</string>
+    <string name="accounts_preset_custom">Custom</string>
+    <string name="accounts_range_invalid">“From” must be on or before “To”</string>
+    <string name="accounts_range_invalid_message">Pick a start date that is not after the end date.</string>
+    <string name="accounts_total_income">Total income</string>
+    <string name="accounts_total_expenses">Total expenses</string>
+    <string name="accounts_net">Net profit / (loss)</string>
+    <string name="accounts_net_profit">Profit for this period</string>
+    <string name="accounts_net_loss">Loss for this period</string>
+    <string name="accounts_income_vs_expenses">Income vs expenses</string>
+    <string name="accounts_section_income">Income</string>
+    <string name="accounts_section_expenses">Expenses</string>
+    <string name="accounts_expense_ratio">Expenses are %1$d%% of income</string>
+    <string name="accounts_no_lines">Nothing in this period</string>
+    <string name="accounts_total">Total</string>
+</resources>

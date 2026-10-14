@@ -39,6 +39,7 @@ import com.schoolapp.core.ui.people.GuardianFields
 import com.schoolapp.core.ui.people.MAX_GUARDIANS
 import com.schoolapp.core.ui.people.text
 import com.schoolapp.feature.students.R
+import com.schoolapp.feature.students.parentlogin.ParentLoginsContent
 
 /** [onCreated] gets the new student's id (the caller opens the profile). */
 @Composable
@@ -49,13 +50,17 @@ fun AddStudentRoute(
     viewModel: AddStudentViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(state.created) { state.created?.let { onCreated(it.id) } }
+    val created = state.created
+    // With parent sign-ins to hand over, show them first (once); otherwise open the new profile straight away.
+    LaunchedEffect(created) { if (created != null && created.parentLogins.isEmpty()) onCreated(created.id) }
     AppScaffold(
         modifier = modifier,
         topBar = { AppTopBar(title = stringResource(R.string.students_add_title), navigationIcon = { BackButton(onBack) }) },
     ) { padding ->
         val body = Modifier.padding(padding)
         when {
+            created != null && created.parentLogins.isNotEmpty() ->
+                ParentLoginsContent(created.name, created.admissionNo, created.parentLogins, { onCreated(created.id) }, body)
             state.isLoading -> LoadingState(body)
             !state.canAdd -> EmptyState(stringResource(R.string.students_add_no_permission), body, icon = Icons.Outlined.Lock)
             state.loadError != null -> ErrorState(appErrorMessage(state.loadError!!), body, onRetry = viewModel::load)

@@ -17,6 +17,13 @@ interface TimetableApi {
         @Query("studentId") studentId: String? = null,
     ): ApiEnvelope<List<TeacherSlotDto>>
 
+    /** Supervisors: one teacher's week (published lessons plus substitutions) for the week of [weekOf]. */
+    @GET("timetables/teacher/{staffId}")
+    suspend fun teacher(
+        @Path("staffId") staffId: String,
+        @Query("weekOf") weekOf: String? = null,
+    ): ApiEnvelope<List<TeacherSlotDto>>
+
     @GET("timetables")
     suspend fun section(@Query("sectionId") sectionId: String): ApiEnvelope<TimetableDto>
 

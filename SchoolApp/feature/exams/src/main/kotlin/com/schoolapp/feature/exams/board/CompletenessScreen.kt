@@ -16,7 +16,6 @@ import com.schoolapp.core.designsystem.component.SwitcherOption
 import com.schoolapp.core.model.exams.MarkSheet
 import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.exams.R
-import com.schoolapp.feature.exams.board.components.ApprovalsNote
 import com.schoolapp.feature.exams.board.components.CompletenessSummary
 import com.schoolapp.feature.exams.components.MarkSheetCard
 import com.schoolapp.feature.exams.components.examOptions
@@ -28,19 +27,22 @@ internal class CompletenessActions(
     val onRefresh: () -> Unit,
     val onRetrySheets: () -> Unit,
     val onSheetClick: (MarkSheet) -> Unit,
-    val onOpenApprovals: (() -> Unit)?,
 )
 
 @Composable
-internal fun CompletenessScreen(state: CompletenessUiState, actions: CompletenessActions, modifier: Modifier = Modifier) {
+internal fun CompletenessScreen(
+    state: CompletenessUiState,
+    actions: CompletenessActions,
+    modifier: Modifier = Modifier,
+    showExamPicker: Boolean = true,
+) {
     val examChips = examOptions(state.exams)
     val filterOptions = listOf(SwitcherOption(CompletenessViewModel.ALL, stringResource(R.string.exams_filter_all, state.sheets.size))) +
         state.statuses.map { (status, count) -> SwitcherOption(status.name, stringResource(R.string.exams_filter_status, markSheetStatusLabel(status), count)) }
     val groups = state.groups
     RefreshBox(state.isRefreshing, actions.onRefresh, modifier) {
         ScreenColumn {
-            item(key = "note") { ApprovalsNote(actions.onOpenApprovals) }
-            item(key = "exam_picker") {
+            if (showExamPicker) item(key = "exam_picker") {
                 Column {
                     SectionHeader(title = stringResource(R.string.exams_completeness_title), subtitle = stringResource(R.string.exams_pick_exam))
                     FilterChipRow(examChips, state.selectedExamId, actions.onExamSelected)

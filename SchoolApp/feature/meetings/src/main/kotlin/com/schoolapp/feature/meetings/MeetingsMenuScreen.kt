@@ -7,6 +7,7 @@ import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.RoleRef
 import com.schoolapp.core.navigation.BookMeetingDestination
 import com.schoolapp.feature.meetings.navigation.MeetingDetailDestination
+import com.schoolapp.feature.meetings.navigation.ScheduleMeetingDestination
 import com.schoolapp.feature.meetings.parent.ParentMeetingsRoute
 import com.schoolapp.feature.meetings.staff.StaffMeetingsRoute
 
@@ -18,6 +19,7 @@ fun MeetingsMenuScreen(role: RoleRef, onOpen: (Any) -> Unit, modifier: Modifier 
     } else {
         StaffMeetingsRoute(
             onOpenMeeting = { id, box -> onOpen(MeetingDetailDestination(id, box.name)) },
+            onSchedule = { onOpen(ScheduleMeetingDestination) },
             modifier = modifier,
             viewModel = hiltViewModel(key = "meetings_${role.key}"),
             slotsViewModel = hiltViewModel(key = "meeting_slots_${role.key}"),

@@ -16,6 +16,11 @@ internal fun ProposePickers(picker: ProposePicker?, form: ProposeForm, onDismiss
             onConfirm = { onDismiss(); actions.onDate(it) },
             onDismiss = onDismiss,
         )
+        ProposePicker.END_DATE -> AppDatePickerDialog(
+            initialDate = form.effectiveEndDate,
+            onConfirm = { onDismiss(); actions.onEndDate(it) },
+            onDismiss = onDismiss,
+        )
         ProposePicker.DEADLINE -> AppDatePickerDialog(
             initialDate = form.consentDeadline ?: form.date,
             onConfirm = { onDismiss(); actions.onDeadline(it) },
@@ -36,4 +41,4 @@ internal fun ProposePickers(picker: ProposePicker?, form: ProposeForm, onDismiss
     }
 }
 
-internal enum class ProposePicker { DATE, START, END, DEADLINE }
+internal enum class ProposePicker { DATE, START, END_DATE, END, DEADLINE }

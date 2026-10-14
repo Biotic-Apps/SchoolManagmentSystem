@@ -1,5 +1,6 @@
 package com.schoolapp.feature.activities
 
+import androidx.lifecycle.SavedStateHandle
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.common.time.AppClock
 import com.schoolapp.core.data.organisation.OrganisationRepository
@@ -47,10 +48,10 @@ class ProposeActivityTest {
     }
 
     @Test
-    fun consent_deadline_must_be_before_start_date() {
+    fun consent_deadline_must_be_on_or_before_start_date() {
         val consent = valid.copy(consentRequired = true)
         assertTrue(ProposeField.DEADLINE in ProposeValidation.validate(consent, today))
-        assertTrue(ProposeField.DEADLINE_AFTER_START in ProposeValidation.validate(consent.copy(consentDeadline = "2026-10-20"), today))
+        assertTrue(ProposeValidation.validate(consent.copy(consentDeadline = "2026-10-20"), today).isEmpty())
         assertTrue(ProposeField.DEADLINE_AFTER_START in ProposeValidation.validate(consent.copy(consentDeadline = "2026-10-25"), today))
         assertTrue(ProposeValidation.validate(consent.copy(consentDeadline = "2026-10-19"), today).isEmpty())
     }
@@ -66,7 +67,8 @@ class ProposeActivityTest {
     fun submit_sends_local_date_times_and_reports_success() {
         val repository = FakeActivitiesRepository()
         val auth = FakeAuthRepository(TestSessions.session(RoleKey.TEACHER, "activities.add"))
-        val vm = ProposeActivityViewModel(repository, ScopedSections(auth, noOrganisation()), auth, AppClock { LocalDateTime.of(2026, 10, 6, 9, 0) })
+        val organisation = noOrganisation()
+        val vm = ProposeActivityViewModel(SavedStateHandle(), repository, ScopedSections(auth, organisation), organisation, auth, AppClock { LocalDateTime.of(2026, 10, 6, 9, 0) })
         vm.submit()
         assertFalse(vm.uiState.value.errors.isEmpty())
         assertTrue(repository.proposals.isEmpty())

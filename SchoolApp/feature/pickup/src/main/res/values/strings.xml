@@ -27,6 +27,28 @@
     <string name="pickup_search_students">Search students by name or admission no.</string>
     <string name="pickup_search_empty">No students match your search</string>
     <string name="pickup_approve">Approve</string>
+    <string name="pickup_tab_gate">Early leave &amp; departures</string>
+    <string name="pickup_tab_persons">Authorised persons</string>
+    <string name="pickup_previous_day">Previous day</string>
+    <string name="pickup_next_day">Next day</string>
+    <string name="pickup_early_leaves_empty_day">No early leave requests on this day</string>
+    <string name="pickup_departures">Departures</string>
+    <string name="pickup_departures_empty_day">No departures recorded on this day</string>
+
+    <!-- Authorised persons -->
+    <string name="pickup_persons_search_hint">Search for a student to see and verify the people authorised to collect them</string>
+    <string name="pickup_persons_rule">Only verified persons can collect the student. Guardians on record can always collect.</string>
+    <string name="pickup_persons_none">No authorised pickup persons</string>
+    <string name="pickup_change_student">Change student</string>
+    <string name="pickup_person_cnic_value">CNIC: %1$s</string>
+    <string name="pickup_verify">Verify</string>
+    <string name="pickup_revoke">Revoke</string>
+    <string name="pickup_verify_title">Verify this pickup person?</string>
+    <string name="pickup_verify_message">Check the CNIC and photo of %1$s first. Once verified, the gate can release the student to them.</string>
+    <string name="pickup_revoke_title">Revoke pickup authorisation?</string>
+    <string name="pickup_revoke_message">%1$s will be blocked at the gate.</string>
+    <string name="pickup_person_verified">Pickup person verified</string>
+    <string name="pickup_person_revoked">Pickup authorisation revoked</string>
     <string name="pickup_reject">Reject</string>
 
     <!-- Record departure -->

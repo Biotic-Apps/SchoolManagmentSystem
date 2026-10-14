@@ -10,6 +10,7 @@ import com.schoolapp.core.network.dto.meeting.MeetingDto
 import com.schoolapp.core.network.dto.meeting.MeetingRequestBodyDto
 import com.schoolapp.core.network.dto.meeting.MeetingSlotDto
 import com.schoolapp.core.network.dto.meeting.MeetingTeacherDto
+import com.schoolapp.core.network.dto.meeting.StaffMeetingBodyDto
 import com.schoolapp.core.network.model.ApiEnvelope
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -53,8 +54,20 @@ interface MeetingsApi {
     @POST("meetings")
     suspend fun book(@Body body: BookMeetingBodyDto): ApiEnvelope<MeetingDto>
 
+    /** Staff-initiated meeting with a guardian (no slot). */
+    @POST("meetings")
+    suspend fun schedule(@Body body: StaffMeetingBodyDto): ApiEnvelope<MeetingDto>
+
     @GET("meetings")
-    suspend fun meetings(@Query("box") box: String, @Query("studentId") studentId: String? = null): ApiEnvelope<List<MeetingDto>>
+    suspend fun meetings(
+        @Query("box") box: String,
+        @Query("studentId") studentId: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("pageSize") pageSize: Int? = null,
+    ): ApiEnvelope<List<MeetingDto>>
+
+    @GET("meetings/{id}")
+    suspend fun meeting(@Path("id") id: String): ApiEnvelope<MeetingDto>
 
     @POST("meetings/{id}/cancel")
     suspend fun cancel(@Path("id") id: String, @Body body: ReasonBodyDto): ApiEnvelope<MeetingDto>

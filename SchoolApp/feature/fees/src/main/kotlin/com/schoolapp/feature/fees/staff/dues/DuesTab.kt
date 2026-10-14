@@ -22,6 +22,7 @@ import com.schoolapp.core.designsystem.component.SearchField
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.designsystem.money.MoneyFormat
 import com.schoolapp.core.ui.appErrorMessage
+import com.schoolapp.core.model.fees.DuesRow
 import com.schoolapp.feature.fees.R
 import com.schoolapp.feature.fees.staff.dues.components.DuesRowCard
 import com.schoolapp.feature.fees.staff.dues.components.DuesSelectionBar
@@ -37,6 +38,7 @@ internal class DuesActions(
     val onAskSend: () -> Unit,
     val onConfirmSend: () -> Unit,
     val onDismissSend: () -> Unit,
+    val onOpenLedger: (DuesRow) -> Unit = {},
 )
 
 @Composable
@@ -86,6 +88,7 @@ internal fun DuesTab(state: DuesUiState, actions: DuesActions, modifier: Modifie
                             currency = currency,
                             selected = if (state.canRemind) row.studentId in state.selected else null,
                             onToggle = { actions.onToggle(row.studentId) },
+                            onOpenLedger = { actions.onOpenLedger(row) },
                         )
                     }
                 }

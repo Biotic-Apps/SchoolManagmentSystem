@@ -35,6 +35,9 @@ export interface QuestionInput {
   correctAnswer: string;
 }
 
+/** UpdateQuestionDto: school, subject and class are fixed once a question exists. */
+export type QuestionUpdate = Omit<QuestionInput, "schoolId" | "subjectId" | "classId">;
+
 export interface PaperSection {
   title: string;
   questionIds: string[];

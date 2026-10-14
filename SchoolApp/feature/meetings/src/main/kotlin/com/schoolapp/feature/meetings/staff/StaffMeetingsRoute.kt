@@ -16,6 +16,7 @@ import com.schoolapp.feature.meetings.staff.slots.PublishSlotsActions
 @Composable
 internal fun StaffMeetingsRoute(
     onOpenMeeting: (String, MeetingBox) -> Unit,
+    onSchedule: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: StaffMeetingsViewModel = hiltViewModel(),
     slotsViewModel: MySlotsViewModel = hiltViewModel(),
@@ -31,11 +32,16 @@ internal fun StaffMeetingsRoute(
         state = state,
         slots = slots,
         slotActions = slotActions,
-        onTabSelected = viewModel::onTabSelected,
-        onOpenMeeting = onOpenMeeting,
-        onFollowUpDone = viewModel::markFollowUpDone,
-        onRefresh = viewModel::refresh,
-        onRetry = viewModel::retry,
+        actions = StaffMeetingsActions(
+            onTabSelected = viewModel::onTabSelected,
+            onOpenMeeting = onOpenMeeting,
+            onFollowUpDone = viewModel::markFollowUpDone,
+            onRefresh = viewModel::refresh,
+            onRetry = viewModel::retry,
+            onLoadMore = viewModel::loadMore,
+            onRetryMore = viewModel::retryMore,
+            onSchedule = onSchedule,
+        ),
         modifier = modifier,
     )
 }

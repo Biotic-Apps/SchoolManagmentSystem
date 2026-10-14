@@ -25,7 +25,6 @@ export const QUEUE_OPTIONS: Option[] = KNOWN_QUEUES.map((queue) => ({
 
 export const JOB_STATUS_OPTIONS: Option[] = [
   { id: "FAILED", name: "Failed" },
-  { id: "QUEUED", name: "Queued" },
   { id: "RUNNING", name: "Running" },
   { id: "DONE", name: "Done" },
 ];

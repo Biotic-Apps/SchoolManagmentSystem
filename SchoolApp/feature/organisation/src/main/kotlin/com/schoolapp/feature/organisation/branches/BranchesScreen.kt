@@ -1,15 +1,20 @@
 package com.schoolapp.feature.organisation.branches
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Apartment
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -18,6 +23,7 @@ import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.ListItemRow
 import com.schoolapp.core.designsystem.component.LoadingState
+import com.schoolapp.core.designsystem.component.PrimaryButton
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.StatusChip
@@ -26,7 +32,12 @@ import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.core.ui.humanizeKey
 import com.schoolapp.feature.organisation.R
 import com.schoolapp.feature.organisation.branches.components.BranchOverviewContent
+import com.schoolapp.feature.organisation.branches.edit.BranchActionsBar
+import com.schoolapp.feature.organisation.branches.edit.BranchEditor
+import com.schoolapp.feature.organisation.branches.edit.BranchEditorState
+import com.schoolapp.feature.organisation.components.ActionErrorMessage
 import com.schoolapp.feature.organisation.components.RefreshErrorBanner
+import com.schoolapp.feature.organisation.components.SuccessNotice
 import com.schoolapp.feature.organisation.components.recordStatusTone
 
 @Composable
@@ -37,17 +48,29 @@ fun BranchesScreen(
     onOpenBranch: (String) -> Unit,
     modifier: Modifier = Modifier,
     calendarContent: @Composable () -> Unit = {},
+    editorState: BranchEditorState = BranchEditorState(),
+    editor: BranchEditor? = null,
 ) {
     when {
         state.isLoading -> LoadingState(modifier)
-        state.overview != null -> SingleBranchContent(state, onRefresh, calendarContent, modifier)
-        else -> RefreshBox(state.isRefreshing, onRefresh, modifier.fillMaxSize()) { BranchList(state, onRetry, onOpenBranch) }
+        state.overview != null -> SingleBranchContent(state, onRefresh, calendarContent, editorState, editor, modifier)
+        else -> RefreshBox(state.isRefreshing, onRefresh, modifier.fillMaxSize()) {
+            BranchList(state, onRetry, onOpenBranch, editorState, editor)
+        }
     }
 }
 
 @Composable
-private fun BranchList(state: BranchesUiState, onRetry: () -> Unit, onOpenBranch: (String) -> Unit) {
+private fun BranchList(
+    state: BranchesUiState,
+    onRetry: () -> Unit,
+    onOpenBranch: (String) -> Unit,
+    editorState: BranchEditorState,
+    editor: BranchEditor?,
+) {
     ScreenColumn(itemSpacing = 0.dp) {
+        val showToolbar = editorState.perms.canAdd || editorState.notice != null || editorState.openError != null
+        if (editor != null && showToolbar) item(key = "toolbar") { ListToolbar(editorState, editor) }
         if (state.error != null && !state.hasContent) {
             item(key = "error") { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
             return@ScreenColumn
@@ -60,11 +83,25 @@ private fun BranchList(state: BranchesUiState, onRetry: () -> Unit, onOpenBranch
         ) { branch ->
             ListItemRow(
                 title = branch.name,
-                supporting = listOfNotNull(branch.schoolName, branch.code).joinToString(" · "),
+                supporting = listOfNotNull(branch.schoolName, branch.code, branch.principalName).joinToString(" · "),
                 leadingIcon = Icons.Outlined.Apartment,
                 onClick = { onOpenBranch(branch.id) },
                 trailing = { branch.status?.let { StatusChip(humanizeKey(it), recordStatusTone(it)) } },
             )
+        }
+    }
+}
+
+/** Notice of the last save and "Add branch" (super admin) above the list. */
+@Composable
+private fun ListToolbar(state: BranchEditorState, editor: BranchEditor) {
+    Column(Modifier.fillMaxWidth().padding(bottom = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SuccessNotice(state.notice, editor::dismissNotice)
+        ActionErrorMessage(state.openError)
+        if (state.perms.canAdd) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                PrimaryButton(stringResource(R.string.org_add_branch), onClick = editor::openAdd, leadingIcon = Icons.Outlined.Add)
+            }
         }
     }
 }
@@ -75,6 +112,8 @@ private fun SingleBranchContent(
     state: BranchesUiState,
     onRefresh: () -> Unit,
     calendarContent: @Composable () -> Unit,
+    editorState: BranchEditorState,
+    editor: BranchEditor?,
     modifier: Modifier = Modifier,
 ) {
     val overview = state.overview ?: return
@@ -87,7 +126,11 @@ private fun SingleBranchContent(
         )
         if (tab == 0) {
             RefreshBox(state.isRefreshing, onRefresh, Modifier.fillMaxSize()) {
-                BranchOverviewContent(overview, refreshError = state.error)
+                BranchOverviewContent(
+                    overview,
+                    refreshError = state.error,
+                    actions = editor?.let { { BranchActionsBar(overview.branch, editorState, it, showAdd = true) } },
+                )
             }
         } else {
             calendarContent()

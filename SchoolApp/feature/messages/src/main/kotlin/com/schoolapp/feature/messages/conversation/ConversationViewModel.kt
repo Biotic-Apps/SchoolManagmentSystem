@@ -55,7 +55,7 @@ class ConversationViewModel @Inject constructor(
                             olderCursor = detail.olderCursor,
                         )
                     }
-                    repository.markRead(threadId)
+                    if (!_uiState.value.readOnly) repository.markRead(threadId)
                 }
                 is AppResult.Failure -> _uiState.update { it.copy(isLoading = false, myUserId = myUserId, error = result.error) }
             }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_sms_title">SMS Gateway via Android Phone</string>
+    <string name="settings_sms_description">Use your school\'s Android phone as an SMS relay. The phone polls for pending messages and sends them as real SMS.</string>
+    <string name="settings_sms_load_failed">Failed to load SMS gateway status.</string>
+    <string name="settings_sms_connected_title">Phone connected</string>
+    <string name="settings_sms_disconnected_title">No phone connected</string>
+    <string name="settings_sms_device">Device: %1$s</string>
+    <string name="settings_sms_disconnected_hint">Register your school\'s Android phone with the address below to use it as an SMS gateway.</string>
+    <string name="settings_sms_connected">Connected</string>
+    <string name="settings_sms_disconnected">Disconnected</string>
+    <string name="settings_sms_pending">Pending messages</string>
+    <string name="settings_sms_gateway_status">Gateway status</string>
+    <string name="settings_sms_enabled">Enabled</string>
+    <string name="settings_sms_disabled">Disabled</string>
+    <string name="settings_sms_last_sent">Last SMS sent</string>
+    <string name="settings_sms_never">Never</string>
+    <string name="settings_sms_register_title">Gateway Registration</string>
+    <string name="settings_sms_register_hint">On the school\'s Android phone, register this address as the SMS gateway.</string>
+    <string name="settings_sms_copy_url">Copy address</string>
+    <string name="settings_sms_register_footer">The phone will poll for pending messages every few seconds and send them as real SMS from its SIM card.</string>
+</resources>

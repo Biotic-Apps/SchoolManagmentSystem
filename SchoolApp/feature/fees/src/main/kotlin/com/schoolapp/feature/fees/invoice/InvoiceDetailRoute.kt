@@ -17,6 +17,7 @@ import com.schoolapp.core.designsystem.component.AppTopBar
 import com.schoolapp.core.designsystem.component.BackButton
 import com.schoolapp.core.ui.rememberExternalActions
 import com.schoolapp.feature.fees.R
+import com.schoolapp.feature.fees.invoice.staff.InvoiceStaffActions
 
 @Composable
 internal fun InvoiceDetailRoute(
@@ -57,6 +58,7 @@ internal fun InvoiceDetailRoute(
             onPayOnline = viewModel::payOnline,
             onDownloadChallan = viewModel::downloadChallan,
             modifier = Modifier.padding(padding),
+            staffActions = { state.invoice?.let { InvoiceStaffActions(it, onChanged = viewModel::load) } },
         )
     }
 }

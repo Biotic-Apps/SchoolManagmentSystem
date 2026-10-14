@@ -23,6 +23,8 @@ interface DiaryApi {
         @Query("date") date: String? = null,
         @Query("from") from: String? = null,
         @Query("to") to: String? = null,
+        @Query("branchId") branchId: String? = null,
+        @Query("status") status: String? = null,
     ): ApiEnvelope<List<DiaryEntryDto>>
 
     /** Entry, or `{ status: "PENDING_REVIEW", approvalId }`. */

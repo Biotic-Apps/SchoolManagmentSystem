@@ -69,7 +69,7 @@ class ScopedRefreshTest {
 
     @Test
     fun sessions_refresh_keeps_data_on_failure_then_recovers() {
-        val vm = SessionsCalendarViewModel(loader, repository, SavedStateHandle())
+        val vm = sessionsViewModel(loader, repository)
         repository.failure = AppError.Network
         vm.refresh()
         assertEquals(listOf("se1"), vm.uiState.value.sessions.map { it.id })
@@ -88,7 +88,7 @@ class ScopedRefreshTest {
     @Test
     fun sessions_refresh_after_failed_first_load_fetches_options_again() {
         repository.failure = AppError.Network
-        val vm = SessionsCalendarViewModel(loader, repository, SavedStateHandle())
+        val vm = sessionsViewModel(loader, repository)
         assertEquals(AppError.Network, vm.uiState.value.error)
         repository.failure = null
         vm.refresh()

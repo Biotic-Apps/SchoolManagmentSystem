@@ -32,10 +32,26 @@ data class CertificateDto(
     val rejectionReason: String? = null,
     val duplicate: Boolean = false,
     val isDuplicate: Boolean = false,
+    val duplicateOfId: String? = null,
+    val reissueReason: String? = null,
+    /** Set by issue / reissue: the PDF job to poll. */
+    val jobId: String? = null,
 )
 
 @Serializable
-data class CertificateBodyDto(val studentId: String, val type: String, val purpose: String? = null)
+data class CertificateBodyDto(
+    val studentId: String,
+    val type: String,
+    val purpose: String? = null,
+    val details: CertificateDetailsBodyDto? = null,
+)
+
+@Serializable
+data class CertificateDetailsBodyDto(val achievement: String? = null)
+
+/** `POST /certificates/:id/issue`; [effectiveDate] (yyyy-MM-dd) only for SCHOOL_LEAVING. */
+@Serializable
+data class IssueCertificateBodyDto(val effectiveDate: String? = null)
 
 /** Details of `409 CLEARANCE_REQUIRED`. */
 @Serializable

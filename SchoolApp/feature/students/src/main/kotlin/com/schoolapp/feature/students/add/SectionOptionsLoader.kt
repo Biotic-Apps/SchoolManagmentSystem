@@ -29,7 +29,9 @@ class SectionOptionsLoader @Inject constructor(private val organisation: Organis
                     active.id,
                     sections.data.filter { it.status == null || it.status == "ACTIVE" }
                         .sortedWith(compareBy({ it.className }, { it.name }))
-                        .map { SectionOption(it.id, listOfNotNull(it.className, it.name).joinToString(" · "), it.studentCount, it.capacity) },
+                        .map {
+                            SectionOption(it.id, listOfNotNull(it.className, it.name).joinToString(" · "), it.studentCount, it.capacity, it.classId, it.className)
+                        },
                 ),
             )
         }

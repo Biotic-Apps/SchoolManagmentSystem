@@ -5,6 +5,7 @@ import com.schoolapp.core.data.dashboard.DashboardRepository
 import com.schoolapp.core.model.SessionContext
 import com.schoolapp.feature.dashboard.DashboardUiState
 import com.schoolapp.feature.dashboard.finance.FinanceLoader
+import com.schoolapp.feature.dashboard.scope.DashboardScope
 import com.schoolapp.feature.dashboard.setup.SetupChecklistLoader
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -17,10 +18,21 @@ class SupervisorLoader @Inject constructor(
     private val setupLoader: SetupChecklistLoader,
 ) {
 
-    suspend fun load(session: SessionContext, date: String, showsToday: Boolean): DashboardUiState = coroutineScope {
+    suspend fun load(
+        session: SessionContext,
+        date: String,
+        showsToday: Boolean,
+        filter: DashboardScope = DashboardScope(),
+    ): DashboardUiState = coroutineScope {
         val scope = session.activeAssignments.firstOrNull()
-        val pending = if (showsToday) async { repository.pending(session.activeBranchId, date) } else null
-        val summary = async { repository.summary(scope?.branchId) }
+        val pending = if (showsToday) async { repository.pending(filter.branchId ?: session.activeBranchId, date) } else null
+        val summary = async {
+            if (filter.isFiltered) {
+                repository.scopedSummary(filter.schoolId, filter.branchId, filter.sessionId)
+            } else {
+                repository.summary(scope?.branchId)
+            }
+        }
         val finance = async { financeLoader.load(session, date) }
         val setup = async { setupLoader.load(session) }
         val pendingResult = pending?.await()

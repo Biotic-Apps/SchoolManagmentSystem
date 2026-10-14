@@ -3,6 +3,7 @@ package com.schoolapp.feature.messages.newthread
 import androidx.compose.runtime.Immutable
 import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.model.ChildSummary
+import com.schoolapp.core.model.message.MessageRecipient
 import com.schoolapp.core.model.people.GuardianLink
 import com.schoolapp.core.model.people.StudentSummary
 
@@ -11,6 +12,11 @@ data class NewThreadUiState(
     val isParent: Boolean = false,
     val children: List<ChildSummary> = emptyList(),
     val selectedChildId: String? = null,
+    /** Parent: staff the selected child's parent may write to; [staffUserId] null = class teacher. */
+    val recipients: List<MessageRecipient> = emptyList(),
+    val isLoadingRecipients: Boolean = false,
+    val recipientsError: AppError? = null,
+    val staffUserId: String? = null,
     val query: String = "",
     val isSearching: Boolean = false,
     val results: List<StudentSummary> = emptyList(),

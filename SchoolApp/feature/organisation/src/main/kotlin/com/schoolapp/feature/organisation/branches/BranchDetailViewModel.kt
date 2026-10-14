@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.organisation.OrganisationRepository
+import com.schoolapp.feature.organisation.branches.edit.BranchEditor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +19,8 @@ import javax.inject.Inject
 class BranchDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: OrganisationRepository,
+    /** Add / edit / archive, settings and principal actions (permission-gated). */
+    val editor: BranchEditor,
 ) : ViewModel() {
 
     private val branchId: String = checkNotNull(savedStateHandle["id"]) { "Branch id missing" }
@@ -28,6 +31,7 @@ class BranchDetailViewModel @Inject constructor(
     private var loadJob: Job? = null
 
     init {
+        editor.attach(viewModelScope, ::refresh)
         load()
     }
 

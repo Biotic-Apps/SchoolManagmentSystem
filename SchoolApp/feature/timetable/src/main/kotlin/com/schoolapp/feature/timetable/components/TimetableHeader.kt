@@ -15,6 +15,7 @@ import com.schoolapp.core.designsystem.component.FilterChipRow
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.feature.timetable.R
 import com.schoolapp.feature.timetable.TeacherView
+import com.schoolapp.feature.timetable.TimetableStatus
 import com.schoolapp.feature.timetable.TimetableUiState
 
 /** Teacher view switch, section chips, "Edit draft" and subtitle; scrolls away with the timetable body. */
@@ -37,7 +38,7 @@ internal fun TimetableHeader(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             )
         }
-        val editable = state.selectedSectionId?.takeIf { state.teacherView == TeacherView.SECTIONS && state.sectionEditable }
+        val editable = state.selectedSectionId?.takeIf { state.showsSections && state.sectionEditable && state.status != TimetableStatus.NOT_CREATED }
         if (editable != null && onEditSection != null) {
             val title = state.sections.firstOrNull { it.id == editable }?.label.orEmpty()
             AppTextButton(

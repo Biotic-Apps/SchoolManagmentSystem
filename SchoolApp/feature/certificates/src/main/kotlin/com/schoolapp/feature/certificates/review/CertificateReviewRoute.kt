@@ -1,44 +1,51 @@
 package com.schoolapp.feature.certificates.review
 
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CardMembership
+import androidx.compose.material.icons.outlined.PostAdd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.padding
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.schoolapp.core.designsystem.component.EmptyState
-import com.schoolapp.core.designsystem.component.ErrorState
-import com.schoolapp.core.designsystem.component.FilterChipRow
-import com.schoolapp.core.designsystem.component.InlineMessage
-import com.schoolapp.core.designsystem.component.LoadingState
-import com.schoolapp.core.designsystem.component.ScreenColumn
-import com.schoolapp.core.designsystem.component.StatusTone
-import com.schoolapp.core.designsystem.component.SwitcherOption
-import com.schoolapp.core.model.certificates.CertificateStatus
-import com.schoolapp.core.ui.appErrorMessage
+import com.schoolapp.core.designsystem.component.AppFloatingButton
 import com.schoolapp.feature.certificates.R
-import com.schoolapp.feature.certificates.components.CertificateCard
-import com.schoolapp.feature.certificates.components.certificateStatusLabel
-import com.schoolapp.feature.certificates.review.components.ClearanceBlockedMessage
+import com.schoolapp.feature.certificates.review.components.IssueCertificateSheet
 import com.schoolapp.feature.certificates.review.components.RejectCertificateSheet
-import com.schoolapp.feature.certificates.review.components.ReviewActions
+import com.schoolapp.feature.certificates.review.components.ReissueCertificateSheet
+import com.schoolapp.feature.certificates.review.request.StaffRequestCallbacks
+import com.schoolapp.feature.certificates.review.request.StaffRequestSheet
 
 @Composable
 internal fun CertificateReviewRoute(modifier: Modifier = Modifier, viewModel: CertificateReviewViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    CertificateReviewScreen(
-        state = state,
-        onFilterChange = viewModel::onFilterChange,
-        onApprove = viewModel::approve,
-        onReject = viewModel::openReject,
-        onRetry = viewModel::retry,
-        modifier = modifier,
-    )
+    val issuing = viewModel.issuing
+    val requests = viewModel.requests
+    Box(modifier.fillMaxSize()) {
+        CertificateReviewScreen(
+            state = state,
+            actions = ReviewActionsCallbacks(
+                onFilterChange = viewModel::onFilterChange,
+                onRefresh = viewModel::refresh,
+                onRetry = viewModel::retry,
+                onApprove = viewModel::approve,
+                onReject = viewModel::openReject,
+                onIssue = issuing::openIssue,
+                onReissue = issuing::openReissue,
+                onCheckPdf = issuing::checkPdf,
+            ),
+        )
+        if (state.canIssue) {
+            Box(Modifier.align(Alignment.BottomEnd).padding(16.dp)) {
+                AppFloatingButton(stringResource(R.string.certificates_new_request), Icons.Outlined.PostAdd, requests::open)
+            }
+        }
+    }
     state.rejectForm?.let { form ->
         RejectCertificateSheet(
             form = form,
@@ -47,64 +54,25 @@ internal fun CertificateReviewRoute(modifier: Modifier = Modifier, viewModel: Ce
             onDismiss = viewModel::dismissReject,
         )
     }
-}
-
-@Composable
-internal fun CertificateReviewScreen(
-    state: CertificateReviewUiState,
-    onFilterChange: (ReviewFilter) -> Unit,
-    onApprove: (String) -> Unit,
-    onReject: (String) -> Unit,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    ScreenColumn(modifier) {
-        item(key = "filters") {
-            FilterChipRow(
-                options = ReviewFilter.entries.map { SwitcherOption(it.name, filterLabel(it)) },
-                selectedId = state.filter.name,
-                onSelect = { onFilterChange(ReviewFilter.valueOf(it)) },
-            )
-        }
-        item(key = "web_note") { InlineMessage(stringResource(R.string.certificates_issue_on_web), StatusTone.Info) }
-        state.message?.let { message ->
-            item(key = "message") {
-                val text = when (message) {
-                    ReviewMessage.APPROVED -> R.string.certificates_approved_message
-                    ReviewMessage.REJECTED -> R.string.certificates_rejected_message
-                }
-                InlineMessage(stringResource(text), StatusTone.Success)
-            }
-        }
-        when {
-            state.isLoading -> item(key = "loading") { LoadingState() }
-            state.error != null -> item(key = "error") { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
-            state.certificates.isEmpty() -> item(key = "empty") {
-                EmptyState(
-                    title = stringResource(R.string.certificates_empty),
-                    message = stringResource(R.string.certificates_empty_review_message),
-                    icon = Icons.Outlined.CardMembership,
-                )
-            }
-            else -> items(state.certificates, key = { it.id }) { certificate ->
-                CertificateCard(certificate, showStudent = true) {
-                    state.blocked[certificate.id]?.let { ClearanceBlockedMessage(it, Modifier.padding(top = 8.dp)) }
-                    state.actionError?.takeIf { it.first == certificate.id }?.let { (_, error) ->
-                        InlineMessage(appErrorMessage(error), StatusTone.Error, Modifier.padding(top = 8.dp))
-                    }
-                    if (state.canApprove && certificate.status == CertificateStatus.REQUESTED) {
-                        ReviewActions(
-                            busy = certificate.id in state.busyIds,
-                            onApprove = { onApprove(certificate.id) },
-                            onReject = { onReject(certificate.id) },
-                        )
-                    }
-                }
-            }
-        }
+    state.issueForm?.let { form ->
+        IssueCertificateSheet(form, issuing::onEffectiveDate, issuing::submitIssue, issuing::dismissIssue)
+    }
+    state.reissueForm?.let { form ->
+        ReissueCertificateSheet(form, issuing::onReissueReason, issuing::submitReissue, issuing::dismissReissue)
+    }
+    state.requestForm?.let { form ->
+        StaffRequestSheet(
+            form = form,
+            callbacks = StaffRequestCallbacks(
+                onQueryChange = requests::onQueryChange,
+                onPick = requests::onPick,
+                onClearStudent = requests::clearStudent,
+                onTypeChange = requests::onTypeChange,
+                onPurposeChange = requests::onPurposeChange,
+                onAchievementChange = requests::onAchievementChange,
+                onSubmit = requests::submit,
+                onDismiss = requests::dismiss,
+            ),
+        )
     }
 }
-
-@Composable
-private fun filterLabel(filter: ReviewFilter): String =
-    filter.status?.let { certificateStatusLabel(it) } ?: stringResource(R.string.certificates_filter_all)

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tabs and actions -->
+    <string name="qb_tab_questions">Question Bank</string>
+    <string name="qb_tab_papers">Paper Generator</string>
+    <string name="qb_add_question">Add question</string>
+    <string name="qb_edit_question">Edit question</string>
+    <string name="qb_save_changes">Save changes</string>
+    <string name="qb_generate_paper">Generate paper</string>
+    <string name="qb_generate">Generate</string>
+    <string name="qb_edit">Edit</string>
+    <string name="qb_delete">Delete</string>
+    <string name="qb_load_more">Load more</string>
+    <string name="qb_clear_filters">Clear filters</string>
+    <string name="qb_search_hint">Search question or chapter</string>
+
+    <!-- Filters -->
+    <string name="qb_all_subjects">All subjects</string>
+    <string name="qb_all_classes">All classes</string>
+    <string name="qb_all_types">All types</string>
+    <string name="qb_all_difficulties">All levels</string>
+
+    <!-- Fields -->
+    <string name="qb_field_subject">Subject</string>
+    <string name="qb_field_class">Class</string>
+    <string name="qb_field_chapter">Chapter / Topic</string>
+    <string name="qb_field_type">Question type</string>
+    <string name="qb_field_difficulty">Difficulty</string>
+    <string name="qb_field_marks">Marks</string>
+    <string name="qb_field_question">Question text</string>
+    <string name="qb_field_paper_title">Paper title</string>
+    <string name="qb_field_total_marks">Total marks</string>
+    <string name="qb_field_duration">Duration (minutes)</string>
+    <string name="qb_field_section_title">Section title</string>
+    <string name="qb_field_question_count">No. of questions</string>
+    <string name="qb_field_marks_each">Marks per question</string>
+    <string name="qb_correct_answer">Correct answer</string>
+    <string name="qb_section_classification">Classification</string>
+    <string name="qb_section_content">Content</string>
+    <string name="qb_subject_class_locked">Subject and class can\'t be changed after a question is added.</string>
+    <string name="qb_options_hint">Enter the choices and tap the circle next to the correct one.</string>
+    <string name="qb_option_label">Option %1$s</string>
+    <string name="qb_add_option">Add option</string>
+    <string name="qb_remove_option">Remove option</string>
+    <string name="qb_true">True</string>
+    <string name="qb_false">False</string>
+
+    <!-- Labels -->
+    <string name="qb_type_mcq">Multiple Choice</string>
+    <string name="qb_type_short">Short Answer</string>
+    <string name="qb_type_long">Long Answer</string>
+    <string name="qb_type_true_false">True / False</string>
+    <string name="qb_type_fill_blank">Fill in the Blank</string>
+    <string name="qb_type_unknown">Other</string>
+    <string name="qb_difficulty_easy">Easy</string>
+    <string name="qb_difficulty_medium">Medium</string>
+    <string name="qb_difficulty_hard">Hard</string>
+    <string name="qb_status_draft">Draft</string>
+    <string name="qb_status_published">Published</string>
+    <string name="qb_minutes">%1$d min</string>
+    <plurals name="qb_marks">
+        <item quantity="one">%1$d mark</item>
+        <item quantity="other">%1$d marks</item>
+    </plurals>
+    <plurals name="qb_questions">
+        <item quantity="one">%1$d question</item>
+        <item quantity="other">%1$d questions</item>
+    </plurals>
+    <plurals name="qb_sections">
+        <item quantity="one">%1$d section</item>
+        <item quantity="other">%1$d sections</item>
+    </plurals>
+
+    <!-- Question list and detail -->
+    <string name="qb_empty">No questions yet</string>
+    <string name="qb_empty_message">Add questions to the bank, then use them to generate exam papers.</string>
+    <string name="qb_no_matches">No matching questions</string>
+    <string name="qb_no_matches_message">Try another subject, class or filter.</string>
+    <string name="qb_no_school">No school assigned</string>
+    <string name="qb_no_school_message">Your role isn\'t linked to a school, so there is no question bank to show.</string>
+    <string name="qb_question_detail">Question</string>
+    <string name="qb_delete_title">Delete this question?</string>
+    <string name="qb_delete_message">It is removed from the bank and won\'t be picked for new papers. Papers already generated keep it.</string>
+    <string name="qb_question_added">Question added</string>
+    <string name="qb_question_updated">Question updated</string>
+    <string name="qb_question_deleted">Question deleted</string>
+
+    <!-- Validation -->
+    <string name="qb_error_subject">Choose a subject</string>
+    <string name="qb_error_class">Choose a class</string>
+    <string name="qb_error_chapter">Enter a chapter name</string>
+    <string name="qb_error_type">Choose a type</string>
+    <string name="qb_error_difficulty">Choose difficulty</string>
+    <string name="qb_error_marks">Enter marks (1–100)</string>
+    <string name="qb_error_text">Enter the question</string>
+    <string name="qb_error_answer">Enter the correct answer</string>
+    <string name="qb_error_options">Enter at least two options</string>
+    <string name="qb_error_pick_correct">Tap the circle next to the correct option</string>
+    <string name="qb_error_too_long">This is too long</string>
+    <string name="qb_error_title">Enter a title</string>
+    <string name="qb_error_total_marks">Enter total marks (1–500)</string>
+    <string name="qb_error_duration">Enter duration in minutes (10–300)</string>
+    <string name="qb_error_section_title">Enter a section title</string>
+    <string name="qb_error_count">Enter 1–50 questions</string>
+
+    <!-- Paper generator -->
+    <string name="qb_generate_intro">Configure sections and the system will randomly pick matching questions from the bank.</string>
+    <string name="qb_paper_details">Paper details</string>
+    <string name="qb_sections">Sections</string>
+    <string name="qb_sections_total">Sections add up to %1$d marks</string>
+    <string name="qb_section_number">Section %1$d · %2$d marks</string>
+    <string name="qb_add_section">Add section</string>
+    <string name="qb_remove_section">Remove section</string>
+    <string name="qb_marks_mismatch">Sections add up to %1$d marks but the paper total is %2$s.</string>
+    <string name="qb_papers_empty">No exam papers</string>
+    <string name="qb_papers_empty_message">Generate exam papers using the question bank.</string>
+
+    <!-- Paper detail -->
+    <string name="qb_paper">Exam paper</string>
+    <string name="qb_download_pdf">Download PDF</string>
+    <string name="qb_publish">Publish</string>
+    <string name="qb_move_to_draft">Move to draft</string>
+    <string name="qb_no_pdf_app">No app found to open PDF files</string>
+    <string name="qb_paper_generated">Exam paper generated</string>
+    <string name="qb_paper_updated">Exam paper updated</string>
+    <string name="qb_paper_published">Exam paper published</string>
+    <string name="qb_paper_drafted">Exam paper moved to draft</string>
+    <string name="qb_loading_question">%1$d. Loading…</string>
+    <string name="qb_question_unavailable">%1$d. Question not available</string>
+    <string name="qb_numbered_question">%1$d. %2$s (%3$d)</string>
+    <string name="qb_answer_line">Answer: %1$s</string>
+</resources>

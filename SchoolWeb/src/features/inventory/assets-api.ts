@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { http, request, type Query } from "@/lib/http";
+import { http, type Query } from "@/lib/http";
 import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { inventoryKeys } from "./keys";
@@ -14,14 +14,14 @@ export function useAssets(params: Query, enabled = true) {
   });
 }
 
-/** The contract scopes the create by `?branchId=` like the list. */
+/** The create carries `branchId` in the body (CreateAssetDto); edits never move an asset. */
 export function useSaveAsset(branchId: string, assetId: string | null) {
   return useApiMutation({
     mutationFn: withRowFlash(
       async (input: AssetInput) => {
         const result = assetId
           ? await http.patch<Asset>(`/assets/${assetId}`, input)
-          : await request<Asset>("/assets", { method: "POST", body: input, query: { branchId } });
+          : await http.post<Asset>("/assets", { ...input, branchId });
         return result.data;
       },
       (asset) => assetId ?? asset.id,

@@ -16,5 +16,13 @@ internal fun ParentMeetingsRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.onResume() }
-    ParentMeetingsScreen(state, onBook = onBook, onRefresh = viewModel::refresh, onRetry = viewModel::retry, modifier = modifier)
+    ParentMeetingsScreen(
+        state,
+        onBook = onBook,
+        onRefresh = viewModel::refresh,
+        onRetry = viewModel::retry,
+        onLoadMore = viewModel::loadMore,
+        onRetryMore = viewModel::retryMore,
+        modifier = modifier,
+    )
 }

@@ -35,7 +35,10 @@ class DefaultStudentAdminRepository @Inject constructor(
 
     override suspend fun register(input: RegisterStudentInput): AppResult<RegisteredStudent> = apiCaller.call {
         val dto = api.register(RegisterStudentRequest(input.child.toRequest(), input.guardians.map { it.toRequest() }, input.sectionId, input.admissionDate)).data
-        RegisteredStudent(dto.id, dto.name, dto.admissionNo)
+        RegisteredStudent(
+            dto.id, dto.name, dto.admissionNo,
+            dto.parentLogins.map { com.schoolapp.core.model.admissions.ParentLogin(it.guardianName, it.status, it.email, it.phone, it.temporaryPassword, it.reason) },
+        )
     }
 
     override suspend fun update(studentId: String, update: StudentUpdate): AppResult<Unit> = apiCaller.call {

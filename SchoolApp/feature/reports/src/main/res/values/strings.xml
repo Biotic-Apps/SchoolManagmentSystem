@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reports_title">Reports &amp; History</string>
+    <string name="reports_subtitle">Pick a report, set its filters and download it as PDF, Excel or CSV.</string>
+    <string name="reports_empty_title">No reports available</string>
+    <string name="reports_empty_message">Reports for your role appear here.</string>
+
+    <string name="reports_area_attendance">Attendance</string>
+    <string name="reports_area_academics">Academics</string>
+    <string name="reports_area_fees">Fees</string>
+    <string name="reports_area_payroll">Payroll</string>
+    <string name="reports_area_expenses">Expenses &amp; finance</string>
+    <string name="reports_area_inventory">Inventory</string>
+    <string name="reports_area_branches">Branches</string>
+    <string name="reports_area_other">Other</string>
+
+    <string name="reports_recent_title">Recent exports</string>
+    <string name="reports_recent_subtitle">Started on this device. Links stay here until the app is closed.</string>
+    <string name="reports_recent_clear">Clear</string>
+    <string name="reports_recent_meta">%1$s · %2$s</string>
+    <string name="reports_recent_rows">%1$d rows</string>
+    <string name="reports_download">Download</string>
+    <string name="reports_retry_export">Try again</string>
+    <string name="reports_check_again">Check again</string>
+    <string name="reports_remove">Remove</string>
+    <string name="reports_poll_failed">Could not check the status. Check your connection.</string>
+    <string name="reports_job_failed">The report could not be generated.</string>
+    <string name="reports_status_queued">Queued</string>
+    <string name="reports_status_running">Generating</string>
+    <string name="reports_status_done">Ready</string>
+    <string name="reports_status_failed">Failed</string>
+    <string name="reports_queued">Report queued. It appears under Recent exports when ready.</string>
+    <string name="reports_retry_queued">Report queued again.</string>
+    <string name="reports_clear_confirm_title">Clear recent exports?</string>
+    <string name="reports_clear_confirm_message">The list is removed from this device. Reports already generated are not deleted.</string>
+
+    <string name="reports_generate">Generate</string>
+    <string name="reports_format">Format</string>
+    <string name="reports_optional">%1$s (optional)</string>
+    <string name="reports_all">All</string>
+    <string name="reports_pick">Select</string>
+    <string name="reports_options_retry">Retry</string>
+    <string name="reports_options_empty">Nothing to choose from</string>
+    <string name="reports_options_loading">Loading…</string>
+
+    <string name="reports_param_branch">Branch</string>
+    <string name="reports_param_school">School</string>
+    <string name="reports_param_exam">Exam</string>
+    <string name="reports_param_month">Month</string>
+    <string name="reports_param_from">From</string>
+    <string name="reports_param_to">To</string>
+    <string name="reports_param_min_days">Overdue for at least (days)</string>
+
+    <string name="reports_error_required">Enter %1$s</string>
+    <string name="reports_error_date">Pick a date</string>
+    <string name="reports_error_month">Pick a month</string>
+    <string name="reports_error_number">Use a whole number</string>
+    <string name="reports_error_range">The end date is before the start date</string>
+</resources>

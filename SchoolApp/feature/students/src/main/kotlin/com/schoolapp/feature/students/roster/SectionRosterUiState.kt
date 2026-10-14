@@ -10,4 +10,10 @@ data class SectionRosterUiState(
     val isLoading: Boolean = true,
     val students: List<StudentSummary> = emptyList(),
     val error: AppError? = null,
+    val sectionId: String = "",
+    val branchId: String? = null,
+    /** `students.edit`: bulk ID cards for this section. */
+    val canPrintCards: Boolean = false,
+    /** `guardians.edit` + `users.edit`: parent login slips for this section. */
+    val canPrintSlips: Boolean = false,
 )

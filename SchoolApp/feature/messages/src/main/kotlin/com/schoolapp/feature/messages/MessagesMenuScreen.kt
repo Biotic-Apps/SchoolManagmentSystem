@@ -10,6 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.model.RoleRef
 import com.schoolapp.core.navigation.MessageThreadDestination
 import com.schoolapp.core.navigation.NewThreadDestination
+import com.schoolapp.feature.messages.threads.ThreadsActions
 import com.schoolapp.feature.messages.threads.ThreadsScreen
 import com.schoolapp.feature.messages.threads.ThreadsViewModel
 
@@ -25,10 +26,17 @@ fun MessagesMenuScreen(
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.onResume() }
     ThreadsScreen(
         state = state,
-        onRefresh = viewModel::refresh,
-        onOpenThread = { onOpen(MessageThreadDestination(it)) },
-        onOpen = onOpen,
-        onNewMessage = { onOpen(NewThreadDestination) },
+        actions = ThreadsActions(
+            onRefresh = viewModel::refresh,
+            onOpenThread = { onOpen(MessageThreadDestination(it)) },
+            onOpen = onOpen,
+            onNewMessage = { onOpen(NewThreadDestination) },
+            onSearchChange = viewModel::onSearchChange,
+            onUnreadOnlyChange = viewModel::onUnreadOnlyChange,
+            onBranchScopeChange = viewModel::onBranchScopeChange,
+            onLoadMore = viewModel::loadMore,
+            onRetryMore = viewModel::retryMore,
+        ),
         modifier = modifier,
     )
 }

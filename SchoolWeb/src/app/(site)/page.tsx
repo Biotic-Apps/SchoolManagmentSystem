@@ -1,12 +1,7 @@
 import { Hero } from "@/components/site/sections/Hero";
 import { StatTiles } from "@/components/site/sections/StatTiles";
 import { HowItWorks } from "@/components/site/sections/HowItWorks";
-import {
-  AcademicsShowcase,
-  AttendanceShowcase,
-  FeesShowcase,
-  ParentShowcase,
-} from "@/components/site/sections/FeatureScrollSections";
+import { FeatureShowcases } from "@/components/site/sections/FeatureScrollSections";
 import { AttendanceFlow } from "@/components/site/sections/AttendanceFlow";
 import { Modules } from "@/components/site/sections/Modules";
 import { BuiltForPakistan } from "@/components/site/sections/BuiltForPakistan";
@@ -24,11 +19,8 @@ export default function HomePage() {
       <Hero />
       <StatTiles />
       <HowItWorks />
-      <AttendanceShowcase />
+      <FeatureShowcases />
       <AttendanceFlow />
-      <AcademicsShowcase />
-      <FeesShowcase />
-      <ParentShowcase />
       <Modules />
       <BuiltForPakistan />
       <Trust />

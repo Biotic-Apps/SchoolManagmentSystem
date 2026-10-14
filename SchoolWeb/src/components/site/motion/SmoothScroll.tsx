@@ -30,7 +30,10 @@ export function SmoothScroll() {
     }
 
     const lenis = new Lenis({
-      duration: 1.05,
+      // `lerp` follows the wheel closely each frame. The old `duration` easing had a long slow tail
+      // that made the page feel like it was sticking at the end of every flick.
+      lerp: 0.14,
+      wheelMultiplier: 1,
       smoothWheel: true,
       // Touch devices already scroll well; hijacking them just feels laggy.
       syncTouch: false,

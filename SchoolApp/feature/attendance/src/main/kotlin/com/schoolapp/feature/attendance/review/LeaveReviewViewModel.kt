@@ -58,12 +58,18 @@ class LeaveReviewViewModel @Inject constructor(
 
     fun onTabSelected(tab: ReviewTab) = _uiState.update { it.copy(tab = tab) }
 
-    fun onOpen(id: String) = _uiState.update { state ->
+    fun onDecidedFilter(status: LeaveStatus?) = _uiState.update { it.copy(decidedFilter = status) }
+
+    fun onOpen(id: String) = open(id, null)
+
+    fun onQuickDecide(id: String, action: ApprovalAction) = open(id, action)
+
+    private fun open(id: String, intent: ApprovalAction?) = _uiState.update { state ->
         val leave = state.pending.firstOrNull { it.id == id } ?: return@update state
-        state.copy(decision = LeaveDecision(leave), message = null)
+        state.copy(decision = LeaveDecision(leave, intent = intent), message = null)
     }
 
-    fun onCommentChange(comment: String) = editDecision { it.copy(comment = comment) }
+    fun onCommentChange(comment: String) = editDecision { it.copy(comment = comment.take(COMMENT_MAX)) }
 
     fun onDismissDecision() {
         if (_uiState.value.decision?.busyAction != null) return
@@ -101,4 +107,9 @@ class LeaveReviewViewModel @Inject constructor(
 
     private fun editDecision(transform: (LeaveDecision) -> LeaveDecision) =
         _uiState.update { state -> state.copy(decision = state.decision?.let(transform)) }
+
+    companion object {
+        /** `LeaveDecisionDto.comment` MaxLength. */
+        const val COMMENT_MAX = 1000
+    }
 }

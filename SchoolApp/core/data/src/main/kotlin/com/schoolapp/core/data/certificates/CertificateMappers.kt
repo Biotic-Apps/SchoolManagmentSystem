@@ -25,7 +25,10 @@ internal fun CertificateDto.toModel() = Certificate(
     issuedOn = issuedOn ?: issuedAt,
     fileUrl = fileUrl,
     reason = (rejectionReason ?: rejectReason ?: reason)?.takeIf(String::isNotBlank),
-    duplicate = isDuplicate || duplicate,
+    duplicate = isDuplicate || duplicate || duplicateOfId != null,
+    effectiveDate = effectiveDate,
+    reissueReason = reissueReason?.takeIf(String::isNotBlank),
+    jobId = jobId,
 )
 
 /** Parses the `details` of `409 CLEARANCE_REQUIRED`; unknown shapes give an empty block. */

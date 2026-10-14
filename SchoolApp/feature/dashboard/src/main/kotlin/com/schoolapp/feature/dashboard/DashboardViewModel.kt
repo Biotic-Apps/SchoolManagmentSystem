@@ -11,6 +11,8 @@ import com.schoolapp.core.model.SessionContext
 import com.schoolapp.feature.dashboard.finance.FinanceLoader
 import com.schoolapp.feature.dashboard.parent.ChallanState
 import com.schoolapp.feature.dashboard.parent.ParentHome
+import com.schoolapp.feature.dashboard.scope.DashboardScopeController
+import com.schoolapp.feature.dashboard.scope.DashboardScopeState
 import com.schoolapp.feature.dashboard.supervisor.SupervisorLoader
 import com.schoolapp.feature.dashboard.teacher.TeacherDayLoader
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,6 +36,7 @@ class DashboardViewModel @Inject constructor(
     private val financeLoader: FinanceLoader,
     private val clock: AppClock,
     private val challanPdf: InvoicePdfDownloader,
+    private val scopeController: DashboardScopeController,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
@@ -44,6 +47,9 @@ class DashboardViewModel @Inject constructor(
     /** Parent fee tile download; kept apart from [uiState] so reloads do not reset it. */
     val challan: StateFlow<ChallanState> = _challan.asStateFlow()
 
+    /** School › Branch › Session picker for supervisors (web DashboardScopeBar). */
+    val scope: StateFlow<DashboardScopeState> = scopeController.state
+
     private var session: SessionContext? = null
     private var loadJob: Job? = null
 
@@ -53,6 +59,7 @@ class DashboardViewModel @Inject constructor(
                 .distinctUntilChanged { old, new -> old.activeRole == new.activeRole && old.activeChild?.id == new.activeChild?.id }
                 .collect { current ->
                     session = current
+                    if (current.dashboardMode() == DashboardMode.SUPERVISOR) viewModelScope.launch { scopeController.reset(current) }
                     start(current, refreshing = false)
                 }
         }
@@ -74,6 +81,22 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    fun onScopeSchool(schoolId: String?) = changeScope { scopeController.selectSchool(it, schoolId) }
+
+    fun onScopeBranch(branchId: String?) = changeScope { scopeController.selectBranch(it, branchId) }
+
+    fun onScopeSession(sessionId: String?) = changeScope { scopeController.selectSession(sessionId) }
+
+    fun onScopeReset() = changeScope { scopeController.reset(it) }
+
+    private fun changeScope(change: suspend (SessionContext) -> Unit) {
+        val current = session ?: return
+        viewModelScope.launch {
+            change(current)
+            start(current, refreshing = true)
+        }
+    }
+
     fun onChallanOpened() = _challan.update { it.copy(urlToOpen = null) }
 
     private fun start(session: SessionContext, refreshing: Boolean) {
@@ -85,7 +108,7 @@ class DashboardViewModel @Inject constructor(
         when (session.dashboardMode()) {
             DashboardMode.SUPERVISOR -> {
                 showProgress(refreshing)
-                _uiState.value = supervisorLoader.load(session, today(), session.showsTodayQueue())
+                _uiState.value = supervisorLoader.load(session, today(), session.showsTodayQueue(), scopeController.scope)
             }
             DashboardMode.TEACHER -> {
                 showProgress(refreshing)

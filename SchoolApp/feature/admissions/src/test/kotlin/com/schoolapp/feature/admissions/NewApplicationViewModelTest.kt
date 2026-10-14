@@ -4,7 +4,7 @@ import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.common.time.AppClock
 import com.schoolapp.core.data.organisation.OrganisationRepository
-import com.schoolapp.core.data.people.StudentAdminRepository
+import com.schoolapp.core.data.admissions.AdmissionsRepository
 import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.organisation.AcademicSession
 import com.schoolapp.core.model.organisation.SchoolClass
@@ -15,7 +15,9 @@ import com.schoolapp.core.testing.MainDispatcherRule
 import com.schoolapp.core.testing.TestSessions
 import com.schoolapp.core.ui.people.ChildForm
 import com.schoolapp.core.ui.people.GuardianForm
+import com.schoolapp.feature.admissions.common.AdmissionScopeLoader
 import com.schoolapp.feature.admissions.create.NewApplicationViewModel
+import androidx.lifecycle.SavedStateHandle
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -34,7 +36,7 @@ class NewApplicationViewModelTest {
     private var failWith: AppError? = null
     private var activeSession = true
 
-    private val admin = Proxy.newProxyInstance(StudentAdminRepository::class.java.classLoader, arrayOf(StudentAdminRepository::class.java)) { _, method, args ->
+    private val admin = Proxy.newProxyInstance(AdmissionsRepository::class.java.classLoader, arrayOf(AdmissionsRepository::class.java)) { _, method, args ->
         when (method.name) {
             "createApplication" -> {
                 created += args[0] as ApplicationInput
@@ -42,7 +44,7 @@ class NewApplicationViewModelTest {
             }
             else -> error("unexpected ${method.name}")
         }
-    } as StudentAdminRepository
+    } as AdmissionsRepository
 
     private val organisation = Proxy.newProxyInstance(OrganisationRepository::class.java.classLoader, arrayOf(OrganisationRepository::class.java)) { _, method, _ ->
         when (method.name) {
@@ -52,10 +54,13 @@ class NewApplicationViewModelTest {
         }
     } as OrganisationRepository
 
-    private fun viewModel(vararg permissions: String = arrayOf("admissions.view", "admissions.add")) = NewApplicationViewModel(
-        admin, organisation, FakeAuthRepository(TestSessions.session(RoleKey.PRINCIPAL, *permissions)),
-        AppClock { LocalDateTime.of(2026, 10, 8, 9, 0) },
-    )
+    private fun viewModel(vararg permissions: String = arrayOf("admissions.view", "admissions.add")): NewApplicationViewModel {
+        val auth = FakeAuthRepository(TestSessions.session(RoleKey.PRINCIPAL, *permissions))
+        return NewApplicationViewModel(
+            SavedStateHandle(), admin, AdmissionScopeLoader(organisation, auth), auth,
+            AppClock { LocalDateTime.of(2026, 10, 8, 9, 0) },
+        )
+    }
 
     private fun NewApplicationViewModel.fill() {
         onClass("c2")

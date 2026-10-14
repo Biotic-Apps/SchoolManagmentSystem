@@ -3,9 +3,6 @@ package com.schoolapp.feature.attendance.review
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.EventAvailable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -16,18 +13,10 @@ import com.schoolapp.core.designsystem.component.AppScaffold
 import com.schoolapp.core.designsystem.component.AppTabs
 import com.schoolapp.core.designsystem.component.AppTopBar
 import com.schoolapp.core.designsystem.component.BackButton
-import com.schoolapp.core.designsystem.component.EmptyState
-import com.schoolapp.core.designsystem.component.ErrorState
-import com.schoolapp.core.designsystem.component.InlineMessage
-import com.schoolapp.core.designsystem.component.LoadingState
-import com.schoolapp.core.designsystem.component.PullableState
 import com.schoolapp.core.designsystem.component.RefreshBox
-import com.schoolapp.core.designsystem.component.ScreenColumn
-import com.schoolapp.core.designsystem.component.StatusTone
-import com.schoolapp.core.ui.appErrorMessage
 import com.schoolapp.feature.attendance.R
-import com.schoolapp.feature.attendance.components.LeaveRequestCard
 
+/** Principal / coordinator / head teacher / class teacher: leave requests to decide, and the ones already decided. */
 @Composable
 internal fun LeaveReviewRoute(
     onBack: () -> Unit,
@@ -37,7 +26,13 @@ internal fun LeaveReviewRoute(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     AppScaffold(
         modifier = modifier,
-        topBar = { AppTopBar(stringResource(R.string.attendance_leave_requests), navigationIcon = { BackButton(onBack) }) },
+        topBar = {
+            AppTopBar(
+                stringResource(R.string.attendance_leave_requests),
+                subtitle = stringResource(R.string.attendance_leave_requests_supporting),
+                navigationIcon = { BackButton(onBack) },
+            )
+        },
     ) { padding ->
         Column(Modifier.padding(padding).fillMaxSize()) {
             AppTabs(
@@ -49,7 +44,15 @@ internal fun LeaveReviewRoute(
                 onSelect = { viewModel.onTabSelected(ReviewTab.entries[it]) },
             )
             RefreshBox(state.isRefreshing, viewModel::refresh, Modifier.fillMaxSize()) {
-                LeaveReviewContent(state, viewModel::load, viewModel::onOpen)
+                LeaveReviewContent(
+                    state = state,
+                    actions = LeaveReviewActions(
+                        onRetry = viewModel::load,
+                        onOpen = viewModel::onOpen,
+                        onQuickDecide = viewModel::onQuickDecide,
+                        onDecidedFilter = viewModel::onDecidedFilter,
+                    ),
+                )
             }
         }
     }
@@ -61,36 +64,5 @@ internal fun LeaveReviewRoute(
             onReject = viewModel::reject,
             onDismiss = viewModel::onDismissDecision,
         )
-    }
-}
-
-@Composable
-internal fun LeaveReviewContent(state: LeaveReviewUiState, onRetry: () -> Unit, onOpen: (String) -> Unit, modifier: Modifier = Modifier) {
-    when {
-        state.isLoading -> LoadingState(modifier)
-        state.error != null && state.pending.isEmpty() && state.decided.isEmpty() -> PullableState(modifier) { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
-        else -> ScreenColumn(modifier) {
-            state.error?.let { item(key = "refresh_error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
-            state.message?.let { message ->
-                item(key = "message") {
-                    val text = if (message == ReviewMessage.APPROVED) R.string.attendance_leave_approved_message else R.string.attendance_leave_rejected_message
-                    InlineMessage(stringResource(text), StatusTone.Success)
-                }
-            }
-            if (state.items.isEmpty()) {
-                item(key = "empty") {
-                    EmptyState(
-                        title = stringResource(
-                            if (state.tab == ReviewTab.PENDING) R.string.attendance_review_empty_pending else R.string.attendance_review_empty_decided,
-                        ),
-                        icon = Icons.Outlined.EventAvailable,
-                    )
-                }
-            }
-            val pending = state.tab == ReviewTab.PENDING
-            items(state.items, key = { it.id }) { leave ->
-                LeaveRequestCard(leave = leave, showSubject = true, onClick = if (pending) ({ onOpen(leave.id) }) else null)
-            }
-        }
     }
 }

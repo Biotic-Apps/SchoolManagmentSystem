@@ -7,4 +7,7 @@ data class CalendarEvent(
     val startDate: String?,
     val endDate: String?,
     val description: String?,
+    val schoolId: String? = null,
+    /** null = whole-school entry. */
+    val branchId: String? = null,
 )

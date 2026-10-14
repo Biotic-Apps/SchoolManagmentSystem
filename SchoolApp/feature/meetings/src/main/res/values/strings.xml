@@ -138,4 +138,25 @@
     <string name="meetings_error_slot_location">Keep the location under 200 characters</string>
     <string name="meetings_slot_start_title">Slot starts at</string>
     <string name="meetings_slot_end_title">Slot ends at</string>
+
+    <string name="meetings_accept_change">Accept at another time</string>
+    <string name="meetings_accept_change_title">Accept at another time</string>
+    <string name="meetings_accept_change_help">Keep the parent\'s suggestion or change it. The parent is notified either way.</string>
+    <string name="meetings_confirm_meeting">Confirm meeting</string>
+    <string name="meetings_retry">Retry</string>
+    <string name="meetings_schedule">Schedule meeting</string>
+    <string name="meetings_schedule_submit">Schedule meeting</string>
+    <string name="meetings_schedule_intro">Invite a parent to a meeting about their child. They are notified at once.</string>
+    <string name="meetings_scheduled">Meeting scheduled</string>
+    <string name="meetings_student">Student</string>
+    <string name="meetings_change">Change</string>
+    <string name="meetings_search_student">Search student by name or admission no.</string>
+    <string name="meetings_search_hint">Type at least 2 letters to search.</string>
+    <string name="meetings_no_students">No students found in your classes.</string>
+    <string name="meetings_pick_student">Pick a student</string>
+    <string name="meetings_admission_no">Adm. %1$s</string>
+    <string name="meetings_pick_guardian">Choose a guardian</string>
+    <string name="meetings_no_verified_guardians">This student has no verified guardian, so a meeting cannot be scheduled.</string>
+    <string name="meetings_when">When and where</string>
+    <string name="meetings_error_agenda_long">Keep the agenda under 1000 characters</string>
 </resources>

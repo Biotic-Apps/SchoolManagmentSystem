@@ -34,12 +34,12 @@ class PrimaryNavigationTest {
     fun bottom_bar_never_holds_web_only_placeholders() {
         RoleKey.entries.forEach { role ->
             val primary = PrimaryNavigation.split(fullMenu(role), role).primary.map { it.id }
-            assertTrue("$role $primary", primary.none(PrimaryNavigation.WebOnly::contains))
+            assertTrue("$role $primary", primary.none(PrimaryNavigation.DrawerOnly::contains))
         }
-        val custom = NavigationCatalog.entries.filter { it.id in PrimaryNavigation.WebOnly || it.id == MenuIds.DASHBOARD } +
+        val custom = NavigationCatalog.entries.filter { it.id in PrimaryNavigation.DrawerOnly || it.id == MenuIds.DASHBOARD } +
             NavigationCatalog.entries.filter { it.id == MenuIds.NOTICES }
         val split = PrimaryNavigation.split(custom, CustomRole("auditor"))
-        assertTrue(split.primary.none { it.id in PrimaryNavigation.WebOnly })
+        assertTrue(split.primary.none { it.id in PrimaryNavigation.DrawerOnly })
     }
 
     @Test
@@ -76,7 +76,7 @@ class PrimaryNavigationTest {
         assertTrue(PrimaryNavigation.split(small, RoleKey.TEACHER).overflow.isEmpty())
         val custom = NavigationCatalog.entries.take(10)
         val split = PrimaryNavigation.split(custom, CustomRole("librarian"))
-        val inApp = custom.filterNot { it.id in PrimaryNavigation.WebOnly }
+        val inApp = custom.filterNot { it.id in PrimaryNavigation.DrawerOnly }
         assertEquals(inApp.take(4), split.primary)
         assertEquals(custom.filterNot { it in inApp.take(4) }, split.overflow)
     }

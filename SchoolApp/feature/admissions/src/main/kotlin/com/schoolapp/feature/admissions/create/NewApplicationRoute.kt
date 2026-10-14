@@ -25,6 +25,7 @@ import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.FieldKind
 import com.schoolapp.core.designsystem.component.InlineMessage
+import com.schoolapp.core.designsystem.component.KeyValueRow
 import com.schoolapp.core.designsystem.component.LoadingState
 import com.schoolapp.core.designsystem.component.PickerOption
 import com.schoolapp.core.designsystem.component.PrimaryButton
@@ -40,7 +41,7 @@ import com.schoolapp.core.ui.people.MAX_GUARDIANS
 import com.schoolapp.core.ui.people.text
 import com.schoolapp.feature.admissions.R
 
-/** [onCreated] gets the new application's id (the caller opens its detail). */
+/** New or edit (route has an `id`); [onCreated] gets the saved application's id (the caller opens or returns to its detail). */
 @Composable
 fun NewApplicationRoute(
     onBack: () -> Unit,
@@ -52,7 +53,10 @@ fun NewApplicationRoute(
     LaunchedEffect(state.createdId) { state.createdId?.let(onCreated) }
     AppScaffold(
         modifier = modifier,
-        topBar = { AppTopBar(title = stringResource(R.string.admissions_new_title), navigationIcon = { BackButton(onBack) }) },
+        topBar = {
+            val title = if (state.isEdit) stringResource(R.string.admissions_edit_title) else stringResource(R.string.admissions_new_title)
+            AppTopBar(title = title, subtitle = state.applicationNo, navigationIcon = { BackButton(onBack) })
+        },
     ) { padding ->
         val body = Modifier.padding(padding)
         when {
@@ -67,10 +71,10 @@ fun NewApplicationRoute(
 @Composable
 private fun ApplicationForm(state: NewApplicationUiState, viewModel: NewApplicationViewModel, modifier: Modifier) {
     ScreenColumn(modifier) {
-        if (state.noSession) item { InlineMessage(stringResource(R.string.admissions_new_no_session), StatusTone.Warning) }
+        if (state.noSession && !state.isEdit) item { InlineMessage(stringResource(R.string.admissions_new_no_session), StatusTone.Warning) }
         item {
             Card(stringResource(R.string.admissions_new_class)) {
-                CreatablePickerField(
+                if (state.isEdit) KeyValueRow(stringResource(R.string.admissions_new_class_field), state.className) else CreatablePickerField(
                     label = stringResource(R.string.admissions_new_class_field),
                     options = state.classes.map { PickerOption(it.id, it.name) },
                     selectedId = state.classId,
@@ -95,11 +99,14 @@ private fun ApplicationForm(state: NewApplicationUiState, viewModel: NewApplicat
                 }
             }
         }
+        if (state.guardians.size < MAX_GUARDIANS) {
+            item(key = "addGuardian") {
+                SecondaryButton(stringResource(R.string.admissions_new_add_guardian), onClick = viewModel::addGuardian, leadingIcon = Icons.Outlined.Add)
+            }
+        }
+        item(key = "medical") { MedicalCard(state.medical, viewModel::onMedical) }
         item {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                if (state.guardians.size < MAX_GUARDIANS) {
-                    SecondaryButton(stringResource(R.string.admissions_new_add_guardian), onClick = viewModel::addGuardian, leadingIcon = Icons.Outlined.Add)
-                }
                 AppTextField(
                     value = state.notes,
                     onValueChange = viewModel::onNotes,
@@ -112,10 +119,10 @@ private fun ApplicationForm(state: NewApplicationUiState, viewModel: NewApplicat
                 state.submitError?.let { InlineMessage(actionErrorMessage(it.error, it.details), StatusTone.Error) }
                 if (!state.errors.isEmpty) InlineMessage(stringResource(R.string.admissions_new_fix_fields), StatusTone.Error)
                 PrimaryButton(
-                    stringResource(R.string.admissions_new_submit),
+                    stringResource(if (state.isEdit) R.string.admissions_edit_submit else R.string.admissions_new_submit),
                     onClick = viewModel::submit,
                     loading = state.submitting,
-                    enabled = !state.noSession,
+                    enabled = state.isEdit || !state.noSession,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }

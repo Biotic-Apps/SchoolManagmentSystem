@@ -33,7 +33,7 @@ class CertificateReviewViewModelTest {
 
     @Test
     fun defaults_to_requested_and_filters() {
-        val vm = CertificateReviewViewModel(principal, repo)
+        val vm = CertificateReviewViewModel(principal, repo, FakeStudentsRepository())
         assertEquals(ReviewFilter.REQUESTED, vm.uiState.value.filter)
         assertEquals(listOf("leave", "transfer"), vm.uiState.value.certificates.map { it.id })
         vm.onFilterChange(ReviewFilter.ALL)
@@ -42,7 +42,7 @@ class CertificateReviewViewModelTest {
 
     @Test
     fun blocked_approval_keeps_requested_and_exposes_clearance() {
-        val vm = CertificateReviewViewModel(principal, repo)
+        val vm = CertificateReviewViewModel(principal, repo, FakeStudentsRepository())
         vm.approve("leave")
         val state = vm.uiState.value
         assertEquals(clearance, state.blocked["leave"])
@@ -53,7 +53,7 @@ class CertificateReviewViewModelTest {
 
     @Test
     fun clean_approval_updates_status() {
-        val vm = CertificateReviewViewModel(principal, repo)
+        val vm = CertificateReviewViewModel(principal, repo, FakeStudentsRepository())
         vm.approve("transfer")
         assertEquals(CertificateStatus.APPROVED, vm.uiState.value.certificates.first { it.id == "transfer" }.status)
         assertEquals(ReviewMessage.APPROVED, vm.uiState.value.message)
@@ -61,7 +61,7 @@ class CertificateReviewViewModelTest {
 
     @Test
     fun reject_requires_reason() {
-        val vm = CertificateReviewViewModel(principal, repo)
+        val vm = CertificateReviewViewModel(principal, repo, FakeStudentsRepository())
         vm.openReject("transfer")
         vm.onRejectReasonChange("   ")
         vm.submitReject()
@@ -78,7 +78,7 @@ class CertificateReviewViewModelTest {
     @Test
     fun without_approve_permission_actions_are_ignored() {
         val office = FakeAuthRepository(TestSessions.session(RoleKey.ACCOUNTANT, "certificates.view"))
-        val vm = CertificateReviewViewModel(office, repo)
+        val vm = CertificateReviewViewModel(office, repo, FakeStudentsRepository())
         vm.approve("transfer")
         vm.openReject("transfer")
         assertNull(vm.uiState.value.rejectForm)

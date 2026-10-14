@@ -1,57 +1,34 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Section } from "@/components/site/ui/Section";
 import { SectionHeading } from "@/components/site/ui/SectionHeading";
-import { Reveal } from "@/components/site/motion/Reveal";
+import { TimelineStep } from "@/components/site/how/TimelineStep";
+import { SetupChecklist } from "@/components/site/how/SetupChecklist";
+import { ImportTable } from "@/components/site/how/ImportTable";
+import { RoleFan } from "@/components/site/how/RoleFan";
+import { useTimelineScroll } from "@/components/site/how/useTimelineScroll";
 import { HOW_COPY, HOW_IT_WORKS } from "@/lib/site/content";
-import { gsap, prefersReducedMotion } from "@/lib/site/gsap";
-import { refreshScrollTriggers } from "@/lib/site/scroll";
+
+const VISUALS = [
+  <SetupChecklist key="setup" />,
+  <ImportTable key="import" />,
+  <RoleFan key="roles" />,
+];
 
 /**
- * Three steps with a rule that draws itself as the section scrolls through.
- *
- * The line is scrubbed rather than triggered so it tracks the reader's pace
- * instead of firing once and finishing without them.
+ * Three steps on a vertical timeline. The centre line fills with the brand
+ * gradient as the reader scrolls; each node pops as the fill reaches it and
+ * its card swings in from its own side. On phones the line moves to the left
+ * gutter and every card sits to its right.
  */
 export function HowItWorks() {
-  const lineRef = useRef<HTMLDivElement>(null);
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const line = lineRef.current;
-    const section = sectionRef.current;
-    if (!line || !section) return;
-
-    if (prefersReducedMotion()) {
-      gsap.set(line, { scaleX: 1 });
-      return;
-    }
-
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        line,
-        { scaleX: 0 },
-        {
-          scaleX: 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 72%",
-            end: "bottom 62%",
-            scrub: 0.6,
-          },
-        },
-      );
-    }, section);
-
-    refreshScrollTriggers();
-
-    return () => ctx.revert();
-  }, []);
+  const listRef = useRef<HTMLOListElement>(null);
+  const fillRef = useRef<HTMLDivElement>(null);
+  useTimelineScroll(listRef, fillRef);
 
   return (
-    <Section id="how-it-works">
+    <Section id="how-it-works" className="overflow-hidden">
       <SectionHeading
         eyebrow={HOW_COPY.eyebrow}
         title={HOW_COPY.title}
@@ -59,29 +36,28 @@ export function HowItWorks() {
         align="center"
       />
 
-      <div ref={sectionRef} className="relative mt-16">
-        {/* The rule that fills in behind the step markers */}
+      <div className="relative mx-auto mt-16 max-w-5xl lg:mt-20">
+        {/* Track and fill. Stops at the first and last node centres. */}
         <div
           aria-hidden
-          className="absolute inset-x-[16.6%] top-6 hidden h-px bg-line lg:block"
+          className="absolute bottom-12 left-6 top-12 w-[3px] -translate-x-1/2 rounded-full bg-line-strong/70 lg:left-1/2"
         >
           <div
-            ref={lineRef}
-            className="h-full origin-left bg-gradient-to-r from-brand-400 via-brand-500 to-accent-400"
+            ref={fillRef}
+            className="h-full origin-top rounded-full bg-gradient-to-b from-brand-500 via-brand-400 to-accent-500 shadow-[0_0_14px_rgb(123_104_238/0.55)]"
           />
         </div>
 
-        <ol className="relative grid gap-12 lg:grid-cols-3 lg:gap-10">
+        <ol ref={listRef} className="relative space-y-12 lg:space-y-0">
           {HOW_IT_WORKS.map((step, index) => (
-            <Reveal as="li" key={step.step} delay={index * 0.12} className="lg:text-center">
-              <span className="inline-grid size-11 place-items-center rounded-full bg-surface-sunken text-[0.8rem] font-bold tabular-nums text-brand-700 ring-1 ring-line">
-                {step.step}
-              </span>
-              <h3 className="mt-5 text-lg font-semibold tracking-tight">{step.title}</h3>
-              <p className="mx-auto mt-3 max-w-sm text-pretty text-[0.95rem] leading-relaxed text-muted">
-                {step.body}
-              </p>
-            </Reveal>
+            <TimelineStep
+              key={step.step}
+              index={index}
+              step={step.step}
+              title={step.title}
+              body={step.body}
+              visual={VISUALS[index]}
+            />
           ))}
         </ol>
       </div>

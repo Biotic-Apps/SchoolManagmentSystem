@@ -1,11 +1,16 @@
 import { FormSection } from "@/components/shared/FormSection";
 import { CheckboxField } from "@/components/shared/form/CheckboxField";
 import { MoneyField } from "@/components/shared/form/MoneyField";
+import { SelectField } from "@/components/shared/form/SelectField";
 import { TextField } from "@/components/shared/form/TextField";
 import { TimeField } from "@/components/shared/form/TimeField";
+import { useGradingSchemes } from "@/features/exams/grading-api";
 import { ApprovalLimitsFields } from "./ApprovalLimitsFields";
 
-export function DefaultsPolicySection() {
+export function DefaultsPolicySection({ schoolId }: { schoolId: string }) {
+  const schemes = useGradingSchemes({ schoolId });
+  const schemeOptions = (schemes.data ?? []).map((scheme) => ({ id: scheme.id, name: scheme.name }));
+
   return (
     <FormSection
       title="School defaults"
@@ -18,7 +23,14 @@ export function DefaultsPolicySection() {
           hint="After this time changes need a correction request."
           required
         />
-        <TextField name="gradingDefault" label="Default grading scale" hint="Leave blank to have no default." maxLength={60} />
+        <SelectField
+          name="gradingDefault"
+          label="Default grading scale"
+          options={schemeOptions}
+          emptyLabel="No default"
+          placeholder={schemes.isLoading ? "Loading…" : "No default"}
+          hint="One of this school's grading schemes."
+        />
       </div>
       <CheckboxField
         name="diaryModeration"

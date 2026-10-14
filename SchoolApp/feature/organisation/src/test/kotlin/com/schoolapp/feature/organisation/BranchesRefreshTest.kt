@@ -22,7 +22,7 @@ class BranchesRefreshTest {
     @Test
     fun refresh_updates_branch_list() {
         repository.branches = listOf(branch("b1"), branch("b2"))
-        val vm = BranchesViewModel(repository)
+        val vm = BranchesViewModel(repository, branchEditor())
         repository.branches = listOf(branch("b1"), branch("b2"), branch("b3"))
         vm.refresh()
         val state = vm.uiState.value
@@ -34,7 +34,7 @@ class BranchesRefreshTest {
 
     @Test
     fun failed_refresh_keeps_single_branch_overview() {
-        val vm = BranchesViewModel(repository)
+        val vm = BranchesViewModel(repository, branchEditor())
         repository.failure = AppError.Network
         vm.refresh()
         val state = vm.uiState.value
@@ -47,7 +47,7 @@ class BranchesRefreshTest {
     @Test
     fun refresh_after_error_recovers() {
         repository.failure = AppError.Network
-        val vm = BranchesViewModel(repository)
+        val vm = BranchesViewModel(repository, branchEditor())
         assertEquals(AppError.Network, vm.uiState.value.error)
         repository.failure = null
         vm.refresh()
@@ -57,7 +57,7 @@ class BranchesRefreshTest {
 
     @Test
     fun branch_detail_refresh_keeps_overview_on_failure_and_updates_on_success() {
-        val vm = BranchDetailViewModel(SavedStateHandle(mapOf("id" to "b1")), repository)
+        val vm = BranchDetailViewModel(SavedStateHandle(mapOf("id" to "b1")), repository, branchEditor())
         repository.failure = AppError.Network
         vm.refresh()
         assertEquals("Branch b1", vm.uiState.value.overview?.branch?.name)

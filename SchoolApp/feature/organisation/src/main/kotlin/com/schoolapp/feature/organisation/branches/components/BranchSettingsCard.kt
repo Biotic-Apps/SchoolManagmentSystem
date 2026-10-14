@@ -17,10 +17,7 @@ import com.schoolapp.feature.organisation.R
 @Composable
 internal fun BranchSettingsCard(settings: List<BranchSetting>, modifier: Modifier = Modifier) {
     AppCard(modifier.fillMaxWidth()) {
-        SectionHeader(
-            title = stringResource(R.string.org_branch_settings),
-            subtitle = stringResource(R.string.org_read_only_hint),
-        )
+        SectionHeader(title = stringResource(R.string.org_branch_settings))
         if (settings.isEmpty()) {
             Text(stringResource(R.string.org_settings_empty), style = MaterialTheme.typography.bodyMedium, color = AppColors.TextSecondary)
         }

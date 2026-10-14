@@ -8,13 +8,17 @@ import com.schoolapp.core.data.common.clean
 import com.schoolapp.core.data.common.decodeEach
 import com.schoolapp.core.model.activity.Activity
 import com.schoolapp.core.model.activity.ActivityConsent
+import com.schoolapp.core.model.activity.ActivityFilter
 import com.schoolapp.core.model.activity.ActivityInput
 import com.schoolapp.core.model.activity.ActivityParticipant
 import com.schoolapp.core.model.activity.ActivityStatus
 import com.schoolapp.core.model.activity.ConsentStatus
+import com.schoolapp.core.model.settings.PagedList
 import com.schoolapp.core.network.ApiCaller
 import com.schoolapp.core.network.api.ActivitiesApi
 import com.schoolapp.core.network.dto.activity.ActivityDto
+import com.schoolapp.core.network.dto.activity.ActivityStatusBodyDto
+import com.schoolapp.core.network.dto.activity.ParticipantsBodyDto
 import com.schoolapp.core.network.dto.activity.ConsentBodyDto
 import com.schoolapp.core.network.dto.activity.ConsentDto
 import com.schoolapp.core.network.dto.activity.ParticipantDto
@@ -72,4 +76,25 @@ class DefaultActivitiesRepository @Inject constructor(
             .mapNotNull { it.toModel() }
             .sortedWith(compareBy(nullsLast()) { it.position })
     }
+
+    override suspend fun activitiesPage(branchId: String?, filter: ActivityFilter, page: Int, pageSize: Int): AppResult<PagedList<Activity>> =
+        apiCaller.call {
+            val envelope = api.activities(branchId, filter.type?.name, filter.status?.name, filter.from, filter.to, page, pageSize)
+            val items = envelope.data.map { it.toModel() }
+            PagedList(items, page, pageSize, envelope.meta?.total ?: ((page - 1) * pageSize + items.size))
+        }
+
+    override suspend fun update(id: String, input: ActivityInput): AppResult<Activity> =
+        apiCaller.call { api.update(id, input.toBody(forUpdate = true)).data.toModel() }
+
+    override suspend fun setStatus(id: String, status: ActivityStatus, reason: String?): AppResult<Activity> =
+        apiCaller.call { api.setStatus(id, ActivityStatusBodyDto(status.name, reason.clean())).data.toModel() }
+
+    override suspend fun saveParticipants(id: String, participants: List<ActivityParticipant>): AppResult<List<ActivityParticipant>> =
+        apiCaller.call {
+            val saved = api.replaceParticipants(id, ParticipantsBodyDto(participants.map { it.toInput() })).data
+            json.decodeEach(saved.arrayAt("participants", "items"), ParticipantDto.serializer())
+                .mapNotNull { it.toModel() }
+                .sortedWith(compareBy(nullsLast()) { it.position })
+        }
 }

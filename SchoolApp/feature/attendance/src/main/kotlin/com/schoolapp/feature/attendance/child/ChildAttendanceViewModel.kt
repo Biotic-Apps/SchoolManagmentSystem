@@ -6,6 +6,7 @@ import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.common.time.AppClock
 import com.schoolapp.core.data.attendance.AttendanceRepository
 import com.schoolapp.core.data.auth.AuthRepository
+import com.schoolapp.core.data.files.FilesRepository
 import com.schoolapp.core.data.leave.LeaveRepository
 import com.schoolapp.core.model.leave.LeaveInput
 import com.schoolapp.feature.attendance.leave.MyLeavesController
@@ -30,6 +31,7 @@ class ChildAttendanceViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val repository: AttendanceRepository,
     leaveRepository: LeaveRepository,
+    filesRepository: FilesRepository,
     clock: AppClock,
 ) : ViewModel() {
 
@@ -44,8 +46,13 @@ class ChildAttendanceViewModel @Inject constructor(
         scope = viewModelScope,
         withType = false,
         defaultDate = { todayDate.toString() },
-        inputFor = { form -> _uiState.value.childId?.let { LeaveInput.ForStudent(it, form.from, form.to, form.reason.trim()) } },
+        inputFor = { form ->
+            _uiState.value.childId?.let {
+                LeaveInput.ForStudent(it, form.from, form.to, form.reason.trim(), form.attachments.fileIds.firstOrNull())
+            }
+        },
         include = { leave -> leave.subject.id == null || leave.subject.id == _uiState.value.childId },
+        files = filesRepository,
     )
     val leavesState: StateFlow<MyLeavesState> = leaves.state
 

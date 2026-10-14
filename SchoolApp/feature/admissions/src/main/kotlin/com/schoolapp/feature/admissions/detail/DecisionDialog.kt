@@ -1,51 +1,32 @@
 package com.schoolapp.feature.admissions.detail
 
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.schoolapp.core.designsystem.component.AppTextArea
-import com.schoolapp.core.designsystem.component.AppTextButton
-import com.schoolapp.core.designsystem.theme.AppColors
+import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.model.admissions.AdmissionDecision
 import com.schoolapp.feature.admissions.R
 
+/** Offer, waitlist or reject; the reason is required only to reject and is shared with the guardian. */
 @Composable
 internal fun DecisionDialog(
     decision: AdmissionDecision,
-    reason: String,
-    reasonMissing: Boolean,
     busy: Boolean,
-    onReasonChange: (String) -> Unit,
-    onConfirm: () -> Unit,
+    error: AppError?,
+    onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = AppColors.Surface,
-        shape = MaterialTheme.shapes.medium,
-        title = { Text(stringResource(decision.titleRes()), style = MaterialTheme.typography.titleLarge) },
-        text = {
-            AppTextArea(
-                value = reason,
-                onValueChange = onReasonChange,
-                label = stringResource(R.string.admissions_reason),
-                enabled = !busy,
-                errorText = if (reasonMissing) stringResource(R.string.admissions_reason_required) else null,
-            )
-        },
-        confirmButton = {
-            AppTextButton(
-                text = stringResource(decision.labelRes()),
-                onClick = onConfirm,
-                loading = busy,
-                contentColor = if (decision == AdmissionDecision.REJECT) AppColors.Error else AppColors.Primary,
-            )
-        },
-        dismissButton = {
-            AppTextButton(text = stringResource(android.R.string.cancel), onClick = onDismiss, enabled = !busy, contentColor = AppColors.TextSecondary)
-        },
+    ReasonDialog(
+        title = stringResource(decision.titleRes()),
+        message = stringResource(
+            if (decision == AdmissionDecision.WAITLIST) R.string.admissions_decide_waitlist_hint else R.string.admissions_decide_hint,
+        ),
+        confirmLabel = stringResource(decision.labelRes()),
+        busy = busy,
+        error = error,
+        required = decision == AdmissionDecision.REJECT,
+        destructive = decision == AdmissionDecision.REJECT,
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
     )
 }
 

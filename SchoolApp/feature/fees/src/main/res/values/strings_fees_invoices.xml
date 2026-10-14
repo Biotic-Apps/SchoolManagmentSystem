@@ -1,0 +1,73 @@
+<resources>
+    <string name="fees_inv_search">Search invoice no. or student</string>
+    <string name="fees_inv_all_status">All</string>
+    <string name="fees_inv_all_classes">All classes</string>
+    <string name="fees_inv_class">Class</string>
+    <string name="fees_inv_any_month">Any month</string>
+    <string name="fees_inv_filter_month">Only one month</string>
+    <string name="fees_inv_empty">No invoices</string>
+    <string name="fees_inv_empty_message">Generate this month\'s invoices from the approved fee plans, or create one for a single student.</string>
+    <string name="fees_inv_generate">Generate invoices</string>
+    <string name="fees_inv_new">New invoice</string>
+    <string name="fees_inv_print">Print challans</string>
+    <string name="fees_inv_select">Select drafts</string>
+    <string name="fees_inv_select_done">Done</string>
+    <plurals name="fees_inv_issue_n">
+        <item quantity="one">Issue %1$d invoice</item>
+        <item quantity="other">Issue %1$d invoices</item>
+    </plurals>
+    <plurals name="fees_inv_issued_n">
+        <item quantity="one">%1$d invoice issued</item>
+        <item quantity="other">%1$d invoices issued</item>
+    </plurals>
+    <string name="fees_inv_issue_failed">Some invoices were not issued: %1$s</string>
+    <string name="fees_inv_due">Due %1$s</string>
+    <string name="fees_inv_balance">Balance %1$s</string>
+    <string name="fees_inv_total_paid">Total %1$s · Paid %2$s</string>
+    <!-- Generate -->
+    <string name="fees_inv_session">Academic session</string>
+    <string name="fees_inv_session_required">Choose a session</string>
+    <string name="fees_inv_month">Month</string>
+    <string name="fees_inv_classes">Classes</string>
+    <string name="fees_inv_classes_hint">Leave all unselected to generate for every class with an approved fee plan.</string>
+    <string name="fees_inv_generate_help">Invoices are made as drafts from the approved fee plans, with concessions, sibling discounts and activity fees. Issue them when they look right.</string>
+    <string name="fees_inv_generating">Generating invoices… This can take a minute.</string>
+    <string name="fees_inv_generated">Invoices generated</string>
+    <plurals name="fees_inv_generated_n">
+        <item quantity="one">%1$d invoice generated</item>
+        <item quantity="other">%1$d invoices generated</item>
+    </plurals>
+    <!-- Print -->
+    <string name="fees_inv_print_help">One PDF with a 3-copy bank challan for every open invoice of the month.</string>
+    <string name="fees_inv_section">Section</string>
+    <string name="fees_inv_all_sections">All sections</string>
+    <string name="fees_inv_printing">Preparing challans… This can take a minute.</string>
+    <string name="fees_inv_print_start">Make PDF</string>
+    <!-- Detail -->
+    <string name="fees_inv_issue">Issue invoice</string>
+    <string name="fees_inv_issued_one">Invoice issued</string>
+    <string name="fees_inv_family_challan">Family challan</string>
+    <string name="fees_inv_cancel">Cancel invoice</string>
+    <string name="fees_inv_cancel_title">Cancel %1$s?</string>
+    <string name="fees_inv_cancel_help">A draft is cancelled at once. An issued invoice is cancelled after approval; payments already made stay on the student\'s account.</string>
+    <string name="fees_inv_reason">Reason</string>
+    <string name="fees_inv_reason_invalid">Enter a reason (at least 3 characters)</string>
+    <string name="fees_inv_cancelled">Invoice cancelled</string>
+    <string name="fees_inv_cancel_sent">Cancellation sent for approval</string>
+    <!-- New invoice -->
+    <string name="fees_inv_due_date">Due date</string>
+    <string name="fees_inv_lines">Charges</string>
+    <string name="fees_inv_add_line">Add charge</string>
+    <string name="fees_inv_line_head">Fee head</string>
+    <string name="fees_inv_line_head_required">Choose a fee head</string>
+    <string name="fees_inv_line_description">Description</string>
+    <string name="fees_inv_line_description_required">Enter a description</string>
+    <string name="fees_inv_line_amount">Amount</string>
+    <string name="fees_inv_line_amount_invalid">Enter an amount greater than 0</string>
+    <string name="fees_inv_lines_required">Add at least one charge</string>
+    <string name="fees_inv_remove_line">Remove</string>
+    <string name="fees_inv_total">Total %1$s</string>
+    <string name="fees_inv_create">Create draft invoice</string>
+    <string name="fees_inv_created">Draft invoice created</string>
+    <string name="fees_inv_cancel_button">Cancel</string>
+</resources>

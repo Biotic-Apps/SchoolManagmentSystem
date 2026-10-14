@@ -4,6 +4,7 @@ import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.model.approval.ApprovalDecision
 import com.schoolapp.core.model.approval.ApprovalRequest
 import com.schoolapp.core.model.approval.ApprovalStatus
+import com.schoolapp.core.model.settings.PagedList
 import com.schoolapp.core.network.ApiCaller
 import com.schoolapp.core.network.api.ApprovalsApi
 import com.schoolapp.core.network.dto.approval.DecisionRequestDto
@@ -24,6 +25,13 @@ class DefaultApprovalsRepository @Inject constructor(
 
     override suspend fun inbox(status: ApprovalStatus?): AppResult<List<ApprovalRequest>> =
         apiCaller.call { api.list(status = status?.name).data.map { it.toModel() } }
+
+    override suspend fun inboxPage(status: ApprovalStatus?, type: String?, page: Int, pageSize: Int): AppResult<PagedList<ApprovalRequest>> =
+        apiCaller.call {
+            val envelope = api.list(status = status?.name, type = type, page = page, pageSize = pageSize)
+            val items = envelope.data.map { it.toModel() }
+            PagedList(items, envelope.meta?.page ?: page, envelope.meta?.pageSize ?: pageSize, envelope.meta?.total ?: items.size)
+        }
 
     override suspend fun detail(id: String): AppResult<ApprovalRequest> =
         apiCaller.call { api.detail(id).data.toModel() }

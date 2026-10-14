@@ -27,12 +27,14 @@ internal fun BranchDto.toModel() = Branch(
     workingDays = workingDays.sorted(),
     principalName = principal?.name,
     status = status,
+    principalId = principal?.id,
 )
 
 internal fun AcademicSessionDto.toModel() =
     AcademicSession(id, branchId, name, startDate, endDate, status, termCount)
 
-internal fun CalendarEventDto.toModel() = CalendarEvent(id, type, title, startDate, endDate, description)
+internal fun CalendarEventDto.toModel() =
+    CalendarEvent(id, type, title, startDate, endDate, description, schoolId = schoolId, branchId = branchId)
 
 internal fun SchoolClassDto.toModel() = SchoolClass(id, name, levelOrder, subjectCount)
 

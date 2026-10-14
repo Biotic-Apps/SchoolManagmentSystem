@@ -11,6 +11,7 @@ import com.schoolapp.core.model.message.NewThreadInput
 import com.schoolapp.core.model.people.StudentSummary
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +24,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/** Parent: pick a child, the server picks the recipient. Staff: search a student in scope, guardians receive it. */
+/** Parent: pick a child and (optionally) a teacher or the principal; default is the class teacher. Staff: search a student in scope, guardians receive it. */
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class NewThreadViewModel @Inject constructor(
@@ -36,6 +37,7 @@ class NewThreadViewModel @Inject constructor(
     val uiState: StateFlow<NewThreadUiState> = _uiState.asStateFlow()
 
     private val query = MutableStateFlow("")
+    private var recipientsJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -47,13 +49,32 @@ class NewThreadViewModel @Inject constructor(
                     selectedChildId = session.activeChild?.id,
                 )
             }
+            if (session.activeRole == RoleKey.PARENT) session.activeChild?.id?.let(::loadRecipients)
         }
         viewModelScope.launch {
             query.debounce(SEARCH_DEBOUNCE_MS).distinctUntilChanged().collectLatest(::search)
         }
     }
 
-    fun onChildSelected(id: String) = _uiState.update { it.copy(selectedChildId = id, studentMissing = false) }
+    fun onChildSelected(id: String) {
+        if (_uiState.value.selectedChildId == id) return
+        // A different child has different teachers.
+        _uiState.update { it.copy(selectedChildId = id, studentMissing = false, staffUserId = null) }
+        loadRecipients(id)
+    }
+
+    fun onRecipientSelected(userId: String?) = _uiState.update { it.copy(staffUserId = userId, error = null) }
+
+    private fun loadRecipients(childId: String) {
+        recipientsJob?.cancel()
+        _uiState.update { it.copy(recipients = emptyList(), isLoadingRecipients = true, recipientsError = null) }
+        recipientsJob = viewModelScope.launch {
+            when (val result = messagesRepository.recipients(childId)) {
+                is AppResult.Success -> _uiState.update { it.copy(recipients = result.data, isLoadingRecipients = false) }
+                is AppResult.Failure -> _uiState.update { it.copy(isLoadingRecipients = false, recipientsError = result.error) }
+            }
+        }
+    }
 
     fun onQueryChange(text: String) {
         _uiState.update { it.copy(query = text) }
@@ -97,7 +118,12 @@ class NewThreadViewModel @Inject constructor(
         }
         _uiState.update { it.copy(isSubmitting = true, error = null) }
         viewModelScope.launch {
-            val input = NewThreadInput(studentId = studentId, staffUserId = null, subject = state.subject.trim(), body = state.body.trim())
+            val input = NewThreadInput(
+                studentId = studentId,
+                staffUserId = if (state.isParent) state.staffUserId else null,
+                subject = state.subject.trim(),
+                body = state.body.trim(),
+            )
             when (val result = messagesRepository.startThread(input)) {
                 is AppResult.Success -> _uiState.update { it.copy(isSubmitting = false, createdThreadId = result.data.id) }
                 is AppResult.Failure -> _uiState.update { it.copy(isSubmitting = false, error = result.error) }

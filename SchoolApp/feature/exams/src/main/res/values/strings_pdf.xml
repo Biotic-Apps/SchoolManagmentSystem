@@ -1,0 +1,7 @@
+<resources>
+    <string name="exams_pdf_open">Open PDF</string>
+    <string name="exams_pdf_share">Share</string>
+    <string name="exams_pdf_preparing">Preparing the PDF…</string>
+    <string name="exams_pdf_not_ready">The PDF is still being prepared. Try again in a minute.</string>
+    <string name="exams_pdf_failed">The PDF could not be generated. Try again.</string>
+</resources>

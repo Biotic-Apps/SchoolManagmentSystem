@@ -22,6 +22,8 @@ data class Payslip(
     val pdfUrl: String?,
     val currency: String,
     val breakdown: PayBreakdown = PayBreakdown(),
+    /** `PENDING` while the PDF is being made; [pdfUrl] is set once it is ready. */
+    val pdfStatus: String? = null,
 ) {
     val earnings: List<PayslipLineItem> get() = breakdown.earnings
     val deductionItems: List<PayslipLineItem> get() = breakdown.deductionItems

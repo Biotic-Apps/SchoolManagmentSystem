@@ -10,12 +10,12 @@ import com.schoolapp.core.data.academics.TeacherAllocationRepository
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.data.common.toActionError
 import com.schoolapp.core.data.organisation.ClassesOverviewRepository
-import com.schoolapp.core.data.organisation.OrganisationRepository
 import com.schoolapp.core.data.timetable.TimetableBuilderRepository
 import com.schoolapp.core.model.academics.NamedRef
 import com.schoolapp.core.model.timetable.DraftSlot
 import com.schoolapp.core.model.timetable.LessonInput
 import com.schoolapp.core.ui.SaveTracker
+import com.schoolapp.feature.timetable.scope.TimetableBranchScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +36,7 @@ class TimetableBuilderViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: TimetableBuilderRepository,
     private val overview: ClassesOverviewRepository,
-    private val organisation: OrganisationRepository,
+    private val scope: TimetableBranchScope,
     private val allocation: TeacherAllocationRepository,
     private val catalogue: CatalogueRepository,
     private val authRepository: AuthRepository,
@@ -57,12 +57,24 @@ class TimetableBuilderViewModel @Inject constructor(
         viewModelScope.launch {
             val session = authRepository.session.filterNotNull().first()
             _uiState.update { it.copy(mayPublish = session.has(TIMETABLE_PUBLISH)) }
-            branchId = session.activeBranchId ?: (organisation.branches() as? AppResult.Success)?.data?.firstOrNull()?.id
+            branchId = (scope.branchId(session) as? AppResult.Success)?.data
             loadChoices()
         }
     }
 
     fun retry() = viewModelScope.launch { loadChoices() }
+
+    /** Pull-to-refresh: reloads the open section (other editors' lessons, conflicts, busy teachers). */
+    fun refresh() {
+        val sectionId = _uiState.value.sectionId
+        if (sectionId == null) {
+            retry()
+            return
+        }
+        _uiState.update { it.copy(isRefreshing = true) }
+        loadBuilder(sectionId, spinner = false)
+        viewModelScope.launch { loadChoices(keepSelection = true) }
+    }
 
     fun selectSection(sectionId: String) {
         if (sectionId == _uiState.value.sectionId && _uiState.value.builder != null) return
@@ -211,12 +223,13 @@ class TimetableBuilderViewModel @Inject constructor(
         loadJob = viewModelScope.launch {
             if (spinner) _uiState.update { it.copy(isLoading = true, error = null) }
             when (val result = repository.builder(sectionId)) {
-                is AppResult.Failure -> _uiState.update { it.copy(isLoading = false, error = result.error) }
+                is AppResult.Failure -> _uiState.update { it.copy(isLoading = false, isRefreshing = false, error = result.error) }
                 is AppResult.Success -> {
                     val days = result.data.draft.workingDays
                     _uiState.update {
                         it.copy(
                             isLoading = false,
+                            isRefreshing = false,
                             error = null,
                             builder = result.data,
                             selectedDay = it.selectedDay.takeIf { d -> days.isEmpty() || d in days } ?: days.first(),

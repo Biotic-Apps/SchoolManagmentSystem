@@ -3,19 +3,21 @@ package com.schoolapp.feature.meetings.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.common.time.AppClock
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.data.meetings.MeetingsRepository
 import com.schoolapp.core.model.RoleKey
-import com.schoolapp.core.model.common.enumOrDefault
+import com.schoolapp.core.model.meeting.AcceptMeetingInput
 import com.schoolapp.core.model.meeting.Meeting
-import com.schoolapp.core.model.meeting.MeetingBox
 import com.schoolapp.core.model.meeting.MeetingStatus
 import com.schoolapp.feature.meetings.domain.CompleteErrors
 import com.schoolapp.feature.meetings.domain.CompleteMeetingForm
 import com.schoolapp.feature.meetings.domain.CompleteValidation
 import com.schoolapp.feature.meetings.domain.FollowUpDraft
+import com.schoolapp.feature.meetings.domain.MeetingTimeDraft
+import com.schoolapp.feature.meetings.domain.SlotTimes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +30,7 @@ import javax.inject.Inject
 
 /**
  * One meeting for staff; SCHEDULED meetings can be completed (notes, summary, follow-ups), marked no-show or
- * cancelled, and a parent's REQUESTED meeting accepted (at the suggested time) or declined.
+ * cancelled, and a parent's REQUESTED meeting accepted (at the suggested or another time) or declined.
  */
 @HiltViewModel
 class MeetingDetailViewModel @Inject constructor(
@@ -39,7 +41,6 @@ class MeetingDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val meetingId: String = checkNotNull(savedStateHandle["meetingId"]) { "Meeting id missing" }
-    private val box: MeetingBox = enumOrDefault(savedStateHandle.get<String>("box"), MeetingBox.UPCOMING)
     private var nextFollowUpKey = 0
 
     private val _uiState = MutableStateFlow(MeetingDetailUiState(today = clock.now().toLocalDate().toString()))
@@ -49,24 +50,21 @@ class MeetingDetailViewModel @Inject constructor(
         load()
     }
 
-    /** There is no single-meeting endpoint: look in the box it was opened from, then the other one. */
     fun load() {
         _uiState.update { it.copy(isLoading = it.meeting == null, error = null) }
         viewModelScope.launch {
             val isStaff = authRepository.session.filterNotNull().first().activeRole != RoleKey.PARENT
-            val other = if (box == MeetingBox.UPCOMING) MeetingBox.PAST else MeetingBox.UPCOMING
-            var found: Meeting? = null
-            for (candidate in listOf(box, other)) {
-                when (val result = repository.meetings(candidate)) {
-                    is AppResult.Failure -> {
-                        _uiState.update { it.copy(isLoading = false, error = result.error) }
-                        return@launch
-                    }
-                    is AppResult.Success -> found = result.data.firstOrNull { it.id == meetingId }
+            when (val result = repository.meeting(meetingId)) {
+                is AppResult.Success -> _uiState.update {
+                    it.copy(isLoading = false, notFound = false, isStaffViewer = isStaff).withMeeting(result.data)
                 }
-                if (found != null) break
+                is AppResult.Failure -> {
+                    val missing = result.error.isNotFound()
+                    _uiState.update {
+                        it.copy(isLoading = false, isStaffViewer = isStaff, notFound = missing, error = result.error.takeUnless { missing })
+                    }
+                }
             }
-            _uiState.update { it.copy(isLoading = false, notFound = found == null, isStaffViewer = isStaff).withMeeting(found) }
         }
     }
 
@@ -119,6 +117,38 @@ class MeetingDetailViewModel @Inject constructor(
 
     fun accept() = perform(MeetingAction.ACCEPT) { repository.accept(meetingId) }
 
+    /** "Accept at another time": starts from the parent's suggested time. */
+    fun openAcceptChange() = _uiState.update { state ->
+        val meeting = state.meeting
+        if (!state.canAnswer || meeting == null) return@update state
+        val start = meeting.startTime.ifBlank { SlotTimes.DEFAULT_START }
+        val end = meeting.endTime.takeIf { it > start } ?: SlotTimes.time(SlotTimes.minutes(start) + DEFAULT_LENGTH)
+        val date = maxOf(meeting.date, state.today)
+        state.copy(
+            acceptDraft = MeetingTimeDraft(date, start, end, meeting.mode, meeting.location.orEmpty()),
+            acceptProblems = emptySet(),
+            actionError = null,
+            done = null,
+        )
+    }
+
+    fun onAcceptDraftChange(draft: MeetingTimeDraft) = _uiState.update { state ->
+        if (state.acceptDraft == null) return@update state
+        state.copy(acceptDraft = draft, acceptProblems = if (state.acceptProblems.isEmpty()) emptySet() else draft.problems(state.today))
+    }
+
+    fun dismissAcceptChange() = _uiState.update { if (it.busy == MeetingAction.ACCEPT) it else it.copy(acceptDraft = null) }
+
+    fun submitAcceptChange() {
+        val state = _uiState.value
+        val draft = state.acceptDraft ?: return
+        val problems = draft.problems(state.today)
+        _uiState.update { it.copy(acceptProblems = problems) }
+        if (problems.isNotEmpty()) return
+        val change = AcceptMeetingInput(draft.date, draft.startTime, draft.endTime, draft.mode, draft.location)
+        perform(MeetingAction.ACCEPT) { repository.accept(meetingId, change) }
+    }
+
     fun askNoShow() = _uiState.update { if (!it.canAct) it else it.copy(confirmNoShow = true, actionError = null, done = null) }
     fun dismissNoShow() = _uiState.update { it.copy(confirmNoShow = false) }
 
@@ -136,7 +166,8 @@ class MeetingDetailViewModel @Inject constructor(
             when (val result = call()) {
                 is AppResult.Failure -> _uiState.update { it.copy(busy = null, actionError = result.error) }
                 is AppResult.Success -> _uiState.update {
-                    it.copy(busy = null, completeForm = null, cancelOpen = false, done = action).withMeeting(result.data)
+                    it.copy(busy = null, completeForm = null, cancelOpen = false, acceptDraft = null, done = action)
+                        .withMeeting(result.data)
                 }
             }
         }
@@ -149,6 +180,13 @@ class MeetingDetailViewModel @Inject constructor(
         val form = state.completeForm?.let(transform) ?: return@update state
         val errors = if (state.completeErrors.isEmpty) state.completeErrors else CompleteValidation.validate(form)
         state.copy(completeForm = form, completeErrors = errors)
+    }
+
+    private fun AppError.isNotFound(): Boolean = this is AppError.Server && httpCode == HTTP_NOT_FOUND
+
+    private companion object {
+        const val HTTP_NOT_FOUND = 404
+        const val DEFAULT_LENGTH = 30
     }
 
     private fun MeetingDetailUiState.withMeeting(meeting: Meeting?) = copy(

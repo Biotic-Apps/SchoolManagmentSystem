@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.organisation.OrganisationRepository
+import com.schoolapp.feature.organisation.branches.edit.BranchEditor
 import com.schoolapp.core.model.organisation.Branch
 import com.schoolapp.core.model.organisation.BranchOverview
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BranchesViewModel @Inject constructor(
     private val repository: OrganisationRepository,
+    /** Add / edit / archive, settings and principal actions (permission-gated). */
+    val editor: BranchEditor,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BranchesUiState())
@@ -26,6 +29,7 @@ class BranchesViewModel @Inject constructor(
     private var loadJob: Job? = null
 
     init {
+        editor.attach(viewModelScope, ::refresh)
         load()
     }
 

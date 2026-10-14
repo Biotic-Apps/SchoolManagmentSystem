@@ -11,6 +11,7 @@ internal fun LazyListScope.studentProfileItems(
     afterHeader: (LazyListScope.() -> Unit)? = null,
     onEditGuardian: ((String) -> Unit)? = null,
     onAddGuardian: (() -> Unit)? = null,
+    showDocuments: Boolean = true,
 ) {
     item(key = "header") { StudentHeaderCard(detail.summary) }
     afterHeader?.invoke(this)
@@ -19,5 +20,5 @@ internal fun LazyListScope.studentProfileItems(
     }
     item(key = "enrollment") { EnrollmentCard(detail.enrollment) }
     item(key = "info") { StudentInfoCard(detail) }
-    item(key = "documents") { DocumentsCard(detail.documents, onOpen = actions::open) }
+    if (showDocuments) item(key = "documents") { DocumentsCard(detail.documents, onOpen = actions::open) }
 }

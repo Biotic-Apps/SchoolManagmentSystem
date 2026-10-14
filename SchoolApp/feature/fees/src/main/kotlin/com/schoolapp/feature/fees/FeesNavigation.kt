@@ -7,6 +7,9 @@ import com.schoolapp.core.navigation.InvoiceDetailDestination
 import com.schoolapp.feature.fees.invoice.InvoiceDetailRoute
 import com.schoolapp.feature.fees.proof.ProofUploadRoute
 import com.schoolapp.feature.fees.record.RecordPaymentRoute
+import com.schoolapp.feature.fees.staff.invoices.feesInvoiceDestinations
+import com.schoolapp.feature.fees.staff.ledger.feesLedgerDestinations
+import com.schoolapp.feature.fees.staff.structure.feesStructureDestinations
 import kotlinx.serialization.Serializable
 
 /** Parent: upload a bank/wallet payment proof against [invoiceId]. */
@@ -26,4 +29,7 @@ fun NavGraphBuilder.feesDestinations(navController: NavHostController) {
     }
     composable<ProofUploadDestination> { ProofUploadRoute(onBack = navController::popBackStack) }
     composable<RecordPaymentDestination> { RecordPaymentRoute(onBack = navController::popBackStack) }
+    feesInvoiceDestinations(navController)
+    feesLedgerDestinations(navController)
+    feesStructureDestinations(navController)
 }

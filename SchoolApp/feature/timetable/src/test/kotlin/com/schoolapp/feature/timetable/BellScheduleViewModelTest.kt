@@ -11,6 +11,7 @@ import com.schoolapp.feature.timetable.bell.BellRow
 import com.schoolapp.feature.timetable.bell.BellRules
 import com.schoolapp.feature.timetable.bell.BellScheduleViewModel
 import com.schoolapp.feature.timetable.bell.RowProblem
+import com.schoolapp.feature.timetable.scope.TimetableBranchScope
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -27,7 +28,7 @@ class BellScheduleViewModelTest {
     private val principal = FakeAuthRepository(TestSessions.session(RoleKey.PRINCIPAL, "timetable.view", "timetable.edit"))
 
     private fun viewModel(auth: FakeAuthRepository = principal) =
-        BellScheduleViewModel(SavedStateHandle(), FakeBell(), repository, OrgAnswers().repository, auth, AcademicsEvents())
+        BellScheduleViewModel(SavedStateHandle(), FakeBell(), repository, TimetableBranchScope(OrgAnswers().repository), auth, AcademicsEvents())
 
     @Test
     fun generator_matches_the_contract_default() {

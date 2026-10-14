@@ -23,6 +23,8 @@ data class DiaryEntry(
     /** Reviewer note when RETURNED. */
     val comment: String?,
     val publishedAt: String?,
+    /** Approval request holding a SUBMITTED (moderation) or PENDING_REVIEW entry. */
+    val approvalId: String? = null,
 ) {
     val slotKey: String get() = diarySlotKey(sectionId, subjectId, date)
 }

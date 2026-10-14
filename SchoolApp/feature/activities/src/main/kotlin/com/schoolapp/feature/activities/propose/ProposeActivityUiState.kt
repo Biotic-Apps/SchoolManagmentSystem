@@ -9,6 +9,7 @@ data class ProposeActivityUiState(
     val form: ProposeForm = ProposeForm(),
     /** Shown only after the first submit attempt. */
     val errors: Set<ProposeField> = emptySet(),
+    val classes: List<SwitcherOption> = emptyList(),
     val sections: List<SwitcherOption> = emptyList(),
     val sectionsLoading: Boolean = true,
     val sectionsError: AppError? = null,
@@ -16,4 +17,10 @@ data class ProposeActivityUiState(
     val submitError: AppError? = null,
     val submitted: Boolean = false,
     val today: String = "",
-)
+    /** Editing an existing PROPOSED activity. */
+    val editingId: String? = null,
+    val isLoadingActivity: Boolean = false,
+    val loadError: AppError? = null,
+) {
+    val isEditing: Boolean get() = editingId != null
+}

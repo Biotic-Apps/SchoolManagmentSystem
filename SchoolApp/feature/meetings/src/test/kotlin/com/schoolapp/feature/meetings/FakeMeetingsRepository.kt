@@ -4,6 +4,7 @@ import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.meetings.MeetingsRepository
 import com.schoolapp.core.model.common.PersonRef
+import com.schoolapp.core.model.meeting.AcceptMeetingInput
 import com.schoolapp.core.model.meeting.CompleteMeetingInput
 import com.schoolapp.core.model.meeting.FollowUp
 import com.schoolapp.core.model.meeting.Meeting
@@ -14,6 +15,8 @@ import com.schoolapp.core.model.meeting.MeetingSlot
 import com.schoolapp.core.model.meeting.MeetingStatus
 import com.schoolapp.core.model.meeting.MeetingTeacher
 import com.schoolapp.core.model.meeting.SlotInput
+import com.schoolapp.core.model.meeting.StaffMeetingInput
+import com.schoolapp.core.model.settings.PagedList
 
 internal fun slot(id: String, date: String = "2026-10-08", start: String = "09:00") =
     MeetingSlot(id, PersonRef("t1", "Ms Sana"), date, start, "09:20", MeetingMode.IN_PERSON, null, "OPEN")
@@ -48,8 +51,12 @@ internal class FakeMeetingsRepository : MeetingsRepository {
         return AppResult.Success(meeting(status = MeetingStatus.REQUESTED))
     }
 
-    override suspend fun accept(id: String): AppResult<Meeting> {
+    val acceptChanges = mutableListOf<AcceptMeetingInput?>()
+    val scheduled = mutableListOf<StaffMeetingInput>()
+
+    override suspend fun accept(id: String, change: AcceptMeetingInput?): AppResult<Meeting> {
         accepted += id
+        acceptChanges += change
         return AppResult.Success(meeting(id, MeetingStatus.SCHEDULED))
     }
 
@@ -96,6 +103,19 @@ internal class FakeMeetingsRepository : MeetingsRepository {
 
     override suspend fun meetings(box: MeetingBox, studentId: String?) =
         AppResult.Success(if (box == MeetingBox.UPCOMING) upcoming else emptyList())
+
+    override suspend fun schedule(input: StaffMeetingInput): AppResult<Meeting> {
+        scheduled += input
+        return AppResult.Success(meeting())
+    }
+
+    override suspend fun meetingsPage(box: MeetingBox, studentId: String?, page: Int, pageSize: Int): AppResult<PagedList<Meeting>> {
+        val all = if (box == MeetingBox.UPCOMING) upcoming else emptyList()
+        return AppResult.Success(PagedList(all, page, pageSize, all.size))
+    }
+
+    override suspend fun meeting(id: String): AppResult<Meeting> =
+        upcoming.firstOrNull { it.id == id }?.let { AppResult.Success(it) } ?: AppResult.Failure(AppError.Server(404, "NOT_FOUND", "Meeting"))
 
     override suspend fun cancel(id: String, reason: String?) = AppResult.Success(meeting(id, MeetingStatus.CANCELLED))
 

@@ -2,12 +2,14 @@ import { z } from "zod";
 import {
   blankToNull,
   blankToUndefined,
+  isoDate,
   optionalEmail,
   optionalIsoDate,
   optionalText,
   requiredText,
 } from "@/lib/validation";
-import type { Enquiry, EnquiryInput, EnquiryStatus, EnquiryUpdate } from "./types";
+import type { Gender } from "@/features/people/types";
+import type { ConvertEnquiryInput, Enquiry, EnquiryInput, EnquiryStatus, EnquiryUpdate } from "./types";
 
 export const enquirySchema = z.object({
   classId: z.string().min(1, "Choose a class"),
@@ -74,4 +76,19 @@ export const toEnquiryUpdate = (values: EnquiryUpdateValues, item: Enquiry): Enq
   ...(values.status !== item.status ? { status: values.status as EnquiryStatus } : {}),
   notes: blankToNull(values.notes),
   followUpDate: blankToNull(values.followUpDate),
+});
+
+/** Conversion needs the child's gender, plus a date of birth when the enquiry has none. */
+export const convertEnquirySchema = (needsDob: boolean) =>
+  z.object({
+    gender: z.string().min(1, "Choose a gender"),
+    dob: needsDob ? isoDate : optionalIsoDate,
+  });
+export type ConvertEnquiryValues = z.infer<ReturnType<typeof convertEnquirySchema>>;
+
+export const convertEnquiryDefaults = (item: Enquiry): ConvertEnquiryValues => ({ gender: "", dob: item.dob ?? "" });
+
+export const toConvertEnquiryInput = (values: ConvertEnquiryValues): ConvertEnquiryInput => ({
+  gender: values.gender as Gender,
+  dob: blankToUndefined(values.dob),
 });

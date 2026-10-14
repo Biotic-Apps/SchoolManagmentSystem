@@ -44,6 +44,24 @@ export function usePublishDiary() {
   });
 }
 
+/**
+ * Moderator approves a SUBMITTED entry: decides its approval (the API publishes it once
+ * the last step approves). /publish only accepts DRAFT/RETURNED, so it is the fallback.
+ */
+export function useApproveDiary() {
+  return useApiMutation({
+    mutationFn: async (entry: DiaryEntry) => {
+      if (!entry.approvalId) return (await http.post<{ status: string }>(`/diary/${entry.id}/publish`)).data;
+      const approval = (
+        await http.post<{ status: string }>(`/approvals/${entry.approvalId}/decide`, { decision: "APPROVED" })
+      ).data;
+      return { status: approval.status === "APPROVED" ? "PUBLISHED" : "SUBMITTED" };
+    },
+    invalidate: [diaryKeys.all, ["approvals"], ["dashboard"], ["notifications"]],
+    toastError: false,
+  });
+}
+
 export function useReturnDiary() {
   return useApiMutation({
     mutationFn: ({ id, comment }: { id: string; comment: string }) => http.post(`/diary/${id}/return`, { comment }),

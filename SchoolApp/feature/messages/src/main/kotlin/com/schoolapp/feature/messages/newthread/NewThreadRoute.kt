@@ -35,6 +35,7 @@ fun NewThreadRoute(
             state = state,
             actions = NewThreadActions(
                 onChildSelected = viewModel::onChildSelected,
+                onRecipientSelected = viewModel::onRecipientSelected,
                 onQueryChange = viewModel::onQueryChange,
                 onStudentSelected = viewModel::onStudentSelected,
                 onClearStudent = viewModel::onClearStudent,

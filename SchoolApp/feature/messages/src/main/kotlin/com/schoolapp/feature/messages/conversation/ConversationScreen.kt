@@ -73,7 +73,9 @@ internal fun ConversationScreen(state: ConversationUiState, actions: Conversatio
         else -> Column(modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             ChatList(state, actions, Modifier.weight(1f).widthIn(max = ContentMaxWidth).fillMaxWidth())
             Box(Modifier.widthIn(max = ContentMaxWidth).fillMaxWidth()) {
-                if (state.closed) {
+                if (state.readOnly) {
+                    InlineMessage(stringResource(R.string.messages_read_only_note), StatusTone.Info, Modifier.padding(16.dp))
+                } else if (state.closed) {
                     InlineMessage(stringResource(R.string.messages_thread_closed_note), StatusTone.Neutral, Modifier.padding(16.dp))
                 } else {
                     MessageComposer(

@@ -1,45 +1,38 @@
 package com.schoolapp.feature.students.detail
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Logout
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Shuffle
-import androidx.compose.material.icons.outlined.SwapHoriz
+import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.designsystem.component.AppScaffold
-import com.schoolapp.core.designsystem.component.AppTextButton
+import com.schoolapp.core.designsystem.component.AppTabs
 import com.schoolapp.core.designsystem.component.AppTopBar
 import com.schoolapp.core.designsystem.component.BackButton
 import com.schoolapp.core.designsystem.component.ErrorState
-import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.LoadingState
-import com.schoolapp.core.designsystem.component.ScreenColumn
-import com.schoolapp.core.designsystem.component.SecondaryButton
-import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.ui.appErrorMessage
-import com.schoolapp.core.ui.rememberExternalActions
 import com.schoolapp.feature.students.R
+import com.schoolapp.feature.students.detail.idcard.PrintIdCardsSheet
 import com.schoolapp.feature.students.manage.ManageController
-import com.schoolapp.feature.students.manage.ManageNotice
 import com.schoolapp.feature.students.manage.ManageSheetHost
-import com.schoolapp.feature.students.manage.PlacementKind
-import com.schoolapp.feature.students.profile.studentProfileItems
+import kotlinx.coroutines.launch
 
 @Composable
 fun StudentDetailRoute(
@@ -60,64 +53,55 @@ fun StudentDetailScreen(
     manage: ManageController? = null,
     onNoticeShown: () -> Unit = {},
 ) {
-    val actions = rememberExternalActions()
+    val snackbar = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    var tabName by rememberSaveable { mutableStateOf(StudentDetailTab.PROFILE.name) }
+    var printing by rememberSaveable { mutableStateOf(false) }
+    val detail = state.detail
     AppScaffold(
         modifier = modifier,
+        snackbarHostState = snackbar,
         topBar = {
             AppTopBar(
-                title = state.detail?.summary?.name ?: stringResource(R.string.students_detail_title),
+                title = detail?.summary?.name ?: stringResource(R.string.students_detail_title),
                 navigationIcon = { BackButton(onBack) },
+                actions = {
+                    if (detail != null && state.canEditStudent) {
+                        IconButton(onClick = { printing = true }) {
+                            Icon(Icons.Outlined.Print, stringResource(R.string.sd_print_cards), tint = AppColors.TextPrimary)
+                        }
+                    }
+                },
             )
         },
     ) { padding ->
         val body = Modifier.padding(padding)
         when {
             state.isLoading -> LoadingState(body)
-            state.error != null && state.detail == null -> ErrorState(appErrorMessage(state.error), body, onRetry = onRetry)
-            state.detail != null -> ScreenColumn(body) {
-                studentProfileItems(
-                    detail = state.detail,
-                    actions = actions,
-                    afterHeader = {
-                        if (manage != null && (state.canAct || state.notice != null)) {
-                            item(key = "actions") { ActionsRow(state, manage, onNoticeShown) }
-                        }
-                    },
-                    onEditGuardian = manage?.let { m -> m::openEditGuardian }?.takeIf { state.canEditGuardians },
-                    onAddGuardian = manage?.let { m -> m::openAddGuardian }?.takeIf { state.canLinkGuardian },
+            state.error != null && detail == null -> ErrorState(appErrorMessage(state.error), body, onRetry = onRetry)
+            detail != null -> Column(body.fillMaxSize()) {
+                val tabs = state.visibleTabs()
+                val selected = tabs.firstOrNull { it.name == tabName } ?: StudentDetailTab.PROFILE
+                AppTabs(
+                    titles = tabs.map { stringResource(it.title) },
+                    selectedIndex = tabs.indexOf(selected),
+                    onSelect = { tabName = tabs[it].name },
                 )
+                StudentDetailTabContent(selected, detail, state, manage, onNoticeShown, snackbar, Modifier.weight(1f))
             }
         }
     }
     if (manage != null) ManageSheetHost(state.sheet, state.today, manage)
-}
-
-@Composable
-private fun ActionsRow(state: StudentDetailUiState, manage: ManageController, onNoticeShown: () -> Unit) {
-    state.notice?.let { notice ->
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            InlineMessage(stringResource(noticeText(notice)), StatusTone.Success, Modifier.weight(1f))
-            IconButton(onClick = onNoticeShown) { Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.students_dismiss)) }
-        }
-    }
-    if (!state.canAct) return
-    FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SecondaryButton(stringResource(R.string.students_edit), onClick = manage::openEdit, leadingIcon = Icons.Outlined.Edit)
-        SecondaryButton(stringResource(R.string.students_change_section), onClick = { manage.openPlacement(PlacementKind.CHANGE_SECTION) }, leadingIcon = Icons.Outlined.Shuffle)
-        SecondaryButton(stringResource(R.string.students_transfer), onClick = { manage.openPlacement(PlacementKind.TRANSFER) }, leadingIcon = Icons.Outlined.SwapHoriz)
-        AppTextButton(
-            stringResource(R.string.students_withdraw),
-            onClick = { manage.openPlacement(PlacementKind.WITHDRAW) },
-            leadingIcon = Icons.AutoMirrored.Outlined.Logout,
-            contentColor = AppColors.Error,
+    if (printing && detail != null) {
+        PrintIdCardsSheet(
+            branchId = detail.enrollment?.branchId,
+            sectionId = detail.enrollment?.sectionId ?: detail.summary.sectionId,
+            onPrinted = { count ->
+                printing = false
+                scope.launch { snackbar.showSnackbar(context.resources.getQuantityString(R.plurals.sd_print_ready, count, count)) }
+            },
+            onDismiss = { printing = false },
         )
     }
-}
-
-private fun noticeText(notice: ManageNotice): Int = when (notice) {
-    ManageNotice.SAVED -> R.string.students_notice_saved
-    ManageNotice.WITHDRAWN -> R.string.students_notice_withdrawn
-    ManageNotice.SECTION_CHANGED -> R.string.students_notice_section
-    ManageNotice.TRANSFER_REQUESTED -> R.string.students_notice_transfer
-    ManageNotice.GUARDIAN_LINKED -> R.string.students_notice_guardian
 }

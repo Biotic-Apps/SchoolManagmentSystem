@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Principals & Admin Users menu (feature.admin.users) -->
+    <string name="users_add">Add user</string>
+    <string name="users_search_hint">Search name, email or phone</string>
+    <string name="users_filter_role">Role</string>
+    <string name="users_filter_all_roles">All roles</string>
+    <string name="users_filter_branch">Branch</string>
+    <string name="users_filter_all_branches">All branches</string>
+    <string name="users_filter_status">Status</string>
+    <string name="users_filter_all_statuses">All statuses</string>
+    <string name="users_filter_reset">Reset</string>
+    <string name="users_empty">No users found</string>
+    <string name="users_empty_message">Try other filters, or add a user.</string>
+    <string name="users_status_active">Active</string>
+    <string name="users_status_disabled">Disabled</string>
+    <string name="users_locked">Locked</string>
+    <string name="users_must_change_password">Must change password</string>
+    <string name="users_last_sign_in">Last sign-in %1$s</string>
+    <string name="users_never">Never</string>
+    <string name="users_dash">—</string>
+
+    <string name="users_detail_title">User</string>
+    <string name="users_field_name">Full name</string>
+    <string name="users_field_email">Email</string>
+    <string name="users_field_phone">Phone</string>
+    <string name="users_field_password">Initial password</string>
+    <string name="users_field_last_sign_in">Last sign-in</string>
+    <string name="users_field_created">Created</string>
+    <string name="users_roles_title">Roles</string>
+    <string name="users_no_roles">No active roles.</string>
+    <string name="users_assign_role">Assign role</string>
+    <string name="users_until">Until %1$s</string>
+    <string name="users_end">End</string>
+    <string name="users_scope_global">Whole system</string>
+    <string name="users_scope_school">One school (all branches)</string>
+    <string name="users_scope_branch">One branch</string>
+    <string name="users_scope_school_fallback">School</string>
+    <string name="users_scope_branch_fallback">Branch</string>
+
+    <string name="users_edit">Edit</string>
+    <string name="users_reset_password">Reset password</string>
+    <string name="users_unlock">Unlock account</string>
+    <string name="users_disable">Disable</string>
+    <string name="users_enable">Enable</string>
+    <string name="users_disable_title">Disable %1$s?</string>
+    <string name="users_enable_title">Enable %1$s?</string>
+    <string name="users_disable_message">They are signed out of every device immediately and can\'t sign in until enabled again.</string>
+    <string name="users_enable_message">They can sign in again with their current password.</string>
+    <string name="users_reset_title">Reset password for %1$s?</string>
+    <string name="users_reset_message">A temporary password is generated and shown once. They must change it when they next sign in.</string>
+    <string name="users_unlock_title">Unlock %1$s?</string>
+    <string name="users_unlock_message">Clears the lock after too many failed sign-ins so the user can try again now.</string>
+    <string name="users_end_title">End %1$s assignment?</string>
+    <string name="users_end_message">Access through this role stops now. The assignment stays in the history.</string>
+    <string name="users_end_assignment">End assignment</string>
+    <string name="users_new_password_title">New temporary password for %1$s</string>
+    <string name="users_temp_password_for">Temporary password for %1$s</string>
+    <string name="users_done">Done</string>
+
+    <string name="users_add_title">Add user</string>
+    <string name="users_added_title">User created</string>
+    <string name="users_add_intro">Principals and admin staff sign in with their email or phone.</string>
+    <string name="users_password_hint">Optional. Leave empty to generate a temporary password; the user must change it at first sign-in.</string>
+    <string name="users_roles_and_scope">Roles and scope</string>
+    <string name="users_assignment_n">Assignment %1$d</string>
+    <string name="users_remove_assignment">Remove assignment %1$d</string>
+    <string name="users_add_another_role">Add another role</string>
+    <string name="users_create">Create user</string>
+    <string name="users_no_permission">You don\'t have permission to manage users.</string>
+    <string name="users_edit_title">Edit user</string>
+    <string name="users_assign_title">Assign a role to %1$s</string>
+
+    <string name="users_field_role">Role</string>
+    <string name="users_field_applies_to">Applies to</string>
+    <string name="users_field_school">School</string>
+    <string name="users_field_branch">Branch</string>
+    <string name="users_field_valid_until">Valid until</string>
+    <string name="users_valid_until_hint">Leave empty for a permanent assignment (use a date for substitutes).</string>
+    <string name="users_clear">Clear</string>
+    <string name="users_error_pick_role">Pick a role</string>
+    <string name="users_error_pick_school">Pick a school</string>
+    <string name="users_error_pick_branch">Pick a branch</string>
+    <string name="users_error_past_date">Pick a date in the future</string>
+</resources>

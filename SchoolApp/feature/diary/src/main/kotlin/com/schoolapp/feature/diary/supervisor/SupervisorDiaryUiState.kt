@@ -35,6 +35,9 @@ data class SupervisorDiaryUiState(
     val canReturn: Boolean = false,
     val returnEditor: ReturnEditor? = null,
     val returnedMessage: Boolean = false,
+    val publishingId: String? = null,
+    val publishedMessage: Boolean = false,
+    val publishError: AppError? = null,
 ) {
     val selectedSectionLabel: String? get() = sections.firstOrNull { it.id == selectedSectionId }?.label
 }

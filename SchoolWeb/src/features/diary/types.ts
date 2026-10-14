@@ -19,6 +19,8 @@ export interface DiaryEntry {
   author: PersonRef;
   onBehalfOf: PersonRef | null;
   comment: string | null;
+  /** Moderation / probation approval while SUBMITTED or PENDING_REVIEW. */
+  approvalId?: string | null;
   publishedAt: string | null;
 }
 

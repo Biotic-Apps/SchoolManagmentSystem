@@ -22,7 +22,6 @@ import com.schoolapp.feature.exams.SheetReviewDestination
 @Composable
 internal fun CompletenessRoute(
     onOpen: (Any) -> Unit,
-    onOpenApprovals: (() -> Unit)?,
     modifier: Modifier = Modifier,
     viewModel: CompletenessViewModel = hiltViewModel(),
 ) {
@@ -49,7 +48,6 @@ internal fun CompletenessRoute(
                 onRefresh = viewModel::refresh,
                 onRetrySheets = viewModel::refresh,
                 onSheetClick = { sheet -> onOpen(destinationFor(sheet, state)) },
-                onOpenApprovals = onOpenApprovals,
             ),
             modifier = modifier,
         )
@@ -57,7 +55,7 @@ internal fun CompletenessRoute(
 }
 
 /** Submitted sheets go to review; editable ones open marks entry for proxies with `exams.edit`; others are viewed. */
-private fun destinationFor(sheet: MarkSheet, state: CompletenessUiState): Any = when {
+internal fun destinationFor(sheet: MarkSheet, state: CompletenessUiState): Any = when {
     sheet.status == MarkSheetStatus.SUBMITTED -> SheetReviewDestination(sheet.id, sheet.title)
     state.canEdit && sheet.status.isEditable -> MarkSheetDestination(sheet.id, sheet.title)
     else -> SheetReviewDestination(sheet.id, sheet.title)

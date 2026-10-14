@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Students list -->
+    <string name="students_tab_students">Students</string>
+    <string name="students_tab_transfers">Transfers</string>
+    <string name="students_filter_class">Class</string>
+    <string name="students_filter_section">Section</string>
+    <string name="students_all_classes">All classes</string>
+    <string name="students_all_sections">All sections</string>
+    <string name="students_all_statuses">All</string>
+    <string name="students_print_id_cards">Print ID cards</string>
+    <string name="students_id_cards_printed">ID cards ready</string>
+    <string name="students_list_empty">No students found</string>
+    <string name="students_list_empty_hint">Try other filters, or register a student.</string>
+
+    <!-- Transfers -->
+    <string name="students_incoming">Incoming</string>
+    <string name="students_outgoing">Outgoing</string>
+    <string name="students_both_directions">Both</string>
+    <string name="students_transfers_empty">No transfers</string>
+    <string name="students_transfers_empty_hint">Transfers requested from a student\'s profile appear here for both branches.</string>
+    <string name="students_effective_on">Effective %1$s</string>
+    <string name="students_transfer_reason">Reason: %1$s</string>
+    <string name="students_transfer_decision">Decision: %1$s</string>
+    <string name="students_requested_on">Requested %1$s</string>
+    <string name="students_accept">Accept</string>
+    <string name="students_cancel_transfer">Cancel transfer</string>
+    <string name="students_accept_transfer_title">Accept %1$s</string>
+    <string name="students_accept_transfer_hint">Pick the section in this branch\'s current session to place the student in.</string>
+    <string name="students_pick_section">Pick a section</string>
+    <string name="students_section_full_warning">This section is full. Pick another section if this one cannot take more students.</string>
+    <string name="students_reject_transfer_title">Reject transfer of %1$s?</string>
+    <string name="students_reject_transfer_hint">The student stays in the source branch.</string>
+    <string name="students_reject_transfer">Reject transfer</string>
+    <string name="students_cancel_transfer_title">Cancel transfer of %1$s?</string>
+    <string name="students_cancel_transfer_hint">The transfer request is withdrawn.</string>
+    <string name="students_transfer_accepted">Transfer accepted — student placed</string>
+    <string name="students_transfer_rejected">Transfer rejected</string>
+    <string name="students_transfer_cancelled">Transfer cancelled</string>
+</resources>

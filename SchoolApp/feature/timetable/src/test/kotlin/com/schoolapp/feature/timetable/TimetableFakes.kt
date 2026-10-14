@@ -124,5 +124,5 @@ internal fun timetableViewModel(
     studentCalendar: FakeStudentCalendar = FakeStudentCalendar(),
 ): TimetableViewModel {
     val loader = TimetableLoader(timetables, bell, ScopedSections(auth, org.repository), WeekHolidays(org.repository, studentCalendar))
-    return TimetableViewModel(auth, loader, clock)
+    return TimetableViewModel(auth, loader, clock, com.schoolapp.core.data.academics.AcademicsEvents())
 }

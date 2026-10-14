@@ -21,14 +21,19 @@ internal fun ProposeActivityRoute(
             onDescription = viewModel::onDescriptionChange,
             onDate = viewModel::onDateChange,
             onStartTime = viewModel::onStartTimeChange,
+            onEndDate = viewModel::onEndDateChange,
             onEndTime = viewModel::onEndTimeChange,
             onVenue = viewModel::onVenueChange,
             onWholeBranch = viewModel::onWholeBranchChange,
+            onClassToggle = viewModel::onClassToggle,
             onSectionToggle = viewModel::onSectionToggle,
             onRetrySections = viewModel::loadSections,
             onConsentRequired = viewModel::onConsentRequiredChange,
             onDeadline = viewModel::onDeadlineChange,
+            onFee = viewModel::onFeeChange,
+            onMaxParticipants = viewModel::onMaxParticipantsChange,
             onSubmit = viewModel::submit,
+            onRetryLoad = viewModel::loadActivity,
         )
     }
     ProposeActivityScreen(state = state, actions = actions, onBack = onBack, modifier = modifier)

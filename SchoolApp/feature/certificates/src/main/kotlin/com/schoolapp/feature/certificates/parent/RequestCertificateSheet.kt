@@ -27,6 +27,7 @@ internal fun RequestCertificateSheet(
     childName: String?,
     onTypeChange: (CertificateType) -> Unit,
     onPurposeChange: (String) -> Unit,
+    onAchievementChange: (String) -> Unit,
     onSubmit: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -47,6 +48,15 @@ internal fun RequestCertificateSheet(
         }
         if (form.type?.needsClearance() == true) {
             InlineMessage(stringResource(R.string.certificates_clearance_note), StatusTone.Info)
+        }
+        if (form.type == CertificateType.ACHIEVEMENT) {
+            AppTextArea(
+                value = form.achievement,
+                onValueChange = onAchievementChange,
+                label = stringResource(R.string.certificates_achievement),
+                enabled = !form.isSaving,
+                errorText = if (form.achievementMissing) stringResource(R.string.certificates_achievement_required) else null,
+            )
         }
         AppTextArea(
             value = form.purpose,

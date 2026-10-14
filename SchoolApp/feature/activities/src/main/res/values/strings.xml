@@ -57,7 +57,7 @@
     <string name="activities_propose_title">Propose activity</string>
     <string name="activities_field_title">Title</string>
     <string name="activities_field_description">Description</string>
-    <string name="activities_field_date">Date</string>
+    <string name="activities_field_date">Start date</string>
     <string name="activities_field_start_time">Start time</string>
     <string name="activities_field_end_time">End time</string>
     <string name="activities_field_venue">Venue (optional)</string>
@@ -77,7 +77,78 @@
     <string name="activities_error_start_time">Pick a start time</string>
     <string name="activities_error_end_time">Pick an end time</string>
     <string name="activities_error_end_before_start">End time must be after the start time</string>
-    <string name="activities_error_sections">Pick at least one section</string>
+    <string name="activities_error_sections">Choose the whole branch, or some classes or sections</string>
     <string name="activities_error_deadline">Pick a consent deadline</string>
-    <string name="activities_error_deadline_after_start">The consent deadline must be before the activity date</string>
+    <string name="activities_error_deadline_after_start">The deadline must be on or before the start date</string>
+
+
+    <string name="activities_edit_title">Edit activity</string>
+    <string name="activities_edit_saved">Changes saved</string>
+    <string name="activities_save_changes">Save changes</string>
+    <string name="activities_field_end_date">End date</string>
+    <string name="activities_field_fee">Fee in rupees (optional)</string>
+    <string name="activities_error_fee">Enter the fee in rupees, e.g. 500</string>
+    <string name="activities_field_max_participants">Max participants (optional)</string>
+    <string name="activities_error_max_participants">Enter a whole number</string>
+    <string name="activities_audience_pick">Pick classes or sections</string>
+    <string name="activities_audience_classes">Classes</string>
+    <string name="activities_audience_sections_label">Sections</string>
+    <string name="activities_no_options">Nothing to choose here</string>
+
+    <string name="activities_actions">Actions</string>
+    <string name="activities_mark_ongoing">Mark ongoing</string>
+    <string name="activities_mark_completed">Mark completed</string>
+    <string name="activities_edit">Edit</string>
+    <string name="activities_cancel_activity">Cancel activity</string>
+    <string name="activities_cancel_title">Cancel this activity?</string>
+    <string name="activities_cancel_message">Parents and staff will see it as cancelled with your reason. This cannot be undone.</string>
+    <string name="activities_cancel_reason">Reason</string>
+    <string name="activities_cancel_reason_required">Enter a reason</string>
+    <string name="activities_cancel_confirm">Cancel activity</string>
+    <string name="activities_keep_activity">Keep activity</string>
+    <string name="activities_reason">Reason</string>
+    <string name="activities_started_message">Activity marked ongoing</string>
+    <string name="activities_completed_message">Activity marked completed</string>
+    <string name="activities_cancelled_message">Activity cancelled</string>
+
+    <string name="activities_participants_edit">Edit</string>
+    <string name="activities_participants_empty">No participants yet</string>
+    <string name="activities_participants_saved">Participants saved</string>
+    <string name="activities_participants_save">Save participants</string>
+    <string name="activities_participants_limit">%1$s (at most %2$d)</string>
+    <string name="activities_participants_over_limit">At most %1$d participants can be listed</string>
+    <string name="activities_participant_add">Add participant</string>
+    <string name="activities_participant_remove">Remove</string>
+    <string name="activities_participant_remove_title">Remove participant?</string>
+    <string name="activities_participant_remove_message">%1$s will be taken off the list when you save.</string>
+    <string name="activities_participant_role">Role</string>
+    <string name="activities_participant_position">Position</string>
+    <string name="activities_participant_result">Result</string>
+    <string name="activities_participant_remarks">Remarks</string>
+    <string name="activities_participant_no_granted">No more students with granted consent</string>
+    <string name="activities_participant_granted_hint">Only students whose parents granted consent can take part.</string>
+    <string name="activities_participant_search">Search students by name or admission no.</string>
+    <string name="activities_participant_no_results">No students found</string>
+
+    <string name="activities_filter_all">All</string>
+    <string name="activities_view_list">List</string>
+    <string name="activities_view_calendar">Calendar</string>
+    <string name="activities_empty_filtered">No activities match these filters</string>
+    <string name="activities_previous_month">Previous month</string>
+    <string name="activities_next_month">Next month</string>
+    <string name="activities_day_count">Day %1$d, %2$d activities</string>
+    <string name="activities_day_empty">No activities on this day</string>
+
+    <plurals name="activities_classes_count">
+        <item quantity="one">%1$d class</item>
+        <item quantity="other">%1$d classes</item>
+    </plurals>
+    <plurals name="activities_sections_count">
+        <item quantity="one">%1$d section</item>
+        <item quantity="other">%1$d sections</item>
+    </plurals>
+    <plurals name="activities_participants_count">
+        <item quantity="one">%1$d participant</item>
+        <item quantity="other">%1$d participants</item>
+    </plurals>
 </resources>

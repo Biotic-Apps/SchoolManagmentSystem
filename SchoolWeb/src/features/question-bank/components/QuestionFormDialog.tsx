@@ -44,8 +44,8 @@ export function QuestionFormDialog({
     >
       <FormSection title="Classification">
         <div className="grid gap-4 sm:grid-cols-2">
-          <SelectField name="subjectId" label="Subject" options={subjectOptions} required />
-          <SelectField name="classId" label="Class" options={classOptions} required />
+          <SelectField name="subjectId" label="Subject" options={subjectOptions} required disabled={!!question} />
+          <SelectField name="classId" label="Class" options={classOptions} required disabled={!!question} />
           <TextField name="chapterName" label="Chapter / Topic" required maxLength={150} />
           <SelectField name="questionType" label="Question type" options={QUESTION_TYPE_OPTIONS} required />
           <SelectField name="difficultyLevel" label="Difficulty" options={DIFFICULTY_OPTIONS} required />

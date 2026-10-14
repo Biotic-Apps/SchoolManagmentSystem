@@ -4,7 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.schoolapp.core.common.result.AppResult
+import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.data.people.StudentsRepository
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,15 +20,26 @@ import javax.inject.Inject
 class SectionRosterViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: StudentsRepository,
+    authRepository: AuthRepository,
 ) : ViewModel() {
 
     private val sectionId: String = checkNotNull(savedStateHandle["sectionId"]) { "Section id missing" }
 
-    private val _uiState = MutableStateFlow(SectionRosterUiState(title = savedStateHandle["title"] ?: ""))
+    private val _uiState = MutableStateFlow(SectionRosterUiState(title = savedStateHandle["title"] ?: "", sectionId = sectionId))
     val uiState: StateFlow<SectionRosterUiState> = _uiState.asStateFlow()
 
     init {
         load()
+        viewModelScope.launch {
+            val session = authRepository.session.filterNotNull().first()
+            _uiState.update {
+                it.copy(
+                    branchId = session.activeBranchId,
+                    canPrintCards = session.has("students.edit"),
+                    canPrintSlips = session.has("guardians.edit") && session.has("users.edit"),
+                )
+            }
+        }
     }
 
     fun load() {

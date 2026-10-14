@@ -43,6 +43,7 @@ import com.schoolapp.feature.organisation.sessions.SessionsCalendarRoute
 import com.schoolapp.feature.profile.ProfileRoute
 import com.schoolapp.feature.profile.navigation.ChangePasswordDestination
 import com.schoolapp.feature.profile.navigation.DeviceSessionsDestination
+import com.schoolapp.feature.profile.navigation.TwoFactorDestination
 import com.schoolapp.feature.profile.navigation.profileDestinations
 import com.schoolapp.feature.staff.list.StaffListRoute
 import com.schoolapp.feature.staff.navigation.AddStaffDestination
@@ -76,6 +77,24 @@ import com.schoolapp.feature.payroll.payrollDestinations
 import com.schoolapp.feature.progress.ParentProgressScreen
 import com.schoolapp.feature.progress.ProgressMenuScreen
 import com.schoolapp.feature.progress.progressDestinations
+import com.schoolapp.feature.settings.SettingsMenuScreen
+import com.schoolapp.feature.settings.settingsDestinations
+import com.schoolapp.feature.expenses.ExpensesMenuScreen
+import com.schoolapp.feature.expenses.expensesDestinations
+import com.schoolapp.feature.inventory.InventoryMenuScreen
+import com.schoolapp.feature.inventory.inventoryDestinations
+import com.schoolapp.feature.accounts.AccountsMenuScreen
+import com.schoolapp.feature.accounts.accountsDestinations
+import com.schoolapp.feature.reports.ReportsMenuScreen
+import com.schoolapp.feature.reports.reportsDestinations
+import com.schoolapp.feature.admin.SchoolsMenuScreen
+import com.schoolapp.feature.admin.adminDestinations
+import com.schoolapp.feature.admin.UsersMenuScreen
+import com.schoolapp.feature.admin.RolesMenuScreen
+import com.schoolapp.feature.homework.HomeworkMenuScreen
+import com.schoolapp.feature.homework.homeworkDestinations
+import com.schoolapp.feature.questionbank.QuestionBankMenuScreen
+import com.schoolapp.feature.questionbank.questionBankDestinations
 
 /** Menu ids with a real screen; everything else shows the phase placeholder. */
 internal val AppShellContent = ShellContent(
@@ -89,6 +108,7 @@ internal val AppShellContent = ShellContent(
                 onChangePassword = { shell.open(ChangePasswordDestination) },
                 onDeviceSessions = { shell.open(DeviceSessionsDestination) },
                 onNotificationPreferences = { shell.open(NotificationPreferencesDestination) },
+                onTwoFactor = { shell.open(TwoFactorDestination) },
             )
         },
         MenuIds.BRANCHES to { shell -> BranchesRoute(onOpenBranch = { shell.open(BranchDetailDestination(it)) }) },
@@ -100,12 +120,20 @@ internal val AppShellContent = ShellContent(
                     onRequestCorrection = { shell.open(ContactChangeDestination) },
                     onLinkChild = { shell.open(LinkChildDestination) },
                 )
-            } else {
+            } else if (shell.activeRole in SECTION_STAFF) {
                 MyClasses(shell)
+            } else {
+                com.schoolapp.feature.students.list.StudentsListRoute(
+                    onOpenStudent = { shell.open(StudentDetailDestination(it)) },
+                    onAddStudent = { shell.open(AddStudentDestination) },
+                )
             }
         },
         MenuIds.GUARDIANS to { shell ->
-            GuardiansRoute(onOpenApprovals = { shell.openMenu(MenuIds.APPROVALS) }.takeIf { shell.canOpenMenu(MenuIds.APPROVALS) })
+            GuardiansRoute(
+                onOpenApprovals = { shell.openMenu(MenuIds.APPROVALS) }.takeIf { shell.canOpenMenu(MenuIds.APPROVALS) },
+                onOpenGuardian = { shell.open(com.schoolapp.feature.students.navigation.GuardianDetailDestination(it)) },
+            )
         },
         MenuIds.TIMETABLE to { shell ->
             if (shell.activeRole == RoleKey.PARENT) {
@@ -154,6 +182,16 @@ internal val AppShellContent = ShellContent(
         MenuIds.FEES to { shell -> FeesMenuScreen(role = shell.activeRole, onOpen = shell::open, onOpenApprovals = shell.approvalsLink()) },
         MenuIds.PAYROLL to { shell -> PayrollMenuScreen(role = shell.activeRole, onOpen = shell::open, onOpenApprovals = shell.approvalsLink()) },
         MenuIds.CERTIFICATES to { shell -> CertificatesMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.SETTINGS to { shell -> SettingsMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.EXPENSES to { shell -> ExpensesMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.INVENTORY to { shell -> InventoryMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.ACCOUNTS to { shell -> AccountsMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.REPORTS to { shell -> ReportsMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.SCHOOLS to { shell -> SchoolsMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.USERS to { shell -> UsersMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.ROLES to { shell -> RolesMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.HOMEWORK to { shell -> HomeworkMenuScreen(role = shell.activeRole, onOpen = shell::open) },
+        MenuIds.QUESTION_BANK to { shell -> QuestionBankMenuScreen(role = shell.activeRole, onOpen = shell::open) },
     ),
     destinations = { navController ->
         approvalsDestinations(navController)
@@ -178,6 +216,14 @@ internal val AppShellContent = ShellContent(
         feesDestinations(navController)
         payrollDestinations(navController)
         certificatesDestinations(navController)
+        settingsDestinations(navController)
+        expensesDestinations(navController)
+        inventoryDestinations(navController)
+        accountsDestinations(navController)
+        reportsDestinations(navController)
+        adminDestinations(navController)
+        homeworkDestinations(navController)
+        questionBankDestinations(navController)
     },
 )
 

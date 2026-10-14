@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Attendance | Leave switch -->
+    <string name="attendance_segment_attendance">Attendance</string>
+    <string name="attendance_segment_leave">Leave</string>
+    <string name="attendance_tab_pending_leave">Leave (%1$d)</string>
+
+    <!-- Leave summary tiles -->
+    <string name="leave_tile_pending">Pending</string>
+    <string name="leave_tile_approved_days">Days approved this year</string>
+    <string name="leave_tile_rejected">Rejected</string>
+
+    <!-- Filters -->
+    <string name="leave_filter_all">All</string>
+
+    <!-- Leave list -->
+    <string name="leave_empty_title">No leave requests yet</string>
+    <string name="leave_empty_message_staff">Need time off? Tap Request leave and the principal will be notified.</string>
+    <string name="leave_empty_message_parent">Tap Request leave to tell the school your child will be away.</string>
+    <string name="leave_empty_filtered">No requests match this filter</string>
+    <string name="leave_load_failed">Could not load leave requests</string>
+    <string name="leave_requested_on">Requested %1$s</string>
+    <string name="leave_decision_comment">“%1$s”</string>
+    <string name="leave_cancel_title">Cancel this leave request?</string>
+    <string name="leave_cancel_message">The request for %1$s will be withdrawn. You can send a new one any time.</string>
+    <string name="leave_cancel_confirm">Cancel request</string>
+    <string name="leave_cancel_keep">Keep</string>
+    <string name="leave_for_child">For %1$s</string>
+
+    <!-- Request form -->
+    <string name="leave_form_close">Close</string>
+    <string name="leave_form_type_header">What kind of leave?</string>
+    <string name="leave_form_dates_header">When will you be away?</string>
+    <string name="leave_form_dates_header_child">When will your child be away?</string>
+    <string name="leave_form_reason_header">Reason</string>
+    <string name="leave_form_reason_hint">Explain briefly why leave is needed</string>
+    <string name="leave_form_reason_counter">%1$d / %2$d</string>
+    <string name="leave_form_reason_short">Write at least %1$d characters</string>
+    <string name="leave_form_attachment">Supporting document (optional)</string>
+    <plurals name="leave_form_days">
+        <item quantity="one">%1$d calendar day</item>
+        <item quantity="other">%1$d calendar days</item>
+    </plurals>
+    <string name="leave_form_days_note">Only school working days are counted as leave.</string>
+    <string name="leave_form_approver_staff">Your request goes to the principal for approval.</string>
+    <string name="leave_form_approver_parent">The class teacher or principal will review this request.</string>
+    <string name="leave_type_casual_hint">Personal errands</string>
+    <string name="leave_type_sick_hint">Illness or medical</string>
+    <string name="leave_type_annual_hint">Planned holiday</string>
+    <string name="leave_type_unpaid_hint">Without pay</string>
+    <string name="leave_type_other_hint">Anything else</string>
+
+    <!-- Review -->
+    <string name="leave_review_reason">Reason</string>
+    <string name="leave_review_details">Request details</string>
+    <string name="leave_review_comment_hint">Add a note for the requester (optional)</string>
+    <string name="leave_review_decision_note">The requester is notified of your decision.</string>
+    <string name="leave_review_kind_staff">Staff leave</string>
+    <string name="leave_review_kind_student">Student leave</string>
+    <string name="leave_review_decided_on">Decided by %1$s</string>
+
+    <!-- QR scan -->
+    <string name="qr_entry_title">QR scanner</string>
+    <string name="qr_entry_supporting">Scan student or staff ID cards to mark attendance</string>
+    <string name="qr_title">QR scan attendance</string>
+    <string name="qr_subtitle">Scan ID-card QR codes</string>
+    <string name="qr_check_in">Check in</string>
+    <string name="qr_check_out">Check out</string>
+    <string name="qr_scan_button">Scan ID card</string>
+    <string name="qr_scan_next">Scan next card</string>
+    <string name="qr_processing">Marking attendance…</string>
+    <string name="qr_ready_title">Ready to scan</string>
+    <string name="qr_ready_message">Choose Check in or Check out, then point the camera at the QR code on the ID card.</string>
+    <string name="qr_invalid_code">This QR code is not a school ID card.</string>
+    <string name="qr_scanner_unavailable">The scanner could not start. Make sure Google Play services is up to date.</string>
+    <string name="qr_result_marked">Marked</string>
+    <string name="qr_result_already">Already marked</string>
+    <string name="qr_result_not_found">Not found</string>
+    <string name="qr_result_outside">Outside school hours</string>
+    <string name="qr_type_student">Student</string>
+    <string name="qr_type_staff">Staff</string>
+    <string name="qr_admission_no">Admission no. %1$s</string>
+    <string name="qr_employee_no">Employee no. %1$s</string>
+    <string name="qr_recent">Recent scans</string>
+    <string name="qr_recent_empty">No scans yet today</string>
+    <string name="qr_recent_empty_message">Scanned cards appear here.</string>
+    <string name="qr_unknown">Unknown card</string>
+</resources>

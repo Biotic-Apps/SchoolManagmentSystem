@@ -4,16 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.common.time.AppClock
+import com.schoolapp.core.data.academics.AcademicsEvents
 import com.schoolapp.core.data.auth.AuthRepository
 import com.schoolapp.core.designsystem.component.SwitcherOption
 import com.schoolapp.core.model.RoleKey
 import com.schoolapp.core.model.SessionContext
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -22,12 +25,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/** Read-only timetable; the shown week depends on the active role (see [TimetableMode]). */
+/**
+ * Week timetable; the shown week depends on the active role (see [TimetableMode]). Reloads quietly after the
+ * builder saves (a class teacher editing their section's draft comes back to the new version).
+ */
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class TimetableViewModel @Inject internal constructor(
     private val authRepository: AuthRepository,
     private val loader: TimetableLoader,
     private val clock: AppClock,
+    private val events: AcademicsEvents,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TimetableUiState())
@@ -37,6 +45,9 @@ class TimetableViewModel @Inject internal constructor(
     private var branchId: String? = null
 
     init {
+        viewModelScope.launch {
+            events.changes.debounce(EDIT_SETTLE_MS).collect { if (!_uiState.value.isLoading) refresh() }
+        }
         viewModelScope.launch {
             val session = authRepository.session.filterNotNull().first()
             branchId = session.activeBranchId
@@ -179,5 +190,9 @@ class TimetableViewModel @Inject internal constructor(
         RoleKey.TEACHER, RoleKey.HELPER -> TimetableMode.MY_WEEK
         RoleKey.PARENT -> TimetableMode.CHILD
         else -> TimetableMode.SECTION
+    }
+
+    private companion object {
+        const val EDIT_SETTLE_MS = 600L
     }
 }

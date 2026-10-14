@@ -25,7 +25,7 @@ export function usePaperGenerator() {
     !!schoolId,
   );
 
-  const canAdd = can("exam-papers.add");
+  const canAdd = can("questions.add");
   const [wizardOpen, setWizardOpen] = useState(false);
   const [previewPaper, setPreviewPaper] = useState<ExamPaper | null>(null);
 

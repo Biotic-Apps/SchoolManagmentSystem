@@ -9,6 +9,7 @@ import com.schoolapp.core.data.diary.DiaryRepository
 import com.schoolapp.core.data.organisation.ScopedSections
 import com.schoolapp.core.designsystem.component.SwitcherOption
 import com.schoolapp.core.model.diary.MissingDiary
+import com.schoolapp.feature.diary.moderation.SubmittedEntryPublisher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +30,7 @@ class SupervisorDiaryViewModel @Inject constructor(
     private val diaryRepository: DiaryRepository,
     private val scopedSections: ScopedSections,
     private val authRepository: AuthRepository,
+    private val publisher: SubmittedEntryPublisher,
     clock: AppClock,
 ) : ViewModel() {
 
@@ -99,10 +101,28 @@ class SupervisorDiaryViewModel @Inject constructor(
         }
     }
 
+    /** Supervisor publishes a SUBMITTED entry directly (no trip through the approvals inbox). */
+    fun onPublishClick(entryId: String) {
+        val state = _uiState.value
+        val entry = state.entries.firstOrNull { it.id == entryId } ?: return
+        if (!state.canReturn || state.publishingId != null) return
+        _uiState.update { it.copy(publishingId = entryId, publishedMessage = false, returnedMessage = false, publishError = null) }
+        viewModelScope.launch {
+            when (val result = publisher.publish(entry)) {
+                is AppResult.Success -> {
+                    _uiState.update { it.copy(publishingId = null, publishedMessage = true) }
+                    loadEntries()
+                    loadMissing()
+                }
+                is AppResult.Failure -> _uiState.update { it.copy(publishingId = null, publishError = result.error) }
+            }
+        }
+    }
+
     fun onReturnClick(entryId: String) {
         val entry = _uiState.value.entries.firstOrNull { it.id == entryId } ?: return
         if (!_uiState.value.canReturn) return
-        _uiState.update { it.copy(returnEditor = ReturnEditor(entry.id, entry.subjectName), returnedMessage = false) }
+        _uiState.update { it.copy(returnEditor = ReturnEditor(entry.id, entry.subjectName), returnedMessage = false, publishedMessage = false) }
     }
 
     fun onReturnCommentChange(value: String) = editReturn { it.copy(comment = value, commentMissing = false) }

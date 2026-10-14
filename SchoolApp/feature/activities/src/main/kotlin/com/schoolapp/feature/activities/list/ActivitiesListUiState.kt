@@ -20,6 +20,8 @@ data class ActivitiesListUiState(
     val isRefreshing: Boolean = false,
     val error: AppError? = null,
     val isParent: Boolean = false,
+    /** Staff roles use the filtered / calendar list instead ([StaffActivitiesViewModel]). */
+    val isStaff: Boolean = false,
     val noChild: Boolean = false,
     val canPropose: Boolean = false,
     val tab: ActivitiesTab = ActivitiesTab.UPCOMING,

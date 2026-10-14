@@ -1,19 +1,21 @@
 package com.schoolapp.feature.timetable.builder
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ListAlt
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Publish
-import androidx.compose.material.icons.outlined.Undo
+import androidx.compose.material.icons.automirrored.outlined.Undo
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +33,7 @@ import com.schoolapp.core.common.result.AppError
 import com.schoolapp.core.designsystem.component.AppTextButton
 import com.schoolapp.core.designsystem.component.CollapsingHeaderLayout
 import com.schoolapp.core.designsystem.component.ConfirmDialog
+import com.schoolapp.core.designsystem.component.ContentMaxWidth
 import com.schoolapp.core.designsystem.component.CreatablePickerField
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
@@ -39,6 +42,7 @@ import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.LoadingState
 import com.schoolapp.core.designsystem.component.PickerOption
 import com.schoolapp.core.designsystem.component.PrimaryButton
+import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.SaveIndicator
 import com.schoolapp.core.designsystem.component.StatusTone
 import com.schoolapp.core.designsystem.component.SwitcherOption
@@ -66,16 +70,18 @@ internal fun BuilderPane(state: BuilderUiState, viewModel: TimetableBuilderViewM
     val builder = state.builder
     if (builder != null && !state.isLoading) {
         // Picker, toolbar and day chips scroll away with the day's periods so the page reads as one scroll.
-        CollapsingHeaderLayout(
-            header = {
-                Column {
-                    picker()
-                    Toolbar(state, viewModel)
-                    DayChips(state, viewModel)
-                }
-            },
-            modifier = modifier.fillMaxSize(),
-        ) { DayPager(state, viewModel) }
+        RefreshBox(state.isRefreshing, viewModel::refresh, modifier.fillMaxSize()) {
+            CollapsingHeaderLayout(
+                header = {
+                    Column {
+                        picker()
+                        Toolbar(state, viewModel)
+                        DayChips(state, viewModel)
+                    }
+                },
+                modifier = Modifier.fillMaxSize(),
+            ) { DayPager(state, viewModel) }
+        }
     } else {
         Column(modifier.fillMaxSize()) {
             picker()
@@ -127,7 +133,7 @@ private fun Toolbar(state: BuilderUiState, viewModel: TimetableBuilderViewModel)
                         stringResource(R.string.tt_discard),
                         onClick = { viewModel.askDiscard(true) },
                         loading = state.discarding,
-                        leadingIcon = Icons.Outlined.Undo,
+                        leadingIcon = Icons.AutoMirrored.Outlined.Undo,
                     )
                 }
             }
@@ -177,7 +183,15 @@ private fun DayPager(state: BuilderUiState, viewModel: TimetableBuilderViewModel
         snapshotFlow { pager.settledPage }.distinctUntilChanged().collect { currentDays.getOrNull(it)?.let(viewModel::selectDay) }
     }
     HorizontalPager(pager, Modifier.fillMaxSize()) { page ->
-        DayPeriodsList(builder, days[page], state.canEdit, onOpen = { viewModel.lessons.open(days[page], it) })
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+            DayPeriodsList(
+                builder,
+                days[page],
+                state.canEdit,
+                onOpen = { viewModel.lessons.open(days[page], it) },
+                modifier = Modifier.widthIn(max = ContentMaxWidth),
+            )
+        }
     }
 }
 

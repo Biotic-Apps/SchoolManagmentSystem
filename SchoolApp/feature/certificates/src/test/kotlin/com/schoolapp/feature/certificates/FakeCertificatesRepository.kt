@@ -2,6 +2,9 @@ package com.schoolapp.feature.certificates
 
 import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.certificates.CertificatesRepository
+import com.schoolapp.core.data.people.StudentsRepository
+import com.schoolapp.core.model.people.StudentDetail
+import com.schoolapp.core.model.people.StudentSummary
 import com.schoolapp.core.model.certificates.Certificate
 import com.schoolapp.core.model.certificates.CertificateDecision
 import com.schoolapp.core.model.certificates.CertificateInput
@@ -43,4 +46,24 @@ internal class FakeCertificatesRepository(var all: List<Certificate> = emptyList
         rejects += id to reason
         return AppResult.Success(all.first { it.id == id }.copy(status = CertificateStatus.REJECTED, reason = reason))
     }
+
+    override suspend fun certificate(id: String): AppResult<Certificate> = AppResult.Success(all.first { it.id == id })
+
+    override suspend fun issue(id: String, effectiveDate: String?): AppResult<CertificateDecision> {
+        blocks[id]?.let { return AppResult.Success(CertificateDecision.Blocked(it)) }
+        val updated = all.first { it.id == id }.copy(status = CertificateStatus.ISSUED, fileUrl = "https://files/$id.pdf")
+        all = all.map { if (it.id == id) updated else it }
+        return AppResult.Success(CertificateDecision.Done(updated))
+    }
+
+    override suspend fun reissue(id: String, reason: String): AppResult<Certificate> =
+        AppResult.Success(all.first { it.id == id }.copy(id = "${id}_dup", duplicate = true, reissueReason = reason))
+
+    override suspend fun pdfUrl(jobId: String): AppResult<String> = AppResult.Success("https://files/$jobId.pdf")
+}
+
+internal class FakeStudentsRepository(private val list: List<StudentSummary> = emptyList()) : StudentsRepository {
+    override suspend fun students(sectionId: String?, search: String?): AppResult<List<StudentSummary>> = AppResult.Success(list)
+
+    override suspend fun student(id: String): AppResult<StudentDetail> = error("not used")
 }

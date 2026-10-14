@@ -69,8 +69,8 @@ internal class TimetableLoader @Inject constructor(
         val draftNote = !editor && timetable.canEdit && !timetable.state.isPublished && timetable.state != TimetableState.EMPTY
         val visible = editor || draftNote || timetable.state.isPublished
         val status = when {
-            editor && timetable.state == TimetableState.EMPTY -> TimetableStatus.NOT_CREATED
-            !visible || timetable.slots.isEmpty() -> if (editor) TimetableStatus.NOT_CREATED else TimetableStatus.NOT_PUBLISHED
+            (editor || timetable.canEdit) && timetable.state == TimetableState.EMPTY -> TimetableStatus.NOT_CREATED
+            !visible || timetable.slots.isEmpty() -> if (editor || timetable.canEdit) TimetableStatus.NOT_CREATED else TimetableStatus.NOT_PUBLISHED
             else -> TimetableStatus.CONTENT
         }
         val lessons = if (visible) ScheduleBuilder.lessonsOf(timetable) else emptyList()

@@ -1,5 +1,4 @@
 <resources>
-    <string name="org_read_only_hint">Changes are made on the web panel.</string>
     <string name="org_branches_empty">No branches yet</string>
     <string name="org_branch_title">Branch</string>
     <string name="org_branch_code">Code</string>
@@ -19,7 +18,7 @@
     <string name="org_sessions_title">Academic sessions</string>
     <string name="org_sessions_empty">No academic sessions yet</string>
     <string name="org_calendar_title">Calendar</string>
-    <string name="org_calendar_empty">No holidays or events in this session</string>
+    <string name="org_calendar_empty">Nothing on the calendar this month</string>
     <string name="org_tab_branch">Branch</string>
     <string name="org_tab_calendar">Sessions &amp; calendar</string>
     <string name="org_tab_sections">Sections</string>

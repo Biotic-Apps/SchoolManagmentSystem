@@ -25,6 +25,7 @@ internal fun MeetingDetailRoute(
         onCancel = viewModel::openCancel,
         onNoShow = viewModel::askNoShow,
         onAccept = viewModel::accept,
+        onAcceptChange = viewModel::openAcceptChange,
         onDecline = viewModel::openDecline,
         modifier = modifier,
     )
@@ -53,6 +54,18 @@ internal fun MeetingDetailRoute(
             onReasonChange = viewModel::onCancelReasonChange,
             onSubmit = viewModel::submitCancel,
             onDismiss = viewModel::dismissCancel,
+        )
+    }
+    state.acceptDraft?.let { draft ->
+        AcceptMeetingSheet(
+            draft = draft,
+            problems = state.acceptProblems,
+            today = state.today,
+            busy = state.busy == MeetingAction.ACCEPT,
+            error = state.actionError,
+            onChange = viewModel::onAcceptDraftChange,
+            onSubmit = viewModel::submitAcceptChange,
+            onDismiss = viewModel::dismissAcceptChange,
         )
     }
     if (state.confirmNoShow) {

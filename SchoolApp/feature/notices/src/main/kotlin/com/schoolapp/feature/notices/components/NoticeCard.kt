@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AttachFile
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -77,6 +78,9 @@ internal fun NoticeCard(notice: Notice, onClick: () -> Unit, modifier: Modifier 
                     color = AppColors.TextSecondary,
                     modifier = Modifier.weight(1f),
                 )
+                if (notice.attachments.isNotEmpty()) {
+                    Icon(Icons.Outlined.AttachFile, stringResource(R.string.notices_has_attachments), tint = AppColors.TextSecondary, modifier = Modifier.size(16.dp))
+                }
                 if (notice.status != NoticeStatus.PUBLISHED) {
                     StatusChip(noticeStatusLabel(notice.status), statusTone(notice.status.name), Modifier.padding(start = 4.dp))
                 }

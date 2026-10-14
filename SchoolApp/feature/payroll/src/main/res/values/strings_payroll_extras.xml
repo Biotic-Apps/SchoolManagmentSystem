@@ -1,0 +1,75 @@
+<resources>
+    <!-- Overtime -->
+    <string name="payroll_ot_find">Find in attendance</string>
+    <string name="payroll_ot_add">Add overtime</string>
+    <string name="payroll_ot_approve_all">Approve all pending</string>
+    <string name="payroll_ot_switched_off">Overtime pay is switched off in Pay rules. Entries are kept but not paid.</string>
+    <string name="payroll_ot_leave_time">Anyone who checks out after %1$s (the staff leave time) gets an overtime entry here. Only approved overtime is paid; recalculate the payroll run after approving.</string>
+    <string name="payroll_ot_no_leave_time">Set the staff leave time in the branch timings so late check-outs count as overtime. Only approved overtime is paid; recalculate the payroll run after approving.</string>
+    <string name="payroll_ot_approved_month">Approved this month: %1$s.</string>
+    <string name="payroll_ot_locked">This month\'s payroll is approved, so its overtime can no longer change.</string>
+    <string name="payroll_ot_empty">No overtime this month</string>
+    <string name="payroll_ot_empty_message">Record check-out times in staff attendance, then tap Find in attendance. Or add extra hours by hand.</string>
+    <string name="payroll_ot_from_attendance">Attendance (left at %1$s)</string>
+    <string name="payroll_ot_by_hand">Added by hand</string>
+    <string name="payroll_ot_by">by %1$s</string>
+    <string name="payroll_ot_status_pending">Pending</string>
+    <string name="payroll_ot_status_approved">Approved</string>
+    <string name="payroll_ot_status_rejected">Rejected</string>
+    <string name="payroll_ot_approve">Approve</string>
+    <string name="payroll_ot_reject">Reject</string>
+    <string name="payroll_ot_remove">Remove</string>
+    <string name="payroll_ot_remove_title">Remove overtime?</string>
+    <string name="payroll_ot_remove_message">%1$s · %2$s on %3$s will be removed.</string>
+    <plurals name="payroll_ot_found">
+        <item quantity="one">Found %1$d new overtime entry in attendance</item>
+        <item quantity="other">Found %1$d new overtime entries in attendance</item>
+    </plurals>
+    <string name="payroll_ot_found_none">No new overtime found in attendance</string>
+    <string name="payroll_ot_added">Overtime added. It waits for approval before it is paid.</string>
+    <string name="payroll_ot_approved_done">Overtime approved</string>
+    <string name="payroll_ot_rejected_done">Overtime rejected</string>
+    <string name="payroll_ot_removed">Overtime removed</string>
+    <string name="payroll_ot_form_title">Add overtime</string>
+    <string name="payroll_ot_date">Date</string>
+    <string name="payroll_ot_hours">Extra hours</string>
+    <string name="payroll_ot_hours_hint">For example 2 or 1.5</string>
+    <string name="payroll_ot_hours_invalid">Enter hours between 0.25 and 16, e.g. 2 or 1.5</string>
+    <string name="payroll_ot_date_invalid">Pick a date in %1$s</string>
+    <!-- Shared form bits -->
+    <string name="payroll_extra_staff">Staff member</string>
+    <string name="payroll_extra_staff_required">Choose a staff member</string>
+    <string name="payroll_extra_all_staff">All staff</string>
+    <string name="payroll_extra_reason">Reason</string>
+    <string name="payroll_extra_reason_invalid">Enter a reason (at least 3 characters)</string>
+    <string name="payroll_extra_save">Save</string>
+    <string name="payroll_extra_cancel">Cancel</string>
+    <!-- Adjustments -->
+    <string name="payroll_adj_add">Add adjustment</string>
+    <string name="payroll_adj_empty">No adjustments</string>
+    <string name="payroll_adj_empty_message">Nothing extra this month. Use Add adjustment for a bonus, arrears, a fine, a deduction or an advance / loan recovery.</string>
+    <string name="payroll_adj_kind">Kind</string>
+    <string name="payroll_adj_kind_required">Choose a kind</string>
+    <string name="payroll_adj_month">Month</string>
+    <string name="payroll_adj_amount">Amount</string>
+    <string name="payroll_adj_amount_invalid">Enter an amount greater than 0</string>
+    <string name="payroll_adj_added">Adjustment added</string>
+    <string name="payroll_adj_cancel_action">Cancel adjustment</string>
+    <string name="payroll_adj_cancel_title">Cancel this adjustment?</string>
+    <string name="payroll_adj_cancel_help">It will no longer change this month\'s pay. A calculated run goes back to draft and must be recalculated.</string>
+    <string name="payroll_adj_cancelled">Adjustment cancelled</string>
+    <string name="payroll_adj_keep">Keep</string>
+    <string name="payroll_adj_status_pending">Pending</string>
+    <string name="payroll_adj_status_applied">Applied</string>
+    <string name="payroll_adj_status_cancelled">Cancelled</string>
+    <string name="payroll_adj_kind_bonus">Bonus</string>
+    <string name="payroll_adj_kind_arrear">Arrears</string>
+    <string name="payroll_adj_kind_deduction">Deduction</string>
+    <string name="payroll_adj_kind_advance">Advance / loan recovery</string>
+    <string name="payroll_adj_kind_fine">Fine</string>
+    <string name="payroll_adj_hint_bonus">Added to this month\'s pay.</string>
+    <string name="payroll_adj_hint_arrear">Pay owed from an earlier month, added to this month.</string>
+    <string name="payroll_adj_hint_deduction">Taken off this month\'s pay.</string>
+    <string name="payroll_adj_hint_advance">Recovers an advance or loan instalment from this month\'s pay.</string>
+    <string name="payroll_adj_hint_fine">A fine taken off this month\'s pay.</string>
+</resources>

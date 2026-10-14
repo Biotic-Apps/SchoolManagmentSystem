@@ -1,0 +1,56 @@
+<resources>
+    <string name="fees_month_previous">Previous month</string>
+    <string name="fees_month_next">Next month</string>
+    <!-- Payments list -->
+    <string name="fees_pl_from">From</string>
+    <string name="fees_pl_to">To</string>
+    <string name="fees_pl_all_methods">All methods</string>
+    <string name="fees_pl_search">Search receipt or student</string>
+    <string name="fees_pl_clear">Clear filters</string>
+    <string name="fees_pl_empty">No payments found</string>
+    <string name="fees_pl_empty_message">Payments recorded at the counter, verified proofs and online payments appear here.</string>
+    <string name="fees_pl_total">%1$d payments · %2$s</string>
+    <!-- Concessions -->
+    <string name="fees_cn_request">Request concession</string>
+    <string name="fees_cn_all">All</string>
+    <string name="fees_cn_pending">Pending</string>
+    <string name="fees_cn_approved">Approved</string>
+    <string name="fees_cn_rejected">Rejected</string>
+    <string name="fees_cn_empty">No concessions</string>
+    <string name="fees_cn_empty_message">Concessions reduce a student\'s fees for some months after approval.</string>
+    <string name="fees_cn_all_fees">All fees</string>
+    <string name="fees_cn_percent_value">%1$d%% off</string>
+    <string name="fees_cn_fixed_value">%1$s off</string>
+    <string name="fees_cn_months">%1$s – %2$s</string>
+    <string name="fees_cn_months_open">From %1$s</string>
+    <string name="fees_cn_estimate">About %1$s in total</string>
+    <string name="fees_cn_fee_head">Fee head</string>
+    <string name="fees_cn_type">Type</string>
+    <string name="fees_cn_type_percent">Percent</string>
+    <string name="fees_cn_type_fixed">Fixed amount</string>
+    <string name="fees_cn_percent">Percent off</string>
+    <string name="fees_cn_percent_invalid">Enter a whole percentage from 1 to 100</string>
+    <string name="fees_cn_amount">Amount off each month</string>
+    <string name="fees_cn_amount_invalid">Enter the concession amount, e.g. 1500</string>
+    <string name="fees_cn_first_month">First month</string>
+    <string name="fees_cn_last_month">Last month</string>
+    <string name="fees_cn_open_ended">No end month</string>
+    <string name="fees_cn_set_end">Set an end month</string>
+    <string name="fees_cn_to_invalid">The last month must be on or after the first month</string>
+    <string name="fees_cn_reason">Reason</string>
+    <string name="fees_cn_reason_invalid">Enter the reason (at least 3 characters)</string>
+    <string name="fees_cn_send">Send for approval</string>
+    <string name="fees_cn_sent">Concession sent for approval</string>
+    <string name="fees_cn_cancel">Cancel</string>
+    <!-- Ledger -->
+    <string name="fees_ledger_view">View ledger</string>
+    <string name="fees_ledger_title">Fee ledger</string>
+    <string name="fees_ledger_empty">No ledger entries yet</string>
+    <string name="fees_ledger_balance">Balance %1$s</string>
+    <string name="fees_ledger_total_due">Total due</string>
+    <string name="fees_ledger_overdue">Overdue</string>
+    <string name="fees_ledger_advance">Advance</string>
+    <string name="fees_ledger_last_payment">Last payment %1$s on %2$s</string>
+    <string name="fees_ledger_next_due">Next due %1$s on %2$s</string>
+    <string name="fees_ledger_entries">Entries</string>
+</resources>

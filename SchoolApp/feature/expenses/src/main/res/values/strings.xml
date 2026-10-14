@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Menu and tabs -->
+    <string name="expenses_tab_expenses">Expenses</string>
+    <string name="expenses_tab_vendors">Vendors</string>
+    <string name="expenses_tab_categories">Categories</string>
+    <string name="expenses_no_branch">No branch in your scope</string>
+    <string name="expenses_no_branch_message">Expenses are recorded per branch.</string>
+    <string name="expenses_retry">Try again</string>
+    <string name="expenses_added_named">%1$s added</string>
+    <string name="expenses_dash">—</string>
+    <string name="expenses_none">None</string>
+    <string name="expenses_no">No</string>
+    <string name="expenses_clear">Clear</string>
+    <string name="expenses_label_value">%1$s: %2$s</string>
+
+    <!-- Expense list -->
+    <string name="expenses_list_title">Bills and expenses</string>
+    <string name="expenses_all">All</string>
+    <string name="expenses_filters">Filters</string>
+    <string name="expenses_filters_count">Filters (%1$d)</string>
+    <string name="expenses_filters_title">Filter expenses</string>
+    <string name="expenses_all_categories">All categories</string>
+    <string name="expenses_any_date">Any date</string>
+    <string name="expenses_filter_from">Bill date from</string>
+    <string name="expenses_filter_to">Bill date to</string>
+    <string name="expenses_reset">Reset</string>
+    <string name="expenses_apply">Apply</string>
+    <string name="expenses_empty">No expenses</string>
+    <string name="expenses_empty_message">Bills and expenses recorded for this branch appear here.</string>
+    <string name="expenses_bill_on">Bill %1$s</string>
+    <string name="expenses_due_on">Due %1$s</string>
+    <string name="expenses_paid_balance">Paid %1$s · Balance %2$s</string>
+    <string name="expenses_monthly">Monthly</string>
+    <string name="expenses_monthly_until">Monthly until %1$s</string>
+    <string name="expenses_no_vendor">No vendor</string>
+    <string name="expenses_totals_partial">Totals of %1$d loaded of %2$d bills (scroll to load more)</string>
+    <plurals name="expenses_totals_all">
+        <item quantity="one">Totals of %1$d bill</item>
+        <item quantity="other">Totals of %1$d bills</item>
+    </plurals>
+    <string name="expenses_total_amount">Amount</string>
+    <string name="expenses_total_paid">Paid</string>
+    <string name="expenses_total_balance">Balance</string>
+
+    <!-- Statuses and methods -->
+    <string name="expenses_status_draft">Draft</string>
+    <string name="expenses_status_submitted">Submitted</string>
+    <string name="expenses_status_approved">Approved</string>
+    <string name="expenses_status_rejected">Rejected</string>
+    <string name="expenses_status_partially_paid">Partially paid</string>
+    <string name="expenses_status_paid">Paid</string>
+    <string name="expenses_status_unknown">Unknown</string>
+    <string name="expenses_method_cash">Cash</string>
+    <string name="expenses_method_bank">Bank transfer</string>
+    <string name="expenses_method_cheque">Cheque</string>
+
+    <!-- Expense form -->
+    <string name="expenses_add_expense">Add expense</string>
+    <string name="expenses_edit_expense">Edit expense</string>
+    <string name="expenses_form_subtitle">Saved as a draft. Submit it for approval before it can be paid.</string>
+    <string name="expenses_field_title">Title</string>
+    <string name="expenses_field_title_placeholder">e.g. Electricity bill</string>
+    <string name="expenses_field_category">Category</string>
+    <string name="expenses_field_vendor">Vendor</string>
+    <string name="expenses_create_category_named">Add category “%1$s”</string>
+    <string name="expenses_create_vendor_named">Add vendor “%1$s”</string>
+    <string name="expenses_field_amount">Amount</string>
+    <string name="expenses_field_bill_date">Bill date</string>
+    <string name="expenses_field_due_date">Due date</string>
+    <string name="expenses_clear_due_date">Clear due date</string>
+    <string name="expenses_field_bill">Bill copy</string>
+    <string name="expenses_field_recurring">Repeats every month</string>
+    <string name="expenses_field_recurring_short">Recurring</string>
+    <string name="expenses_recurring_hint">A new draft is created on the 1st of each month.</string>
+    <string name="expenses_recurring_locked">This bill already repeats monthly; you can change the last month.</string>
+    <string name="expenses_field_until">Repeat until</string>
+    <string name="expenses_until_stopped">Until stopped</string>
+    <string name="expenses_field_notes">Notes</string>
+    <string name="expenses_save_draft">Save draft</string>
+    <string name="expenses_save_changes">Save changes</string>
+
+    <!-- Expense detail -->
+    <string name="expenses_detail_title">Expense</string>
+    <string name="expenses_details">Details</string>
+    <string name="expenses_submit">Submit for approval</string>
+    <string name="expenses_submit_title">Submit for approval?</string>
+    <string name="expenses_submit_message">The bill is sent to Approvals. It can’t be edited while it is waiting for a decision.</string>
+    <string name="expenses_record_payment">Record payment</string>
+    <string name="expenses_open_bill">Open bill copy</string>
+    <string name="expenses_hint_draft">Draft: submit it for approval before it can be paid.</string>
+    <string name="expenses_hint_submitted">Waiting for approval. It can be paid once approved.</string>
+    <string name="expenses_hint_rejected">Rejected: edit it and submit again, or leave it.</string>
+    <string name="expenses_payments">Payments</string>
+    <string name="expenses_payments_empty">No payments yet</string>
+    <string name="expenses_payments_empty_message">Payments can be recorded once the expense is approved.</string>
+    <string name="expenses_notice_created">Expense saved as draft</string>
+    <string name="expenses_notice_updated">Changes saved</string>
+    <string name="expenses_notice_submitted">Expense sent for approval</string>
+    <string name="expenses_notice_paid">Payment recorded</string>
+
+    <!-- Payment sheet -->
+    <string name="expenses_outstanding">Outstanding balance: %1$s</string>
+    <string name="expenses_part_payment_hint">Part payments are allowed; the bill is marked paid once the balance is settled.</string>
+    <string name="expenses_field_method">Method</string>
+    <string name="expenses_field_paid_on">Paid on</string>
+    <string name="expenses_field_reference">Reference</string>
+    <string name="expenses_field_reference_placeholder">Cheque or transaction no.</string>
+
+    <!-- Vendors -->
+    <string name="expenses_search_vendors">Search vendors</string>
+    <string name="expenses_vendors_empty">No vendors</string>
+    <string name="expenses_vendors_no_match">No vendors match</string>
+    <string name="expenses_vendors_empty_message">Suppliers you buy from or pay bills to appear here.</string>
+    <string name="expenses_add_vendor">Add vendor</string>
+    <string name="expenses_vendor_name">Vendor name</string>
+    <string name="expenses_vendor_contact">Contact person</string>
+    <string name="expenses_vendor_phone">Phone</string>
+    <string name="expenses_vendor_email">Email</string>
+    <string name="expenses_vendor_ntn">NTN</string>
+    <string name="expenses_vendor_ntn_hint">National tax number</string>
+    <string name="expenses_vendor_address">Address</string>
+    <string name="expenses_call_vendor">Call %1$s</string>
+    <string name="expenses_email_vendor">Email %1$s</string>
+
+    <!-- Categories -->
+    <string name="expenses_categories_title">Expense categories for this school</string>
+    <string name="expenses_categories_empty">No categories</string>
+    <string name="expenses_categories_empty_message">Categories group expenses such as rent, utilities and repairs.</string>
+    <string name="expenses_add_category">Add category</string>
+    <string name="expenses_category_scope_note">Available to every branch of this school.</string>
+    <string name="expenses_category_name">Name</string>
+    <string name="expenses_category_name_placeholder">e.g. Security services</string>
+    <string name="expenses_category_code">Code</string>
+    <string name="expenses_category_code_hint">Optional short code, e.g. SECURITY</string>
+
+    <!-- Validation -->
+    <string name="expenses_error_required">Required</string>
+    <string name="expenses_error_too_short">Use at least %1$d characters</string>
+    <string name="expenses_error_too_long">Too long</string>
+    <string name="expenses_error_amount">Enter an amount greater than zero</string>
+    <string name="expenses_error_over_balance">Amount can’t be more than the balance</string>
+    <string name="expenses_error_due_before_bill">Due date can’t be before the bill date</string>
+    <string name="expenses_error_until_before_bill">Repeat-until month can’t be before the bill month</string>
+    <string name="expenses_error_vendor_name">Enter the vendor name</string>
+    <string name="expenses_error_phone">Enter a valid phone number</string>
+    <string name="expenses_error_email">Enter a valid email</string>
+    <string name="expenses_error_category_name">Enter the category name</string>
+    <string name="expenses_error_category_code">Start with a letter; use letters, digits or underscores (2–30)</string>
+</resources>

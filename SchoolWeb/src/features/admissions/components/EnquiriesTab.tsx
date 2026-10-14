@@ -1,6 +1,5 @@
 "use client";
 
-import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { DataTable } from "@/components/shared/DataTable";
 import { FilterBar } from "@/components/shared/FilterBar";
 import { FilterSelect } from "@/components/shared/FilterSelect";
@@ -8,6 +7,7 @@ import { TabToolbar } from "@/features/classes/components/TabToolbar";
 import type { AcademicScope } from "@/features/classes/use-academic-scope";
 import { ENQUIRY_STATUS_OPTIONS } from "../options";
 import { useEnquiriesTab } from "../use-enquiries-tab";
+import { ConvertEnquiryDialog } from "./ConvertEnquiryDialog";
 import { EnquiryFormDialog } from "./EnquiryFormDialog";
 import { EnquiryUpdateDialog } from "./EnquiryUpdateDialog";
 
@@ -55,15 +55,9 @@ export function EnquiriesTab({ scope, onConverted }: EnquiriesTabProps) {
         />
       )}
       {tab.update.item && <EnquiryUpdateDialog item={tab.update.item} onClose={tab.update.close} />}
-      <ConfirmDialog
-        open={!!target}
-        onOpenChange={tab.convertTarget.onOpenChange}
-        title={`Convert ${target?.childName ?? "enquiry"} to an application?`}
-        description="An application is created from this enquiry. Complete the child and guardian details on it next."
-        confirmLabel="Convert"
-        loading={tab.converting}
-        onConfirm={tab.confirmConvert}
-      />
+      {target && (
+        <ConvertEnquiryDialog item={target} onClose={tab.convertTarget.close} onConverted={tab.handleConverted} />
+      )}
     </div>
   );
 }

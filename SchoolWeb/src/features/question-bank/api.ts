@@ -7,6 +7,7 @@ import type {
   GenerateExamPaperInput,
   Question,
   QuestionInput,
+  QuestionUpdate,
 } from "./types";
 
 // ── Questions ───────────────────────────────────────────────────────────
@@ -37,7 +38,7 @@ export function useQuestion(id: string | null) {
 export function useSaveQuestion() {
   return useApiMutation({
     mutationFn: withRowFlash(
-      async ({ id, input }: { id?: string; input: QuestionInput }) =>
+      async ({ id, input }: { id?: string; input: QuestionInput | QuestionUpdate }) =>
         (id
           ? await http.patch<Question>(`/questions/${id}`, input)
           : await http.post<Question>("/questions", input)

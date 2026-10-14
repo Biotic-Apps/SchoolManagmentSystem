@@ -5,11 +5,13 @@ import com.schoolapp.core.common.result.AppResult
 import com.schoolapp.core.data.activities.ActivitiesRepository
 import com.schoolapp.core.model.activity.Activity
 import com.schoolapp.core.model.activity.ActivityConsent
+import com.schoolapp.core.model.activity.ActivityFilter
 import com.schoolapp.core.model.activity.ActivityInput
 import com.schoolapp.core.model.activity.ActivityParticipant
 import com.schoolapp.core.model.activity.ActivityStatus
 import com.schoolapp.core.model.activity.ActivityType
 import com.schoolapp.core.model.activity.ConsentStatus
+import com.schoolapp.core.model.settings.PagedList
 
 internal fun activity(
     id: String = "a1",
@@ -54,4 +56,22 @@ internal class FakeActivitiesRepository(var items: List<Activity> = listOf(activ
     }
 
     override suspend fun participants(id: String): AppResult<List<ActivityParticipant>> = AppResult.Success(emptyList())
+
+    val statusChanges = mutableListOf<Pair<ActivityStatus, String?>>()
+    val updates = mutableListOf<ActivityInput>()
+
+    override suspend fun activitiesPage(branchId: String?, filter: ActivityFilter, page: Int, pageSize: Int) =
+        AppResult.Success(PagedList(items, page, pageSize, items.size))
+
+    override suspend fun update(id: String, input: ActivityInput): AppResult<Activity> {
+        updates += input
+        return AppResult.Success(items.first())
+    }
+
+    override suspend fun setStatus(id: String, status: ActivityStatus, reason: String?): AppResult<Activity> {
+        statusChanges += status to reason
+        return AppResult.Success(items.first().copy(status = status, reason = reason))
+    }
+
+    override suspend fun saveParticipants(id: String, participants: List<ActivityParticipant>) = AppResult.Success(participants)
 }

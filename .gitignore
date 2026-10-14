@@ -33,3 +33,4 @@ SchoolApi/.pgdata-*/
 
 # Agent build artifacts
 SchoolApi/.agent-dist-live/
+SchoolApp/.gradle-agent-lock
