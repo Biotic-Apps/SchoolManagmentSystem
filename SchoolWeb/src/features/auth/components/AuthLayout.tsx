@@ -22,12 +22,15 @@ export function AuthLayout({ title, description, footer, children }: AuthLayoutP
   const schoolName = branding?.schoolName || branding?.appName || "eSchool";
 
   return (
-    <main style={brandStyle(branding?.primaryColor)} className="grid min-h-dvh grid-cols-1 bg-white lg:grid-cols-[1fr_1.1fr]">
+    <main
+      style={brandStyle(branding?.primaryColor)}
+      className="grid min-h-dvh grid-cols-1 overflow-x-hidden bg-background lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]"
+    >
       <AuthBrandPanel schoolName={schoolName} logoUrl={branding?.logoUrl} />
 
-      <section className="relative isolate flex min-w-0 flex-col overflow-hidden bg-white px-4 py-6 sm:px-8 lg:py-8">
-        <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 -z-10 size-80 rounded-full bg-card-bg/70 blur-3xl" />
-        <div aria-hidden className="pointer-events-none absolute -bottom-40 -left-24 -z-10 size-72 rounded-full bg-selected/60 blur-3xl lg:hidden" />
+      <section className="relative isolate flex min-w-0 flex-col bg-background px-4 py-5 sm:px-8 lg:px-10 lg:py-8">
+        {/* Phones/tablets: no side panel, just a soft lavender wash behind the top of the page. */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 bg-gradient-to-b from-selected/70 to-transparent lg:hidden" />
 
         <Link
           href="/"
@@ -37,16 +40,16 @@ export function AuthLayout({ title, description, footer, children }: AuthLayoutP
           Back to home
         </Link>
 
-        <div className="flex flex-1 items-center justify-center py-8">
-          <div className="flex w-full max-w-[400px] animate-page-in flex-col gap-6">
+        <div className="flex flex-1 items-center justify-center py-8 sm:py-10">
+          <div className="flex w-full max-w-[420px] animate-page-in flex-col gap-6">
             <div className="flex items-center gap-3 lg:hidden">
-              <BrandLogo logoUrl={branding?.logoUrl} size="md" />
+              <BrandLogo logoUrl={branding?.logoUrl} size="md" className="shadow-sm" />
               <span className="text-card-title font-semibold text-fg">{schoolName}</span>
             </div>
-            <div className="flex flex-col gap-1">
-              <h1 className="text-[26px] font-semibold leading-8 tracking-tight text-fg">{title}</h1>
+            <header className="flex flex-col gap-1.5">
+              <h1 className="text-page-title font-semibold tracking-tight text-fg">{title}</h1>
               {description && <p className="text-body text-fg-muted">{description}</p>}
-            </div>
+            </header>
             {children}
             {footer}
           </div>

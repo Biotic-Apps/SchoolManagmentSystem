@@ -34,16 +34,18 @@ export function LoginPanel() {
         title="Sign in with a code"
         description="For parents: we email a one-time code to the address the school has on record."
       >
-        <EmailCodeLoginForm onChallenge={setOtpChallengeId} />
-        <OrDivider />
-        <Button
-          variant="secondary"
-          size="lg"
-          className="w-full"
-          onClick={() => setWithCode(false)}
-        >
-          Use username and password instead
-        </Button>
+        <div className="flex flex-col">
+          <EmailCodeLoginForm onChallenge={setOtpChallengeId} />
+          <OrDivider />
+          <Button
+            variant="secondary"
+            size="lg"
+            className="w-full"
+            onClick={() => setWithCode(false)}
+          >
+            Use username and password instead
+          </Button>
+        </div>
       </AuthLayout>
     );
   }
@@ -53,12 +55,15 @@ export function LoginPanel() {
       description="Sign in to your school account."
       footer={<AuthFooterLink href="/forgot-password">Forgot your password?</AuthFooterLink>}
     >
-      <LoginForm login={login} />
-      <OrDivider />
-      <Button variant="ghost" size="lg" className="w-full" onClick={() => setWithCode(true)}>
-        <Mail />
-        Sign in with an email code
-      </Button>
+      {/* One group, so the only space around "or" is the divider's own margin. */}
+      <div className="flex flex-col">
+        <LoginForm login={login} />
+        <OrDivider />
+        <Button variant="secondary" size="lg" className="w-full" onClick={() => setWithCode(true)}>
+          <Mail />
+          Sign in with an email code
+        </Button>
+      </div>
     </AuthLayout>
   );
 }
