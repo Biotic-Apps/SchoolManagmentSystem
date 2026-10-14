@@ -46,7 +46,6 @@ internal fun LazyListScope.mySlotsTab(state: MySlotsUiState, actions: MySlotsAct
             onPrevious = actions.onPreviousWeek,
             onNext = actions.onNextWeek,
             onThisWeek = actions.onThisWeek,
-            onAdd = actions.onOpenSheet,
         )
     }
     state.notice?.let { notice -> item(key = "slots_notice") { InlineMessage(noticeText(notice), StatusTone.Success) } }

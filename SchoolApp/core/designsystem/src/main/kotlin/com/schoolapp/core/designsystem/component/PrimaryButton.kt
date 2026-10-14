@@ -6,16 +6,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.motion.pressScale
+import com.schoolapp.core.designsystem.theme.AppButtonShape
 import com.schoolapp.core.designsystem.theme.AppColors
 
 @Composable
@@ -34,7 +33,7 @@ fun PrimaryButton(
         modifier = modifier.heightIn(min = 52.dp).pressScale(interaction, enabled && !loading),
         interactionSource = interaction,
         enabled = enabled && !loading,
-        shape = RoundedCornerShape(50),
+        shape = AppButtonShape,
         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = if (pressed) AppColors.PrimaryPressed else AppColors.Primary,

@@ -1,20 +1,25 @@
 package com.schoolapp.feature.organisation.classes
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.schoolapp.core.designsystem.component.AppFloatingButton
 import com.schoolapp.core.designsystem.component.AppTabs
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
@@ -127,28 +132,37 @@ private fun ClassesContent(state: ClassesUiState, actions: ClassesActions, onRet
 /** One column on phones, two or three on tablets and wide windows; picker and toolbar scroll with the cards. */
 @Composable
 private fun ClassesGrid(state: ClassesUiState, actions: ClassesActions, scopeBar: @Composable () -> Unit) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 300.dp),
-        contentPadding = PaddingValues(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        if (state.branches.isNotEmpty()) item(key = "scope", span = { GridItemSpan(maxLineSpan) }) { scopeBar() }
-        if (state.error != null) {
-            item(key = "refresh-error", span = { GridItemSpan(maxLineSpan) }) { RefreshErrorBanner(state.error) }
-        }
-        if (state.canAdd || (state.canReorder && state.classes.size > 1)) {
-            item(key = "toolbar", span = { GridItemSpan(maxLineSpan) }) {
-                ClassesToolbar(
-                    onAdd = actions.onAddClass.takeIf { state.canAdd },
-                    onReorder = actions.onReorder.takeIf { state.canReorder && state.classes.size > 1 },
-                )
+    val canReorder = state.canReorder && state.classes.size > 1
+    Box(Modifier.fillMaxSize()) {
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 300.dp),
+            contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = if (state.canAdd) FAB_CLEARANCE else 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            if (state.branches.isNotEmpty()) item(key = "scope", span = { GridItemSpan(maxLineSpan) }) { scopeBar() }
+            if (state.error != null) {
+                item(key = "refresh-error", span = { GridItemSpan(maxLineSpan) }) { RefreshErrorBanner(state.error) }
             }
+            if (canReorder) {
+                item(key = "toolbar", span = { GridItemSpan(maxLineSpan) }) { ClassesToolbar(onReorder = actions.onReorder) }
+            }
+            items(state.classes, key = { it.id }) { ClassOverviewCard(it, onClick = { actions.onOpenClass(it.id) }) }
         }
-        items(state.classes, key = { it.id }) { ClassOverviewCard(it, onClick = { actions.onOpenClass(it.id) }) }
+        if (state.canAdd) {
+            AppFloatingButton(
+                text = stringResource(R.string.org_add_class),
+                icon = Icons.Outlined.Add,
+                onClick = actions.onAddClass,
+                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            )
+        }
     }
 }
+
+/** Room under the last card so the floating "Add class" never covers it. */
+private val FAB_CLEARANCE = 88.dp
 
 @Preview(showBackground = true)
 @Composable

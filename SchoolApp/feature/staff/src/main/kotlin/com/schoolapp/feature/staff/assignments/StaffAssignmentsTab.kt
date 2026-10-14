@@ -1,6 +1,9 @@
 package com.schoolapp.feature.staff.assignments
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.EventBusy
@@ -8,15 +11,17 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.schoolapp.core.designsystem.component.AppFloatingButton
 import com.schoolapp.core.designsystem.component.ConfirmDialog
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.LoadingState
-import com.schoolapp.core.designsystem.component.PrimaryButton
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.ui.appErrorMessage
@@ -52,29 +57,38 @@ internal fun StaffAssignmentsTab(
             icon = Icons.Outlined.EventBusy,
             modifier = modifier.fillMaxSize(),
         )
-        else -> RefreshBox(state.isRefreshing, viewModel::refresh, modifier.fillMaxSize()) {
-            ScreenColumn {
-                item(key = "session") {
-                    OptionPickerField(
-                        label = stringResource(R.string.staff_asg_session),
-                        options = state.sessions,
-                        selectedId = state.sessionId,
-                        onSelect = viewModel::selectSession,
-                    )
-                }
-                if (canAdd) item(key = "add") { PrimaryButton(stringResource(R.string.staff_asg_add_title), viewModel::openAdd, leadingIcon = Icons.Outlined.Add) }
-                if (state.assignments.isEmpty()) {
-                    item(key = "empty") {
-                        EmptyState(
-                            title = stringResource(R.string.staff_asg_empty),
-                            message = stringResource(R.string.staff_asg_empty_hint),
+        else -> Box(modifier.fillMaxSize()) {
+            RefreshBox(state.isRefreshing, viewModel::refresh, Modifier.fillMaxSize()) {
+                ScreenColumn(contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = if (canAdd) 88.dp else 16.dp)) {
+                    item(key = "session") {
+                        OptionPickerField(
+                            label = stringResource(R.string.staff_asg_session),
+                            options = state.sessions,
+                            selectedId = state.sessionId,
+                            onSelect = viewModel::selectSession,
                         )
                     }
+                    if (state.assignments.isEmpty()) {
+                        item(key = "empty") {
+                            EmptyState(
+                                title = stringResource(R.string.staff_asg_empty),
+                                message = stringResource(R.string.staff_asg_empty_hint),
+                            )
+                        }
+                    }
+                    items(state.assignments.size, key = { state.assignments[it].id }) { i ->
+                        val a = state.assignments[i]
+                        AssignmentRow(a, onEnd = { viewModel.askEnd(a) }.takeIf { canEdit })
+                    }
                 }
-                items(state.assignments.size, key = { state.assignments[it].id }) { i ->
-                    val a = state.assignments[i]
-                    AssignmentRow(a, onEnd = { viewModel.askEnd(a) }.takeIf { canEdit })
-                }
+            }
+            if (canAdd) {
+                AppFloatingButton(
+                    text = stringResource(R.string.staff_asg_add_title),
+                    icon = Icons.Outlined.Add,
+                    onClick = viewModel::openAdd,
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+                )
             }
         }
     }

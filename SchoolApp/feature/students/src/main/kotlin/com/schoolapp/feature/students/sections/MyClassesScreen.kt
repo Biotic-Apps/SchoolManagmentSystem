@@ -1,13 +1,17 @@
 package com.schoolapp.feature.students.sections
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.PersonSearch
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.material.icons.outlined.PersonAdd
-import com.schoolapp.core.designsystem.component.PrimaryButton
+import com.schoolapp.core.designsystem.component.AppFloatingButton
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,49 +39,52 @@ fun MyClassesScreen(
     modifier: Modifier = Modifier,
     onAddStudent: () -> Unit = {},
 ) {
-    ScreenColumn(modifier, itemSpacing = 0.dp) {
-        if (state.canAdd) {
-            item(key = "add") {
-                PrimaryButton(
-                    stringResource(R.string.students_add_title),
-                    onClick = onAddStudent,
-                    leadingIcon = Icons.Outlined.PersonAdd,
-                    modifier = Modifier.padding(bottom = 16.dp),
-                )
+    Box(modifier.fillMaxSize()) {
+        ScreenColumn(
+            contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = if (state.canAdd) 88.dp else 16.dp),
+            itemSpacing = 0.dp,
+        ) {
+            if (state.canSearch) {
+                item(key = "search") {
+                    StudentSearchBar(query = state.query, onQueryChange = onQueryChange, modifier = Modifier.padding(bottom = 16.dp))
+                }
             }
-        }
-        if (state.canSearch) {
-            item(key = "search") {
-                StudentSearchBar(query = state.query, onQueryChange = onQueryChange, modifier = Modifier.padding(bottom = 16.dp))
-            }
-        }
-        when {
-            state.showsSearch -> when {
-                state.isSearching -> item(key = "searching") { LoadingState() }
-                state.searchError != null -> item(key = "searchError") { ErrorState(appErrorMessage(state.searchError)) }
+            when {
+                state.showsSearch -> when {
+                    state.isSearching -> item(key = "searching") { LoadingState() }
+                    state.searchError != null -> item(key = "searchError") { ErrorState(appErrorMessage(state.searchError)) }
+                    else -> dataListItems(
+                        items = state.results,
+                        key = { it.id },
+                        emptyContent = { EmptyState(stringResource(R.string.students_search_empty), icon = Icons.Outlined.PersonSearch) },
+                    ) { StudentRow(it, onClick = { onOpenStudent(it.id) }, showClass = true) }
+                }
+                state.isLoading -> item(key = "loading") { LoadingState() }
+                state.error != null -> item(key = "error") { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
                 else -> dataListItems(
-                    items = state.results,
+                    items = state.sections,
                     key = { it.id },
-                    emptyContent = { EmptyState(stringResource(R.string.students_search_empty), icon = Icons.Outlined.PersonSearch) },
-                ) { StudentRow(it, onClick = { onOpenStudent(it.id) }, showClass = true) }
+                    emptyContent = { EmptyState(stringResource(R.string.students_sections_empty), icon = Icons.Outlined.Groups) },
+                ) { section ->
+                    ListItemRow(
+                        title = sectionLabel(section.className, section.name) ?: section.name,
+                        supporting = listOfNotNull(
+                            pluralStringResource(R.plurals.students_count, section.studentCount, section.studentCount),
+                            section.roomName,
+                        ).joinToString(" · "),
+                        leadingIcon = Icons.Outlined.Groups,
+                        onClick = { onOpenSection(section) },
+                    )
+                }
             }
-            state.isLoading -> item(key = "loading") { LoadingState() }
-            state.error != null -> item(key = "error") { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
-            else -> dataListItems(
-                items = state.sections,
-                key = { it.id },
-                emptyContent = { EmptyState(stringResource(R.string.students_sections_empty), icon = Icons.Outlined.Groups) },
-            ) { section ->
-                ListItemRow(
-                    title = sectionLabel(section.className, section.name) ?: section.name,
-                    supporting = listOfNotNull(
-                        pluralStringResource(R.plurals.students_count, section.studentCount, section.studentCount),
-                        section.roomName,
-                    ).joinToString(" · "),
-                    leadingIcon = Icons.Outlined.Groups,
-                    onClick = { onOpenSection(section) },
-                )
-            }
+        }
+        if (state.canAdd) {
+            AppFloatingButton(
+                text = stringResource(R.string.students_add_title),
+                icon = Icons.Outlined.PersonAdd,
+                onClick = onAddStudent,
+                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            )
         }
     }
 }

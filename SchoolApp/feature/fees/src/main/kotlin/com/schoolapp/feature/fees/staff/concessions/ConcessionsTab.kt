@@ -1,6 +1,10 @@
 package com.schoolapp.feature.fees.staff.concessions
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
@@ -10,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -17,12 +22,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.data.fees.scope.FinanceBranch
 import com.schoolapp.core.designsystem.component.AppCard
+import com.schoolapp.core.designsystem.component.AppFloatingButton
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.FilterChipRow
 import com.schoolapp.core.designsystem.component.InlineMessage
 import com.schoolapp.core.designsystem.component.LoadingState
-import com.schoolapp.core.designsystem.component.PrimaryButton
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.SectionHeader
@@ -52,30 +57,36 @@ internal fun ConcessionsTab(
     val student by viewModel.studentSearch.state.collectAsStateWithLifecycle()
     val statuses = listOf(SwitcherOption(ALL, stringResource(R.string.fees_cn_all))) +
         RequestStatus.entries.map { SwitcherOption(it.name, statusLabel(it)) }
-    RefreshBox(state.isRefreshing, viewModel::refresh, modifier) {
-        ScreenColumn(itemSpacing = 12.dp) {
-            if (session.has("fees.add")) {
-                item(key = "request") {
-                    PrimaryButton(stringResource(R.string.fees_cn_request), viewModel::openForm, Modifier.fillMaxWidth(), leadingIcon = Icons.Outlined.Add)
+    val canAdd = session.has("fees.add")
+    Box(modifier.fillMaxSize()) {
+        RefreshBox(state.isRefreshing, viewModel::refresh, Modifier.fillMaxSize()) {
+            ScreenColumn(contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 88.dp), itemSpacing = 12.dp) {
+                if (state.sent) item(key = "sent") { InlineMessage(stringResource(R.string.fees_cn_sent), StatusTone.Success) }
+                item(key = "status") {
+                    FilterChipRow(statuses, state.status?.name ?: ALL, { id -> viewModel.onStatus(RequestStatus.entries.firstOrNull { it.name == id }) })
+                }
+                val items = state.items
+                when {
+                    state.isLoading && items == null -> item(key = "loading") { LoadingState() }
+                    items == null -> item(key = "error") { ErrorState(state.error?.let { appErrorMessage(it) }.orEmpty(), onRetry = viewModel::retry) }
+                    items.isEmpty() -> item(key = "empty") {
+                        EmptyState(
+                            title = stringResource(R.string.fees_cn_empty),
+                            message = stringResource(R.string.fees_cn_empty_message),
+                            icon = Icons.Outlined.Discount,
+                        )
+                    }
+                    else -> items(items, key = { "cn_${it.id}" }) { ConcessionCard(it) }
                 }
             }
-            if (state.sent) item(key = "sent") { InlineMessage(stringResource(R.string.fees_cn_sent), StatusTone.Success) }
-            item(key = "status") {
-                FilterChipRow(statuses, state.status?.name ?: ALL, { id -> viewModel.onStatus(RequestStatus.entries.firstOrNull { it.name == id }) })
-            }
-            val items = state.items
-            when {
-                state.isLoading && items == null -> item(key = "loading") { LoadingState() }
-                items == null -> item(key = "error") { ErrorState(state.error?.let { appErrorMessage(it) }.orEmpty(), onRetry = viewModel::retry) }
-                items.isEmpty() -> item(key = "empty") {
-                    EmptyState(
-                        title = stringResource(R.string.fees_cn_empty),
-                        message = stringResource(R.string.fees_cn_empty_message),
-                        icon = Icons.Outlined.Discount,
-                    )
-                }
-                else -> items(items, key = { "cn_${it.id}" }) { ConcessionCard(it) }
-            }
+        }
+        if (canAdd) {
+            AppFloatingButton(
+                text = stringResource(R.string.fees_cn_request),
+                icon = Icons.Outlined.Add,
+                onClick = viewModel::openForm,
+                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            )
         }
     }
     state.form?.let { form ->

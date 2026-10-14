@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.schoolapp.core.designsystem.component.AppFloatingButton
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.InlineMessage
@@ -72,6 +73,14 @@ fun StaffHrLettersTab(canGenerate: Boolean, modifier: Modifier = Modifier) {
                     HrLettersList(state, canGenerate, canOpenForm, viewModel)
                 }
             }
+            if (canOpenForm && state.error == null && state.letters.isNotEmpty()) {
+                AppFloatingButton(
+                    text = stringResource(R.string.staff_hr_generate),
+                    icon = Icons.Outlined.Add,
+                    onClick = viewModel::openForm,
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+                )
+            }
         }
         SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(16.dp))
     }
@@ -92,6 +101,7 @@ fun StaffHrLettersTab(canGenerate: Boolean, modifier: Modifier = Modifier) {
 
 @Composable
 private fun HrLettersList(state: HrLettersUiState, canGenerate: Boolean, canOpenForm: Boolean, viewModel: HrLettersViewModel) {
+    // Empty-state action only; with letters listed, "Generate" is the floating button.
     val generateButton: (@Composable () -> Unit)? = if (canOpenForm) {
         { PrimaryButton(stringResource(R.string.staff_hr_generate), viewModel::openForm, leadingIcon = Icons.Outlined.Add) }
     } else {
@@ -112,7 +122,7 @@ private fun HrLettersList(state: HrLettersUiState, canGenerate: Boolean, canOpen
             }
         } else {
             item(key = "header") {
-                SectionHeader(title = stringResource(R.string.staff_hr_count, state.letters.size), action = generateButton)
+                SectionHeader(title = stringResource(R.string.staff_hr_count, state.letters.size))
             }
             items(state.letters.size, key = { state.letters[it].id }) { index ->
                 val letter = state.letters[index]

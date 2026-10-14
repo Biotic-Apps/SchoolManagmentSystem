@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -19,12 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.schoolapp.core.designsystem.component.AppTextButton
-import com.schoolapp.core.designsystem.component.PrimaryButton
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.ui.formatDateRange
 import com.schoolapp.feature.meetings.R
 
-/** Week pager plus "Add slots"; wraps onto two lines on narrow screens, one line on tablets. */
+/** Week pager; "Add slots" is the floating button of the staff meetings screen. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun SlotsWeekHeader(
@@ -34,7 +32,6 @@ internal fun SlotsWeekHeader(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onThisWeek: () -> Unit,
-    onAdd: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     FlowRow(
@@ -57,6 +54,5 @@ internal fun SlotsWeekHeader(
             }
             if (!isThisWeek) AppTextButton(stringResource(R.string.meetings_this_week), onThisWeek)
         }
-        PrimaryButton(stringResource(R.string.meetings_add_slots), onAdd, leadingIcon = Icons.Outlined.Add)
     }
 }

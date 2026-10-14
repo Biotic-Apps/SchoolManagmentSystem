@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.schoolapp.core.designsystem.theme.AppButtonShape
 import com.schoolapp.core.designsystem.theme.AppColors
 
 /** Primary screen action floating above lists ("New message", "File complaint"). */
@@ -22,7 +23,7 @@ fun AppFloatingButton(
         modifier = modifier,
         containerColor = AppColors.Primary,
         contentColor = AppColors.OnPrimary,
-        shape = MaterialTheme.shapes.medium,
+        shape = AppButtonShape,
         icon = { Icon(icon, contentDescription = null) },
         text = { Text(text, style = MaterialTheme.typography.labelLarge) },
     )

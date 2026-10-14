@@ -21,6 +21,9 @@ internal val AppShapes = Shapes(
     extraLarge = RoundedCornerShape(AppRadius.ExtraLarge),
 )
 
+/** The one button shape used everywhere: primary, secondary, text and floating buttons. */
+val AppButtonShape = RoundedCornerShape(AppRadius.Full)
+
 object Borders {
     val Thin = 1.dp
 }

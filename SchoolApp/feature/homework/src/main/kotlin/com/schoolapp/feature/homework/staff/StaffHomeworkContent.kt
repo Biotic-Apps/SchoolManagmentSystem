@@ -1,6 +1,9 @@
 package com.schoolapp.feature.homework.staff
 
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -8,12 +11,14 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.AssignmentTurnedIn
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.schoolapp.core.designsystem.component.AppFloatingButton
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.LoadingState
-import com.schoolapp.core.designsystem.component.PrimaryButton
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScopePicker
 import com.schoolapp.core.designsystem.component.ScreenColumn
@@ -38,39 +43,40 @@ internal fun StaffHomeworkContent(state: StaffHomeworkUiState, actions: StaffHom
     when {
         state.isLoading -> LoadingState(modifier)
         state.scopeError != null -> ErrorState(appErrorMessage(state.scopeError), modifier, onRetry = actions.onRetry)
-        else -> RefreshBox(isRefreshing = state.isRefreshing, onRefresh = actions.onRefresh, modifier = modifier) {
-            ScreenColumn {
-                if (state.branches.isNotEmpty()) {
-                    item(key = "branch") {
-                        ScopePicker(
-                            options = state.branches.map { SwitcherOption(it.id, it.name) },
-                            selectedId = state.branchId,
-                            onSelect = actions.onBranchSelected,
-                        )
-                    }
-                }
-                if (state.sections.isEmpty()) {
-                    item(key = "no_sections") {
-                        EmptyState(
-                            stringResource(R.string.homework_no_sections),
-                            message = stringResource(R.string.homework_no_sections_message),
-                            icon = Icons.Outlined.Groups,
-                        )
-                    }
-                } else {
-                    item(key = "sections") { SectionChips(state.sections, state.sectionId, actions.onSectionSelected) }
-                    if (state.canAssign && state.sectionId != null) {
-                        item(key = "assign") {
-                            PrimaryButton(
-                                text = stringResource(R.string.homework_assign),
-                                onClick = actions.onAssign,
-                                leadingIcon = Icons.Outlined.Add,
-                                modifier = Modifier.fillMaxWidth(),
+        else -> Box(modifier.fillMaxSize()) {
+            val showAssign = state.canAssign && state.sectionId != null && state.sections.isNotEmpty()
+            RefreshBox(isRefreshing = state.isRefreshing, onRefresh = actions.onRefresh, modifier = Modifier.fillMaxSize()) {
+                ScreenColumn(contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = if (showAssign) 88.dp else 16.dp)) {
+                    if (state.branches.isNotEmpty()) {
+                        item(key = "branch") {
+                            ScopePicker(
+                                options = state.branches.map { SwitcherOption(it.id, it.name) },
+                                selectedId = state.branchId,
+                                onSelect = actions.onBranchSelected,
                             )
                         }
                     }
-                    homeworkList(state, actions)
+                    if (state.sections.isEmpty()) {
+                        item(key = "no_sections") {
+                            EmptyState(
+                                stringResource(R.string.homework_no_sections),
+                                message = stringResource(R.string.homework_no_sections_message),
+                                icon = Icons.Outlined.Groups,
+                            )
+                        }
+                    } else {
+                        item(key = "sections") { SectionChips(state.sections, state.sectionId, actions.onSectionSelected) }
+                        homeworkList(state, actions)
+                    }
                 }
+            }
+            if (showAssign) {
+                AppFloatingButton(
+                    text = stringResource(R.string.homework_assign),
+                    icon = Icons.Outlined.Add,
+                    onClick = actions.onAssign,
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+                )
             }
         }
     }

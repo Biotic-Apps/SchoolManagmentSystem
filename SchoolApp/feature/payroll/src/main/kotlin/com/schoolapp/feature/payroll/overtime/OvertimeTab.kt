@@ -1,5 +1,9 @@
 package com.schoolapp.feature.payroll.overtime
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -12,6 +16,7 @@ import androidx.compose.material.icons.outlined.MoreTime
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -19,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.schoolapp.core.data.fees.scope.FinanceBranch
+import com.schoolapp.core.designsystem.component.AppFloatingButton
 import com.schoolapp.core.designsystem.component.ConfirmDialog
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
@@ -50,48 +56,55 @@ internal fun OvertimeTab(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val rules = OvertimeRowRules(session.has("payroll.approve"), session.has("payroll.edit"), state.locked)
     val data = state.data
-    RefreshBox(state.isRefreshing, viewModel::refresh, modifier) {
-        ScreenColumn(itemSpacing = 12.dp) {
-            item(key = "month") { MonthHeader(state.month, state.canGoNext, viewModel::previousMonth, viewModel::nextMonth) }
-            if (data != null) {
-                item(key = "actions") {
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        if (!state.locked && data.overtimeEnabled) {
-                            SecondaryButton(stringResource(R.string.payroll_ot_find), viewModel::scan, loading = state.scanning, leadingIcon = Icons.Outlined.ManageSearch)
-                        }
-                        if (rules.canEdit && !state.locked) {
-                            SecondaryButton(stringResource(R.string.payroll_ot_add), viewModel::openForm, leadingIcon = Icons.Outlined.Add)
-                        }
-                        if (rules.canApprove && !state.locked && state.pendingIds.isNotEmpty()) {
-                            PrimaryButton(stringResource(R.string.payroll_ot_approve_all), viewModel::approveAll, loading = state.approvingAll, leadingIcon = Icons.Outlined.DoneAll)
+    Box(modifier.fillMaxSize()) {
+        RefreshBox(state.isRefreshing, viewModel::refresh, Modifier.fillMaxSize()) {
+            ScreenColumn(contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 88.dp), itemSpacing = 12.dp) {
+                item(key = "month") { MonthHeader(state.month, state.canGoNext, viewModel::previousMonth, viewModel::nextMonth) }
+                if (data != null) {
+                    item(key = "actions") {
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            if (!state.locked && data.overtimeEnabled) {
+                                SecondaryButton(stringResource(R.string.payroll_ot_find), viewModel::scan, loading = state.scanning, leadingIcon = Icons.Outlined.ManageSearch)
+                            }
+                            if (rules.canApprove && !state.locked && state.pendingIds.isNotEmpty()) {
+                                PrimaryButton(stringResource(R.string.payroll_ot_approve_all), viewModel::approveAll, loading = state.approvingAll, leadingIcon = Icons.Outlined.DoneAll)
+                            }
                         }
                     }
+                    item(key = "info") { OvertimeInfo(data.overtimeEnabled, data.staffLeavesAt, data.approvedMinutes) }
+                    if (state.locked) item(key = "locked") { InlineMessage(stringResource(R.string.payroll_ot_locked), StatusTone.Warning) }
                 }
-                item(key = "info") { OvertimeInfo(data.overtimeEnabled, data.staffLeavesAt, data.approvedMinutes) }
-                if (state.locked) item(key = "locked") { InlineMessage(stringResource(R.string.payroll_ot_locked), StatusTone.Warning) }
+                state.notice?.let { notice -> item(key = "notice") { InlineMessage(noticeText(notice), StatusTone.Success) } }
+                state.actionError?.let { item(key = "action_error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
+                when {
+                    state.isLoading && data == null -> item(key = "loading") { LoadingState() }
+                    data == null -> item(key = "error") { ErrorState(state.error?.let { appErrorMessage(it) }.orEmpty(), onRetry = viewModel::retry) }
+                    data.items.isEmpty() -> item(key = "empty") {
+                        EmptyState(
+                            title = stringResource(R.string.payroll_ot_empty),
+                            message = stringResource(R.string.payroll_ot_empty_message),
+                            icon = Icons.Outlined.MoreTime,
+                        )
+                    }
+                    else -> items(data.items, key = { "ot_${it.id}" }) { entry ->
+                        OvertimeRow(
+                            entry = entry,
+                            rules = rules,
+                            busy = state.busyId == entry.id || state.approvingAll,
+                            onDecide = { approve -> viewModel.decide(entry, approve) },
+                            onRemove = { viewModel.askRemove(entry) },
+                        )
+                    }
+                }
             }
-            state.notice?.let { notice -> item(key = "notice") { InlineMessage(noticeText(notice), StatusTone.Success) } }
-            state.actionError?.let { item(key = "action_error") { InlineMessage(appErrorMessage(it), StatusTone.Error) } }
-            when {
-                state.isLoading && data == null -> item(key = "loading") { LoadingState() }
-                data == null -> item(key = "error") { ErrorState(state.error?.let { appErrorMessage(it) }.orEmpty(), onRetry = viewModel::retry) }
-                data.items.isEmpty() -> item(key = "empty") {
-                    EmptyState(
-                        title = stringResource(R.string.payroll_ot_empty),
-                        message = stringResource(R.string.payroll_ot_empty_message),
-                        icon = Icons.Outlined.MoreTime,
-                    )
-                }
-                else -> items(data.items, key = { "ot_${it.id}" }) { entry ->
-                    OvertimeRow(
-                        entry = entry,
-                        rules = rules,
-                        busy = state.busyId == entry.id || state.approvingAll,
-                        onDecide = { approve -> viewModel.decide(entry, approve) },
-                        onRemove = { viewModel.askRemove(entry) },
-                    )
-                }
-            }
+        }
+        if (data != null && rules.canEdit && !state.locked) {
+            AppFloatingButton(
+                text = stringResource(R.string.payroll_ot_add),
+                icon = Icons.Outlined.Add,
+                onClick = viewModel::openForm,
+                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            )
         }
     }
     state.form?.let { form ->

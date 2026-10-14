@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.EventAvailable
 import androidx.compose.material.icons.outlined.TaskAlt
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -68,7 +69,7 @@ internal fun StaffMeetingsScreen(
                 state.isLoading -> LoadingState()
                 state.error != null && state.upcoming.items.isEmpty() && state.past.items.isEmpty() && state.followUps.isEmpty() ->
                     PullableState { ErrorState(appErrorMessage(state.error), onRetry = actions.onRetry) }
-                else -> ScreenColumn(contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = if (showSchedule) 88.dp else 16.dp)) {
+                else -> ScreenColumn(contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = if (showSchedule || onSlotsTab) 88.dp else 16.dp)) {
                     item(key = "tabs") {
                         AppTabs(
                             titles = tabs.map { stringResource(it.titleRes()) },
@@ -87,7 +88,14 @@ internal fun StaffMeetingsScreen(
                 }
             }
         }
-        if (showSchedule && !state.isLoading) {
+        if (onSlotsTab && !state.isLoading) {
+            AppFloatingButton(
+                text = stringResource(R.string.meetings_add_slots),
+                icon = Icons.Outlined.Add,
+                onClick = slotActions.onOpenSheet,
+                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            )
+        } else if (showSchedule && !state.isLoading) {
             AppFloatingButton(
                 text = stringResource(R.string.meetings_schedule),
                 icon = Icons.Outlined.CalendarMonth,

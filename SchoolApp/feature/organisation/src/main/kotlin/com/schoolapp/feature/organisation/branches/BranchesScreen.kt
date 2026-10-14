@@ -1,8 +1,9 @@
 package com.schoolapp.feature.organisation.branches
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,12 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.schoolapp.core.designsystem.component.AppFloatingButton
 import com.schoolapp.core.designsystem.component.AppTabs
 import com.schoolapp.core.designsystem.component.EmptyState
 import com.schoolapp.core.designsystem.component.ErrorState
 import com.schoolapp.core.designsystem.component.ListItemRow
 import com.schoolapp.core.designsystem.component.LoadingState
-import com.schoolapp.core.designsystem.component.PrimaryButton
 import com.schoolapp.core.designsystem.component.RefreshBox
 import com.schoolapp.core.designsystem.component.ScreenColumn
 import com.schoolapp.core.designsystem.component.StatusChip
@@ -68,41 +69,54 @@ private fun BranchList(
     editorState: BranchEditorState,
     editor: BranchEditor?,
 ) {
-    ScreenColumn(itemSpacing = 0.dp) {
-        val showToolbar = editorState.perms.canAdd || editorState.notice != null || editorState.openError != null
-        if (editor != null && showToolbar) item(key = "toolbar") { ListToolbar(editorState, editor) }
-        if (state.error != null && !state.hasContent) {
-            item(key = "error") { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
-            return@ScreenColumn
+    val canAdd = editor != null && editorState.perms.canAdd
+    Box(Modifier.fillMaxSize()) {
+        ScreenColumn(
+            contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = if (canAdd) FAB_CLEARANCE else 16.dp),
+            itemSpacing = 0.dp,
+        ) {
+            val showToolbar = editorState.notice != null || editorState.openError != null
+            if (editor != null && showToolbar) item(key = "toolbar") { ListToolbar(editorState, editor) }
+            if (state.error != null && !state.hasContent) {
+                item(key = "error") { ErrorState(appErrorMessage(state.error), onRetry = onRetry) }
+                return@ScreenColumn
+            }
+            if (state.error != null) item(key = "refresh-error") { RefreshErrorBanner(state.error, Modifier.padding(bottom = 16.dp)) }
+            dataListItems(
+                items = state.branches,
+                key = { it.id },
+                emptyContent = { EmptyState(title = stringResource(R.string.org_branches_empty), icon = Icons.Outlined.Apartment) },
+            ) { branch ->
+                ListItemRow(
+                    title = branch.name,
+                    supporting = listOfNotNull(branch.schoolName, branch.code, branch.principalName).joinToString(" · "),
+                    leadingIcon = Icons.Outlined.Apartment,
+                    onClick = { onOpenBranch(branch.id) },
+                    trailing = { branch.status?.let { StatusChip(humanizeKey(it), recordStatusTone(it)) } },
+                )
+            }
         }
-        if (state.error != null) item(key = "refresh-error") { RefreshErrorBanner(state.error, Modifier.padding(bottom = 16.dp)) }
-        dataListItems(
-            items = state.branches,
-            key = { it.id },
-            emptyContent = { EmptyState(title = stringResource(R.string.org_branches_empty), icon = Icons.Outlined.Apartment) },
-        ) { branch ->
-            ListItemRow(
-                title = branch.name,
-                supporting = listOfNotNull(branch.schoolName, branch.code, branch.principalName).joinToString(" · "),
-                leadingIcon = Icons.Outlined.Apartment,
-                onClick = { onOpenBranch(branch.id) },
-                trailing = { branch.status?.let { StatusChip(humanizeKey(it), recordStatusTone(it)) } },
-            )
-        }
+        if (canAdd && editor != null) AddBranchFab(editor, Modifier.align(Alignment.BottomEnd))
     }
 }
 
-/** Notice of the last save and "Add branch" (super admin) above the list. */
+/** "Add branch" (super admin) floating bottom-right above the bottom bar. */
+@Composable
+private fun AddBranchFab(editor: BranchEditor, modifier: Modifier = Modifier) {
+    AppFloatingButton(
+        text = stringResource(R.string.org_add_branch),
+        icon = Icons.Outlined.Add,
+        onClick = editor::openAdd,
+        modifier = modifier.padding(16.dp),
+    )
+}
+
+/** Notice of the last save above the list. */
 @Composable
 private fun ListToolbar(state: BranchEditorState, editor: BranchEditor) {
     Column(Modifier.fillMaxWidth().padding(bottom = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SuccessNotice(state.notice, editor::dismissNotice)
         ActionErrorMessage(state.openError)
-        if (state.perms.canAdd) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-                PrimaryButton(stringResource(R.string.org_add_branch), onClick = editor::openAdd, leadingIcon = Icons.Outlined.Add)
-            }
-        }
     }
 }
 
@@ -125,15 +139,23 @@ private fun SingleBranchContent(
             onSelect = { tab = it },
         )
         if (tab == 0) {
-            RefreshBox(state.isRefreshing, onRefresh, Modifier.fillMaxSize()) {
-                BranchOverviewContent(
-                    overview,
-                    refreshError = state.error,
-                    actions = editor?.let { { BranchActionsBar(overview.branch, editorState, it, showAdd = true) } },
-                )
+            val canAdd = editor != null && editorState.perms.canAdd
+            Box(Modifier.fillMaxSize()) {
+                RefreshBox(state.isRefreshing, onRefresh, Modifier.fillMaxSize()) {
+                    BranchOverviewContent(
+                        overview,
+                        refreshError = state.error,
+                        actions = editor?.let { { BranchActionsBar(overview.branch, editorState, it) } },
+                        bottomPadding = if (canAdd) FAB_CLEARANCE else 16.dp,
+                    )
+                }
+                if (canAdd && editor != null) AddBranchFab(editor, Modifier.align(Alignment.BottomEnd))
             }
         } else {
             calendarContent()
         }
     }
 }
+
+/** Room under the last item so the floating "Add branch" never covers it. */
+private val FAB_CLEARANCE = 88.dp

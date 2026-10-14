@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.ManageAccounts
@@ -17,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.schoolapp.core.designsystem.component.PrimaryButton
 import com.schoolapp.core.designsystem.component.SecondaryButton
 import com.schoolapp.core.designsystem.theme.AppColors
 import com.schoolapp.core.model.organisation.Branch
@@ -33,7 +31,6 @@ internal fun BranchActionsBar(
     state: BranchEditorState,
     editor: BranchEditor,
     modifier: Modifier = Modifier,
-    showAdd: Boolean = false,
 ) {
     val perms = state.perms
     val archiving = branch.status == "ACTIVE"
@@ -42,9 +39,6 @@ internal fun BranchActionsBar(
         SuccessNotice(state.notice, editor::dismissNotice)
         ActionErrorMessage(state.openError)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (showAdd && perms.canAdd) {
-                PrimaryButton(stringResource(R.string.org_add_branch), onClick = editor::openAdd, leadingIcon = Icons.Outlined.Add)
-            }
             if (perms.canEdit) {
                 SecondaryButton(stringResource(R.string.org_edit), onClick = { editor.openEdit(branch) }, leadingIcon = Icons.Outlined.Edit)
             }
