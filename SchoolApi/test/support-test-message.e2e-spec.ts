@@ -24,6 +24,8 @@ describe('Support test message (e2e)', () => {
 
   afterAll(async () => {
     jest.restoreAllMocks();
+    // Let fire-and-forget audit/notification writes finish before the pool closes.
+    await new Promise((r) => setTimeout(r, 500));
     await app.close();
   });
 

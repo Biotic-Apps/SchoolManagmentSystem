@@ -79,9 +79,10 @@ describe('Backups (e2e)', () => {
     expect(backup).toMatchObject({
       status: 'DONE',
       encrypted: true,
-      format: 'copy',
       error: null,
     });
+    // pg_dump where the client tools are installed (CI), the COPY dump otherwise.
+    expect(['pg_dump', 'copy']).toContain(backup.format);
     expect(backup.checksumSha256).toMatch(/^[0-9a-f]{64}$/);
     expect(backup.sizeBytes).toBeGreaterThan(1000);
     expect(backup.storageKey).toMatch(/^backups\/\d{4}\/\d{2}\/.+\.esbk$/);
