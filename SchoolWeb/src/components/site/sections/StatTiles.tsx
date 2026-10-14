@@ -19,7 +19,7 @@ const tail = counted.slice(4);
  */
 export function StatTiles() {
   return (
-    <Section id="features" tone="sunken">
+    <Section id="at-a-glance" tone="sunken">
       <SectionHeading eyebrow={STATS_COPY.eyebrow} title={STATS_COPY.title} body={STATS_COPY.body} />
 
       <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -32,7 +32,7 @@ export function StatTiles() {
               </span>
             </div>
             <div className="mt-6 grid flex-1 items-center gap-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
-              <AttendanceRing value={ring.value} label={ring.label} />
+              <AttendanceRing value={ring.value} label={STATS_COPY.ringUnit} />
               <div>
                 <dl className="grid grid-cols-2 gap-3 sm:grid-cols-1">
                   {[

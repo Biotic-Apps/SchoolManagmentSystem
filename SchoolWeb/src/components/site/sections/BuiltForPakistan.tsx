@@ -18,8 +18,8 @@ export function BuiltForPakistan() {
     >
       {/* Ambient light and a faint dot grid, all static and behind the content. */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -left-40 top-0 size-[34rem] rounded-full bg-brand-500/25 blur-[120px]" />
-        <div className="absolute -right-32 bottom-0 size-[30rem] rounded-full bg-accent-500/20 blur-[120px]" />
+        <div className="absolute -left-60 -top-40 size-[48rem] rounded-full bg-[radial-gradient(closest-side,rgb(123_104_238/0.32),transparent)]" />
+        <div className="absolute -bottom-40 -right-52 size-[44rem] rounded-full bg-[radial-gradient(closest-side,rgb(236_72_153/0.22),transparent)]" />
         <div className="absolute inset-0 bg-[radial-gradient(rgb(255_255_255/0.07)_1px,transparent_1px)] [background-size:26px_26px] [mask-image:linear-gradient(180deg,black,transparent_85%)]" />
       </div>
 

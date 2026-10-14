@@ -19,12 +19,14 @@ const TONES = [
   "from-accent-400 to-accent-600",
 ];
 /** Where each avatar lands when the fan opens: an offset from centre (in container
- *  width units, so it fits at 360px and at 1440px) and a slight tilt. */
+ *  width units, so it fits at 360px and at 1440px) a drop that
+ *  bends the row into an arc (and keeps neighbouring labels off one line on
+ *  narrow phones), and a slight tilt. */
 const FAN = [
-  { x: -37, r: -9 },
-  { x: -12.5, r: -3 },
-  { x: 12.5, r: 3 },
-  { x: 37, r: 9 },
+  { x: -35, y: 16, r: -9 },
+  { x: -12.5, y: 0, r: -3 },
+  { x: 12.5, y: 0, r: 3 },
+  { x: 35, y: 16, r: 9 },
 ];
 
 /** Step 3: one school account splitting into four role portals. */
@@ -36,21 +38,21 @@ export function RoleFan() {
     <div
       ref={ref}
       aria-hidden
-      className="relative h-[8.75rem] overflow-hidden rounded-xl border border-line bg-white"
+      className="relative h-[9.75rem] overflow-hidden rounded-xl border border-line bg-white"
     >
       <p className="absolute inset-x-0 top-3 text-center text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-faint">
         One school, four portals
       </p>
-      <div className="absolute inset-x-0 top-10 h-20 [container-type:inline-size]">
+      <div className="absolute inset-x-0 top-10 h-24 [container-type:inline-size]">
         {HOW_COPY.roles.map((role, i) => {
           const Icon = ICONS[i] ?? UserRound;
-          const fan = FAN[i] ?? { x: 0, r: 0 };
+          const fan = FAN[i] ?? { x: 0, y: 0, r: 0 };
           return (
             <div
               key={role}
               className="absolute left-1/2 top-0 flex w-[4.5rem] flex-col items-center transition-transform duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
               style={{
-                transform: `translateX(calc(-50% + ${open ? fan.x : (i - 1.5) * 2}cqw)) rotate(${open ? fan.r : 0}deg) scale(${open ? 1 : 0.85})`,
+                transform: `translateX(calc(-50% + ${open ? fan.x : (i - 1.5) * 2}cqw)) translateY(${open ? fan.y : 0}px) rotate(${open ? fan.r : 0}deg) scale(${open ? 1 : 0.85})`,
                 transitionDelay: open ? `${i * 80}ms` : "0ms",
                 zIndex: 4 - i,
               }}
@@ -65,7 +67,7 @@ export function RoleFan() {
               </span>
               <span
                 className={cn(
-                  "mt-2 whitespace-nowrap text-[0.68rem] font-semibold transition-opacity duration-500",
+                  "mt-2 whitespace-nowrap text-[0.6rem] font-semibold sm:text-[0.68rem] transition-opacity duration-500",
                   open ? "opacity-100" : "opacity-0",
                 )}
               >

@@ -17,7 +17,7 @@ export function AttendanceRing({ value, label }: { value: number; label: string 
   const share = value / 100;
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[15rem]">
+    <div className="relative mx-auto aspect-square w-full max-w-[12rem] sm:max-w-[15rem]">
       <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="size-full -rotate-90" aria-hidden>
         <defs>
           <linearGradient id="attendance-ring" x1="0" y1="0" x2="1" y2="1">
@@ -53,7 +53,7 @@ export function AttendanceRing({ value, label }: { value: number; label: string 
             <CountUp value={value} decimals={0} durationMs={1600} />
             <span className="text-[0.5em] font-medium text-faint">%</span>
           </p>
-          <p className="mt-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-faint">{label}</p>
+          <p className="mt-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.08em] text-faint sm:text-[0.7rem] sm:tracking-[0.12em]">{label}</p>
         </div>
       </div>
     </div>

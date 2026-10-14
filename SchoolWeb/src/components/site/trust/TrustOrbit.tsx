@@ -28,7 +28,7 @@ function OrbitRings() {
       >
         <span className="absolute left-1/2 top-0 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent-400 shadow-[0_0_12px_#f472b6]" />
       </motion.div>
-      <div className="absolute inset-[24%] rounded-full bg-brand-400/15 blur-2xl" />
+      <div className="absolute inset-[18%] rounded-full bg-[radial-gradient(closest-side,rgb(167_139_250/0.28),transparent)]" />
     </div>
   );
 }

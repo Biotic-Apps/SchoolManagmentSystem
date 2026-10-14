@@ -50,7 +50,7 @@ export function TimelineStep({
         data-card
         data-side={left ? "left" : "right"}
         className={cn(
-          "rounded-[1.4rem] border border-line bg-white/90 p-6 shadow-[var(--shadow-lift)] backdrop-blur sm:p-7",
+          "rounded-[1.4rem] border border-line bg-white p-6 shadow-[var(--shadow-lift)] sm:p-7",
           left ? "lg:col-start-1" : "lg:col-start-2",
         )}
       >

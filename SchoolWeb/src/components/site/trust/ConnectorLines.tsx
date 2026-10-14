@@ -55,8 +55,8 @@ export function ConnectorLines({
           <g key={i}>
             <motion.path
               d={line.d}
-              stroke={on ? "url(#trust-connector)" : "#d9d2f7"}
-              strokeWidth={on ? 2 : 1.25}
+              stroke={on ? "url(#trust-connector)" : "#b4a8f2"}
+              strokeWidth={on ? 2.5 : 1.5}
               strokeLinecap="round"
               initial={{ pathLength: 0 }}
               animate={drawn ? { pathLength: 1 } : undefined}

@@ -53,16 +53,16 @@ export function FeatureCard({
         {String(index + 1).padStart(2, "0")}
       </div>
 
-      <div className="relative grid h-full items-center gap-10 p-6 sm:p-10 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-12 lg:p-12">
+      <div className="relative grid h-full items-center gap-10 p-6 sm:p-10 lg:grid-cols-2 lg:gap-10 lg:px-12 lg:py-10">
         <div className="min-w-0">
           <DeckCounter index={index} total={total} barRef={barRef} />
-          <p className="mt-6 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brand-700">
+          <p className="mt-5 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brand-700">
             {feature.eyebrow}
           </p>
-          <h3 className="mt-3 text-balance text-[1.7rem] font-semibold leading-[1.12] tracking-[-0.03em] sm:text-[2.1rem] lg:text-[2.2rem]">
+          <h3 className="mt-3 text-balance text-[1.7rem] font-semibold leading-[1.12] tracking-[-0.03em] sm:text-[2.1rem] lg:text-[2rem]">
             {feature.title}
           </h3>
-          <p className="mt-4 max-w-xl text-pretty text-[0.98rem] leading-[1.6] text-muted">
+          <p className="mt-3 max-w-xl text-pretty text-[0.96rem] leading-[1.6] text-muted">
             {feature.body}
           </p>
           <FeaturePoints feature={feature} shown={shown} />

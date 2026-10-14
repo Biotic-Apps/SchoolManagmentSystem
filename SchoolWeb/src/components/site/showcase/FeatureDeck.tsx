@@ -48,7 +48,7 @@ export function FeatureDeck() {
               ref={(node) => {
                 slots.current[index] = node;
               }}
-              className="[@media(min-width:1024px)_and_(min-height:700px)]:sticky [@media(min-width:1024px)_and_(min-height:700px)]:h-[min(660px,calc(100svh-var(--site-header-height)-6rem))]"
+              className="[@media(min-width:1024px)_and_(min-height:700px)]:sticky [@media(min-width:1024px)_and_(min-height:700px)]:h-[min(720px,calc(100svh-var(--site-header-height)-5rem))]"
               style={{
                 top: `calc(var(--site-header-height) + 1.75rem + ${index * 14}px)`,
               }}

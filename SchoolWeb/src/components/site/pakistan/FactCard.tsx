@@ -52,12 +52,12 @@ export function FactCard({ fact }: { fact: Fact }) {
       data-motion
       variants={flipUp}
       style={{ transformOrigin: "50% 0%" }}
-      className="group relative overflow-hidden rounded-[1.4rem] border border-white/12 bg-white/[0.06] p-6 backdrop-blur-md transition-colors duration-300 hover:border-white/25 hover:bg-white/[0.1] sm:p-7"
+      className="group relative overflow-hidden rounded-[1.4rem] border border-white/12 bg-white/[0.06] p-6 transition-colors duration-300 hover:border-white/25 hover:bg-white/[0.1] sm:p-7"
     >
       {/* A soft glow that wakes up behind the icon on hover. */}
       <span
         aria-hidden
-        className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-accent-500/25 opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
+        className="pointer-events-none absolute -right-10 -top-10 size-48 rounded-full bg-[radial-gradient(closest-side,rgb(236_72_153/0.3),transparent)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
       />
       <div className="relative flex items-start justify-between gap-4">
         <p className="bg-gradient-to-br from-white to-brand-200 bg-clip-text text-[2.2rem] font-semibold leading-none tracking-[-0.04em] text-transparent">

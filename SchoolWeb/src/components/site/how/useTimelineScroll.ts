@@ -87,7 +87,8 @@ export function useTimelineScroll(
             trigger: node,
             start: `center ${EDGE}`,
             onEnter: () => tl.play(),
-            onLeaveBack: () => tl.reverse(),
+            // Once a step is shown it stays: hiding cards again on scroll-up reads as a glitch.
+            once: true,
           },
         });
       });

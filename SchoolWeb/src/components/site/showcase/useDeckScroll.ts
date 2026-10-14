@@ -10,7 +10,7 @@ type DeckRefs = {
   marks: RefObject<Array<HTMLDivElement | null>>;
   /** Each sticky slot, in order. */
   slots: RefObject<Array<HTMLDivElement | null>>;
-  /** The element inside each slot that is scaled, dimmed and blurred. */
+  /** The element inside each slot that is scaled and dimmed (no blur: filtering a full card every scroll frame stutters). */
   cards: RefObject<Array<HTMLDivElement | null>>;
   /** The dimming veil inside each card. */
   veils: RefObject<Array<HTMLDivElement | null>>;
@@ -70,10 +70,9 @@ export function useDeckScroll({ marks, slots, cards, veils, bars }: DeckRefs) {
         };
         gsap.fromTo(
           card,
-          { scale: 1, filter: "blur(0px)" },
+          { scale: 1 },
           {
             scale: 0.92,
-            filter: "blur(2px)",
             ease: "none",
             scrollTrigger: { ...range },
           },

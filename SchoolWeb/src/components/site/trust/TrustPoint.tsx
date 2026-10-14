@@ -55,7 +55,7 @@ export function TrustPoint({ point, active, align = "left" }: TrustPointProps) {
   return (
     <div
       className={cn(
-        "rounded-2xl border bg-white/80 p-5 backdrop-blur transition-[border-color,box-shadow,transform] duration-300",
+        "rounded-2xl border bg-white p-5 transition-[border-color,box-shadow,transform] duration-300",
         active
           ? "-translate-y-0.5 border-brand-300 shadow-[var(--shadow-lift),var(--shadow-glow)]"
           : "border-line shadow-[var(--shadow-soft)]",

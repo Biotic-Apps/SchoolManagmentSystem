@@ -48,7 +48,7 @@ export function HeroVisual() {
         </div>
       </div>
 
-      <div data-speed="56" className="[transform-style:preserve-3d] absolute -bottom-[16%] left-0 w-[27%] lg:-left-[7%] lg:w-[29%]">
+      <div data-speed="56" className="[transform-style:preserve-3d] absolute -bottom-[40%] left-0 w-[22%] lg:-bottom-[30%] lg:-left-[9%] lg:w-[25%]">
         <div data-depth="26" className="hero-depth">
           <motion.div
             data-motion
@@ -74,7 +74,7 @@ export function HeroVisual() {
         </div>
       </div>
 
-      <div data-speed="68" className="[transform-style:preserve-3d] absolute -bottom-[12%] right-[4%] lg:-bottom-[6%] lg:right-[10%]">
+      <div data-speed="68" className="[transform-style:preserve-3d] absolute -bottom-[26%] right-0 lg:-bottom-[6%] lg:right-[10%]">
         <div data-depth="32" className="hero-depth">
           <NotificationChip
             icon={Wallet}

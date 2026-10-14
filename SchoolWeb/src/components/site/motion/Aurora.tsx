@@ -15,11 +15,11 @@ type AuroraProps = {
  */
 const BLOBS = {
   panel: [
-    "left-[-10%] top-[-30%] size-[38rem] bg-brand-500/70 [animation-duration:18s]",
+    "left-[-10%] top-[-30%] size-[38rem] bg-brand-500/55 [animation-duration:18s]",
     "right-[-8%] top-[-20%] size-[30rem] bg-accent-500/45 [animation-delay:-6s] [animation-duration:23s]",
     "left-[30%] top-[25%] size-[26rem] bg-tile-indigo/55 [animation-delay:-11s] [animation-duration:15s]",
     "left-[-6%] bottom-[-35%] size-[32rem] bg-brand-400/45 [animation-delay:-3s] [animation-duration:27s]",
-    "right-[12%] bottom-[-40%] size-[34rem] bg-brand-600/70 [animation-delay:-16s] [animation-duration:20s]",
+    "right-[12%] bottom-[-40%] size-[34rem] bg-brand-700/70 [animation-delay:-16s] [animation-duration:20s]",
   ],
   page: [
     "left-[-12%] top-[-30%] size-[30rem] bg-brand-300/35 [animation-duration:20s]",

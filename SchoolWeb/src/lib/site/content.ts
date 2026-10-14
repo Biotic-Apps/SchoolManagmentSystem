@@ -106,6 +106,7 @@ export const STATS_COPY = {
   disclaimer: "Figures shown are illustrative. Your dashboard reads your own school's records.",
   ringTitle: "Attendance today",
   ringCaption: "Marked from classrooms on phones and the web, synced the moment it is saved.",
+  ringUnit: "Students present",
   ringPresent: "Present",
   ringPresentValue: "1,198",
   ringAbsent: "Absent or on leave",

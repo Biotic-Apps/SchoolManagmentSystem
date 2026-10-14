@@ -20,8 +20,8 @@ export function Hero() {
     <section id="top" className="relative overflow-hidden">
       <HeroBackground />
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-x-10 gap-y-16 px-5 pb-24 pt-28 sm:px-8 sm:pt-32 lg:min-h-[min(100svh,860px)] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:pb-28 lg:pt-36 xl:gap-x-16">
-        <div className="relative z-10 max-w-xl">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-x-10 gap-y-20 px-5 pb-32 pt-28 sm:px-8 sm:pt-32 lg:min-h-[min(100svh,860px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:pb-36 lg:pt-36 xl:gap-x-16">
+        <div className="relative z-10 max-w-[36rem]">
           <Reveal>
             <span className="inline-flex items-center gap-2 rounded-full border border-brand-200/70 bg-white/70 px-3 py-1 text-[0.72rem] font-medium text-brand-800">
               <span className="relative flex size-2">
@@ -36,7 +36,7 @@ export function Hero() {
             label={HERO_COPY.headline}
             lead={HERO_COPY.headlineLead}
             rotating={HERO_COPY.rotating}
-            className="mt-6 text-[2.35rem] font-semibold leading-[1.06] tracking-[-0.04em] text-foreground sm:text-[3.1rem] lg:text-[3.4rem] xl:text-[3.85rem]"
+            className="mt-6 text-[2.15rem] font-semibold leading-[1.06] tracking-[-0.04em] text-foreground sm:text-[3rem] lg:text-[2.7rem] xl:text-[3.3rem]"
           />
 
           <Reveal delay={0.5}>
