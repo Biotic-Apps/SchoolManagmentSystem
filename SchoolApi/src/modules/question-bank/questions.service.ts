@@ -32,7 +32,7 @@ export class QuestionsService {
 
   async get(scope: Scope, id: string): Promise<QuestionDto> {
     const row = await this.repository.findById(id);
-    if (!row || !scope.schoolIds.has(row.schoolId)) throw notFound('Question');
+    if (!row || !scope.canReadSchool(row.schoolId)) throw notFound('Question');
     return toQuestionDto(row);
   }
 
@@ -41,7 +41,7 @@ export class QuestionsService {
     scope: Scope,
     dto: CreateQuestionDto,
   ): Promise<QuestionDto> {
-    if (!scope.schoolIds.has(dto.schoolId))
+    if (!scope.canManageSchool(dto.schoolId))
       throw invalid('School not in your scope');
     // Validate subject belongs to this school
     const subject = await this.prisma.subject.findUnique({
@@ -78,7 +78,7 @@ export class QuestionsService {
     dto: UpdateQuestionDto,
   ): Promise<QuestionDto> {
     const existing = await this.repository.findById(id);
-    if (!existing || !scope.schoolIds.has(existing.schoolId))
+    if (!existing || !scope.canManageSchool(existing.schoolId))
       throw notFound('Question');
 
     const row = await this.repository.update(id, {
@@ -104,7 +104,7 @@ export class QuestionsService {
 
   async archive(scope: Scope, id: string): Promise<QuestionDto> {
     const existing = await this.repository.findById(id);
-    if (!existing || !scope.schoolIds.has(existing.schoolId))
+    if (!existing || !scope.canManageSchool(existing.schoolId))
       throw notFound('Question');
     const row = await this.repository.update(id, { status: 'ARCHIVED' });
     return toQuestionDto(row);

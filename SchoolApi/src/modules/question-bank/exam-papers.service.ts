@@ -65,7 +65,7 @@ export class ExamPapersService {
         class: { select: { id: true, name: true } },
       },
     });
-    if (!row || !scope.schoolIds.has(row.schoolId))
+    if (!row || !scope.canReadSchool(row.schoolId))
       throw notFound('Exam paper');
     return toExamPaperDto(row);
   }
@@ -76,7 +76,7 @@ export class ExamPapersService {
     scope: Scope,
     dto: GenerateExamPaperDto,
   ): Promise<ExamPaperDto> {
-    if (!scope.schoolIds.has(dto.schoolId))
+    if (!scope.canManageSchool(dto.schoolId))
       throw invalid('School not in your scope');
 
     const sections: PaperSectionDto[] = [];
@@ -133,7 +133,7 @@ export class ExamPapersService {
     const existing = await this.prisma.generatedPaper.findUnique({
       where: { id },
     });
-    if (!existing || !scope.schoolIds.has(existing.schoolId))
+    if (!existing || !scope.canManageSchool(existing.schoolId))
       throw notFound('Exam paper');
 
     const row = await this.prisma.generatedPaper.update({

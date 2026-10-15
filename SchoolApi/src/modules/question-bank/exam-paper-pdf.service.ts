@@ -26,7 +26,7 @@ export class ExamPaperPdfService {
         school: { select: { name: true } },
       },
     });
-    if (!paper || !scope.schoolIds.has(paper.schoolId))
+    if (!paper || !scope.canReadSchool(paper.schoolId))
       throw notFound('Exam paper');
 
     // Fetch all questions referenced in sections

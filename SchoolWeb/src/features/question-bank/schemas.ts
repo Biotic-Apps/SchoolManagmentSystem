@@ -12,7 +12,10 @@ export const questionSchema = z.object({
   // Plain strings so the form can start empty (""); refine enforces a real choice.
   questionType: z.string().refine((v) => QUESTION_TYPES.includes(v as QuestionType), "Choose a type"),
   difficultyLevel: z.string().refine((v) => DIFFICULTY_LEVELS.includes(v as DifficultyLevel), "Choose difficulty"),
-  marks: z.string().regex(/^[1-9]\d{0,1}$/, "Enter marks (1-99)"),
+  marks: z
+    .string()
+    .regex(/^\d{1,3}$/, "Enter marks (1-100)")
+    .refine((v) => Number(v) >= 1 && Number(v) <= 100, "Enter marks (1-100)"),
   questionText: requiredText("the question", 5000),
   options: z.string().optional(),
   correctAnswer: requiredText("the correct answer", 2000),

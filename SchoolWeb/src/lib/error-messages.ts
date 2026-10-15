@@ -56,6 +56,8 @@ const SERVER_MESSAGE_CODES = new Set([
 const FALLBACK = "Something went wrong. Please try again.";
 /** The API's default text for a missing permission. */
 const GENERIC_FORBIDDEN = "Permission denied";
+/** The API's default text when class-validator rejects the body (details carry the reasons). */
+const GENERIC_VALIDATION = "Validation failed";
 
 const ROUTE_MISSING = /^Cannot (GET|POST|PUT|PATCH|DELETE) /;
 
@@ -81,6 +83,13 @@ export function errorMessage(error: unknown): string {
     error.code === "FORBIDDEN" &&
     error.message &&
     error.message !== GENERIC_FORBIDDEN
+  )
+    return error.message;
+  // A server rule (e.g. "Class does not belong to this school") tells the user what to fix.
+  if (
+    error.code === "VALIDATION_FAILED" &&
+    error.message &&
+    error.message !== GENERIC_VALIDATION
   )
     return error.message;
   return FRIENDLY[error.code] ?? FALLBACK;
