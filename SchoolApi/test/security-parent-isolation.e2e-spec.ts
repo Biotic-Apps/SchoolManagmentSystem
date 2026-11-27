@@ -21,6 +21,7 @@ interface Probe {
 }
 
 let staffId = '';
+let examId = '';
 
 const q = (path: string) => (id: string) => `${path}?studentId=${id}`;
 const p = (suffix: string) => (id: string) => `/students/${id}${suffix}`;
@@ -55,6 +56,7 @@ const PROBES: Record<string, Probe> = {
   // Parents hold no inventory.view.
   'GET /inventory/movements': { url: q('/inventory/movements'), own: 403 },
   'GET /invoices': { url: q('/invoices') },
+  'GET /results': { url: (id) => `/results?examId=${examId}&studentId=${id}` },
   'GET /meetings': { url: q('/meetings') },
   'GET /meetings/teachers': { url: q('/meetings/teachers') },
   'GET /messages/recipients': { url: q('/messages/recipients') },
@@ -105,6 +107,13 @@ describe('Security: parent isolation sweep (e2e)', () => {
     expect(otherStudent).toBeDefined();
     const staff = await as(app, principal).get('/staff?pageSize=1').expect(200);
     staffId = (staff.body as { data: { id: string }[] }).data[0].id;
+    const exams = await as(app, principal)
+      .get('/exams?pageSize=50')
+      .expect(200);
+    examId = (
+      exams.body as { data: { id: string; status: string }[] }
+    ).data.find((exam) => exam.status === 'PUBLISHED')?.id as string;
+    expect(examId).toBeDefined();
     // The ID card read 404s until a card exists; request one (inline job).
     await as(app, principal).post(`/students/${ownChild}/id-card`).expect(200);
   });

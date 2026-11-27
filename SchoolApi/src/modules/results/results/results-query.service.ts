@@ -29,6 +29,8 @@ export class ResultsQueryService {
   ) {}
 
   async list(scope: Scope, query: ResultQueryDto): Promise<StudentResultDto[]> {
+    // Parents filtering by a child who is not theirs get 404, not an empty list (security.md §2.5).
+    scope.assertGuardianStudent(query.studentId);
     const exam = await this.exams.read(scope, query.examId);
     const where: Prisma.ExamResultWhereInput = {
       examId: exam.id,
