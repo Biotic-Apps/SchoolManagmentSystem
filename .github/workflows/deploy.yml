@@ -1,0 +1,121 @@
+name: Deploy
+
+# Builds the API and web images on GitHub (native ARM64 runner, matching the Oracle Ampere server), pushes them to
+# GHCR, then SSHes to the server and runs infra/scripts/deploy-images.sh. The server never builds anything.
+#
+# Repository settings (Settings › Secrets and variables › Actions):
+#   secrets   SSH_HOST          server public IP / hostname
+#             SSH_USER          login user (ubuntu on Oracle Ubuntu images)
+#             SSH_KEY           private key of the deploy key pair (its .pub is in the server's authorized_keys)
+#             SSH_KNOWN_HOSTS   output of `ssh-keyscan <host>` taken once from a trusted machine
+#   variables API_DOMAIN        e.g. api.futurelearning.duckdns.org (compiled into the web bundle)
+#             WEB_IDLE_TIMEOUT_MINUTES (optional, default 30)
+#             WEB_ASSET_ORIGINS        (optional)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch, tag or commit to deploy
+        default: main
+        required: true
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build:
+    name: Build ${{ matrix.app }} (arm64)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 40
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+    strategy:
+      fail-fast: true
+      matrix:
+        app: [api, web]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - id: meta
+        run: |
+          owner="$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
+          echo "image=${REGISTRY}/${owner}/eschool-${{ matrix.app }}" >> "$GITHUB_OUTPUT"
+          echo "tag=$(git rev-parse --short=12 HEAD)" >> "$GITHUB_OUTPUT"
+          if [ "${{ matrix.app }}" = api ]; then echo "context=SchoolApi" >> "$GITHUB_OUTPUT"; else echo "context=SchoolWeb" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Check web build settings
+        if: matrix.app == 'web'
+        run: test -n "${{ vars.API_DOMAIN }}" || { echo "::error::Set the repository variable API_DOMAIN"; exit 1; }
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: ${{ steps.meta.outputs.context }}
+          platforms: linux/arm64
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
+            ${{ steps.meta.outputs.image }}:latest
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://${{ vars.API_DOMAIN }}/api/v1
+            NEXT_PUBLIC_IDLE_TIMEOUT_MINUTES=${{ vars.WEB_IDLE_TIMEOUT_MINUTES || '30' }}
+            NEXT_PUBLIC_ASSET_ORIGINS=${{ vars.WEB_ASSET_ORIGINS }}
+          cache-from: type=gha,scope=${{ matrix.app }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.app }}
+
+  deploy:
+    name: Deploy to server
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: SSH setup
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          printf 'Host server\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/deploy\n  StrictHostKeyChecking yes\n' \
+            "${{ secrets.SSH_HOST }}" "${{ secrets.SSH_USER }}" > ~/.ssh/config
+
+      - name: Copy infra files (never touches infra/.env)
+        run: |
+          tar -C infra -cz docker-compose.prod.yml caddy postgres scripts \
+            | ssh server 'install -d /opt/eschool/infra && tar -C /opt/eschool/infra -xz && chmod +x /opt/eschool/infra/scripts/*.sh'
+
+      - name: Pull and restart
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # The job token only lives for this run; the server forgets it again right after the pull.
+          printf '%s' "$GHCR_TOKEN" | ssh server "docker login ${REGISTRY} -u '${{ github.actor }}' --password-stdin >/dev/null"
+          ssh server "/opt/eschool/infra/scripts/deploy-images.sh '${{ needs.build.outputs.tag }}'; rc=\$?; docker logout ${REGISTRY} >/dev/null; exit \$rc"
+
+      - name: Remove SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy

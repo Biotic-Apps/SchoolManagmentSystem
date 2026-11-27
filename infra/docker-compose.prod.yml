@@ -62,7 +62,8 @@ services:
     logging: *logging
 
   clamav:
-    image: clamav/clamav:stable
+    # clamav-debian is multi-arch (amd64 + arm64); clamav/clamav is amd64 only.
+    image: ${CLAMAV_IMAGE:-clamav/clamav-debian:stable}
     restart: unless-stopped
     # Signature download on first start takes a few minutes; the image ships its own healthcheck.
     volumes:
@@ -74,7 +75,9 @@ services:
     build:
       context: ../SchoolApi
       dockerfile: Dockerfile
-    image: eschool-api:${IMAGE_TAG:-latest}
+    # API_IMAGE / WEB_IMAGE = a registry path (e.g. ghcr.io/<owner>/eschool-api) to pull prebuilt images
+    # (scripts/deploy-images.sh) instead of building on this server.
+    image: ${API_IMAGE:-eschool-api}:${IMAGE_TAG:-latest}
     restart: unless-stopped
     init: true
     env_file: .env
@@ -126,7 +129,7 @@ services:
         NEXT_PUBLIC_API_URL: https://${API_DOMAIN}/api/v1
         NEXT_PUBLIC_IDLE_TIMEOUT_MINUTES: ${WEB_IDLE_TIMEOUT_MINUTES:-30}
         NEXT_PUBLIC_ASSET_ORIGINS: ${WEB_ASSET_ORIGINS:-}
-    image: eschool-web:${IMAGE_TAG:-latest}
+    image: ${WEB_IMAGE:-eschool-web}:${IMAGE_TAG:-latest}
     restart: unless-stopped
     init: true
     environment:
