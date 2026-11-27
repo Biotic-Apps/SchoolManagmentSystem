@@ -57,8 +57,9 @@ export class AuthController {
     });
   }
 
+  // Not in the strict credential throttle: refresh tokens are 256-bit random values (no guessing), and a 429
+  // here signs the user out. The general per-caller limit still applies.
   @Public()
-  @AuthThrottle()
   @Post('refresh')
   @HttpCode(200)
   @ApiData(AuthTokensDto)

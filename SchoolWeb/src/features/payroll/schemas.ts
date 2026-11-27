@@ -35,13 +35,27 @@ export function toPaymentInput(staffId: string, values: PaymentValues): PayrollP
 const salaryItem = z.object({ name: requiredText("a name", 60), amount: moneyText("the amount") });
 export type SalaryItemValues = z.infer<typeof salaryItem>;
 
-export const structureSchema = z.object({
-  effectiveFrom: month,
-  basic: moneyText("the basic salary"),
-  allowances: z.array(salaryItem),
-  deductions: z.array(salaryItem),
-  overtimeRate: moneyText("the overtime rate", { required: false }),
-});
+const itemsMinor = (list: SalaryItemValues[]) => list.reduce((sum, item) => sum + (toMinor(item.amount) ?? 0), 0);
+
+export const structureSchema = z
+  .object({
+    effectiveFrom: month,
+    basic: moneyText("the basic salary"),
+    allowances: z.array(salaryItem),
+    deductions: z.array(salaryItem),
+    overtimeRate: moneyText("the overtime rate", { required: false }),
+  })
+  // Same rule as the API: net salary may not be negative every month.
+  .superRefine((values, ctx) => {
+    const gross = (toMinor(values.basic) ?? 0) + itemsMinor(values.allowances);
+    if (values.deductions.length > 0 && itemsMinor(values.deductions) > gross) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["deductions", values.deductions.length - 1, "amount"],
+        message: "Deductions add up to more than basic + allowances. Recover a large advance as monthly adjustments.",
+      });
+    }
+  });
 export type StructureValues = z.infer<typeof structureSchema>;
 
 export function toStructureInput(values: StructureValues): SalaryStructureInput {

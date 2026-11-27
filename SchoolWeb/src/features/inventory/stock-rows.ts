@@ -27,6 +27,7 @@ export function toStockLine(row: StockRow, catalog: Map<string, InventoryItem>):
     unit: row.unit ?? item.unit ?? "",
     quantity,
     reorderLevel,
-    low: row.lowStock ?? (reorderLevel !== null && quantity <= reorderLevel),
+    // Reorder level 0 means no alert (as in the API).
+    low: row.lowStock ?? (reorderLevel !== null && reorderLevel > 0 && quantity <= reorderLevel),
   };
 }

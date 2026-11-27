@@ -22,3 +22,17 @@ export function paginationFrom(meta: PageMeta | undefined, onPageChange: (page: 
   if (!meta) return undefined;
   return { ...meta, onPageChange };
 }
+
+/** One page of a full (unpaginated) list, with table pagination props when it spans several pages. */
+export function localPage<T>(
+  rows: T[] | undefined,
+  page: number,
+  pageSize: number,
+  onPageChange: (page: number) => void,
+) {
+  if (!rows) return { rows: undefined, pagination: undefined };
+  const total = rows.length;
+  const current = Math.min(page, pageCount({ page, pageSize, total }));
+  const slice = rows.slice((current - 1) * pageSize, current * pageSize);
+  return { rows: slice, pagination: total > pageSize ? { page: current, pageSize, total, onPageChange } : undefined };
+}

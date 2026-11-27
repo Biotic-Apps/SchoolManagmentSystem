@@ -35,6 +35,8 @@ export class RunQueryDto extends PaginationQueryDto {
 export class PayrollLineDto {
   id!: string;
   staffId!: string;
+  /** Login of the staff member (the web hides "Record payment" on the viewer's own line). */
+  userId!: string | null;
   name!: string;
   designation!: string;
   employeeNo!: string | null;
@@ -54,6 +56,11 @@ export class PayrollLineDto {
   @ApiProperty({ type: PayBreakdownDto })
   breakdown!: PayBreakdownDto;
   netMinor!: number;
+  @ApiProperty({
+    description:
+      'Recovery that did not fit in this month (net stopped at zero); moved to next month as a deduction on approval',
+  })
+  carriedForwardMinor!: number;
   paidMinor!: number;
   balanceMinor!: number;
   @ApiProperty({ enum: PayrollLineStatus })

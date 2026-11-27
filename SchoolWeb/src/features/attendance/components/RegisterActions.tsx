@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckCheck, Save, Send } from "lucide-react";
+import { InlineNotice } from "@/components/shared/InlineNotice";
 import { Button } from "@/components/ui/Button";
 import type { RegisterTabState } from "../use-register-tab";
 
@@ -41,5 +42,24 @@ export function RegisterActions({ tab }: { tab: RegisterTabState }) {
         )}
       </div>
     </div>
+  );
+}
+
+/** Submitted / locked register with students who have no mark yet (e.g. enrolled after the submit). */
+export function RegisterFillActions({ tab }: { tab: RegisterTabState }) {
+  const count = tab.unmarkedRows;
+  return (
+    <InlineNotice tone="warning">
+      <span className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <span>
+          {count === 1 ? "1 student has" : `${count} students have`} no mark for this day. Mark them and save; the other
+          marks stay as submitted.
+        </span>
+        <Button size="sm" onClick={tab.saveDraft} loading={tab.saving} disabled={!tab.editor.dirty}>
+          <Save />
+          Save marks
+        </Button>
+      </span>
+    </InlineNotice>
   );
 }

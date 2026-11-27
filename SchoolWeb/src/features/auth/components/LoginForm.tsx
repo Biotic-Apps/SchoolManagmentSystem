@@ -14,7 +14,7 @@ export function LoginForm({ login }: { login: ReturnType<typeof useLoginForm> })
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <form onSubmit={submit} noValidate className="flex flex-col gap-5">
+    <form method="post" onSubmit={submit} noValidate className="flex flex-col gap-5">
       {notice && <InlineNotice>{notice}</InlineNotice>}
       <FormAlert message={serverError} />
       <FormField

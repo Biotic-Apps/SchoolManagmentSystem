@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../../core/common/decorators/current-user.decorator';
@@ -19,6 +20,7 @@ import type { Scope } from '../../../core/rbac/scope/scope';
 import {
   CreateSiblingDiscountDto,
   SiblingDiscountDto,
+  SiblingDiscountQueryDto,
   UpdateSiblingDiscountDto,
 } from './dto/sibling-discount.dto';
 import { SiblingDiscountsService } from './sibling-discounts.service';
@@ -32,8 +34,11 @@ export class SiblingDiscountsController {
   @Get()
   @RequirePermission('fees.view')
   @ApiData(SiblingDiscountDto, { isArray: true })
-  list(@CurrentScope() scope: Scope): Promise<SiblingDiscountDto[]> {
-    return this.service.list(scope);
+  list(
+    @CurrentScope() scope: Scope,
+    @Query() query: SiblingDiscountQueryDto,
+  ): Promise<SiblingDiscountDto[]> {
+    return this.service.list(scope, query.schoolId);
   }
 
   @Post()

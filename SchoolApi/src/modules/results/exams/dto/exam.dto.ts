@@ -16,6 +16,7 @@ import {
 import { ExamStatus, ExamType } from '../../../../generated/prisma/client';
 import { IdNameDto } from '../../../../core/common/dto/id-name.dto';
 import { PaginationQueryDto } from '../../../../core/common/pagination/pagination-query.dto';
+import { Trim } from '../../../../core/common/validation/trim';
 
 export class ExamQueryDto extends PaginationQueryDto {
   @IsOptional()
@@ -110,6 +111,15 @@ export class ExamStatusDto {
   @ApiProperty({ enum: ['MARKS_OPEN', 'MARKS_CLOSED'] })
   @IsIn(['MARKS_OPEN', 'MARKS_CLOSED'])
   status!: 'MARKS_OPEN' | 'MARKS_CLOSED';
+}
+
+export class ReopenMarksDto {
+  /** Why marks entry is reopened (kept in the audit log). */
+  @IsString()
+  @Trim()
+  @MinLength(3)
+  @MaxLength(500)
+  reason!: string;
 }
 
 export class ExamPaperDto {

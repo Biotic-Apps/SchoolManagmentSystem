@@ -45,12 +45,19 @@ export class ExpenseRefs {
   }
 }
 
-/** dueDate ≥ billDate; the recurring end month is not before the bill month. */
+/**
+ * dueDate ≥ billDate; the recurring end month is not before the bill month;
+ * a bill typed in (when `today` is given) is not dated in the future.
+ */
 export function assertExpenseDates(
   billDate: Date,
   dueDate: Date | null,
   untilMonth: string | null,
+  today?: Date,
 ): void {
+  if (today && billDate > today) {
+    throw invalid('billDate cannot be in the future');
+  }
   if (dueDate && dueDate < billDate) {
     throw invalid('dueDate must not be before billDate');
   }

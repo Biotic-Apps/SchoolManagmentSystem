@@ -18,7 +18,7 @@ interface ChildActivityCardProps {
 const CONSENT_LABEL = { PENDING: "Consent pending", GRANTED: "Consent given", DECLINED: "Consent declined" };
 
 export function ChildActivityCard({ activity, pending, onGrant, onDecline }: ChildActivityCardProps) {
-  const consent = activity.consentStatus ?? (activity.consentRequired ? "PENDING" : null);
+  const consent = activity.myConsent ?? (activity.consentRequired ? "PENDING" : null);
   const canRespond = consentOpen(activity, todayIso());
 
   return (

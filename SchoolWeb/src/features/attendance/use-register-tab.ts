@@ -12,6 +12,7 @@ import type { Register } from "./types";
 import { useRegisterEditor } from "./use-register-editor";
 
 const EDITABLE = new Set(["UNMARKED", "DRAFT"]);
+const CLOSED = new Set(["SUBMITTED", "LOCKED"]);
 
 /** Register for one section and day: load, mark locally, save draft or submit. */
 export function useRegisterTab(sectionId: string | null, date: string) {
@@ -29,6 +30,12 @@ export function useRegisterTab(sectionId: string | null, date: string) {
   const status = register?.status;
   const canEdit = can("attendance.edit") && !!status && EDITABLE.has(status);
   const canSubmit = canEdit && can("attendance.submit") && !isHelper;
+  // A submitted / locked register keeps its marks (changes need a correction), but students
+  // with no mark yet — e.g. enrolled after the submit — can still be marked by anyone who takes it.
+  const closed = can("attendance.edit") && !isHelper && !!status && CLOSED.has(status);
+  const unmarkedRows = closed ? (register?.entries.filter((entry) => !entry.entryId).length ?? 0) : 0;
+  const canFill = unmarkedRows > 0;
+  const isRowEditable = (row: { entryId: string | null }) => canEdit || (canFill && !row.entryId);
   const queryKey = attendanceKeys.register(sectionId, date);
 
   const handleError = (error: unknown) => {
@@ -82,8 +89,11 @@ export function useRegisterTab(sectionId: string | null, date: string) {
     notice,
     canEdit,
     canSubmit,
+    canFill,
+    unmarkedRows,
+    isRowEditable,
     isHelper,
-    canCorrect: can("attendance.edit") && status === "LOCKED",
+    canCorrect: closed,
     saveDraft,
     submitRegister,
     saving: save.isPending,

@@ -22,7 +22,7 @@ export function ConsentTracker({ activityId }: { activityId: string }) {
       )}
       <DataTable
         columns={CONSENT_COLUMNS}
-        rows={query.data?.consents}
+        rows={query.data?.items}
         getRowId={(row) => row.student.id}
         loading={query.isLoading}
         error={query.error}

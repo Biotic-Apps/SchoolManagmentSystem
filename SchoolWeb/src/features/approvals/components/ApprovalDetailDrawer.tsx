@@ -37,7 +37,8 @@ export function ApprovalDetailDrawer({ request, onClose }: ApprovalDetailDrawerP
             { label: "Requested by", value: summary.requestedBy.name },
             { label: "Created", value: formatDateTime(summary.createdAt) },
             { label: "Current step", value: formatNumber(summary.currentStep) },
-            { label: "Record", value: humanize(summary.entityType) },
+            // entityType is PascalCase ("AttendanceCorrection" → "Attendance correction").
+            { label: "Record", value: humanize(summary.entityType.replace(/([a-z])([A-Z])/g, "$1_$2")) },
             ...(typeof summary.amountMinor === "number"
               ? [{ label: "Amount", value: <MoneyText amountMinor={summary.amountMinor} /> }]
               : []),

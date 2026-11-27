@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { omit } from "@/lib/omit";
 import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { inventoryKeys } from "./keys";
@@ -20,7 +21,7 @@ export function useSaveAsset(branchId: string, assetId: string | null) {
     mutationFn: withRowFlash(
       async (input: AssetInput) => {
         const result = assetId
-          ? await http.patch<Asset>(`/assets/${assetId}`, input)
+          ? await http.patch<Asset>(`/assets/${assetId}`, omit(input, ["itemId", "tag"]))
           : await http.post<Asset>("/assets", { ...input, branchId });
         return result.data;
       },

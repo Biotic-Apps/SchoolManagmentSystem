@@ -13,6 +13,7 @@ import { AccessCache } from '../../core/rbac/access/access-cache';
 import type { Scope } from '../../core/rbac/scope/scope';
 import { assertSessionOpen } from '../academic-sessions/session-lock';
 import { DocumentsService } from '../documents/documents.service';
+import { seesCareOnly } from '../health/profile/health-profile.mapper';
 import type { RegisterStudentDto } from './dto/register-student.dto';
 import type {
   EnrollmentDto,
@@ -177,6 +178,7 @@ export class StudentsService {
       health,
       sensitive: user.permissions.has('people.sensitive.view'),
       medical,
+      careOnly: seesCareOnly(user.activeRole),
     });
   }
 

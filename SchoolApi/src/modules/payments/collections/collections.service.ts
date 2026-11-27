@@ -10,12 +10,15 @@ import type { Scope } from '../../../core/rbac/scope/scope';
 import { SchoolPeopleService } from '../../school-day/school-people.service';
 import { PAYMENT_INCLUDE } from '../payments/payment.mapper';
 import { PaymentReader } from '../payments/payment-reader';
+import { REFUND_INCLUDE, toRefundDto } from '../refunds/refund.mapper';
+import { refundsPaidWhere, refundTotals } from '../refunds/refunds-paid';
 import { FinanceAccess } from '../shared/finance-access';
 import { lockCollectionDay } from './collection-lock';
 import {
   cashDifference,
   closingNoteRequired,
   dailyTotals,
+  expectedCash,
   type DailyTotals,
 } from './daily-totals';
 import type { CloseDayDto, DailyCollectionDto } from './dto/collection.dto';
@@ -69,7 +72,14 @@ export class CollectionsService {
           },
         });
         const totals = dailyTotals(payments);
-        const difference = cashDifference(counted, totals.cashMinor);
+        const refunds = refundTotals(
+          await tx.refund.findMany({
+            where: refundsPaidWhere({ branchId: branch.id }, dto.date),
+            select: { method: true, amountMinor: true },
+          }),
+        );
+        const expected = expectedCash(totals, refunds.cashMinor);
+        const difference = cashDifference(counted, expected);
         if (closingNoteRequired(difference) && !note) {
           throw invalid('A note is required when the cash does not match', {
             differenceMinor: Number(difference),
@@ -80,8 +90,15 @@ export class CollectionsService {
             schoolId: branch.schoolId,
             branchId: branch.id,
             date,
-            totals: totalsJson(totals),
-            cashExpectedMinor: totals.cashMinor,
+            totals: {
+              ...totalsJson(totals),
+              refunded: {
+                count: refunds.count,
+                amountMinor: Number(refunds.totalMinor),
+                cashMinor: Number(refunds.cashMinor),
+              },
+            },
+            cashExpectedMinor: expected,
             cashCountedMinor: counted,
             differenceMinor: difference,
             note,
@@ -114,7 +131,7 @@ export class CollectionsService {
     branchId: string,
     date: Date,
   ): Promise<DailyCollectionDto> {
-    const [rows, closing] = await Promise.all([
+    const [rows, closing, refundRows] = await Promise.all([
       this.prisma.payment.findMany({
         where: { branchId, receivedOn: date },
         include: PAYMENT_INCLUDE,
@@ -123,11 +140,18 @@ export class CollectionsService {
       this.prisma.dailyCollection.findUnique({
         where: { branchId_date: { branchId, date } },
       }),
+      this.prisma.refund.findMany({
+        where: refundsPaidWhere({ branchId }, formatDate(date)),
+        include: REFUND_INCLUDE,
+        orderBy: { decidedAt: 'asc' },
+      }),
     ]);
     const totals = dailyTotals(rows);
+    const refunded = refundTotals(refundRows);
     const payments = await this.reader.dtos(rows);
     const names = await this.people.names([
       ...totals.byCashier.keys(),
+      ...refundRows.map((r) => r.requestedById),
       ...(closing ? [closing.closedById] : []),
     ]);
     const person = (id: string) => ({ id, name: names.get(id) ?? '' });
@@ -137,6 +161,12 @@ export class CollectionsService {
       count: totals.count,
       totalMinor: Number(totals.totalMinor),
       cashMinor: Number(totals.cashMinor),
+      refundedCount: refunded.count,
+      refundedMinor: Number(refunded.totalMinor),
+      cashRefundedMinor: Number(refunded.cashMinor),
+      netMinor: Number(totals.totalMinor - refunded.totalMinor),
+      expectedCashMinor: Number(expectedCash(totals, refunded.cashMinor)),
+      refunds: refundRows.map((row) => toRefundDto(row, names)),
       byMethod: [...totals.byMethod].map(([method, b]) => ({
         method,
         count: b.count,

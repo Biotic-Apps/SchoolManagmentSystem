@@ -21,12 +21,20 @@ export function useParentFees() {
   const upload = useDialogState<string>();
 
   const rows = invoices.data ?? [];
+  // Unpaid invoices a parent can settle, oldest due date first.
+  const payable = rows
+    .filter((invoice) => invoice.balanceMinor > 0 && invoice.status !== "CANCELLED" && invoice.status !== "DRAFT")
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+  const onlineGateway = summary.data?.onlineGatewayEnabled ? (summary.data.onlineGateway ?? null) : null;
   return {
     child,
     summary,
     invoices,
     rows,
-    hasOpenInvoice: rows.some((invoice) => invoice.balanceMinor > 0),
+    hasOpenInvoice: payable.length > 0,
+    payable,
+    /** The branch's wallet (JAZZCASH, EASYPAISA, MANUAL), or null when online payment is off. */
+    onlineGateway,
     invoiceColumns,
     proofs,
     proofCols,

@@ -49,6 +49,9 @@ export class BranchSettingsService {
 
     const before = await this.get(scope, branchId);
     await this.repository.save(branchId, values, user.id);
+    const lockTime = values['attendance.lockTime'];
+    if (typeof lockTime === 'string')
+      await this.repository.syncTimingLock(branchId, lockTime);
     const after = await this.get(scope, branchId);
     this.audit.stage({
       action: 'branch.settings_update',

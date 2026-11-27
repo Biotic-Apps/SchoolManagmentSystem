@@ -25,8 +25,9 @@ import javax.inject.Singleton
 
 /** Fee heads (per school), fee plans (per branch, session and class) and sibling discounts (per school). */
 interface FeeStructureApi {
+    // Plain lists: the API takes no paging params here (an unknown query param is rejected with 400).
     @GET("fee-heads")
-    suspend fun feeHeads(@Query("schoolId") schoolId: String?, @Query("pageSize") pageSize: Int = PAGE_SIZE): ApiEnvelope<List<FeeHeadDto>>
+    suspend fun feeHeads(@Query("schoolId") schoolId: String?): ApiEnvelope<List<FeeHeadDto>>
 
     @POST("fee-heads")
     suspend fun createFeeHead(@Body body: FeeHeadBodyDto): ApiEnvelope<FeeHeadDto>
@@ -35,7 +36,6 @@ interface FeeStructureApi {
     suspend fun feePlans(
         @Query("branchId") branchId: String,
         @Query("sessionId") sessionId: String,
-        @Query("pageSize") pageSize: Int = PAGE_SIZE,
     ): ApiEnvelope<List<FeePlanDto>>
 
     /** Body built as JSON so `lateFee: null` is sent explicitly. */
@@ -62,10 +62,6 @@ interface FeeStructureApi {
 
     @DELETE("sibling-discounts/{id}")
     suspend fun deleteSiblingDiscount(@Path("id") id: String): ApiEnvelope<JsonObject>
-
-    companion object {
-        const val PAGE_SIZE = 100
-    }
 }
 
 @Module

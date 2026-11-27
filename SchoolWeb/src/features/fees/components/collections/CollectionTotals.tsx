@@ -2,6 +2,7 @@
 
 import { MoneyText } from "@/components/shared/MoneyText";
 import { StatCard } from "@/components/shared/StatCard";
+import { formatMoney } from "@/lib/format";
 import { PAYMENT_METHOD_OPTIONS } from "../../payment-options";
 import type { DailyCollection } from "../../types";
 
@@ -14,7 +15,16 @@ interface CollectionTotalsProps {
 export function CollectionTotals({ day, loading }: CollectionTotalsProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-      <StatCard label="Total collected" loading={loading} value={<MoneyText amountMinor={day?.totalMinor} />} />
+      <StatCard
+        label="Total collected"
+        loading={loading}
+        value={<MoneyText amountMinor={day ? (day.netMinor ?? day.totalMinor) : undefined} />}
+        hint={
+          day?.refundedMinor
+            ? `${formatMoney(day.totalMinor)} received − ${formatMoney(day.refundedMinor)} refunded`
+            : undefined
+        }
+      />
       {PAYMENT_METHOD_OPTIONS.map((method) => {
         const row = day?.byMethod?.find((item) => item.method === method.id);
         return (

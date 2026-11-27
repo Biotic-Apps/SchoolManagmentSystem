@@ -24,16 +24,22 @@ export class WhatsAppController {
     @CurrentScope() scope: Scope,
     @Query() query: WhatsAppQueryDto,
   ): Promise<PageResult<unknown>> {
-    const filter = scope.schoolFilter();
-    // Global scope = all schools
-    const schoolIds =
-      filter.schoolId?.in ??
-      (
-        await this.prisma.school.findMany({
-          where: { status: 'ACTIVE' },
-          select: { id: true },
-        })
-      ).map((s) => s.id);
+    let schoolIds: string[];
+    if (query.schoolId) {
+      scope.assertReadSchool(query.schoolId);
+      schoolIds = [query.schoolId];
+    } else {
+      const filter = scope.schoolFilter();
+      // Global scope = all schools
+      schoolIds =
+        filter.schoolId?.in ??
+        (
+          await this.prisma.school.findMany({
+            where: { status: 'ACTIVE' },
+            select: { id: true },
+          })
+        ).map((s) => s.id);
+    }
     const { rows, total } = await this.repo.list(
       schoolIds,
       { status: query.status },

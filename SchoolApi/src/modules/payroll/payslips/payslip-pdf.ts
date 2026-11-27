@@ -11,6 +11,38 @@ export interface PayslipHeader {
 
 const money = (value: number) => formatMinor(BigInt(value));
 
+const MONTH_NAMES = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+/** `2026-11` → `November 2026` (as the web shows it). */
+export function payslipMonth(month: string): string {
+  const [year, index] = month.split('-').map(Number);
+  const name = MONTH_NAMES[index - 1];
+  return name ? `${name} ${year}` : month;
+}
+
+/** `TEACHER` / `HEAD_TEACHER` → `Teacher` / `Head Teacher`; free text stays as typed. */
+export function designationLabel(value: string): string {
+  if (!/^[A-Z0-9_]+$/.test(value)) return value;
+  return value
+    .split('_')
+    .filter(Boolean)
+    .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
 const COLUMNS = [
   { header: 'Item', weight: 1.6 },
   { header: 'How it was worked out', weight: 3.4 },
@@ -52,12 +84,16 @@ function drawPayslip(
   const b = slip.breakdown;
   if (draft) pdf.watermark('DRAFT - NOT APPROVED');
   pdf
-    .header(header.schoolName, header.branchLine, `Payslip — ${slip.month}`)
+    .header(
+      header.schoolName,
+      header.branchLine,
+      `Payslip — ${payslipMonth(slip.month)}`,
+    )
     .fields([
       ['Name', slip.staff.name],
       ['Employee no.', slip.staff.employeeNo ?? '-'],
-      ['Designation', slip.staff.designation.replace(/_/g, ' ')],
-      ['Month', slip.month],
+      ['Designation', designationLabel(slip.staff.designation)],
+      ['Month', payslipMonth(slip.month)],
       ...attendanceFields(slip),
     ])
     .heading('Earnings')

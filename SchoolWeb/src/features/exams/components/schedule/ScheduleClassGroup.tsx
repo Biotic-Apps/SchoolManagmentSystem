@@ -39,7 +39,7 @@ export function ScheduleClassGroup(props: ScheduleClassGroupProps) {
   const subjects = useClassSubjectOptions(classId);
 
   return (
-    <section className="flex flex-col gap-3">
+    <section className="flex min-w-0 flex-col gap-3">
       <SectionHeading
         title={className}
         actions={
@@ -51,7 +51,7 @@ export function ScheduleClassGroup(props: ScheduleClassGroupProps) {
           )
         }
       />
-      <div className="overflow-hidden rounded-card border border-border bg-surface shadow-card">
+      <div className="min-w-0 max-w-full overflow-hidden rounded-card border border-border bg-surface shadow-card">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">

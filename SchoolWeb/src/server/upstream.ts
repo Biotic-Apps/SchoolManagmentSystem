@@ -5,6 +5,16 @@ const API_URL = (process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "").r
 export interface UpstreamResult {
   status: number;
   payload: unknown;
+  /** Seconds from the API's Retry-After (or a named throttler's Retry-After-<name>) on a 429. */
+  retryAfter?: string;
+}
+
+function retryAfterOf(headers: Headers): string | undefined {
+  let value = headers.get("retry-after") ?? undefined;
+  headers.forEach((headerValue, name) => {
+    if (!value && name.toLowerCase().startsWith("retry-after-")) value = headerValue;
+  });
+  return value && /^\d{1,6}$/.test(value.trim()) ? value.trim() : undefined;
 }
 
 const UNREACHABLE: UpstreamResult = {
@@ -49,7 +59,7 @@ export async function postToApi(path: string, body: unknown, headers: Record<str
     } catch {
       payload = null;
     }
-    return { status: response.status, payload };
+    return { status: response.status, payload, retryAfter: retryAfterOf(response.headers) };
   } catch {
     return UNREACHABLE;
   }

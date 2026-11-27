@@ -9,8 +9,16 @@ import {
   recordLocked,
 } from '../../core/common/errors/errors';
 import type { EntryInputDto } from './dto/register-input.dto';
-import { checkRegisterAction, type RegisterAction } from './register-state';
-import { RegistersRepository, type RegisterRow } from './registers.repository';
+import {
+  checkRegisterAction,
+  type RegisterAction,
+  type RegisterCheck,
+} from './register-state';
+import {
+  RegistersRepository,
+  type RegisterRow,
+  type RosterStudent,
+} from './registers.repository';
 
 export interface WriteInput {
   section: Section;
@@ -20,6 +28,18 @@ export interface WriteInput {
   action: RegisterAction;
   onBehalfOfStaffId: string | null;
   helper: boolean;
+  /** The branch lock time passed for this day (see register-lock.ts). */
+  pastLock: boolean;
+}
+
+export interface WriteResult {
+  registerId: string;
+  roster: RosterStudent[];
+  /**
+   * Set when the register was already submitted or locked: only students
+   * without a mark (e.g. enrolled after the submit) were added.
+   */
+  filledStudentIds: string[] | null;
 }
 
 /** Writes entries under a row lock after the status machine allows it. */
@@ -27,13 +47,15 @@ export interface WriteInput {
 export class RegisterWriter {
   constructor(private readonly repository: RegistersRepository) {}
 
-  async save(tx: Prisma.TransactionClient, input: WriteInput) {
+  async save(
+    tx: Prisma.TransactionClient,
+    input: WriteInput,
+  ): Promise<WriteResult> {
     const current = await this.repository.lock(
       tx,
       input.section.id,
       input.date,
     );
-    this.assertAllowed(current, input);
     const roster = await this.repository.roster(input.section.id, tx);
     const known = new Set(roster.map((s) => s.studentId));
     const outside = input.entries.filter((e) => !known.has(e.studentId));
@@ -41,6 +63,16 @@ export class RegisterWriter {
       throw invalid('Students are not enrolled in this section', {
         studentIds: outside.map((e) => e.studentId),
       });
+    }
+    const check = checkRegisterAction(
+      current,
+      input.action,
+      input.userId,
+      input.pastLock,
+    );
+    if (current && check !== 'OK') {
+      const filled = await this.fillUnmarked(tx, current, input, check);
+      return { registerId: current.id, roster, filledStudentIds: filled };
     }
     const register =
       current ??
@@ -81,16 +113,61 @@ export class RegisterWriter {
         }),
       },
     });
-    return { registerId: register.id, roster };
+    return { registerId: register.id, roster, filledStudentIds: null };
   }
 
-  /** Completes the register (on-leave students default to LEAVE) and submits it. */
+  /**
+   * A submitted or locked register keeps its marks: changing one needs the
+   * submitter (before the lock) or a correction request. Students with no
+   * mark yet (enrolled after the submit) may still be marked by anyone who
+   * takes the register; unchanged rows sent along are ignored.
+   */
+  private async fillUnmarked(
+    tx: Prisma.TransactionClient,
+    current: RegisterRow,
+    input: WriteInput,
+    check: Exclude<RegisterCheck, 'OK'>,
+  ): Promise<string[]> {
+    if (input.helper) throw forbidden('Helpers can only edit draft registers');
+    const marked = new Map(current.entries.map((e) => [e.studentId, e.status]));
+    const changed = input.entries.some(
+      (e) => marked.has(e.studentId) && marked.get(e.studentId) !== e.status,
+    );
+    const added = input.entries.filter((e) => !marked.has(e.studentId));
+    if (check === 'PENDING_REVIEW' || changed || added.length === 0)
+      this.refuse(check);
+    await tx.attendanceEntry.createMany({
+      data: added.map((e) => ({
+        registerId: current.id,
+        studentId: e.studentId,
+        status: e.status,
+        remark: e.remark ?? null,
+      })),
+    });
+    const lockNow = current.status === 'SUBMITTED' && input.pastLock;
+    await tx.attendanceRegister.update({
+      where: { id: current.id },
+      data: {
+        version: { increment: 1 },
+        updatedById: input.userId,
+        ...(lockNow && { status: 'LOCKED', lockedAt: new Date() }),
+      },
+    });
+    return added.map((e) => e.studentId);
+  }
+
+  /**
+   * Completes the register (on-leave students default to LEAVE) and submits
+   * it. A register submitted after the branch lock time (`lockNow`) is locked
+   * straight away, so later changes go through a correction.
+   */
   async submit(
     tx: Prisma.TransactionClient,
     registerId: string,
     submitter: { userId: string; onBehalfOfStaffId: string | null },
     onLeave: Set<string>,
     rosterIds: string[],
+    lockNow = false,
   ): Promise<void> {
     const entries = await tx.attendanceEntry.findMany({
       where: { registerId },
@@ -116,7 +193,8 @@ export class RegisterWriter {
     await tx.attendanceRegister.update({
       where: { id: registerId },
       data: {
-        status: 'SUBMITTED',
+        status: lockNow ? 'LOCKED' : 'SUBMITTED',
+        lockedAt: lockNow ? new Date() : null,
         submittedById: submitter.userId,
         submittedAt: new Date(),
         onBehalfOfStaffId: submitter.onBehalfOfStaffId,
@@ -126,13 +204,12 @@ export class RegisterWriter {
     });
   }
 
-  private assertAllowed(current: RegisterRow | null, input: WriteInput) {
-    if (input.helper && current && current.status !== 'DRAFT') {
-      throw forbidden('Helpers can only edit draft registers');
-    }
-    switch (checkRegisterAction(current, input.action, input.userId)) {
+  private refuse(check: Exclude<RegisterCheck, 'OK'>): never {
+    switch (check) {
       case 'LOCKED':
-        throw recordLocked('The register is locked; request a correction');
+        throw recordLocked(
+          'Attendance for this day is locked; request a correction',
+        );
       case 'PENDING_REVIEW':
         throw conflict('The register is awaiting review');
       case 'ALREADY_SUBMITTED':
@@ -140,7 +217,6 @@ export class RegisterWriter {
           ErrorCode.ALREADY_SUBMITTED,
           'The register was already submitted',
         );
-      default:
     }
   }
 }

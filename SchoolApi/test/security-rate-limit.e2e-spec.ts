@@ -17,7 +17,6 @@ const AUTH_THROTTLED = [
   'POST /auth/otp/verify',
   'POST /auth/password/forgot',
   'POST /auth/password/reset',
-  'POST /auth/refresh',
   'POST /child-links/:id/otp',
   'POST /child-links/request',
   'POST /support/test-message',

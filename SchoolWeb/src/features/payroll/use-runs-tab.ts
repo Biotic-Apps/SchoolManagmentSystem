@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCan } from "@/features/auth/use-can";
+import { useSession } from "@/features/auth/session-context";
 import { ApiError } from "@/lib/api-error";
 import { errorMessage } from "@/lib/error-messages";
 import { currentPeriod } from "@/lib/period";
@@ -16,6 +17,7 @@ import type { PayrollLine } from "./types";
 /** Payroll run of the chosen branch and month: list → detail, lines and per-line dialogs. */
 export function useRunsTab(branchId: string | null) {
   const can = useCan();
+  const viewerId = useSession().session?.user.id ?? null;
   const queryClient = useQueryClient();
   const [month, setMonth] = useState(currentPeriod());
   const runs = usePayrollRuns(branchId, month);
@@ -55,8 +57,8 @@ export function useRunsTab(branchId: string | null) {
   const canPay = can("payroll.edit") && !!run && PAYABLE_STATUSES.includes(run.status);
   const approved = !!run && ["APPROVED", "PARTIALLY_PAID", "PAID", "CLOSED"].includes(run.status);
   const columns = useMemo(
-    () => lineColumns({ canPay, onPay: payment.show, onBreakdown: payslip.show }),
-    [canPay, payment.show, payslip.show],
+    () => lineColumns({ canPay, viewerId, onPay: payment.show, onBreakdown: payslip.show }),
+    [canPay, viewerId, payment.show, payslip.show],
   );
 
   return {

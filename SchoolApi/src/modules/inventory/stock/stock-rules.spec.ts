@@ -1,6 +1,11 @@
 import { AppError } from '../../../core/common/errors/app-error';
 import { ErrorCode } from '../../../core/common/errors/error-code.enum';
-import { applyMovement, signedQuantity, validateMovement } from './stock-rules';
+import {
+  applyMovement,
+  isLowStock,
+  signedQuantity,
+  validateMovement,
+} from './stock-rules';
 
 const codeOf = (fn: () => unknown): string | undefined => {
   try {
@@ -65,5 +70,16 @@ describe('stock rules', () => {
     expect(
       codeOf(() => validateMovement({ ...base, type: 'TRANSFER_IN' })),
     ).toBe(ErrorCode.VALIDATION_FAILED);
+  });
+});
+
+describe('isLowStock', () => {
+  it('flags stock at or below a positive reorder level', () => {
+    expect(isLowStock(5, 5)).toBe(true);
+    expect(isLowStock(6, 5)).toBe(false);
+  });
+
+  it('never flags items with reorder level 0', () => {
+    expect(isLowStock(0, 0)).toBe(false);
   });
 });

@@ -63,6 +63,12 @@ export class ComplaintQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsIn(Object.values(ComplaintCategory))
   category?: ComplaintCategory;
+
+  /** Matches the ticket number or subject. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  search?: string;
 }
 
 export class AssignComplaintDto {

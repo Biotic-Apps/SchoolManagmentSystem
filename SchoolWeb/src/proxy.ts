@@ -3,7 +3,21 @@ import { SESSION_COOKIE } from "@/lib/auth-cookie-names";
 import { buildCsp } from "@/lib/csp";
 
 const isDev = process.env.NODE_ENV === "development";
-const PUBLIC_PATHS = ["/login", "/forgot-password", "/reset-password", "/contact", "/privacy-policy", "/terms"];
+// /admissions/<schoolCode>: public application form and status check (API: public-admissions.controller, @Public).
+const PUBLIC_PATHS = [
+  "/login",
+  "/forgot-password",
+  "/reset-password",
+  "/contact",
+  "/privacy-policy",
+  "/terms",
+  "/admissions",
+  // /verify/certificate/<serial>: QR target printed on certificates (API: certificate-verify.controller, @Public).
+  "/verify",
+  // Crawler files (app/robots.ts, app/sitemap.ts).
+  "/robots.txt",
+  "/sitemap.xml",
+];
 
 function needsSignIn(request: NextRequest): boolean {
   const { pathname } = request.nextUrl;

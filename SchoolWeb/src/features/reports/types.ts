@@ -3,6 +3,7 @@ import type { Option } from "@/components/shared/OptionSelect";
 export type ReportFormat = "PDF" | "XLSX" | "CSV";
 
 export type ReportParamType =
+  | "school"
   | "branch"
   | "date"
   | "month"
@@ -28,6 +29,8 @@ export interface ReportCatalogItem {
     key?: string;
     label?: string;
     type?: string;
+    /** For API "uuid" params: which entity the id refers to (school / branch / exam …). */
+    picker?: string;
     required?: boolean;
     options?: (string | { id?: string; value?: string; name?: string; label?: string })[];
   }[];

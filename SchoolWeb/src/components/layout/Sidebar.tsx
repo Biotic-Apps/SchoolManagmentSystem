@@ -1,5 +1,6 @@
 "use client";
 
+import { roleLabel } from "@/config/roles";
 import type { NavItem } from "@/config/navigation";
 import { AppLogo } from "@/components/shared/AppLogo";
 import { useSession } from "@/features/auth/session-context";
@@ -36,7 +37,10 @@ export function Sidebar({ items, activeId }: SidebarProps) {
           </span>
           <span className="flex min-w-0 flex-col">
             <span className="truncate text-label font-semibold text-fg">{session.user.name}</span>
-            <span className="truncate text-caption text-fg-muted capitalize">{session.activeRole?.toLowerCase().replace("_", " ")}</span>
+            <span className="truncate text-caption text-fg-muted">
+              {session.assignments.find((item) => item.role === session.activeRole)?.roleName ||
+                roleLabel(session.activeRole ?? "")}
+            </span>
           </span>
         </div>
       )}

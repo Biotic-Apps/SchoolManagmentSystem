@@ -37,6 +37,10 @@ export class NoticeTargetService {
     await this.checkSections(scope, audience, schools, branches);
     await this.checkClasses(scope, audience, schools);
     await this.checkGuardians(scope, audience, schools);
+    if (input.schoolId) {
+      scope.assertReadSchool(input.schoolId);
+      schools.add(input.schoolId);
+    }
 
     if (schools.size > 1) throw invalid('All targets must be in one school');
     const home = await this.home(user);

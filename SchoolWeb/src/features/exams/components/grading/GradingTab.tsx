@@ -31,6 +31,7 @@ export function GradingTab() {
         columns={gradingColumns({
           canEdit: tab.canEdit,
           canApprove: tab.canApprove,
+          currentUserId: tab.currentUserId,
           isLocked: tab.isLocked,
           onEdit: editor.show,
           onApprove: (scheme) => tab.approve(scheme.id),

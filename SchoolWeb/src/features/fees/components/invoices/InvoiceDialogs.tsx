@@ -3,6 +3,7 @@
 import { ReasonDialog } from "@/components/shared/ReasonDialog";
 import { StudentLedgerDialog } from "@/features/fees/components/ledger/StudentLedgerDialog";
 import { RecordPaymentDialog } from "@/features/fees/components/payments/RecordPaymentDialog";
+import { cancelNeedsApproval } from "../../invoice-options";
 import type { Invoice } from "../../types";
 import type { InvoiceDetail } from "../../use-invoice-detail";
 
@@ -15,7 +16,7 @@ export function InvoiceDialogs({ detail, invoice }: { detail: InvoiceDetail; inv
         onOpenChange={onOpenChange}
         title={`Cancel ${invoice.invoiceNo}`}
         description={
-          invoice.status === "ISSUED"
+          cancelNeedsApproval(invoice.status)
             ? "Issued invoices are cancelled only after approval."
             : "The draft is cancelled straight away."
         }

@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import { useCan } from "@/features/auth/use-can";
 import { errorMessage } from "@/lib/error-messages";
-import { conflictItems, scheduleClashes } from "./conflict-details";
+import { conflictItems, paperProblems, scheduleClashes } from "./conflict-details";
 import { useSaveSchedule } from "./exams-api";
+import { useIsExamManager } from "./use-exam-manager";
 import { reached } from "./options";
 import { newRow, rowProblems, rowsForClash, rowsFromPapers, rowsSignature, toPaperInputs, type ScheduleRow } from "./schedule-rows";
 import type { Exam } from "./types";
@@ -20,6 +21,7 @@ const NO_FEEDBACK: Feedback = { rows: {}, general: [] };
  */
 export function useScheduleEditor(exam: Exam) {
   const can = useCan();
+  const manager = useIsExamManager();
   const save = useSaveSchedule(exam.id);
   const initial = useMemo(() => rowsFromPapers(exam.papers), [exam.papers]);
   const source = rowsSignature(initial);
@@ -31,7 +33,7 @@ export function useScheduleEditor(exam: Exam) {
   const current = state.source === source ? state : { source, rows: null, feedback: NO_FEEDBACK };
   const rows = current.rows ?? initial;
 
-  const canEdit = can("exams.edit");
+  const canEdit = can("exams.edit") && manager;
   const readOnly = !canEdit || reached(exam.status, "MARKS_OPEN");
   const dirty = !readOnly && current.rows !== null && rowsSignature(rows) !== source;
 
@@ -56,6 +58,17 @@ export function useScheduleEditor(exam: Exam) {
     setFeedback(NO_FEEDBACK);
     save.mutate(toPaperInputs(rows), {
       onError: (error) => {
+        // 400 problems carry the index of the paper in the order sent (= rows order).
+        const fieldProblems = paperProblems(error);
+        if (fieldProblems.length > 0) {
+          const mapped: Feedback = { rows: {}, general: [] };
+          for (const problem of fieldProblems) {
+            const row = rows[problem.index];
+            if (!row) mapped.general.push(problem.message);
+            else mapped.rows[row.key] = [...(mapped.rows[row.key] ?? []), problem.message];
+          }
+          return setFeedback(mapped);
+        }
         const items = conflictItems(error);
         if (!items || items.length === 0) return setFeedback({ rows: {}, general: [errorMessage(error)] });
         const clashes: Feedback = { rows: {}, general: [] };

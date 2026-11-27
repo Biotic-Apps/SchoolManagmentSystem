@@ -15,6 +15,40 @@ export interface CertificateContent {
   attendance: { present: number; total: number } | null;
 }
 
+const MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+/** DATE column (UTC midnight) → "27-Nov-2026", the app's display format. */
+export function certificateDate(date: Date): string {
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  return `${day}-${MONTHS[date.getUTCMonth()]}-${date.getUTCFullYear()}`;
+}
+
+/** Friendly verification page on the web app; the JSON endpoint when its address is unknown. */
+export function certificateVerifyUrl(
+  serialNo: string,
+  webUrl: string | null,
+  apiUrl: string,
+  apiPrefix: string,
+): string {
+  const serial = encodeURIComponent(serialNo);
+  return webUrl
+    ? `${webUrl.replace(/\/+$/, '')}/verify/certificate/${serial}`
+    : `${apiUrl.replace(/\/+$/, '')}/${apiPrefix}/certificates/verify/${serial}`;
+}
+
 export const CERTIFICATE_TITLES: Record<CertificateType, string> = {
   SCHOOL_LEAVING: 'School Leaving Certificate',
   TRANSFER: 'Transfer Certificate',

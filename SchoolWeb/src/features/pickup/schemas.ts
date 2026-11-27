@@ -1,10 +1,13 @@
 import { z } from "zod";
+import { todayIso } from "@/lib/dates";
 import { blankToUndefined, isoDate, optionalText, requiredText, timeOfDay } from "@/lib/validation";
+import { nowTime } from "./now-time";
 import type { DepartureInput, EarlyLeaveInput, PickupPersonInput } from "./types";
 
 export const earlyLeaveSchema = z.object({
   studentId: z.string().min(1, "Choose the student"),
-  date: isoDate,
+  // Mirrors the API: an early leave is for today or a later day.
+  date: isoDate.refine((value) => value >= todayIso(), "Choose today or a later date"),
   time: timeOfDay,
   reason: requiredText("the reason", 500),
   pickupPersonId: z.string(),
@@ -51,14 +54,30 @@ export function toPickupPersonInput(values: PickupPersonValues): PickupPersonInp
 }
 
 /** Picker choice is "person:<id>" or "guardian:<id>". */
-export const departureSchema = z.object({
+const departureFields = z.object({
   studentId: z.string().min(1, "Choose the student"),
   picker: z.string().min(1, "Choose who is collecting the student"),
   earlyLeaveId: z.string(),
   customTime: z.boolean(),
   time: timeOfDay,
 });
-export type DepartureValues = z.infer<typeof departureSchema>;
+export type DepartureValues = z.infer<typeof departureFields>;
+
+/**
+ * Departures recorded for the list's `date`. Mirrors the API: the departure time cannot be in the
+ * future, and an early leave can only be used on its own day (without a custom time, "now" is used).
+ */
+export function departureSchemaFor(date: string) {
+  return departureFields
+    .refine((values) => !values.customTime || date < todayIso() || (date === todayIso() && values.time <= nowTime()), {
+      path: ["time"],
+      message: "The departure time cannot be in the future",
+    })
+    .refine((values) => !values.earlyLeaveId || values.customTime || date === todayIso(), {
+      path: ["earlyLeaveId"],
+      message: "This early leave is for another day; set the time the student left",
+    });
+}
 
 export function departureDefaults(now: string): DepartureValues {
   return { studentId: "", picker: "", earlyLeaveId: "", customTime: false, time: now };

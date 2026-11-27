@@ -1,6 +1,8 @@
 "use client";
 
 import { PageHeader } from "@/components/shared/PageHeader";
+import { AuditLogCard } from "@/features/audit/components/AuditLogCard";
+import { useCan } from "@/features/auth/use-can";
 import { useReportsPage } from "../use-reports-page";
 import { RecentExports } from "./RecentExports";
 import { ReportCatalog } from "./ReportCatalog";
@@ -8,6 +10,7 @@ import { ReportFormDialog } from "./ReportFormDialog";
 
 export function ReportsPage() {
   const page = useReportsPage();
+  const canViewAudit = useCan()("audit.view");
 
   return (
     <div className="flex flex-col gap-6">
@@ -17,6 +20,7 @@ export function ReportsPage() {
       />
       <RecentExports exports={page.recent} />
       <ReportCatalog query={page.catalog} groups={page.groups} onSelect={page.select} />
+      {canViewAudit && <AuditLogCard />}
       {page.selected && <ReportFormDialog key={page.selected.key} report={page.selected} onClose={page.closeForm} />}
     </div>
   );

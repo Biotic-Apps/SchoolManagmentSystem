@@ -7,6 +7,7 @@ import { useTerms } from "@/features/sessions/api";
 import { paginationFrom } from "@/lib/pagination";
 import { useDialogState } from "@/lib/use-dialog-state";
 import { useExams } from "./exams-api";
+import { useIsExamManager } from "./use-exam-manager";
 import type { Exam } from "./types";
 
 const PAGE_SIZE = 20;
@@ -14,6 +15,8 @@ const PAGE_SIZE = 20;
 /** Exams of a branch session, filtered by term and status. */
 export function useExamsTab() {
   const can = useCan();
+  // Teachers hold exams.add/edit for mark entry only; the API refuses them exam changes.
+  const manager = useIsExamManager();
   const router = useRouter();
   const scope = useAcademicScope();
   const terms = useTerms(scope.sessionId);
@@ -50,8 +53,8 @@ export function useExamsTab() {
     status,
     setStatus: resetPage(setStatus),
     editor,
-    canAdd: can("exams.add") && ready,
-    canEdit: can("exams.edit"),
+    canAdd: can("exams.add") && manager && ready,
+    canEdit: can("exams.edit") && manager,
     open: (exam: Exam) => router.push(`/exams/${exam.id}`),
   };
 }

@@ -31,7 +31,7 @@ export function CollectionsTab({ branchId }: { branchId: string | null }) {
         )}
       </div>
       <CollectionTotals day={day} loading={query.isLoading} />
-      {view.closed && <CollectionClosingCard closing={day?.closing ?? null} expectedCashMinor={view.expectedCashMinor} />}
+      {view.closed && <CollectionClosingCard closing={day?.closed ?? null} expectedCashMinor={view.expectedCashMinor} />}
       <div className="flex flex-col gap-3">
         <SectionHeading title="By cashier" />
         <DataTable
@@ -46,6 +46,12 @@ export function CollectionsTab({ branchId }: { branchId: string | null }) {
           emptyDescription="Nothing was collected on this day."
         />
       </div>
+      {!!day?.refunds?.length && (
+        <div className="flex flex-col gap-3">
+          <SectionHeading title="Refunds paid" />
+          <DataTable columns={view.refundCols} rows={day.refunds} getRowId={(row) => row.id} />
+        </div>
+      )}
       <div className="flex flex-col gap-3">
         <SectionHeading title="Payments" />
         <DataTable

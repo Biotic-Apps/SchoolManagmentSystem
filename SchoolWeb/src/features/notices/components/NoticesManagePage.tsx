@@ -73,6 +73,7 @@ export function NoticesManagePage() {
       {composer.open && (
         <NoticeComposeDialog
           notice={composer.item}
+          schoolId={scope.schoolId}
           branchId={scope.branchId}
           audienceOptions={audience}
           canPublish={page.canPublish}

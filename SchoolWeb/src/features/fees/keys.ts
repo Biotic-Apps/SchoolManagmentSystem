@@ -10,6 +10,7 @@ export const feesKeys = {
   payments: (params: Query) => ["fees", "payments", params] as const,
   proofs: (params: Query) => ["fees", "proofs", params] as const,
   concessions: (params: Query) => ["fees", "concessions", params] as const,
+  refunds: (params: Query) => ["fees", "refunds", params] as const,
   ledger: (studentId: string | null) => ["fees", "ledger", studentId] as const,
   summary: (studentId: string | null) => ["fees", "summary", studentId] as const,
   dues: (params: Query) => ["fees", "dues", params] as const,

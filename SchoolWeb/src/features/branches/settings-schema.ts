@@ -2,6 +2,14 @@ import { z } from "zod";
 import { optionalText, timeOfDay } from "@/lib/validation";
 import type { BranchSettings } from "./types";
 
+/** Branch `fees.onlineGateway`: the one wallet parents can pay through ("NONE" turns Pay Online off). */
+export const ONLINE_GATEWAY_OPTIONS: { id: string; name: string }[] = [
+  { id: "NONE", name: "Off (pay at office or upload proof)" },
+  { id: "JAZZCASH", name: "JazzCash" },
+  { id: "EASYPAISA", name: "Easypaisa" },
+  { id: "MANUAL", name: "Manual confirmation (testing)" },
+];
+
 export const branchSettingsSchema = z
   .object({
     attendanceLockTime: timeOfDay,
@@ -15,6 +23,8 @@ export const branchSettingsSchema = z
     bankAccountNumber: optionalText(34),
     bankBranchCode: optionalText(20),
     challanNote: optionalText(300),
+    // Kept as text so a value set outside the web (e.g. MANUAL) round-trips unchanged.
+    onlineGateway: z.string().min(1),
   })
   .refine((values) => values.officeTo > values.officeFrom, {
     path: ["officeTo"],
@@ -51,6 +61,7 @@ export function settingsToValues(settings: BranchSettings): BranchSettingsValues
     bankAccountNumber: text(bank.accountNumber, ""),
     bankBranchCode: text(bank.branchCode, ""),
     challanNote: text(read(settings, "fees.challanNote"), ""),
+    onlineGateway: text(read(settings, "fees.onlineGateway"), "NONE"),
   };
 }
 
@@ -67,5 +78,6 @@ export function valuesToSettings(values: BranchSettingsValues): BranchSettings {
       branchCode: values.bankBranchCode,
     },
     "fees.challanNote": values.challanNote,
+    "fees.onlineGateway": values.onlineGateway,
   };
 }

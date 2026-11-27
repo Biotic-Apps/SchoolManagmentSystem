@@ -1,6 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { Option } from "@/components/shared/OptionSelect";
-import { OPTIONS_PAGE } from "@/config/options";
 import { http, type Query } from "@/lib/http";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { feesKeys } from "./keys";
@@ -38,7 +37,7 @@ export function useRequestConcession() {
 export function useConcessionHeadOptions(schoolId: string | null) {
   const query = useQuery({
     queryKey: ["fees", "heads", "options", schoolId],
-    queryFn: async () => (await http.get<FeeHead[]>("/fee-heads", { ...OPTIONS_PAGE, schoolId })).data ?? [],
+    queryFn: async () => (await http.get<FeeHead[]>("/fee-heads", { schoolId })).data ?? [],
     enabled: !!schoolId,
   });
   const options: Option[] = (query.data ?? []).map((head) => ({ id: head.id, name: head.name }));

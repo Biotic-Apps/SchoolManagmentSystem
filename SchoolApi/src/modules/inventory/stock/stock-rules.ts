@@ -12,6 +12,10 @@ export interface MovementRequest {
   branchId: string;
 }
 
+/** Reorder level 0 means "no alert" (same rule as the low-stock job). */
+export const isLowStock = (quantity: number, reorderLevel: number): boolean =>
+  reorderLevel > 0 && quantity <= reorderLevel;
+
 /**
  * Signed quantity stored for a movement: IN/TRANSFER_IN add stock,
  * ISSUE/TRANSFER_OUT remove it, ADJUST carries its own sign.

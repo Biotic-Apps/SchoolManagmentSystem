@@ -8,6 +8,9 @@ export function CertificateActions({ detail }: { detail: CertificateDetail }) {
   const { rights } = detail;
   return (
     <>
+      {detail.ownRequest && (
+        <p className="w-full text-sm text-fg-muted">You requested this certificate, so another approver must approve or reject it.</p>
+      )}
       {rights.approve && (
         <>
           <Button size="sm" onClick={detail.approve} loading={detail.pendingAction === "approve"} disabled={detail.acting}>

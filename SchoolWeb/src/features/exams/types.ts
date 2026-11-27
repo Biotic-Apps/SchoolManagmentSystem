@@ -25,6 +25,8 @@ export interface GradingScheme {
   bands: GradeBand[];
   status?: "DRAFT" | "APPROVED" | string;
   approvedAt?: string | null;
+  /** Four-eyes: the creator cannot approve their own scheme. */
+  createdById?: string;
   /** Set when an exam using it is RESULTS_APPROVED, so it can no longer change. */
   locked?: boolean;
 }
@@ -61,7 +63,7 @@ export interface Exam {
   termId: string | null;
   name: string;
   type: ExamType;
-  gradingSchemeId: string;
+  /** GET /exams returns the scheme as { id, name }. */
   gradingScheme?: PersonRef | null;
   weightPercent: number | null;
   classIds: string[];

@@ -66,7 +66,16 @@ export class CorrectionService {
             branchId: section.branchId,
             requestedById: user.id,
             title: `Attendance correction: ${name} ${formatDate(entry.register.date)} ${entry.status} -> ${dto.newStatus}`,
-            payload: { correctionId: correction.id, entryId: entry.id },
+            // Shown in the approval drawer: who, which day, old → new, why.
+            payload: {
+              correctionId: correction.id,
+              entryId: entry.id,
+              studentName: name,
+              date: formatDate(entry.register.date),
+              oldStatus: entry.status,
+              newStatus: dto.newStatus,
+              reason: dto.reason,
+            },
             reason: dto.reason,
             steps: [{ approverRole: RoleKey.PRINCIPAL }],
           },

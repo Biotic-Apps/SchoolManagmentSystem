@@ -9,7 +9,7 @@ import { conflict } from '../../core/common/errors/errors';
 import { schoolDate } from '../../core/common/school-time';
 import { SequenceService } from '../../core/sequences/sequence.service';
 import { InvoiceSettlementService } from './invoice-settlement.service';
-import { settledStatus } from './invoice-state';
+import { issueDueDate, settledStatus } from './invoice-state';
 import { LedgerService } from './ledger.service';
 import { sumMinor } from './money';
 
@@ -151,11 +151,16 @@ export class InvoiceLedgerService {
       throw conflict(`Invoice ${invoice.invoiceNo} is not a draft`);
     }
     const today = parseDate(schoolDate());
-    const status = settledStatus({ ...invoice, status: 'ISSUED' }, today);
+    const dueDate = issueDueDate(invoice.dueDate, today);
+    const status = settledStatus(
+      { ...invoice, dueDate, status: 'ISSUED' },
+      today,
+    );
     await tx.invoice.update({
       where: { id: invoice.id },
       data: {
         status,
+        dueDate,
         issueDate: today,
         issuedById: actorId,
         version: { increment: 1 },

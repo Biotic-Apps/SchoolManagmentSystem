@@ -58,6 +58,11 @@ function setup() {
       create: jest.fn(),
     },
     branch: { update: jest.fn() },
+    staff: {
+      create: jest.fn((args: { data: Data }) =>
+        Promise.resolve({ id: 'staff-p', ...args.data }),
+      ),
+    },
     classSubject: { createMany: jest.fn() },
     branchPeriod: { createMany: jest.fn() },
     gradingScheme: {
@@ -250,9 +255,9 @@ describe('SchoolSetupService', () => {
         passPercent: 40,
       }) as unknown,
     });
-    // One audit row per created entity (+ principal link, curricula, bell schedule, grading scheme).
+    // One audit row per created entity (+ principal link and staff profile, curricula, bell schedule, grading scheme).
     expect(t.audit.stage).toHaveBeenCalledTimes(
-      1 + 1 + 2 + 1 + 13 + 13 + 8 + 13 + 1 + 1,
+      1 + 1 + 2 + 1 + 1 + 13 + 13 + 8 + 13 + 1 + 1,
     );
     expect(t.welcome.send).toHaveBeenCalledWith(
       'user-1',
@@ -358,6 +363,19 @@ describe('SchoolSetupService', () => {
     expect(t.tx.branch.update).toHaveBeenCalledWith({
       where: { id: 'branch-1' },
       data: { principalUserId: 'user-1', updatedById: 'admin' },
+    });
+  });
+
+  it('gives the principal a staff profile (leave, staff attendance, payroll)', async () => {
+    const t = setup();
+    await t.service.setup(SUPER, baseDto());
+    expect(t.tx.staff.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        userId: 'user-1',
+        schoolId: 'school-1',
+        branchId: 'branch-1',
+        designation: 'PRINCIPAL',
+      }) as unknown,
     });
   });
 

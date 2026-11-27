@@ -24,6 +24,7 @@ interface Options {
   attempt?: boolean;
   twoFactor?: boolean;
   parent?: boolean;
+  failures?: number;
 }
 
 function setup(options: Options = {}) {
@@ -33,6 +34,7 @@ function setup(options: Options = {}) {
       .mockResolvedValue(options.otp === undefined ? OTP : options.otp),
     takeAttempt: jest.fn().mockResolvedValue(options.attempt ?? true),
     consume: jest.fn().mockResolvedValue(true),
+    recentFailures: jest.fn().mockResolvedValue(options.failures ?? 0),
   };
   const lockout = {
     assertNotLocked: jest.fn(),
@@ -94,16 +96,35 @@ describe('OtpVerifyService', () => {
     expect(issuer.start).not.toHaveBeenCalled();
   });
 
-  it('counts a wrong code toward the account lockout', async () => {
+  it('rejects a wrong code without touching the account lockout', async () => {
     const { service, lockout, repository } = setup();
     await expect(
       service.verify('parent@example.com', '654321', CLIENT),
-    ).rejects.toThrow('wrong code');
-    expect(lockout.registerFailure).toHaveBeenCalledWith(
-      'u1',
-      'Invalid or expired code',
-    );
+    ).rejects.toMatchObject({
+      code: ErrorCode.INVALID_CREDENTIALS,
+      message: 'Invalid or expired code',
+    });
+    expect(repository.takeAttempt).toHaveBeenCalledWith('otp1');
+    expect(lockout.registerFailure).not.toHaveBeenCalled();
     expect(repository.consume).not.toHaveBeenCalled();
+  });
+
+  it('refuses even the right code once the email-code lock is reached', async () => {
+    const { service, repository, issuer } = setup({ failures: 10 });
+    await expect(
+      service.verify('parent@example.com', '123456', CLIENT),
+    ).rejects.toMatchObject({ code: ErrorCode.INVALID_CREDENTIALS });
+    expect(repository.recentFailures).toHaveBeenCalledWith(
+      'parent@example.com',
+    );
+    expect(repository.findUsable).not.toHaveBeenCalled();
+    expect(issuer.start).not.toHaveBeenCalled();
+  });
+
+  it('still allows a code below the email-code lock', async () => {
+    const { service, issuer } = setup({ failures: 9 });
+    await service.verify('parent@example.com', '123456', CLIENT);
+    expect(issuer.start).toHaveBeenCalled();
   });
 
   const rejected: [string, Options][] = [

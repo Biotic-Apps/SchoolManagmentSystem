@@ -4,6 +4,7 @@ import { hasErrorCode } from "@/lib/api-error";
 import { errorMessage } from "@/lib/error-messages";
 import { getAccessToken, setActiveRoleHeader } from "@/lib/request-context";
 import { toast } from "@/lib/toast";
+import { loadActiveChild, saveActiveChild } from "./active-child-store";
 import { saveActiveRole } from "./active-role-store";
 import { logoutRequest } from "./auth-client";
 import { fetchMe } from "./me-api";
@@ -31,6 +32,7 @@ export function useSessionState() {
       clearTokens();
       setActiveRoleHeader(null);
       saveActiveRole(null);
+      saveActiveChild(null);
       setSnapshot({ status: "anonymous", session: null, reason });
       setActiveChildId(null);
       queryClient.clear();
@@ -48,9 +50,12 @@ export function useSessionState() {
       const me = await fetchMe();
       setActiveRoleHeader(me.activeRole);
       setSnapshot({ status: me.user.mustChangePassword ? "password-change" : "authenticated", session: me, reason: null });
-      setActiveChildId((current) =>
-        current && me.children.some((child) => child.id === current) ? current : (me.children[0]?.id ?? null),
-      );
+      // Keep the current pick, else the one saved before a reload, else the first child.
+      setActiveChildId((current) => {
+        const known = (id: string | null) => !!id && me.children.some((child) => child.id === id);
+        const saved = loadActiveChild();
+        return known(current) ? current : known(saved) ? saved : (me.children[0]?.id ?? null);
+      });
     } catch (error) {
       if (!hasErrorCode(error, "PASSWORD_CHANGE_REQUIRED")) throw error;
       requirePasswordChange();
@@ -93,6 +98,11 @@ export function useSessionState() {
     [loadMe, endLocal],
   );
 
+  const selectChild = useCallback((childId: string | null) => {
+    saveActiveChild(childId);
+    setActiveChildId(childId);
+  }, []);
+
   const updateUser = useCallback(
     (user: Partial<SessionUser>) =>
       setSnapshot((s) => (s.session ? { ...s, session: { ...s.session, user: { ...s.session.user, ...user } } } : s)),
@@ -104,7 +114,7 @@ export function useSessionState() {
     session: snapshot.session,
     reason: snapshot.reason,
     activeChildId,
-    selectChild: setActiveChildId,
+    selectChild,
     signIn,
     signOut,
     switchRole,

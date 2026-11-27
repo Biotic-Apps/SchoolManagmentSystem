@@ -42,6 +42,8 @@ export interface PaperSection {
   title: string;
   questionIds: string[];
   marks: number;
+  /** Marks for each question (absent on papers generated before it was stored). */
+  marksPerQuestion?: number;
 }
 
 export interface ExamPaper {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useIsParent } from "@/features/auth/use-active-child";
-import { useCan } from "@/features/auth/use-can";
+import { useCan, useCurrentUserId } from "@/features/auth/use-can";
 import { ApiError, hasErrorCode } from "@/lib/api-error";
 import { errorMessage } from "@/lib/error-messages";
 import { toast } from "@/lib/toast";
@@ -18,6 +18,7 @@ function jobIdOf(result: unknown): string | null {
 /** Drawer actions for one certificate; keyed by id so state starts clean per certificate. */
 export function useCertificateDetail(certificate: Certificate) {
   const can = useCan();
+  const userId = useCurrentUserId();
   const isParent = useIsParent();
   const action = useCertificateAction(certificate.id);
   const [dialog, setDialog] = useState<CertificateDialog | null>(null);
@@ -26,6 +27,9 @@ export function useCertificateDetail(certificate: Certificate) {
 
   const staff = !isParent;
   const status = certificate.status;
+  // The API refuses a decision on your own request (four-eyes); say so instead of offering Approve.
+  const mayDecide = staff && can("certificates.approve") && status === "REQUESTED";
+  const ownRequest = mayDecide && !!userId && certificate.requestedBy?.id === userId;
   const onJob = (result: unknown) => {
     setDialog(null);
     setJobId(jobIdOf(result));
@@ -40,10 +44,11 @@ export function useCertificateDetail(certificate: Certificate) {
 
   return {
     rights: {
-      approve: staff && can("certificates.approve") && status === "REQUESTED",
+      approve: mayDecide && !ownRequest,
       issue: staff && can("certificates.add") && status === "APPROVED",
       reissue: staff && can("certificates.add") && status === "ISSUED",
     },
+    ownRequest,
     dialog,
     openDialog: setDialog,
     closeDialog: () => {

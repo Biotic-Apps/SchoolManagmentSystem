@@ -33,6 +33,7 @@ import type {
   UpdateActivityDto,
 } from './dto/activity-input.dto';
 import type { ActivityDto } from './dto/activity.dto';
+import { assertActivityTimes } from './activity-timing';
 
 const DAY_MS = 86_400_000;
 
@@ -100,6 +101,12 @@ export class ActivitiesService {
     if (scope.guardian || !scope.canReadBranch(branch)) throw forbiddenScope();
     const audience = await this.audiences.validate(branch, dto.audience);
     const times = this.times(dto.startAt, dto.endAt);
+    assertActivityTimes(
+      times.startAt,
+      times.endAt,
+      dto.consentDeadline ? parseDate(dto.consentDeadline) : null,
+      { isNew: true },
+    );
 
     const id = await this.prisma.$transaction(async (tx) => {
       const created = await tx.activity.create({
@@ -158,6 +165,14 @@ export class ActivitiesService {
     const times = this.times(
       dto.startAt ?? row.startAt.toISOString(),
       dto.endAt ?? row.endAt.toISOString(),
+    );
+    assertActivityTimes(
+      times.startAt,
+      times.endAt,
+      dto.consentDeadline
+        ? parseDate(dto.consentDeadline)
+        : row.consentDeadline,
+      { isNew: false },
     );
     const audience = dto.audience
       ? await this.audiences.validate(

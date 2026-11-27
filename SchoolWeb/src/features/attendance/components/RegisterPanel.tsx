@@ -10,7 +10,7 @@ import { AttendanceCountsBar } from "./AttendanceCountsBar";
 import { CorrectionDialog } from "./CorrectionDialog";
 import { HealthAlertsNotice } from "./HealthAlertsNotice";
 import { NonWorkingDayState } from "./NonWorkingDayState";
-import { RegisterActions } from "./RegisterActions";
+import { RegisterActions, RegisterFillActions } from "./RegisterActions";
 import { RegisterBanner } from "./RegisterBanner";
 
 /** One section's register for one day. Keyed by section + date so local marks reset. */
@@ -33,6 +33,7 @@ export function RegisterPanel({ sectionId, date }: { sectionId: string; date: st
         </div>
       )}
       {tab.canEdit && register && register.entries.length > 0 && <RegisterActions tab={tab} />}
+      {tab.canFill && <RegisterFillActions tab={tab} />}
       <DataTable
         columns={columns}
         rows={tab.editor.rows}

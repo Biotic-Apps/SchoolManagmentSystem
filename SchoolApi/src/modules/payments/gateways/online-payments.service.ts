@@ -21,12 +21,21 @@ import { SchoolPeopleService } from '../../school-day/school-people.service';
 import { PaymentFollowup } from '../payments/payment-followup';
 import { PaymentRecorder } from '../payments/payment-recorder';
 import type {
+  OnlineGatewayChoice,
   GatewayCallbackResultDto,
   InitiateOnlineResultDto,
   OnlinePaymentStatusDto,
 } from './dto/online-payment.dto';
 import type { GatewayCallbackRequest } from './payment-gateway';
 import { PaymentGatewayRegistry } from './payment-gateway.registry';
+
+const GATEWAY_LABELS: Record<string, string> = {
+  MANUAL: 'Manual online payment',
+  JAZZCASH: 'JazzCash',
+  EASYPAISA: 'Easypaisa',
+};
+
+const gatewayLabel = (key: string): string => GATEWAY_LABELS[key] ?? key;
 
 /** Parent online payment through the configured gateway adapter (contract B3). */
 @Injectable()
@@ -45,6 +54,7 @@ export class OnlinePaymentsService {
   async initiate(
     scope: Scope,
     invoiceId: string,
+    chosen?: OnlineGatewayChoice,
   ): Promise<InitiateOnlineResultDto> {
     if (!scope.guardian) throw forbidden('Online payment is for parents');
     const invoice = await this.prisma.invoice.findUnique({
@@ -64,8 +74,18 @@ export class OnlinePaymentsService {
         'Online payment is not available; pay at the school office or upload a proof',
       );
     }
+    // The parent's wallet choice is honoured, never silently swapped for another one.
+    if (chosen && chosen !== key) {
+      throw new AppError(
+        ErrorCode.GATEWAY_DISABLED,
+        `${gatewayLabel(chosen)} is not available for this school; use ${gatewayLabel(key)}`,
+      );
+    }
+    // Charge only what is still owed: a part-paid invoice must not be charged its full total again.
+    const dueMinor = balanceOf(invoice);
+    if (dueMinor <= 0n) throw conflict('Nothing is due on this invoice');
     const gateway = this.registry.get(key);
-    const result = await gateway.initiate(invoice);
+    const result = await gateway.initiate(invoice, dueMinor);
 
     // Track the initiated payment
     const onlinePayment = await this.prisma.onlinePayment.create({
@@ -74,7 +94,7 @@ export class OnlinePaymentsService {
         branchId: invoice.branchId,
         invoiceId: invoice.id,
         gateway: key as 'JAZZCASH' | 'EASYPAISA',
-        amountMinor: invoice.totalMinor,
+        amountMinor: dueMinor,
         currency: invoice.currency,
         redirectUrl: result.redirectUrl,
       },

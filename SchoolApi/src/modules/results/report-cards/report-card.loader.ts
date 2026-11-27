@@ -31,6 +31,8 @@ export interface ReportCardContent {
   teacherRemark: string | null;
   skills: StudentSkillDto[];
   scaleKey: string;
+  /** Grading scheme bands of the exam, highest first. */
+  gradeBands: { grade: string; minPercent: number; maxPercent: number }[];
 
   // Template settings (null = use defaults)
   templateName: string | null;
@@ -68,7 +70,17 @@ export class ReportCardLoader {
     const result = await this.prisma.examResult.findUniqueOrThrow({
       where: { id: resultId },
       include: {
-        exam: true,
+        exam: {
+          include: {
+            gradingScheme: {
+              select: {
+                bands: {
+                  select: { grade: true, minPercent: true, maxPercent: true },
+                },
+              },
+            },
+          },
+        },
         student: {
           select: { firstName: true, lastName: true, admissionNo: true },
         },
@@ -135,6 +147,9 @@ export class ReportCardLoader {
       teacherRemark: result.teacherRemark,
       skills,
       scaleKey,
+      gradeBands: [...result.exam.gradingScheme.bands].sort(
+        (a, b) => b.minPercent - a.minPercent,
+      ),
 
       // Template fields
       templateName: template?.name ?? null,

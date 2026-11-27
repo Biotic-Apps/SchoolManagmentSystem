@@ -10,6 +10,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { DiaryStatus } from '../../../generated/prisma/client';
+import { Trim } from '../../../core/common/validation/trim';
 import { IdNameDto } from '../../../core/common/dto/id-name.dto';
 import {
   IsDateOnly,
@@ -50,11 +51,13 @@ export class SaveDiaryDto {
   @IsDateOnly()
   date!: string;
 
+  @Trim()
   @IsString()
   @MinLength(1)
   @MaxLength(4000)
   topics!: string;
 
+  @Trim()
   @IsOptional()
   @IsString()
   @MaxLength(4000)

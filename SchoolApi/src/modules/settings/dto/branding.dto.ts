@@ -4,7 +4,8 @@ import { IsOptional, IsUUID } from 'class-validator';
 export class BrandingQueryDto {
   @ApiPropertyOptional({
     format: 'uuid',
-    description: 'Default school if omitted',
+    description:
+      'Omitted: the only active school on a single-school install, else default eSchool branding',
   })
   @IsOptional()
   @IsUUID()

@@ -51,7 +51,9 @@ export function PrimaryColorField({ color }: { color: PrimaryColorState }) {
         {color.ratioText && (
           <div className="flex items-center gap-2">
             <span className="text-label tabular-nums text-fg">{color.ratioText}</span>
-            <Badge tone={color.passes ? "success" : "error"}>{color.passes ? "Passes AA" : "Too light"}</Badge>
+            <Badge tone={color.passes ? "success" : "error"}>
+              {color.meetsAa ? "Passes AA" : color.passes ? "Default theme" : "Too light"}
+            </Badge>
           </div>
         )}
         {!color.isDefault && (

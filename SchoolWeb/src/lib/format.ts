@@ -3,10 +3,11 @@ export const EMPTY_VALUE = "—";
 const LOCALE = "en-PK";
 
 export function formatMoney(amountMinor: number, currency = "PKR"): string {
+  // Whole amounts stay "Rs 4,500"; any paisa shows both digits ("Rs 4,500.50", never "4,500.5").
   return new Intl.NumberFormat(LOCALE, {
     style: "currency",
     currency,
-    minimumFractionDigits: 0,
+    minimumFractionDigits: amountMinor % 100 === 0 ? 0 : 2,
     maximumFractionDigits: 2,
   }).format(amountMinor / 100);
 }

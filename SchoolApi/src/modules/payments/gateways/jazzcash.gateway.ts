@@ -31,9 +31,14 @@ export class JazzCashGateway implements PaymentGateway {
 
   constructor(private readonly config: AppConfigService) {}
 
-  initiate(invoice: Invoice): Promise<GatewayInitiateResult> {
+  initiate(
+    invoice: Invoice,
+    amountMinor: bigint,
+  ): Promise<GatewayInitiateResult> {
     // Executor throws (e.g. missing config) become rejections.
-    return new Promise((resolve) => resolve(this.buildInitiate(invoice)));
+    return new Promise((resolve) =>
+      resolve(this.buildInitiate(invoice, amountMinor)),
+    );
   }
 
   verifyCallback(
@@ -46,7 +51,10 @@ export class JazzCashGateway implements PaymentGateway {
     return Promise.reject(invalid('JazzCash refunds are processed manually'));
   }
 
-  private buildInitiate(invoice: Invoice): GatewayInitiateResult {
+  private buildInitiate(
+    invoice: Invoice,
+    amountMinor: bigint,
+  ): GatewayInitiateResult {
     const merchantId = this.env('JAZZCASH_MERCHANT_ID');
     const password = this.env('JAZZCASH_PASSWORD');
     const salt = this.env('JAZZCASH_INTEGRITY_SALT');
@@ -55,7 +63,7 @@ export class JazzCashGateway implements PaymentGateway {
     const returnUrl = `${appUrl}/api/v1/payments/online/callback/jazzcash`;
 
     const txnRefNo = `INV-${invoice.id.replace(/-/g, '').slice(0, 20)}-${Date.now()}`;
-    const amountStr = invoice.totalMinor.toString();
+    const amountStr = amountMinor.toString();
     const now = new Date();
     const txnDateTime = formatJazzCashDate(now);
     const expiryDateTime = formatJazzCashDate(

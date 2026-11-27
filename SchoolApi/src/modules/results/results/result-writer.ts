@@ -27,6 +27,14 @@ const entryOf = (mark: Mark): MarkEntry => ({
   marksH: mark.absent || mark.marks === null ? null : toHundredths(mark.marks),
 });
 
+/** "Bilal Yousaf (Grade 1 A · Urdu, Maths)" for the compute error. */
+export const pendingLine = (
+  student: string,
+  section: string,
+  papers: readonly { name: string }[],
+): string =>
+  `${student} (${section.trim()} · ${papers.map((p) => p.name).join(', ')})`;
+
 /** Computes all results of an exam and upserts ExamResult rows (one per student). */
 @Injectable()
 export class ResultWriter {
@@ -65,7 +73,9 @@ export class ResultWriter {
       for (const m of s.marks) marks.set(`${s.paperId}:${m.studentId}`, m);
 
     const computed: Computed[] = [];
-    const pending: { studentId: string; paperIds: string[] }[] = [];
+    const pending: string[] = [];
+    const sectionNames = await this.lookup.sections([...sections.keys()]);
+    const classNames = await this.lookup.classes([...sections.values()]);
     for (const [sectionId, classId] of sections) {
       const papers = this.paperSpecs(exam.papers, classId, subjects);
       for (const student of rosters.get(sectionId) ?? []) {
@@ -76,7 +86,13 @@ export class ResultWriter {
         }
         const missing = pendingPapers(papers, entries);
         if (missing.length > 0)
-          pending.push({ studentId: student.studentId, paperIds: missing });
+          pending.push(
+            pendingLine(
+              student.name,
+              `${classNames.get(classId) ?? ''} ${sectionNames.get(sectionId) ?? ''}`,
+              papers.filter((p) => missing.includes(p.paperId)),
+            ),
+          );
         else
           computed.push({
             studentId: student.studentId,
@@ -88,9 +104,9 @@ export class ResultWriter {
     }
     if (pending.length > 0)
       throw new Error(
-        `Pending marks for ${pending.length} student(s): ${pending
-          .map((p) => p.studentId)
-          .join(', ')}`,
+        `Marks are missing for ${pending.length} student(s): ${pending
+          .slice(0, 5)
+          .join('; ')}${pending.length > 5 ? '; …' : ''}`,
       );
     await this.save(exam, computed);
     return computed.length;

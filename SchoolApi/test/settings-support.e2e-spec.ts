@@ -42,7 +42,9 @@ describe('Settings and support (e2e)', () => {
       'primaryColor',
       'schoolName',
     ]);
-    expect(body.schoolName).toBe('Bright School');
+    // No schoolId: the sole active school's brand, else the default eSchool brand.
+    const active = await prisma.school.count({ where: { status: 'ACTIVE' } });
+    expect(body.schoolName).toBe(active === 1 ? 'Bright School' : 'eSchool');
     await request(app.getHttpServer())
       .get(`${API}/branding?schoolId=00000000-0000-4000-8000-000000000000`)
       .expect(404);

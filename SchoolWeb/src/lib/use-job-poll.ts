@@ -50,11 +50,11 @@ export function useJobPoll(jobId: string | null, invalidate: QueryKey[] = []) {
   useEffect(() => {
     if (!finished && !untracked) return;
     invalidate.forEach((queryKey) => queryClient.invalidateQueries({ queryKey }));
-    // Untracked jobs: refresh again shortly after, while the worker catches up.
-    if (!untracked) return;
+    // Refresh again shortly after: the job can report DONE a moment before the row it wrote
+    // (e.g. a backup run) shows its final status; untracked jobs need longer for the worker.
     const timer = window.setTimeout(
       () => invalidate.forEach((queryKey) => queryClient.invalidateQueries({ queryKey })),
-      5000,
+      untracked ? 5000 : 1500,
     );
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once per state change

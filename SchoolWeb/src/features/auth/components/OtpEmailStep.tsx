@@ -11,7 +11,7 @@ export function OtpEmailStep({ emailForm }: { emailForm: ReturnType<typeof useOt
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={submit} noValidate className="flex flex-col gap-5">
+      <form method="post" onSubmit={submit} noValidate className="flex flex-col gap-5">
         <FormAlert message={formError} />
         <TextField
           name="email"

@@ -11,7 +11,7 @@ Children's data, medical details and money live in this system. Default is deny:
 | Access token | JWT, 15 min, signed HS256 (secret from env, rotated), claims: `sub`, `sid` (session id), `ver` (user token version). No permissions inside the token. |
 | Refresh token | Opaque random 256-bit, stored **hashed** in `refresh_sessions`, 30 days, **rotated on every use**. Reuse of an old token revokes the whole session family (theft detection). |
 | Instant revoke | Disabling a user, removing a role, or "log out all devices" increments `users.token_version` and revokes refresh sessions. Every request checks `ver` against a Redis-cached value, so disabled accounts lose access immediately (not after token expiry). |
-| Brute force | Per-account and per-IP rate limits; progressive lockout (5 failures → 15 min). OTP: 5 attempts, 5 min expiry. |
+| Brute force | Per-account and per-IP rate limits; progressive lockout (5 failures → 15 min). OTP: 5 attempts per code, 5 min expiry; 10 wrong codes for one email within 30 min pause email codes for that email (OTP failures never lock password sign-in). |
 | Password reset | Single-use hashed token (30 min) via email/SMS; resets revoke all sessions. |
 | First login | Accounts created by admins have `must_change_password`. |
 | Devices | Users can see and revoke sessions (device, platform, last used). |

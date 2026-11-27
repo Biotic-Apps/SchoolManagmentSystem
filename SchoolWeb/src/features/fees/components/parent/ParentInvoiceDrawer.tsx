@@ -22,12 +22,26 @@ interface ParentInvoiceDrawerProps {
   onOpenChange: (open: boolean) => void;
   onUploadProof: (invoiceId: string) => void;
   onPayOnline: (invoice: Invoice) => void;
+  /** False when the school has no online gateway: Pay Online is hidden. */
+  onlinePaymentEnabled: boolean;
 }
 
-export function ParentInvoiceDrawer({ invoice: listed, open, onOpenChange, onUploadProof, onPayOnline }: ParentInvoiceDrawerProps) {
+export function ParentInvoiceDrawer({
+  invoice: listed,
+  open,
+  onOpenChange,
+  onUploadProof,
+  onPayOnline,
+  onlinePaymentEnabled,
+}: ParentInvoiceDrawerProps) {
   const { invoice, lines, payments, canUploadProof } = useParentFeesInvoice(open ? listed : null);
   const onlinePayments = useOnlinePaymentsForInvoice(open && invoice ? invoice.id : null);
-  const canPayOnline = !!invoice && invoice.balanceMinor > 0 && invoice.status !== "CANCELLED";
+  const canPayOnline =
+    onlinePaymentEnabled &&
+    !!invoice &&
+    invoice.balanceMinor > 0 &&
+    invoice.status !== "CANCELLED" &&
+    invoice.status !== "DRAFT";
 
   return (
     <DetailDrawer

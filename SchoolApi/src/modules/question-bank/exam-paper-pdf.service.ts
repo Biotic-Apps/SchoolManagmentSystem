@@ -4,6 +4,7 @@ import { PrismaService } from '../../core/prisma/prisma.service';
 import type { Scope } from '../../core/rbac/scope/scope';
 import { PdfBuilder } from '../generated-docs/pdf-builder';
 import type { PaperSectionDto } from './dto/exam-paper.dto';
+import { marksLabel, perQuestionMarks } from './question-rules';
 
 const QUESTION_TYPE_LABELS: Record<string, string> = {
   MCQ: 'Multiple Choice',
@@ -52,17 +53,18 @@ export class ExamPaperPdfService {
 
     let questionNumber = 1;
     for (const section of sections) {
-      pdf.heading(`${section.title} (${section.marks} marks)`);
+      pdf.heading(`${section.title} (${marksLabel(section.marks)})`);
+      const each = marksLabel(perQuestionMarks(section));
       for (const qId of section.questionIds) {
         const q = questionsById.get(qId);
         if (!q) continue;
         const typeLabel =
           QUESTION_TYPE_LABELS[q.questionType] ?? q.questionType;
         pdf.paragraph(
-          `Q${questionNumber}. [${q.marks} marks | ${typeLabel}]  ${q.questionText}`,
+          `Q${questionNumber}. [${each} | ${typeLabel}]  ${q.questionText}`,
           { size: 10 },
         );
-        if (q.questionType === 'MCQ' && q.options) {
+        if (q.questionType === 'MCQ' && Array.isArray(q.options)) {
           const opts = q.options as string[];
           const optText = opts
             .map((opt, i) => `   ${String.fromCharCode(97 + i)}) ${opt}`)

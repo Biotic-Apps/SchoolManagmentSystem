@@ -20,8 +20,21 @@ const AREA_BY_PREFIX: Record<string, string> = {
 
 const FORMATS: ReportFormat[] = ["PDF", "XLSX", "CSV"];
 const PARAM_TYPES: ReportParamType[] = [
-  "branch", "date", "month", "class", "section", "session", "exam", "select", "text", "number",
+  "school", "branch", "date", "month", "class", "section", "session", "exam", "select", "text", "number",
 ];
+
+/** The API types ids as "uuid"; these are the pickers they map to. */
+const PICKER_TYPES: ReportParamType[] = ["school", "branch", "class", "section", "session", "exam"];
+const PICKER_BY_NAME: Record<string, ReportParamType> = {
+  schoolId: "school",
+  branchId: "branch",
+  classId: "class",
+  sectionId: "section",
+  sessionId: "session",
+  examId: "exam",
+};
+/** API scalar types with a different web name. */
+const TYPE_ALIASES: Record<string, ReportParamType> = { int: "number", integer: "number" };
 
 function areaOf(item: ReportCatalogItem): string {
   const given = item.area ?? item.group ?? item.category;
@@ -39,14 +52,22 @@ function optionsOf(raw: RawParam): Option[] {
   });
 }
 
-function paramOf(raw: RawParam): ReportParam | null {
+function typeOf(raw: RawParam, name: string): ReportParamType {
+  if (raw.type === "uuid") {
+    return PICKER_TYPES.find((item) => item === raw.picker) ?? PICKER_BY_NAME[name] ?? "text";
+  }
+  return PARAM_TYPES.find((item) => item === raw.type) ?? TYPE_ALIASES[raw.type ?? ""] ?? "text";
+}
+
+export function paramOf(raw: RawParam, reportKey = ""): ReportParam | null {
   const name = raw.name ?? raw.key;
   if (!name) return null;
-  const type = PARAM_TYPES.find((item) => item === raw.type) ?? "text";
+  const type = typeOf(raw, name);
+  const fallbackLabel = DEFAULT_PARAMS[reportKey]?.find((spec) => spec.name === name)?.label;
   return {
     name,
     type,
-    label: raw.label ?? TYPE_LABEL[type] ?? humanize(name),
+    label: raw.label ?? fallbackLabel ?? TYPE_LABEL[type] ?? humanize(name),
     required: raw.required ?? false,
     options: optionsOf(raw),
   };
@@ -55,7 +76,7 @@ function paramOf(raw: RawParam): ReportParam | null {
 function reportOf(item: ReportCatalogItem): Report {
   const text = REPORT_TEXT[item.key];
   const params = item.params?.length
-    ? item.params.map(paramOf).filter((param): param is ReportParam => !!param)
+    ? item.params.map((raw) => paramOf(raw, item.key)).filter((param): param is ReportParam => !!param)
     : (DEFAULT_PARAMS[item.key] ?? []).map((spec) => ({ ...spec, options: [] }));
   const formats = (item.formats ?? []).filter((format): format is ReportFormat => FORMATS.includes(format as ReportFormat));
   return {

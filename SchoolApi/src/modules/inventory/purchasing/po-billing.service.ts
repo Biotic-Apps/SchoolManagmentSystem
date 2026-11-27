@@ -52,7 +52,7 @@ export class PoBillingService {
           branchId: order.branchId,
           categoryId: category.id,
           vendorId: order.vendorId,
-          title: `PO ${order.poNo}`,
+          title: `Purchase order ${order.poNo}`,
           amountMinor: amount,
           billDate: parseDate(schoolDate()),
           purchaseOrderId: order.id,

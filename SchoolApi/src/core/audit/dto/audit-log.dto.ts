@@ -9,5 +9,8 @@ export class AuditLogDto {
   onBehalfOf!: string | null;
   before!: unknown;
   after!: unknown;
+  /** Client IP and user agent recorded with the entry (for incident review). */
+  ip!: string | null;
+  userAgent!: string | null;
   at!: string;
 }

@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useActiveChild, useIsParent } from "@/features/auth/use-active-child";
 import { useSession } from "@/features/auth/session-context";
 import { useThreads } from "./api";
@@ -24,6 +25,23 @@ export function useInbox() {
   const [scope, setScopeValue] = useState<InboxScope>("own");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [composing, setComposing] = useState(false);
+
+  // `?open=<threadId>` (a notification deep link) selects that thread, then the parameter is dropped.
+  const params = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const openId = params.get("open");
+  const [handledOpen, setHandledOpen] = useState<string | null>(null);
+  if (openId !== handledOpen) {
+    setHandledOpen(openId);
+    if (openId) {
+      setSelectedId(openId);
+      setScopeValue("own");
+    }
+  }
+  useEffect(() => {
+    if (openId) router.replace(pathname, { scroll: false });
+  }, [openId, router, pathname]);
 
   const canReadBranch = BRANCH_READERS.has(session?.activeRole ?? "");
   const readOnly = canReadBranch && scope === "branch";

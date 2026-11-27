@@ -2,7 +2,8 @@ import { useReportJobStatus } from "./api";
 import type { ReportJob } from "./types";
 
 const POLL_MS = 2000;
-const DONE = new Set(["READY", "COMPLETED", "FAILED"]);
+/** The API reports QUEUED / RUNNING / DONE / FAILED (tasks/job-status.dto.ts); older names kept for safety. */
+const DONE = new Set(["DONE", "READY", "COMPLETED", "FAILED"]);
 
 const statusOf = (job: ReportJob | undefined) => job?.status?.toUpperCase() ?? "QUEUED";
 const isDone = (job: ReportJob | undefined) => DONE.has(statusOf(job));

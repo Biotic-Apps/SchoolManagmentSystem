@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { omit } from "@/lib/omit";
 import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { examsKeys } from "./keys";
@@ -22,7 +23,7 @@ export function useSaveGradingScheme() {
     mutationFn: withRowFlash(
       async ({ id, input }: { id?: string; input: GradingSchemeInput }) =>
         id
-          ? (await http.patch<GradingScheme>(`/grading-schemes/${id}`, input)).data
+          ? (await http.patch<GradingScheme>(`/grading-schemes/${id}`, omit(input, ["schoolId", "sessionId"]))).data
           : (await http.post<GradingScheme>("/grading-schemes", input)).data,
       (row, vars) => vars.id ?? row.id,
     ),

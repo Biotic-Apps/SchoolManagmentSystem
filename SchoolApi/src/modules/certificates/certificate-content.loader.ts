@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import type { Certificate, Student } from '../../generated/prisma/client';
-import { formatDate } from '../../core/common/dates';
 import { PrismaService } from '../../core/prisma/prisma.service';
 import { fullName } from '../students/student.mapper';
-import type { CertificateContent } from './certificate-text';
+import { certificateDate, type CertificateContent } from './certificate-text';
 
 export interface LoadedCertificate {
   schoolName: string;
@@ -60,10 +59,10 @@ export class CertificateContentLoader {
           ? `${enrollment.section.schoolClass.name} ${enrollment.section.name}`
           : null,
         sessionName: enrollment?.session.name ?? null,
-        admissionDate: formatDate(cert.student.admissionDate),
+        admissionDate: certificateDate(cert.student.admissionDate),
         leavingDate:
           cert.type === 'SCHOOL_LEAVING' && leaving
-            ? formatDate(leaving)
+            ? certificateDate(leaving)
             : null,
         purpose: cert.purpose,
         achievement: await this.achievement(details),

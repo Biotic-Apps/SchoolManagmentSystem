@@ -34,6 +34,17 @@ function fromHttpException(exception: HttpException): ResolvedError {
     };
   }
 
+  // @nestjs/throttler answers "ThrottlerException: Too Many Requests"; never show the class name.
+  if (status === 429) {
+    return {
+      status,
+      body: errorBody(
+        ErrorCode.RATE_LIMITED,
+        'Too many attempts. Please wait a minute and try again.',
+      ),
+    };
+  }
+
   const text = typeof message === 'string' ? message : exception.message;
   return { status, body: errorBody(codeForStatus(status), text) };
 }

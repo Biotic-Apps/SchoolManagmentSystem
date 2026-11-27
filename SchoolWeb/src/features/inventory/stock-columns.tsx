@@ -31,7 +31,7 @@ export function stockColumns(): DataTableColumn<StockLine>[] {
       cell: (row) => (
         <span className="font-medium">
           {formatNumber(row.quantity)}
-          {row.unit && <span className="ml-1 text-caption font-normal text-fg-muted">{row.unit}</span>}
+          {row.unit && <span className="text-caption font-normal text-fg-muted">{` ${row.unit}`}</span>}
         </span>
       ),
     },

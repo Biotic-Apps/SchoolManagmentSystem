@@ -3,6 +3,7 @@ import type { Prisma } from '../../generated/prisma/client';
 import { AuditService } from '../../core/audit/audit.service';
 import { parseDate } from '../../core/common/dates';
 import { conflict } from '../../core/common/errors/errors';
+import { schoolDate } from '../../core/common/school-time';
 import type { PageResult } from '../../core/common/pagination/page-result';
 import {
   toPageResult,
@@ -83,7 +84,7 @@ export class ExpensesService {
     const billDate = parseDate(dto.billDate);
     const dueDate = dto.dueDate ? parseDate(dto.dueDate) : null;
     const until = dto.recurring?.untilMonth ?? null;
-    assertExpenseDates(billDate, dueDate, until);
+    assertExpenseDates(billDate, dueDate, until, parseDate(schoolDate()));
     await this.refs.check(branch.schoolId, user.id, dto);
     const row = await this.prisma.expense.create({
       data: {
@@ -136,7 +137,12 @@ export class ExpensesService {
       : dto.recurring
         ? (dto.recurring.untilMonth ?? null)
         : before.recurringUntil;
-    assertExpenseDates(billDate, dueDate, until);
+    assertExpenseDates(
+      billDate,
+      dueDate,
+      until,
+      dto.billDate ? parseDate(schoolDate()) : undefined,
+    );
     await this.refs.check(before.schoolId, user.id, dto);
     const updated = await this.prisma.expense.updateMany({
       where: { id, status: { in: EDITABLE_STATUSES } },

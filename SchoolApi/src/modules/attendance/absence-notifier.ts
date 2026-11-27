@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '../../generated/prisma/client';
 import { formatDate } from '../../core/common/dates';
+import { today } from '../../core/common/week';
 import { NotificationService } from '../../core/notifications/notification.service';
 import { PrismaService } from '../../core/prisma/prisma.service';
 import { SchoolPeopleService } from '../school-day/school-people.service';
@@ -37,6 +38,7 @@ export class AbsenceNotifier {
       register.entries.map((e) => e.studentId),
     );
     const date = formatDate(register.date);
+    const when = date === formatDate(today()) ? 'today' : `on ${date}`;
     for (const entry of register.entries) {
       const claimed = await db.attendanceEntry.updateMany({
         where: { id: entry.id, guardianNotifiedAt: null },
@@ -47,7 +49,7 @@ export class AbsenceNotifier {
       await this.notifications.notify({
         userIds: guardians.get(entry.studentId) ?? [],
         category: 'ATTENDANCE',
-        title: `${entry.student.firstName} was ${word} today`,
+        title: `${entry.student.firstName} was ${word} ${when}`,
         body: `${entry.student.firstName} was marked ${word} on ${date}.`,
         data: { studentId: entry.studentId, date, status: entry.status },
       });

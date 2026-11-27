@@ -9,7 +9,7 @@ import type { MarkSheetState } from "../../use-mark-sheet-panel";
 export function MarkSheetActions({ panel }: { panel: MarkSheetState }) {
   const { editor } = panel;
   const busy = panel.saving || panel.submitting;
-  if (!panel.canEdit && !panel.canReview) return null;
+  if (!panel.canEdit && !panel.canReview && !panel.canReturnAccepted) return null;
 
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
@@ -33,21 +33,35 @@ export function MarkSheetActions({ panel }: { panel: MarkSheetState }) {
           )}
         </>
       )}
-      {panel.canReview && (
+      {(panel.canReview || panel.canReturnAccepted) && (
         <>
+          {panel.canReview && panel.acceptBlockedReason && (
+            <span className="text-label text-warning basis-full text-right">{panel.acceptBlockedReason}</span>
+          )}
           <Button variant="secondary" onClick={() => panel.returnDialog.setOpen(true)} disabled={panel.reviewing}>
             <Undo2 />
-            Return
+            {panel.canReturnAccepted ? "Return to teacher" : "Return"}
           </Button>
-          <Button onClick={panel.accept} loading={panel.reviewing}>
-            <Check />
-            Accept
-          </Button>
+          {panel.canReview && (
+            <Button
+              onClick={panel.accept}
+              loading={panel.reviewing}
+              disabled={!!panel.acceptBlockedReason}
+              title={panel.acceptBlockedReason ?? undefined}
+            >
+              <Check />
+              Accept
+            </Button>
+          )}
           <ReasonDialog
             open={panel.returnDialog.open}
             onOpenChange={panel.returnDialog.setOpen}
             title="Return mark sheet"
-            description="The teacher sees your comment and can correct the marks before submitting again."
+            description={
+              panel.canReturnAccepted
+                ? "This sheet was accepted. Returning it reopens it for the teacher; results must be computed again after it is accepted."
+                : "The teacher sees your comment and can correct the marks before submitting again."
+            }
             label="Comment"
             submitLabel="Return"
             submitting={panel.reviewing}

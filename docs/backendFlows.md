@@ -169,6 +169,9 @@ Marks (per subject per section): NOT_ENTERED → DRAFT → SUBMITTED (P) → RET
 ```
 - Grading rules (bands, pass marks, weightage) approved per session.
 - Missing marks stay `PENDING` — never auto zero; absent recorded as `ABSENT` explicitly.
+- A sheet can be accepted only when every active student of the section has marks or `ABSENT` (a student enrolled after submission makes it pending again). Closing marks entry, computing and requesting approval need every sheet `ACCEPTED` and complete; errors name the student, section and subject.
+- Recovery: `POST /exams/:id/reopen-marks { reason }` (`exams.publish`, principal or above) moves `MARKS_CLOSED | RESULTS_APPROVED → MARKS_OPEN` while results are not published and no `RESULT_PUBLISH` request is pending; it clears the approval and is audited (`exam.reopen_marks`). While marks are open a reviewer (`exams.approve`) may return an `ACCEPTED` sheet with a reason (`marks.return`); results are then computed and approved again.
+- Paper dates must be branch working days, not on an active holiday/vacation, inside the session and within branch school hours.
 - Principal reviews completeness → approves (`RESULT_PUBLISH`) → job `documents.reportCards` renders PDFs → publish notifies guardians.
 - Promotion at term end: system suggests `PROMOTE | REPEAT | CONDITIONAL` from rules; principal confirms (`PROMOTION`); confirmed decisions create next-session enrollments from effective date.
 
@@ -177,6 +180,7 @@ Marks (per subject per section): NOT_ENTERED → DRAFT → SUBMITTED (P) → RET
 ### 17.1 Structure and invoices
 - Fee heads (tuition, admission, exam, transport, trip...) and fee plans per class/session; due day, late fee rule.
 - Monthly job `fees.generateInvoices` creates `DRAFT` invoices → finance reviews → `ISSUED` (notify guardians).
+- Due date is fixed at issue: `max(plan due day of the month, issue date + 7 days)` (`ISSUE_GRACE_DAYS`), so an invoice issued after the plan's due day is never overdue (or liable to a late fee) on arrival; the late-fee "after N days" counts from this due date. A cancelled invoice shows a balance of 0.
 ```
 Invoice: DRAFT → ISSUED → PARTIALLY_PAID → PAID
                        ↘ OVERDUE (job) ; CANCELLED (approval, reason)
@@ -188,12 +192,13 @@ Payment (cashier/gateway): RECORDED → ALLOCATED to invoice lines
 Reversal: request → approval (PAYMENT_REVERSAL) → reversing ledger entry
 ```
 - **Uploaded proof alone never marks paid.** Only verified payments allocate.
-- Gateway adapter (`initiate`, `verifyCallback`, `refund`) — Manual gateway now.
+- Gateway adapter (`initiate`, `verifyCallback`, `refund`) — Manual gateway now. One wallet per branch: branch setting `fees.onlineGateway` (`NONE` | `JAZZCASH` | `EASYPAISA` | `MANUAL`, Branch settings › Fee challan bank details). The fee summary exposes it (`onlineGatewayEnabled`, `onlineGateway`); parents only see Pay Online when it is not `NONE`, and the wallet they pick is sent and must match (else `GATEWAY_DISABLED`).
 - Receipt PDF job on each payment; receipt numbers sequential per branch.
 ### 17.3 Concessions and refunds
 Request with reason → approval by authorized approver within amount limit (above limit escalates). Applied as negative ledger lines; never edit original amounts.
 ### 17.4 Dues and daily collections
 Balance = sum(ledger). Old dues stay linked to original invoice. Daily collection report (job at day end) per cashier and mode (cash/bank/online), with cash closing confirmation by accountant.
+Refunds are money paid out on the day they are approved (`decidedAt`, school time zone): the day shows them apart (`refundedMinor`, `refunds`), expected cash at closing = cash received − cash refunds, and the finance overview's "collected" is payments − refunds of the month.
 
 ## 18. Payroll
 ```
@@ -201,18 +206,20 @@ Run (month, branch): DRAFT → CALCULATED → REVIEWED → APPROVED → PARTIALL
 ```
 - Inputs: salary structure (basic, allowances, deductions), staff attendance, unpaid leave, approved adjustments.
 - Job `payroll.calculate` produces lines; finance reviews; approver approves (`PAYROLL`); principal's own line requires higher admin.
-- Payments recorded separately (amount, date, mode, reference); partial payments keep visible balance.
+- Payments recorded separately (amount, date, mode, reference); partial payments keep visible balance. Nobody records a payment of their own salary (403).
+- Salary structure: fixed deductions may not exceed basic + allowances (400). When adjustments/recoveries still exceed a month's pay, net stops at 0 and the unrecovered part (`carriedForwardMinor`) becomes a DEDUCTION adjustment of the next month when the run is approved — never dropped.
 - Payslip PDF job; staff see only their own payslips.
 
 ## 19. Expenses and vendors
 ```
 Expense / vendor bill: DRAFT → SUBMITTED → APPROVED | REJECTED → PAID (partial allowed)
 ```
-Categories: rent, utilities, supplies, repairs, maintenance, transport, other. Attach bill images. Approval limits per role. Recurring expenses (rent) generate drafts monthly.
+Categories: rent, utilities, supplies, repairs, maintenance, transport, other. Attach bill images. Approval limits per role. Recurring expenses (rent) generate drafts monthly. A bill date cannot be in the future.
+- Profit & loss (`GET /profit-loss`, report `profit-loss`) is on a **cash basis**: fee payments received − refunds paid, other income received, expense payments made, salaries paid + deductions withheld (tax, EOBI, other) of runs approved for the months in the range.
 
 ## 20. Inventory and purchasing
 - Items (furniture, computers, stationery, uniforms, books) with category, unit, reorder level; fixed assets get asset tags + location + condition.
-- Purchase request `DRAFT → APPROVED → ORDERED (PO) → RECEIVED (partial ok) → BILLED` → links to vendor bill.
+- Purchase request `DRAFT → APPROVED → ORDERED (PO) → RECEIVED (partial ok) → BILLED` → links to vendor bill. The bill covers received quantities only; after billing nothing more can be received on that PO.
 - Stock movements (IN, OUT/issue, ADJUST with reason, TRANSFER between branches) — stock = sum(movements). Uniform/book sales can create invoice lines.
 - Low stock job notifies store keeper.
 

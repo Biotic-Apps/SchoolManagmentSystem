@@ -58,7 +58,7 @@ export function useOverrides(branchId: string | null, date: string) {
   return useQuery({
     queryKey: timetableKeys.overrides(branchId ?? "", date),
     queryFn: async () =>
-      (await http.get<TimetableOverride[]>("/timetable-overrides", { branchId, date, pageSize: 100 })).data,
+      (await http.get<TimetableOverride[]>("/timetable-overrides", { branchId, date })).data,
     placeholderData: keepPreviousData,
     enabled: !!branchId,
   });

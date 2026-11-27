@@ -12,6 +12,41 @@ export const TEACHING_DESIGNATIONS = ['TEACHER', 'HEAD_TEACHER', 'COORDINATOR'];
 const TEACHING_KINDS = ['CLASS_TEACHER', 'SUBJECT_TEACHER'] as const;
 
 /**
+ * Who may teach a lesson or cover a substitution in a branch: a teaching
+ * designation, a class/subject teaching assignment this session, or the
+ * branch principal. Accountants, helpers and office staff are not.
+ */
+export function teachingStaffWhere(
+  branchId: string,
+  sessionId?: string,
+): Prisma.StaffWhereInput[] {
+  return [
+    { designation: { in: TEACHING_DESIGNATIONS } },
+    {
+      assignments: {
+        some: {
+          endedAt: null,
+          kind: { in: [...TEACHING_KINDS] },
+          sessionId,
+        },
+      },
+    },
+    {
+      user: {
+        roleAssignments: {
+          some: {
+            AND: [
+              activeAssignmentWhere(),
+              { branchId, role: { key: RoleKey.PRINCIPAL } },
+            ],
+          },
+        },
+      },
+    },
+  ];
+}
+
+/**
  * GET /branches/:id/teaching-staff: lesson/allocation candidates from staff
  * records (login or not), with their load (contract §5.3, D8). Read-only:
  * any member of the branch (class teachers building their own draft).
@@ -44,7 +79,7 @@ export class TeachingStaffService {
       where: {
         branchId,
         status: 'ACTIVE',
-        ...(all ? {} : { OR: this.candidateFilter(branchId, session) }),
+        ...(all ? {} : { OR: teachingStaffWhere(branchId, session) }),
       },
       select: { id: true, name: true, designation: true, userId: true },
       orderBy: { name: 'asc' },
@@ -62,36 +97,6 @@ export class TeachingStaffService {
       placedPeriods: load.placed.get(s.id) ?? 0,
       sections: load.sections.get(s.id)?.size ?? 0,
     }));
-  }
-
-  private candidateFilter(
-    branchId: string,
-    sessionId?: string,
-  ): Prisma.StaffWhereInput[] {
-    return [
-      { designation: { in: TEACHING_DESIGNATIONS } },
-      {
-        assignments: {
-          some: {
-            endedAt: null,
-            kind: { in: [...TEACHING_KINDS] },
-            sessionId,
-          },
-        },
-      },
-      {
-        user: {
-          roleAssignments: {
-            some: {
-              AND: [
-                activeAssignmentWhere(),
-                { branchId, role: { key: RoleKey.PRINCIPAL } },
-              ],
-            },
-          },
-        },
-      },
-    ];
   }
 
   private async load(staffIds: string[], sessionId?: string) {

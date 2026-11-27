@@ -8,7 +8,7 @@ export function useMyAttendance() {
   const [month, setMonth] = useState<MonthRef>(currentMonth());
   const { from, to } = monthBounds(month);
   const query = useMyStaffAttendance(from, to);
-  const entries = [...(query.data?.entries ?? [])].sort((a, b) => b.date.localeCompare(a.date));
+  const entries = [...(query.data?.records ?? [])].sort((a, b) => b.date.localeCompare(a.date));
 
   return {
     month,

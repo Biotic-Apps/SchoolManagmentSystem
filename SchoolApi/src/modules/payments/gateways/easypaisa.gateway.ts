@@ -29,9 +29,14 @@ export class EasypaisaGateway implements PaymentGateway {
 
   constructor(private readonly config: AppConfigService) {}
 
-  initiate(invoice: Invoice): Promise<GatewayInitiateResult> {
+  initiate(
+    invoice: Invoice,
+    amountMinor: bigint,
+  ): Promise<GatewayInitiateResult> {
     // Executor throws (e.g. missing config) become rejections.
-    return new Promise((resolve) => resolve(this.buildInitiate(invoice)));
+    return new Promise((resolve) =>
+      resolve(this.buildInitiate(invoice, amountMinor)),
+    );
   }
 
   verifyCallback(
@@ -44,7 +49,10 @@ export class EasypaisaGateway implements PaymentGateway {
     return Promise.reject(invalid('Easypaisa refunds are processed manually'));
   }
 
-  private buildInitiate(invoice: Invoice): GatewayInitiateResult {
+  private buildInitiate(
+    invoice: Invoice,
+    amountMinor: bigint,
+  ): GatewayInitiateResult {
     const storeId = this.env('EASYPAISA_STORE_ID');
     const hashKey = this.env('EASYPAISA_HASH_KEY');
     const sandbox = this.envBool('EASYPAISA_SANDBOX');
@@ -53,7 +61,7 @@ export class EasypaisaGateway implements PaymentGateway {
 
     const orderId = `INV-${invoice.id.replace(/-/g, '').slice(0, 20)}-${Date.now()}`;
     // Easypaisa expects amount as a decimal string (e.g. "1500.00")
-    const amountDecimal = (Number(invoice.totalMinor) / 100).toFixed(2);
+    const amountDecimal = (Number(amountMinor) / 100).toFixed(2);
     const now = new Date();
     const expiryDate = formatEasypaisaDate(
       new Date(now.getTime() + 60 * 60 * 1000),
@@ -95,7 +103,7 @@ export class EasypaisaGateway implements PaymentGateway {
     fields.customField1 = invoice.id;
     fields.customField2 = invoice.invoiceNo;
     // Store the original minor amount for verification
-    fields.customField3 = invoice.totalMinor.toString();
+    fields.customField3 = amountMinor.toString();
 
     const baseUrl = sandbox ? SANDBOX_URL : PRODUCTION_URL;
     return { redirectUrl: baseUrl, formData: fields };

@@ -44,8 +44,19 @@ export function toHealthProfile(
   };
 }
 
-/** security.md §2.1: helpers see allergies and instructions only. */
-export function toHelperView(profile: HealthProfileDto): HealthProfileDto {
+/**
+ * security.md §2.1: classroom staff (teachers, helpers) see allergies and care
+ * instructions only; blood group, conditions, medications, doctor and
+ * emergency contacts stay with management and the child's own parents.
+ */
+const CARE_ONLY_ROLES: ReadonlySet<string> = new Set(['TEACHER', 'HELPER']);
+
+export function seesCareOnly(activeRole: string): boolean {
+  return CARE_ONLY_ROLES.has(activeRole);
+}
+
+/** The allergies + instructions slice of a profile. */
+export function toCareView(profile: HealthProfileDto): HealthProfileDto {
   return {
     ...EMPTY_PROFILE,
     allergies: profile.allergies,

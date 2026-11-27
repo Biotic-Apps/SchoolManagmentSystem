@@ -25,7 +25,8 @@ export function useSalaryStructure(staffId: string | null) {
 export function useSaveSalaryStructure(staffId: string) {
   return useApiMutation({
     mutationFn: (input: SalaryStructureInput) => http.put(`/staff/${staffId}/salary-structure`, input),
-    invalidate: [payrollKeys.structure(staffId)],
+    // Every payroll key: the drawer, the salary setup list and the "no salary yet" banner.
+    invalidate: [payrollKeys.all],
     success: "Salary structure saved",
     toastError: false,
   });

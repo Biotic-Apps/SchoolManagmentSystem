@@ -19,6 +19,16 @@ import type {
 } from './dto/exam-paper.dto';
 import { toExamPaperDto } from './question-bank.mapper';
 import { QuestionsRepository } from './questions.repository';
+import { sectionsTotal } from './question-rules';
+
+/** 400 unless the sections add up to the paper's total marks. */
+function assertTotal(totalMarks: number, sectionMarks: number) {
+  if (sectionMarks !== totalMarks)
+    throw invalid(
+      `Sections add up to ${sectionMarks} marks but the total is ${totalMarks}. Make them equal.`,
+      [{ field: 'totalMarks', message: `Sections add up to ${sectionMarks}` }],
+    );
+}
 
 @Injectable()
 export class ExamPapersService {
@@ -78,6 +88,7 @@ export class ExamPapersService {
   ): Promise<ExamPaperDto> {
     if (!scope.canManageSchool(dto.schoolId))
       throw invalid('School not in your scope');
+    assertTotal(dto.totalMarks, sectionsTotal(dto.sections));
 
     const sections: PaperSectionDto[] = [];
     const usedIds = new Set<string>();
@@ -103,6 +114,7 @@ export class ExamPapersService {
         title: section.title,
         questionIds: picked.map((q) => q.id),
         marks: section.questionCount * section.marksPerQuestion,
+        marksPerQuestion: section.marksPerQuestion,
       });
     }
 
@@ -135,6 +147,13 @@ export class ExamPapersService {
     });
     if (!existing || !scope.canManageSchool(existing.schoolId))
       throw notFound('Exam paper');
+    if (dto.totalMarks !== undefined) {
+      const stored = existing.sections as unknown as PaperSectionDto[];
+      assertTotal(
+        dto.totalMarks,
+        stored.reduce((sum, s) => sum + s.marks, 0),
+      );
+    }
 
     const row = await this.prisma.generatedPaper.update({
       where: { id },

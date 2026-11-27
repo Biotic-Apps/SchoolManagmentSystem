@@ -13,9 +13,13 @@ import type {
 export class SiblingDiscountsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async list(scope: Scope): Promise<SiblingDiscountDto[]> {
+  async list(scope: Scope, schoolId?: string): Promise<SiblingDiscountDto[]> {
+    if (schoolId) scope.assertReadSchool(schoolId);
     const rows = await this.prisma.siblingDiscount.findMany({
-      where: { ...scope.schoolFilter(), status: 'ACTIVE' },
+      where: {
+        ...(schoolId ? { schoolId } : scope.schoolFilter()),
+        status: 'ACTIVE',
+      },
       orderBy: { childIndex: 'asc' },
     });
     return rows.map((r) => this.toDto(r));

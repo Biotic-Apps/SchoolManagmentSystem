@@ -10,6 +10,7 @@ import { ConcessionsTab } from "@/features/fees/components/concessions/Concessio
 import { DuesTab } from "@/features/fees/components/dues/DuesTab";
 import { PaymentsTab } from "@/features/fees/components/payments/PaymentsTab";
 import { ProofsTab } from "@/features/fees/components/proofs/ProofsTab";
+import { RefundsTab } from "@/features/fees/components/refunds/RefundsTab";
 import { useFeesPage, type FeesTabId } from "../use-fees-page";
 import { InvoicesTab } from "./invoices/InvoicesTab";
 import { FinanceOverviewTab } from "./overview/FinanceOverviewTab";
@@ -27,6 +28,7 @@ export function FeesStaffPage() {
     dues: <DuesTab branchId={branchId} />,
     collections: <CollectionsTab branchId={branchId} />,
     concessions: <ConcessionsTab branchId={branchId} />,
+    refunds: <RefundsTab branchId={branchId} />,
     structure: <FeeStructureTab branchId={branchId} schoolId={schoolId} />,
   };
 

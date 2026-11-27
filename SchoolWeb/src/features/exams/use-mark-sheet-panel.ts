@@ -30,7 +30,15 @@ export function useMarkSheetPanel(exam: Exam, sheetId: string) {
   const canEdit =
     can("exams.edit") && exam.status === "MARKS_OPEN" && !!sheet && EDITABLE.has(sheet.status);
   const canSubmit = canEdit && can("exams.submit");
-  const canReview = can("exams.approve") && sheet?.status === "SUBMITTED";
+  const reviewer = can("exams.approve") && exam.status === "MARKS_OPEN";
+  const canReview = reviewer && sheet?.status === "SUBMITTED";
+  /** An accepted sheet can go back to the teacher while marks entry is open (e.g. a late admission). */
+  const canReturnAccepted = reviewer && sheet?.status === "ACCEPTED";
+  const pendingCount = sheet ? Math.max(0, sheet.total - sheet.entered) : 0;
+  const acceptBlockedReason =
+    pendingCount > 0
+      ? `${pendingCount} student${pendingCount === 1 ? " has" : "s have"} no marks yet (for example a student who joined after the sheet was submitted). Return the sheet so the teacher can enter marks or mark them Absent.`
+      : null;
 
   const flag = (ids: string[], message: string) => {
     setFlagged(new Set(ids));
@@ -87,12 +95,16 @@ export function useMarkSheetPanel(exam: Exam, sheetId: string) {
     canEdit,
     canSubmit,
     canReview,
+    canReturnAccepted,
+    acceptBlockedReason,
     saving: save.isPending,
     submitting: submit.isPending,
     reviewing: review.isPending,
     saveDraft,
     submitSheet,
-    accept: () => review.mutate({ action: "accept" }),
+    accept: () => {
+      if (!acceptBlockedReason) review.mutate({ action: "accept" });
+    },
     returnDialog: { open: returning, setOpen: setReturning },
     returnSheet: (comment: string) =>
       review.mutate({ action: "return", comment }, { onSuccess: () => setReturning(false) }),

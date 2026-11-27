@@ -46,6 +46,8 @@ export class ApprovalsController {
       activeRole: user.activeRole,
       status: query.status,
       type: query.type,
+      entityType: query.entityType,
+      search: query.search,
     };
     const { rows, total } = await this.repository.list(scope, filter, query);
     return toPageResult(

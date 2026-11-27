@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { omit } from "@/lib/omit";
 import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { examsKeys } from "./keys";
@@ -28,7 +29,7 @@ export function useSaveExam() {
   return useApiMutation({
     mutationFn: withRowFlash(
       async ({ id, input }: { id?: string; input: ExamInput }) =>
-        id ? (await http.patch<Exam>(`/exams/${id}`, input)).data : (await http.post<Exam>("/exams", input)).data,
+        id ? (await http.patch<Exam>(`/exams/${id}`, omit(input, ["branchId", "sessionId"]))).data : (await http.post<Exam>("/exams", input)).data,
       (row, vars) => vars.id ?? row.id,
     ),
     invalidate: ALL,
@@ -48,18 +49,32 @@ export function useSaveSchedule(examId: string) {
   });
 }
 
+/** Closing answers 409 listing sheets not accepted or with missing marks (shown inline). */
 export function useExamStatus(examId: string) {
   return useApiMutation({
     mutationFn: (input: ExamStatusInput) => http.post<Exam>(`/exams/${examId}/status`, input),
     invalidate: ALL,
     success: (_, vars) => (vars.status === "MARKS_OPEN" ? "Marks entry opened" : "Marks entry closed"),
+    toastError: false,
   });
 }
 
+/** Reopens marks entry after closing (results not yet published); the reason is audited. */
+export function useReopenMarks(examId: string) {
+  return useApiMutation({
+    mutationFn: (reason: string) => http.post<Exam>(`/exams/${examId}/reopen-marks`, { reason }),
+    invalidate: [...ALL, ["approvals"]],
+    success: "Marks entry reopened. Return the sheets that need changes to their teachers.",
+    toastError: false,
+  });
+}
+
+/** 409 lists sheets not accepted or with missing marks (shown inline). */
 export function useComputeResults(examId: string) {
   return useApiMutation({
     mutationFn: async () => (await http.post<{ jobId: string }>(`/exams/${examId}/compute`)).data,
     invalidate: ALL,
+    toastError: false,
   });
 }
 

@@ -19,7 +19,7 @@ export function ResetPasswordPanel() {
       footer={<AuthFooterLink href="/login">Back to sign in</AuthFooterLink>}
     >
       <FormProvider {...form}>
-        <form onSubmit={submit} noValidate className="flex flex-col gap-5">
+        <form method="post" onSubmit={submit} noValidate className="flex flex-col gap-5">
           <FormAlert message={formError} />
           {!hasLinkToken && <TextField name="token" label="Reset code" autoComplete="one-time-code" required />}
           <div className="flex flex-col gap-2">

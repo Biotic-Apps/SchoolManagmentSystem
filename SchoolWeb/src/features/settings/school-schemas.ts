@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DEFAULT_PRIMARY, isHexColor, passesContrast } from "@/features/branding/contrast";
+import { DEFAULT_PRIMARY, isAllowedPrimary, isHexColor } from "@/features/branding/contrast";
 import { blankToNull, optionalText, requiredText } from "@/lib/validation";
 import type { SchoolSettings, SchoolSettingsInput } from "./types";
 
@@ -12,7 +12,7 @@ export const schoolSettingsSchema = z.object({
     .string()
     .trim()
     .refine(isHexColor, "Enter a hex colour like #7B68EE")
-    .refine(passesContrast, "Pick a darker colour so white text on it stays readable"),
+    .refine(isAllowedPrimary, "Pick a darker colour so white text on it stays readable"),
   receiptFooter: optionalText(FOOTER_MAX),
   reportCardFooter: optionalText(FOOTER_MAX),
 });

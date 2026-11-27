@@ -1,10 +1,24 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsUUID } from 'class-validator';
+import { IsIn, IsOptional, IsUUID } from 'class-validator';
+
+/** Wallets a parent can pick; must match the branch's `fees.onlineGateway`. */
+export const ONLINE_GATEWAY_CHOICES = [
+  'MANUAL',
+  'JAZZCASH',
+  'EASYPAISA',
+] as const;
+export type OnlineGatewayChoice = (typeof ONLINE_GATEWAY_CHOICES)[number];
 
 export class InitiateOnlineDto {
   @ApiProperty({ format: 'uuid' })
   @IsUUID()
   invoiceId!: string;
+
+  /** The wallet the parent chose; refused when it is not the branch's gateway. */
+  @ApiPropertyOptional({ enum: ONLINE_GATEWAY_CHOICES })
+  @IsOptional()
+  @IsIn(ONLINE_GATEWAY_CHOICES)
+  gateway?: OnlineGatewayChoice;
 }
 
 export class InitiateOnlineResultDto {

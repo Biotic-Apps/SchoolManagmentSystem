@@ -5,6 +5,7 @@ import { RowActions } from "@/components/shared/RowActions";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { designationLabel } from "@/features/staff/options";
 import { cn } from "@/lib/cn";
+import { formatMoney } from "@/lib/format";
 import { NUMERIC_COLUMN } from "@/lib/table";
 import { hoursText } from "./options";
 import type { PayrollLine } from "./types";
@@ -17,12 +18,14 @@ const deductions = (row: PayrollLine) =>
 
 interface LineColumnOptions {
   canPay: boolean;
+  /** The viewer's user id: nobody records a payment of their own salary. */
+  viewerId?: string | null;
   onPay: (line: PayrollLine) => void;
   onBreakdown: (line: PayrollLine) => void;
 }
 
 /** Run lines: gross, what was added and taken off, net and payment state. */
-export function lineColumns({ canPay, onPay, onBreakdown }: LineColumnOptions): DataTableColumn<PayrollLine>[] {
+export function lineColumns({ canPay, viewerId, onPay, onBreakdown }: LineColumnOptions): DataTableColumn<PayrollLine>[] {
   return [
     {
       id: "staff",
@@ -59,6 +62,11 @@ export function lineColumns({ canPay, onPay, onBreakdown }: LineColumnOptions): 
         <span className="flex flex-col items-end">
           <MoneyText amountMinor={deductions(row)} className={deductions(row) > 0 ? "text-error" : undefined} />
           {row.unpaidLeaveDays > 0 && <span className="text-caption text-fg-muted">{row.unpaidLeaveDays} unpaid days</span>}
+          {!!row.carriedForwardMinor && (
+            <span className="text-caption text-warning">
+              {formatMoney(row.carriedForwardMinor)} carried to next month
+            </span>
+          )}
         </span>
       ),
     },
@@ -74,7 +82,13 @@ export function lineColumns({ canPay, onPay, onBreakdown }: LineColumnOptions): 
           label={`Actions for ${row.name}`}
           actions={[
             { id: "breakdown", label: "View breakdown", icon: FileText, onSelect: () => onBreakdown(row) },
-            { id: "pay", label: "Record payment", icon: Wallet, onSelect: () => onPay(row), hidden: !canPay || row.balanceMinor <= 0 },
+            {
+              id: "pay",
+              label: "Record payment",
+              icon: Wallet,
+              onSelect: () => onPay(row),
+              hidden: !canPay || row.balanceMinor <= 0 || (!!viewerId && row.userId === viewerId),
+            },
           ]}
         />
       ),

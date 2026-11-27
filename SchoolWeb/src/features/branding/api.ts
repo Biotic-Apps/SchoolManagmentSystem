@@ -7,7 +7,7 @@ export const brandingKeys = {
   school: (schoolId: string | null) => ["branding", schoolId] as const,
 };
 
-/** Public branding; without a school id the API answers with the default school. */
+/** Public branding; without a school id the API answers with the only active school, else the default eSchool branding. */
 export function useBranding(schoolId: string | null) {
   return useQuery({
     queryKey: brandingKeys.school(schoolId),

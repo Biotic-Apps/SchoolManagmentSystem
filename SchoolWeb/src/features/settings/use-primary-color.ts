@@ -1,5 +1,5 @@
 import { useWatch, type UseFormReturn } from "react-hook-form";
-import { DEFAULT_PRIMARY, MIN_CONTRAST, contrastOnWhite } from "@/features/branding/contrast";
+import { DEFAULT_PRIMARY, MIN_CONTRAST, contrastOnWhite, isDefaultPrimary } from "@/features/branding/contrast";
 import type { SchoolSettingsValues } from "./school-schemas";
 
 // Rounded down so a colour just under the minimum never reads as "4.5 : 1".
@@ -12,7 +12,10 @@ export function usePrimaryColor(form: UseFormReturn<SchoolSettingsValues>) {
   const value = useWatch({ control: form.control, name: "primaryColor" }) ?? "";
   const ratio = contrastOnWhite(value);
   const isHex = ratio !== null;
-  const passes = isHex && ratio >= MIN_CONTRAST;
+  const isDefault = isDefaultPrimary(value);
+  // The shipped default is always allowed (it is the product theme).
+  const meetsAa = isHex && ratio >= MIN_CONTRAST;
+  const passes = meetsAa || (isHex && isDefault);
 
   const setColor = (hex: string) => {
     form.clearErrors("primaryColor");
@@ -23,10 +26,11 @@ export function usePrimaryColor(form: UseFormReturn<SchoolSettingsValues>) {
     value,
     isHex,
     passes,
+    meetsAa,
     ratioText: isHex ? formatRatio(ratio) : null,
     /** Native colour inputs only accept lowercase #rrggbb. */
     pickerValue: (isHex ? value : DEFAULT_PRIMARY).trim().toLowerCase(),
-    isDefault: value.trim().toUpperCase() === DEFAULT_PRIMARY,
+    isDefault,
     setColor,
     resetToDefault: () => setColor(DEFAULT_PRIMARY),
   };

@@ -19,6 +19,8 @@ import type { ReportCardTemplate } from "../types";
 interface TemplateListProps {
   templates: ReportCardTemplate[];
   onEdit: (id: string) => void;
+  canEdit: boolean;
+  canDelete: boolean;
 }
 
 function sectionSummary(t: ReportCardTemplate): string {
@@ -31,7 +33,7 @@ function sectionSummary(t: ReportCardTemplate): string {
   return parts.length ? parts.join(", ") : "No sections enabled";
 }
 
-export function TemplateList({ templates, onEdit }: TemplateListProps) {
+export function TemplateList({ templates, onEdit, canEdit, canDelete }: TemplateListProps) {
   const deleteMut = useDeleteReportCardTemplate();
   const setDefault = useSetDefaultTemplate();
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -59,29 +61,35 @@ export function TemplateList({ templates, onEdit }: TemplateListProps) {
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
                   {t.isDefault && <Badge tone="primary">Default</Badge>}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="size-8">
-                        <MoreVertical className="size-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => onEdit(t.id)}>
-                        <Pencil className="mr-2 size-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      {!t.isDefault && (
-                        <DropdownMenuItem onClick={() => setDefault.mutate(t.id)}>
-                          <Star className="mr-2 size-4" />
-                          Set as default
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuItem className="text-error" onClick={() => setDeleteId(t.id)}>
-                        <Trash2 className="mr-2 size-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {(canEdit || canDelete) && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="size-8" aria-label={`Actions for ${t.name}`}>
+                          <MoreVertical className="size-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        {canEdit && (
+                          <DropdownMenuItem onClick={() => onEdit(t.id)}>
+                            <Pencil className="mr-2 size-4" />
+                            Edit
+                          </DropdownMenuItem>
+                        )}
+                        {canEdit && !t.isDefault && (
+                          <DropdownMenuItem onClick={() => setDefault.mutate(t.id)}>
+                            <Star className="mr-2 size-4" />
+                            Set as default
+                          </DropdownMenuItem>
+                        )}
+                        {canDelete && (
+                          <DropdownMenuItem className="text-error" onClick={() => setDeleteId(t.id)}>
+                            <Trash2 className="mr-2 size-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                 </div>
               </div>
 

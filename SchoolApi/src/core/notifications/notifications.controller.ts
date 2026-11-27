@@ -35,7 +35,7 @@ export class NotificationsController {
     @CurrentUser() user: AuthUser,
     @Query() query: NotificationQueryDto,
   ): Promise<PageResult<NotificationDto>> {
-    return this.inbox.list(user.id, query);
+    return this.inbox.list(user.id, query, user.activeRole);
   }
 
   @Get('notifications/unread-count')

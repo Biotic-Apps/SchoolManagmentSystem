@@ -31,5 +31,5 @@ export function notifyPublishResult(result: { status?: string } | null | undefin
 
 /** 423 after the branch's diary closing time. */
 export function toastDiaryError(error: unknown) {
-  toast.error(hasErrorCode(error, "RECORD_LOCKED") ? "Diary closed for today" : errorMessage(error));
+  toast.error(hasErrorCode(error, "RECORD_LOCKED") ? "The diary for this day is closed" : errorMessage(error));
 }

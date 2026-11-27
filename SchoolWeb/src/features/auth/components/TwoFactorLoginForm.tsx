@@ -16,7 +16,7 @@ export function TwoFactorLoginForm({ challengeId, onBack }: TwoFactorLoginFormPr
   const totp = mode === "totp";
 
   return (
-    <form onSubmit={submit} noValidate className="flex flex-col gap-5">
+    <form method="post" onSubmit={submit} noValidate className="flex flex-col gap-5">
       <p className="text-label text-fg-muted">
         {totp
           ? "Open your authenticator app and enter the 6-digit code for eSchool."

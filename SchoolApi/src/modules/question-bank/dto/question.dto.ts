@@ -1,5 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
+  ArrayMaxSize,
   IsArray,
   IsIn,
   IsInt,
@@ -16,6 +18,16 @@ import {
   QuestionType,
 } from '../../../generated/prisma/client';
 import { PaginationQueryDto } from '../../../core/common/pagination/pagination-query.dto';
+import { Trim } from '../../../core/common/validation/trim';
+import { MCQ_MAX_OPTIONS } from '../question-rules';
+
+/** Trims every option before validation ("  " is not an option). */
+const TrimEach = () =>
+  Transform(({ value }: { value: unknown }) =>
+    Array.isArray(value)
+      ? value.map((v: unknown) => (typeof v === 'string' ? v.trim() : v))
+      : value,
+  );
 
 export class QuestionQueryDto extends PaginationQueryDto {
   @IsOptional()
@@ -65,6 +77,7 @@ export class CreateQuestionDto {
   @IsUUID()
   classId!: string;
 
+  @Trim()
   @IsString()
   @MinLength(1)
   @MaxLength(150)
@@ -83,16 +96,21 @@ export class CreateQuestionDto {
   @Max(100)
   marks!: number;
 
+  @Trim()
   @IsString()
   @MinLength(1)
   @MaxLength(5000)
   questionText!: string;
 
   @IsOptional()
+  @TrimEach()
   @IsArray()
+  @ArrayMaxSize(MCQ_MAX_OPTIONS)
   @IsString({ each: true })
+  @MaxLength(500, { each: true })
   options?: string[];
 
+  @Trim()
   @IsString()
   @MinLength(1)
   @MaxLength(2000)
@@ -101,6 +119,7 @@ export class CreateQuestionDto {
 
 export class UpdateQuestionDto {
   @IsOptional()
+  @Trim()
   @IsString()
   @MinLength(1)
   @MaxLength(150)
@@ -123,17 +142,22 @@ export class UpdateQuestionDto {
   marks?: number;
 
   @IsOptional()
+  @Trim()
   @IsString()
   @MinLength(1)
   @MaxLength(5000)
   questionText?: string;
 
   @IsOptional()
+  @TrimEach()
   @IsArray()
+  @ArrayMaxSize(MCQ_MAX_OPTIONS)
   @IsString({ each: true })
+  @MaxLength(500, { each: true })
   options?: string[];
 
   @IsOptional()
+  @Trim()
   @IsString()
   @MinLength(1)
   @MaxLength(2000)

@@ -40,8 +40,12 @@ export class StudentAttendanceService {
     if ((to.getTime() - from.getTime()) / 86_400_000 > MAX_DAYS)
       throw invalid(`Range is limited to ${MAX_DAYS} days`);
 
+    // Future days are not "unmarked" yet: list working days up to today only.
+    const until = to > today() ? today() : to;
     const [days, entries] = await Promise.all([
-      this.workingDays.between(student.branchId, from, to),
+      until < from
+        ? Promise.resolve([])
+        : this.workingDays.between(student.branchId, from, until),
       this.prisma.attendanceEntry.findMany({
         where: {
           studentId,

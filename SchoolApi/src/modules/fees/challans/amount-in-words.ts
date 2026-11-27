@@ -71,7 +71,8 @@ export function wholeInWords(value: bigint): string {
 
 /**
  * Amount in minor units as printed on challans and receipts, e.g.
- * `1250050n` → "Rupees Twelve Thousand Five Hundred and Fifty Paisa Only".
+ * `1250050n` → "Rupees Twelve Thousand Five Hundred and Paisa Fifty Only"
+ * (paisa named before the figure, so it never reads as "Five Hundred and Fifty").
  */
 export function amountInWords(amountMinor: bigint, currency = 'PKR'): string {
   const abs = amountMinor < 0n ? -amountMinor : amountMinor;
@@ -79,6 +80,6 @@ export function amountInWords(amountMinor: bigint, currency = 'PKR'): string {
   const minor = Number(abs % 100n);
   const unit = currency === 'PKR' ? 'Rupees' : currency;
   const sign = amountMinor < 0n ? 'Minus ' : '';
-  const paisa = minor ? ` and ${belowHundred(minor)} Paisa` : '';
+  const paisa = minor ? ` and Paisa ${belowHundred(minor)}` : '';
   return `${sign}${unit} ${wholeInWords(major)}${paisa} Only`;
 }

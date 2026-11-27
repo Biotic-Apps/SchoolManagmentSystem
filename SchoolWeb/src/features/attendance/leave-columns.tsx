@@ -87,7 +87,13 @@ export function leaveReviewColumns(actions: (row: Leave) => ReactNode): DataTabl
       ),
     },
     status,
-    { id: "actions", header: "", className: "w-px whitespace-nowrap text-right", cell: actions },
+    // Pinned to the right edge so Approve / Reject stay visible when the table scrolls sideways.
+    {
+      id: "actions",
+      header: "",
+      className: "sticky right-0 w-px whitespace-nowrap bg-surface text-right shadow-[-8px_0_8px_-8px_rgb(0_0_0/0.15)]",
+      cell: actions,
+    },
   ];
 }
 
@@ -100,6 +106,12 @@ export function myLeaveColumns(actions: (row: Leave) => ReactNode, withType: boo
     reason,
     status,
     decision,
-    { id: "actions", header: "", className: "w-px whitespace-nowrap text-right", cell: actions },
+    // Pinned to the right edge so Approve / Reject stay visible when the table scrolls sideways.
+    {
+      id: "actions",
+      header: "",
+      className: "sticky right-0 w-px whitespace-nowrap bg-surface text-right shadow-[-8px_0_8px_-8px_rgb(0_0_0/0.15)]",
+      cell: actions,
+    },
   ];
 }

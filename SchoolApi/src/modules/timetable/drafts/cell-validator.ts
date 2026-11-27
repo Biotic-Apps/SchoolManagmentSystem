@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ErrorCode } from '../../../core/common/errors/error-code.enum';
 import { domainError } from '../../../core/common/errors/errors';
 import { PrismaService } from '../../../core/prisma/prisma.service';
+import { teachingStaffWhere } from '../../staff/allocation/teaching-staff.service';
 import { DAY_NAMES, layoutOf } from '../periods/bell-schedule';
 import type { SectionContext } from '../timetable-context.service';
 
@@ -40,6 +41,22 @@ export class CellValidator {
   async assert(ctx: SectionContext, cell: CellInput): Promise<void> {
     this.assertPlacement(ctx, cell.day, cell.periodIndex);
     await this.assertRefs(ctx, [cell]);
+    await this.assertTeaching(ctx, cell.staffId);
+  }
+
+  /** The lesson teacher must be teaching staff (not an accountant or helper). */
+  private async assertTeaching(ctx: SectionContext, staffId: string) {
+    const teaching = await this.prisma.staff.count({
+      where: {
+        id: staffId,
+        OR: teachingStaffWhere(ctx.section.branchId, ctx.section.sessionId),
+      },
+    });
+    if (teaching === 0)
+      throw domainError(
+        ErrorCode.UNKNOWN_STAFF,
+        'Teacher must be teaching staff (teacher, coordinator or principal)',
+      );
   }
 
   /** Bulk drafts: breaks and non-working days stay conflicts, everything else must be valid. */

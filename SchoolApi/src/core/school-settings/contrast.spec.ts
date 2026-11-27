@@ -20,6 +20,12 @@ describe('primaryColorProblem', () => {
     expect(primaryColorProblem('#0B7F74')).toBeNull();
   });
 
+  it('always accepts the shipped default colour', () => {
+    expect(contrastOnWhite('#7B68EE')!).toBeLessThan(4.5);
+    expect(primaryColorProblem('#7B68EE')).toBeNull();
+    expect(primaryColorProblem('#7b68ee')).toBeNull();
+  });
+
   it('rejects yellow with the ratio in the message', () => {
     const message = primaryColorProblem('#FFFF00');
     expect(message).toContain('1.07:1');

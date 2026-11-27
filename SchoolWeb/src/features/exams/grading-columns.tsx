@@ -8,6 +8,7 @@ import type { GradingScheme } from "./types";
 interface GradingColumnActions {
   canEdit: boolean;
   canApprove: boolean;
+  currentUserId: string | null;
   isLocked: (scheme: GradingScheme) => boolean;
   onEdit: (scheme: GradingScheme) => void;
   onApprove: (scheme: GradingScheme) => void;
@@ -58,7 +59,11 @@ export function gradingColumns(actions: GradingColumnActions): DataTableColumn<G
               label: "Approve",
               icon: CheckCircle2,
               onSelect: () => actions.onApprove(row),
-              hidden: !actions.canApprove || row.status === "APPROVED",
+              // The API refuses a scheme's creator ("needs another approver"), so hide it for them.
+              hidden:
+                !actions.canApprove ||
+                row.status === "APPROVED" ||
+                (!!row.createdById && row.createdById === actions.currentUserId),
             },
           ]}
         />

@@ -8,20 +8,27 @@ import type { StaffRow, StaffAttendanceEditor } from "./use-staff-attendance-edi
 const NO_TIMES = new Set(["ABSENT", "LEAVE"]);
 
 export function staffAttendanceColumns(update: StaffAttendanceEditor["update"]): DataTableColumn<StaffRow>[] {
+  const chips = (row: StaffRow) => (
+    <StatusChips value={row.status} onChange={(status) => update(row.staffId, { status })} label={row.name} />
+  );
   return [
     {
       id: "staff",
       header: "Staff member",
-      className: "min-w-56",
-      cell: (row) => <PersonCell name={row.name} caption={row.designation} photoUrl={row.photoUrl} />,
+      className: "px-3 sm:min-w-56 sm:px-5",
+      // Phones: the status buttons sit under the name instead of off-screen to the right.
+      cell: (row) => (
+        <div className="flex flex-col gap-2">
+          <PersonCell name={row.name} caption={row.designation} photoUrl={row.photoUrl} />
+          <div className="sm:hidden">{chips(row)}</div>
+        </div>
+      ),
     },
     {
       id: "status",
       header: "Status",
-      className: "whitespace-nowrap",
-      cell: (row) => (
-        <StatusChips value={row.status} onChange={(status) => update(row.staffId, { status })} label={row.name} />
-      ),
+      className: "hidden whitespace-nowrap sm:table-cell",
+      cell: chips,
     },
     {
       id: "checkIn",

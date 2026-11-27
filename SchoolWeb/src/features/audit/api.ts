@@ -1,5 +1,5 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { http } from "@/lib/http";
+import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { http, type Query } from "@/lib/http";
 import type { AuditLog } from "./types";
 
 export const AUDIT_PAGE_SIZE = 20;
@@ -20,5 +20,15 @@ export function useAuditLog(entityType: string, entityId: string | null, enabled
       return more && last.logs.length > 0 ? pages.length + 1 : undefined;
     },
     enabled: enabled && !!entityId,
+  });
+}
+
+/** System-wide audit list with filters (GET /audit?actorId&action&from&to&branchId), one page at a time. */
+export function useAuditList(params: Query, enabled = true) {
+  return useQuery({
+    queryKey: ["audit", "list", params],
+    queryFn: () => http.get<AuditLog[]>("/audit", params),
+    placeholderData: keepPreviousData,
+    enabled,
   });
 }

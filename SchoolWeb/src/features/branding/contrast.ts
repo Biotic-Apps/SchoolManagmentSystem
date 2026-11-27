@@ -29,3 +29,15 @@ export function passesContrast(hex: string | null | undefined): boolean {
   const ratio = hex ? contrastOnWhite(hex) : null;
   return ratio !== null && ratio >= MIN_CONTRAST;
 }
+
+export function isDefaultPrimary(hex: string | null | undefined): boolean {
+  return !!hex && hex.trim().toUpperCase() === DEFAULT_PRIMARY;
+}
+
+/**
+ * A primary colour the school may save: passes AA, or is the shipped default
+ * (the product theme, ~4.1 : 1, which keeps its hand-tuned tokens from globals.css).
+ */
+export function isAllowedPrimary(hex: string | null | undefined): boolean {
+  return isDefaultPrimary(hex) || passesContrast(hex);
+}

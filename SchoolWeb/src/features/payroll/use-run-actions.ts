@@ -12,7 +12,8 @@ import {
 } from "./runs-api";
 import type { PayrollLine, PayrollRun, PayrollRunStatus } from "./types";
 
-const CLOSABLE: PayrollRunStatus[] = ["APPROVED", "PARTIALLY_PAID", "PAID"];
+// The API closes a run only once every salary is paid.
+const CLOSABLE: PayrollRunStatus[] = ["PAID"];
 
 export type RunConfirm = "approve" | "close";
 

@@ -8,7 +8,7 @@ import { useServerForm } from "@/lib/use-server-form";
 import { useEarlyLeaves, usePickupPersons, useRecordDeparture } from "./api";
 import { nowTime } from "./now-time";
 import { pickupChoices } from "./pickup-choices";
-import { departureDefaults, departureSchema, toDepartureInput, type DepartureValues } from "./schemas";
+import { departureDefaults, departureSchemaFor, toDepartureInput, type DepartureValues } from "./schemas";
 
 const BLOCKED = "BLOCKED" as const;
 
@@ -16,9 +16,10 @@ const BLOCKED = "BLOCKED" as const;
 export function useDepartureForm(branchId: string, date: string, onDone: () => void) {
   const record = useRecordDeparture();
   const [blockedFor, setBlockedFor] = useState<string | null>(null);
+  const schema = useMemo(() => departureSchemaFor(date), [date]);
 
   const server = useServerForm<DepartureValues, unknown>({
-    schema: departureSchema,
+    schema,
     defaultValues: departureDefaults(nowTime()),
     onSubmit: async (values) => {
       try {

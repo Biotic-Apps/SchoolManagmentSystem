@@ -43,7 +43,7 @@ export class ResultApprovalService {
       });
       if (pending > 0) throw conflict('Results are already awaiting approval');
     }
-    await this.readiness.assertAllAccepted(id);
+    await this.readiness.assertReady(id);
     await this.readiness.assertComputed(exam);
 
     const steps = principalOrAbove(user.activeRole);

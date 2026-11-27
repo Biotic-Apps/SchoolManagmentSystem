@@ -79,7 +79,8 @@ export class FeeSummaryService {
           }
         : null,
       currency: next?.currency ?? last?.currency ?? 'PKR',
-      onlineGatewayEnabled: gateway !== 'NONE',
+      onlineGatewayEnabled: !!gateway && gateway !== 'NONE',
+      onlineGateway: gateway || 'NONE',
       proofUploadEnabled: proofUpload === true,
     };
   }

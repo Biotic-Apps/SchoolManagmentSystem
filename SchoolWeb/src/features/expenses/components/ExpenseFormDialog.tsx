@@ -1,5 +1,6 @@
 "use client";
 
+import { todayIso } from "@/lib/dates";
 import { FormDialog } from "@/components/shared/FormDialog";
 import { CheckboxField } from "@/components/shared/form/CheckboxField";
 import { MoneyField } from "@/components/shared/form/MoneyField";
@@ -40,7 +41,7 @@ export function ExpenseFormDialog({ branchId, lookups, onClose, onSaved }: Expen
         <SelectField name="categoryId" label="Category" options={lookups.categoryOptions} required />
         <SelectField name="vendorId" label="Vendor" options={lookups.vendorOptions} emptyLabel="No vendor" />
         <MoneyField name="amount" label="Amount" required />
-        <TextField name="billDate" label="Bill date" type="date" required />
+        <TextField name="billDate" label="Bill date" type="date" max={todayIso()} required />
         <TextField name="dueDate" label="Due date" type="date" />
       </div>
       <UploadField name="billFileId" label="Bill copy" purpose="DOCUMENT" />

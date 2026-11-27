@@ -39,7 +39,7 @@ export function CreateUserDialog({ onClose, onCreated }: CreateUserDialogProps) 
           type="password"
           autoComplete="new-password"
           className="sm:col-span-2"
-          hint="Optional. Leave empty to generate a temporary password; the user must change it at first sign-in."
+          hint="Optional. Leave empty to generate a temporary password. Either way, the user must change it at first sign-in."
         />
       </div>
       <AssignmentsBuilder options={options} />

@@ -7,6 +7,7 @@ import { AttendanceLockProcessor } from './jobs/attendance-lock.processor';
 import { QrScanController } from './qr/qr-scan.controller';
 import { QrScanService } from './qr/qr-scan.service';
 import { RegisterAccessService } from './register-access.service';
+import { RegisterLockPolicy } from './register-lock';
 import { RegisterSubmitAction } from './register-submit.action';
 import { RegisterViewService } from './register-view.service';
 import { RegisterWriter } from './register-writer';
@@ -20,6 +21,7 @@ import { StudentAttendanceService } from './student-attendance.service';
   providers: [
     RegistersRepository,
     RegisterAccessService,
+    RegisterLockPolicy,
     RegisterViewService,
     RegisterWriter,
     AbsenceNotifier,

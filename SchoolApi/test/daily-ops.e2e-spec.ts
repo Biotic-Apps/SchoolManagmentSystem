@@ -83,7 +83,7 @@ describe('Daily operations (e2e)', () => {
     throw new Error('No free working day found');
   }
 
-  it('teacher marks and submits 5-A; the parent sees the child; a second submitter gets 409', async () => {
+  it('teacher marks and submits a past day of 5-A (locked at once); the parent sees the child; later changes need a correction', async () => {
     const date = await freeDate();
     const register = data<Register>(
       await t('teacher')
@@ -113,7 +113,8 @@ describe('Daily operations (e2e)', () => {
         .post('/attendance/registers/submit', { sectionId: fiveA, date })
         .expect(200),
     );
-    expect(submitted.status).toBe('SUBMITTED');
+    // A past day is beyond its lock time: the late submit locks straight away.
+    expect(submitted.status).toBe('LOCKED');
 
     const history = data<{ entries: { date: string; status: string }[] }>(
       await t('parent')
@@ -124,13 +125,17 @@ describe('Daily operations (e2e)', () => {
       expect.objectContaining({ date, status: 'ABSENT' }),
     ]);
 
+    const changed = entries.map((e) =>
+      e.studentId === ayesha.id ? { ...e, status: 'PRESENT' } : e,
+    );
     const again = await t('coordinator')
-      .post('/attendance/registers/submit', { sectionId: fiveA, date, entries })
-      .expect(409);
-    expect(errorCode(again)).toBe('ALREADY_SUBMITTED');
-    expect(
-      (again.body as { error: { details: Register } }).error.details.status,
-    ).toBe('SUBMITTED');
+      .post('/attendance/registers/submit', {
+        sectionId: fiveA,
+        date,
+        entries: changed,
+      })
+      .expect(423);
+    expect(errorCode(again)).toBe('RECORD_LOCKED');
   });
 
   it('a parent cannot read another child’s attendance (404)', async () => {

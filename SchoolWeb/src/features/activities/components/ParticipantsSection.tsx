@@ -28,7 +28,7 @@ export function ParticipantsSection({ activity, editable }: ParticipantsSectionP
           key={participants.dataUpdatedAt}
           activity={activity}
           initial={participants.data}
-          consents={consents.data?.consents ?? []}
+          consents={consents.data?.items ?? []}
           editable={editable}
         />
       )}

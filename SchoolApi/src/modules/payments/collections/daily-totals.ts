@@ -60,6 +60,12 @@ export function dailyTotals(
   return totals;
 }
 
+/** Cash that should be in the drawer: cash received − cash refunds paid. */
+export const expectedCash = (
+  totals: Pick<DailyTotals, 'cashMinor'>,
+  cashRefundedMinor: bigint,
+): bigint => totals.cashMinor - cashRefundedMinor;
+
 /** Counted − expected: negative = cash short, positive = cash over. */
 export const cashDifference = (counted: bigint, expected: bigint): bigint =>
   counted - expected;

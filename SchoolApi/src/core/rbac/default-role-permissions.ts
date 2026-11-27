@@ -24,6 +24,9 @@ const PRINCIPAL: PermissionKey[] = [
   // Principals can do any teacher task (proxy) for schools where teachers don't carry phones.
   ...grant('attendance', 'view', 'add', 'edit', 'submit', 'approve', 'export'),
   ...grant('diary', 'view', 'add', 'edit', 'submit', 'approve', 'publish'),
+  // Homework grants match migration 20261012150000_homework (fresh databases are seeded from this list).
+  ...grant('homework', 'view', 'add', 'edit', 'delete', 'submit'),
+  ...grant('questions', 'view', 'add', 'edit', 'delete'),
   ...grant('progress', 'view', 'edit'),
   ...grant('activities', 'view', 'add', 'edit', 'approve', 'publish'),
   ...grant('notices', 'view', 'add', 'edit', 'publish'),
@@ -68,6 +71,7 @@ const SUPERVISOR: PermissionKey[] = [
   ...grant('timetable', 'view', 'add', 'edit'),
   ...grant('attendance', 'view', 'add', 'edit', 'submit', 'approve'),
   ...grant('diary', 'view', 'add', 'edit', 'submit', 'approve', 'publish'),
+  ...grant('homework', 'view', 'add', 'edit'),
   ...grant('activities', 'view', 'add', 'edit', 'submit'),
   ...grant('exams', 'view', 'add', 'edit', 'submit', 'approve'),
   ...grant('progress', 'view', 'edit'),
@@ -87,6 +91,8 @@ const SUPERVISOR: PermissionKey[] = [
 // School pay rules stay with the principal/admin (payroll-settings.service.ts).
 const COORDINATOR: PermissionKey[] = [
   ...SUPERVISOR,
+  // navigation.md: COORDINATOR also gets question_bank.
+  ...grant('questions', 'view', 'add', 'edit'),
   ...grant('payroll', 'view', 'add', 'edit', 'submit', 'approve', 'export'),
 ];
 
@@ -98,6 +104,8 @@ const TEACHER: PermissionKey[] = [
   ...grant('progress', 'view', 'edit'),
   ...grant('attendance', 'view', 'add', 'edit', 'submit'),
   ...grant('diary', 'view', 'add', 'edit', 'submit', 'publish'),
+  ...grant('homework', 'view', 'add', 'edit'),
+  ...grant('questions', 'view', 'add', 'edit'),
   ...grant('activities', 'view', 'add', 'edit', 'submit'),
   ...grant('exams', 'view', 'add', 'edit', 'submit'),
   ...grant('notices', 'view', 'add'),
@@ -143,6 +151,7 @@ const ACCOUNTANT: PermissionKey[] = [
 const PARENT: PermissionKey[] = [
   ...viewOnly('dashboard', 'students', 'diary', 'attendance', 'progress'),
   ...viewOnly('timetable', 'activities', 'notices', 'exams'),
+  ...grant('homework', 'view', 'submit'),
   ...grant('fees', 'view', 'add'),
   ...grant('certificates', 'view', 'add'),
   ...grant('guardians', 'add'),

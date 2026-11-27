@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { AuditService } from '../../../core/audit/audit.service';
-import { forbidden } from '../../../core/common/errors/errors';
+import { forbidden, invalid } from '../../../core/common/errors/errors';
 import { toJson } from '../../../core/common/prisma-json';
 import type { AuthUser } from '../../../core/common/types/auth-user';
 import { PrismaService } from '../../../core/prisma/prisma.service';
 import type { Scope } from '../../../core/rbac/scope/scope';
 import { SchoolPeopleService } from '../../school-day/school-people.service';
 import { currentMonth, PayrollAccess } from '../payroll-access.service';
-import { sortStructures, structureFor } from './current-structure';
+import {
+  deductionsError,
+  sortStructures,
+  structureFor,
+} from './current-structure';
 import type {
   PutSalaryStructureDto,
   SalaryStructuresDto,
@@ -65,6 +69,8 @@ export class SalaryStructureService {
     if (staff.userId === user.id) {
       throw forbidden('You cannot change your own salary structure');
     }
+    const tooMuch = deductionsError(dto);
+    if (tooMuch) throw invalid(tooMuch);
     const row = await this.prisma.salaryStructure.create({
       data: {
         schoolId: staff.schoolId,

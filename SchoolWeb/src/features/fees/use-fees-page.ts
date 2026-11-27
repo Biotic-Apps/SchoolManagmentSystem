@@ -10,6 +10,7 @@ export type FeesTabId =
   | "dues"
   | "collections"
   | "concessions"
+  | "refunds"
   | "structure";
 
 export const FEES_TABS: { id: FeesTabId; label: string }[] = [
@@ -20,6 +21,7 @@ export const FEES_TABS: { id: FeesTabId; label: string }[] = [
   { id: "dues", label: "Dues" },
   { id: "collections", label: "Daily collections" },
   { id: "concessions", label: "Concessions" },
+  { id: "refunds", label: "Refunds" },
   { id: "structure", label: "Fee structure" },
 ];
 

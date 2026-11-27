@@ -126,6 +126,8 @@ export interface PaperSectionDto {
   title: string;
   questionIds: string[];
   marks: number;
+  /** Marks for each question of the section (absent on older papers). */
+  marksPerQuestion?: number;
 }
 
 export class ExamPaperDto {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { OTP_MAX_ATTEMPTS } from './otp-code';
+import { OTP_LOCK_WINDOW_MS, OTP_MAX_ATTEMPTS } from './otp-code';
 
 export interface NewLoginOtp {
   id: string;
@@ -67,11 +67,27 @@ export class LoginOtpRepository {
     return count === 1;
   }
 
+  /**
+   * Marks the code used. `attempts` is cleared so a successful sign-in does
+   * not count toward the email-code lock (see `recentFailures`).
+   */
   async consume(id: string): Promise<boolean> {
     const { count } = await this.prisma.loginOtp.updateMany({
       where: { id, usedAt: null, expiresAt: { gt: new Date() } },
-      data: { usedAt: new Date() },
+      data: { usedAt: new Date(), attempts: 0 },
     });
     return count === 1;
+  }
+
+  /** Wrong codes tried for this email within the lock window. */
+  async recentFailures(email: string, now = new Date()): Promise<number> {
+    const { _sum } = await this.prisma.loginOtp.aggregate({
+      where: {
+        email,
+        createdAt: { gte: new Date(now.getTime() - OTP_LOCK_WINDOW_MS) },
+      },
+      _sum: { attempts: true },
+    });
+    return _sum.attempts ?? 0;
   }
 }

@@ -22,6 +22,24 @@ export function structureFor<T extends StructureRef>(
   return sortStructures(rows).find((row) => row.effectiveFrom <= month) ?? null;
 }
 
+/**
+ * Error message when fixed deductions exceed gross pay (basic + allowances):
+ * net salary would be negative every month. Null when the structure is valid.
+ */
+export function deductionsError(structure: {
+  basicMinor: number;
+  allowances: readonly PayComponent[];
+  deductions: readonly PayComponent[];
+}): string | null {
+  const total = (items: readonly PayComponent[]) =>
+    items.reduce((sum, item) => sum + BigInt(item.amountMinor), 0n);
+  const gross = BigInt(structure.basicMinor) + total(structure.allowances);
+  const deductions = total(structure.deductions);
+  return deductions > gross
+    ? 'Deductions cannot be more than the gross salary (basic + allowances). Record a large advance recovery as monthly payroll adjustments instead.'
+    : null;
+}
+
 /** Tolerant read of the stored `[{ name, amountMinor }]` JSON. */
 export function parseComponents(value: unknown): PayComponent[] {
   if (!Array.isArray(value)) return [];

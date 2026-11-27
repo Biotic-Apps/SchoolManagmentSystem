@@ -17,7 +17,7 @@ describe('amountInWords', () => {
       'Rupees Twelve Thousand Five Hundred Only',
     );
     expect(amountInWords(1_250_050n)).toBe(
-      'Rupees Twelve Thousand Five Hundred and Fifty Paisa Only',
+      'Rupees Twelve Thousand Five Hundred and Paisa Fifty Only',
     );
     expect(amountInWords(0n)).toBe('Rupees Zero Only');
   });

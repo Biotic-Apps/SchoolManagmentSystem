@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { conflict, notFound } from '../../../core/common/errors/errors';
+import {
+  conflict,
+  invalid,
+  notFound,
+} from '../../../core/common/errors/errors';
 import { isPrismaKnownError } from '../../../core/common/errors/prisma-error.mapper';
 import type { PageResult } from '../../../core/common/pagination/page-result';
 import {
@@ -12,6 +16,7 @@ import { PrismaService } from '../../../core/prisma/prisma.service';
 import type { Scope } from '../../../core/rbac/scope/scope';
 import type {
   CreateReportCardTemplateDto,
+  TemplateHeaderDto,
   TemplateQueryDto,
   UpdateReportCardTemplateDto,
 } from './dto/template-input.dto';
@@ -60,6 +65,31 @@ function toDto(row: TemplateRow): ReportCardTemplateDto {
   };
 }
 
+/** Trims header texts and drops blank ones, so "" never overrides a default. */
+export function cleanHeader(
+  header: TemplateHeaderDto,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(header)) {
+    if (typeof value === 'string') {
+      const text = value.trim();
+      if (text) out[key] = text;
+    } else if (value !== undefined) out[key] = value;
+  }
+  return out;
+}
+
+const cleanText = (value: string | null | undefined) => value?.trim() || null;
+
+/** School-level templates need school management; branch ones the branch. */
+export function assertManageTemplate(
+  scope: Scope,
+  row: { schoolId: string; branchId: string | null },
+): void {
+  if (row.branchId === null) scope.assertManageSchool(row.schoolId);
+  else scope.assertManageBranch({ id: row.branchId, schoolId: row.schoolId });
+}
+
 /** CRUD for report-card layout templates (school or branch level). */
 @Injectable()
 export class ReportCardTemplatesService {
@@ -70,13 +100,13 @@ export class ReportCardTemplatesService {
     scope: Scope,
     dto: CreateReportCardTemplateDto,
   ): Promise<ReportCardTemplateDto> {
-    const schoolId = this.resolveSchoolId(scope);
+    const { schoolId, branchId } = await this.target(scope, dto.branchId);
 
     const row = await this.prisma.$transaction(async (tx) => {
       // If setting as default, unset other defaults for the same branch.
       if (dto.isDefault) {
         await tx.reportCardTemplate.updateMany({
-          where: { schoolId, branchId: dto.branchId ?? null, isDefault: true },
+          where: { schoolId, branchId, isDefault: true },
           data: { isDefault: false },
         });
       }
@@ -84,13 +114,15 @@ export class ReportCardTemplatesService {
         .create({
           data: {
             schoolId,
-            branchId: dto.branchId ?? null,
+            branchId,
             name: dto.name.trim(),
             isDefault: dto.isDefault ?? false,
             layout: toJson(
               dto.layout ?? { orientation: 'portrait', paperSize: 'A4' },
             ),
-            header: toJson(dto.header ?? { showLogo: true }),
+            header: toJson(
+              dto.header ? cleanHeader(dto.header) : { showLogo: true },
+            ),
             showGradingScale: dto.showGradingScale ?? true,
             showSkills: dto.showSkills ?? true,
             showRemarks: dto.showRemarks ?? true,
@@ -102,7 +134,7 @@ export class ReportCardTemplatesService {
               'Parent / guardian',
             ],
             remarkLabels: dto.remarkLabels ?? undefined,
-            footerText: dto.footerText?.trim() ?? null,
+            footerText: cleanText(dto.footerText),
             createdById: user.id,
           },
         })
@@ -156,7 +188,7 @@ export class ReportCardTemplatesService {
       where: { id },
     });
     if (!existing) throw notFound('Report card template');
-    scope.assertManageSchool(existing.schoolId);
+    assertManageTemplate(scope, existing);
 
     const row = await this.prisma.$transaction(async (tx) => {
       if (dto.isDefault) {
@@ -177,7 +209,7 @@ export class ReportCardTemplatesService {
             name: dto.name?.trim(),
             isDefault: dto.isDefault,
             layout: dto.layout ? toJson(dto.layout) : undefined,
-            header: dto.header ? toJson(dto.header) : undefined,
+            header: dto.header ? toJson(cleanHeader(dto.header)) : undefined,
             showGradingScale: dto.showGradingScale,
             showSkills: dto.showSkills,
             showRemarks: dto.showRemarks,
@@ -187,7 +219,7 @@ export class ReportCardTemplatesService {
             remarkLabels: dto.remarkLabels ?? undefined,
             footerText:
               dto.footerText !== undefined
-                ? (dto.footerText?.trim() ?? null)
+                ? cleanText(dto.footerText)
                 : undefined,
           },
         })
@@ -208,7 +240,7 @@ export class ReportCardTemplatesService {
       where: { id },
     });
     if (!existing) throw notFound('Report card template');
-    scope.assertManageSchool(existing.schoolId);
+    assertManageTemplate(scope, existing);
 
     const used = await this.prisma.reportCard.count({
       where: { templateId: id },
@@ -226,7 +258,7 @@ export class ReportCardTemplatesService {
       where: { id },
     });
     if (!existing) throw notFound('Report card template');
-    scope.assertManageSchool(existing.schoolId);
+    assertManageTemplate(scope, existing);
 
     const row = await this.prisma.$transaction(async (tx) => {
       await tx.reportCardTemplate.updateMany({
@@ -263,6 +295,38 @@ export class ReportCardTemplatesService {
       where: { schoolId, branchId: null, isDefault: true },
     });
     return school ? toDto(school) : null;
+  }
+
+  /**
+   * Where a new template lives. A named branch must be manageable; without
+   * one the template is school-level, which needs school management. A user
+   * who manages a single branch only gets that branch, so they can still
+   * edit what they created.
+   */
+  private async target(
+    scope: Scope,
+    branchId: string | undefined,
+  ): Promise<{ schoolId: string; branchId: string | null }> {
+    if (branchId) {
+      const branch = await this.prisma.branch.findUnique({
+        where: { id: branchId },
+        select: { id: true, schoolId: true },
+      });
+      if (!branch) throw invalid('Branch not found');
+      scope.assertManageBranch(branch);
+      return { schoolId: branch.schoolId, branchId: branch.id };
+    }
+    const schoolId = this.resolveSchoolId(scope);
+    if (scope.canManageSchool(schoolId)) return { schoolId, branchId: null };
+    const branches = [...scope.branchIds];
+    if (branches.length === 1) {
+      const branch = await this.prisma.branch.findUnique({
+        where: { id: branches[0] },
+        select: { id: true, schoolId: true },
+      });
+      if (branch) return { schoolId: branch.schoolId, branchId: branch.id };
+    }
+    throw invalid('Choose the branch this template is for');
   }
 
   private resolveSchoolId(scope: Scope): string {

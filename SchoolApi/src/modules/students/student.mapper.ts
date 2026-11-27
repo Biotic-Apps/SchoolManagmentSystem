@@ -25,6 +25,8 @@ export interface DetailParts {
   sensitive: boolean;
   /** `health.view` */
   medical: boolean;
+  /** Teachers/helpers: allergies and instructions only (security.md §2.1). */
+  careOnly?: boolean;
 }
 
 export const fullName = (row: { firstName: string; lastName: string }) =>
@@ -95,7 +97,7 @@ export class StudentMapper {
         parts.medical && health
           ? {
               allergies: health.allergies,
-              conditions: health.conditions,
+              conditions: parts.careOnly ? null : health.conditions,
               notes: health.notes,
             }
           : null,

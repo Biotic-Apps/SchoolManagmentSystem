@@ -10,6 +10,10 @@ export class ResultQueryDto {
   @IsOptional()
   @IsUUID()
   sectionId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  studentId?: string;
 }
 
 export class SubjectResultDto {

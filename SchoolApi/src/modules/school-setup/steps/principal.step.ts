@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { today } from '../../../core/common/week';
 import { PrincipalRepository } from '../../branches/principal/principal.repository';
 import { UsersRepository } from '../../users/users.repository';
 import { onUnique, userEmailTaken, userPhoneTaken } from '../setup-errors';
@@ -14,7 +15,9 @@ export interface PrincipalAccount {
 
 /**
  * Principal login + BRANCH PRINCIPAL assignment + branch.principalUserId,
- * through the same `assign` as PUT /branches/:id/principal (contract §1 item 3).
+ * through the same `assign` as PUT /branches/:id/principal (contract §1 item 3),
+ * plus the principal's staff profile (designation PRINCIPAL), without which
+ * they cannot apply for leave or appear in staff attendance / payroll.
  */
 @Injectable()
 export class PrincipalStep {
@@ -35,6 +38,19 @@ export class PrincipalStep {
         onUnique(() => (account.email ? userEmailTaken() : userPhoneTaken())),
       );
     await this.principals.assign(ctx.tx, branch, user.id, ctx.actorId);
+    const staff = await ctx.tx.staff.create({
+      data: {
+        schoolId: branch.schoolId,
+        branchId: branch.id,
+        userId: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        designation: 'PRINCIPAL',
+        joinDate: today(),
+        createdById: ctx.actorId,
+      },
+    });
     ctx.audit.push(
       {
         action: 'user.create',
@@ -57,6 +73,14 @@ export class PrincipalStep {
         branchId: branch.id,
         before: { principalUserId: null },
         after: { principalUserId: user.id, endedFor: [] },
+      },
+      {
+        action: 'staff.create',
+        entityType: 'Staff',
+        entityId: staff.id,
+        schoolId: branch.schoolId,
+        branchId: branch.id,
+        after: { id: staff.id, userId: user.id, designation: 'PRINCIPAL' },
       },
     );
     return user;

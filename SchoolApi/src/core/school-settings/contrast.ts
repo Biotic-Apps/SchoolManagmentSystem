@@ -28,11 +28,16 @@ export function contrastOnWhite(hex: string): number | null {
   return 1.05 / (luminance(hex) + 0.05);
 }
 
-/** Error message for an unusable primary colour, or null when it passes. */
+/**
+ * Error message for an unusable primary colour, or null when it passes.
+ * The shipped default (the product theme, ~4.1:1) is always accepted, so a school
+ * can return to it; the web keeps its hand-tuned tokens for it.
+ */
 export function primaryColorProblem(hex: string): string | null {
   const ratio = contrastOnWhite(hex);
   if (ratio === null) return 'primaryColor must be a hex colour like #0B7F74';
   if (ratio >= MIN_CONTRAST_ON_WHITE) return null;
+  if (hex.toUpperCase() === DEFAULT_PRIMARY_COLOR) return null;
   return (
     `primaryColor ${hex} has a contrast ratio of ${ratio.toFixed(2)}:1 ` +
     `against white; at least ${MIN_CONTRAST_ON_WHITE}:1 is required`

@@ -13,6 +13,7 @@ import {
 } from '../../core/common/pagination/paginate';
 import type { AuthUser } from '../../core/common/types/auth-user';
 import { PrismaService } from '../../core/prisma/prisma.service';
+import { containsInsensitive } from '../../core/common/search';
 import type { Scope } from '../../core/rbac/scope/scope';
 import {
   formatNumber,
@@ -133,11 +134,13 @@ export class ComplaintsService {
     scope: Scope,
     query: ComplaintQueryDto,
   ): Promise<PageResult<ComplaintDto>> {
+    const search = containsInsensitive(query.search);
     const where: Prisma.ComplaintWhereInput = {
       AND: [
         this.boxFilter(user, scope, query.box ?? 'mine'),
         notAgainst(user.id),
         { status: query.status, category: query.category },
+        search ? { OR: [{ ticketNo: search }, { subject: search }] } : {},
       ],
     };
     const [rows, total] = await Promise.all([

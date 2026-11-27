@@ -35,9 +35,9 @@ export const noticeDefaults = (notice: Notice | null, branchId: string | null): 
   attachmentFileIds: notice?.attachments.map((file) => file.id) ?? [],
 });
 
-export function toNoticeInput(values: NoticeFormValues): NoticeInput {
+export function toNoticeInput(values: NoticeFormValues, schoolId: string | null): NoticeInput {
   const audience = values.schoolWide
-    ? { schoolWide: true, staffOnly: values.staffOnly }
+    ? { schoolWide: true, staffOnly: values.staffOnly, ...(schoolId && { schoolId }) }
     : {
         branchIds: values.branchIds,
         classIds: values.classIds,

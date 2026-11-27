@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, Plus } from "lucide-react";
+import { useCan } from "@/features/auth/use-can";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -13,9 +15,10 @@ import { TemplateList } from "./TemplateList";
 export function TemplateBuilderRoute() {
   const [editId, setEditId] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const can = useCan();
 
   const { data: templates, isLoading } = useReportCardTemplates();
-  const { data: editTemplate } = useReportCardTemplate(editId);
+  const { data: editTemplate, isError: editFailed } = useReportCardTemplate(editId);
 
   const openCreate = () => {
     setEditId(null);
@@ -34,14 +37,20 @@ export function TemplateBuilderRoute() {
 
   return (
     <div className="flex flex-col gap-6">
+      <Link href="/exams" className="inline-flex items-center gap-1 self-start text-label text-fg-muted hover:text-fg">
+        <ArrowLeft className="size-4" />
+        Exams & Results
+      </Link>
       <PageHeader
         title="Report Card Templates"
         description="Configure the layout and sections of printed report cards."
         actions={
-          <Button onClick={openCreate}>
-            <Plus className="mr-1.5 size-4" />
-            Create template
-          </Button>
+          can("exams.add") ? (
+            <Button onClick={openCreate}>
+              <Plus className="mr-1.5 size-4" />
+              Create template
+            </Button>
+          ) : undefined
         }
       />
 
@@ -50,7 +59,12 @@ export function TemplateBuilderRoute() {
           <Spinner className="size-6" />
         </div>
       ) : (
-        <TemplateList templates={templates ?? []} onEdit={openEdit} />
+        <TemplateList
+          templates={templates ?? []}
+          onEdit={openEdit}
+          canEdit={can("exams.edit")}
+          canDelete={can("exams.delete")}
+        />
       )}
 
       <Sheet open={sheetOpen} onOpenChange={(open) => !open && closeSheet()}>
@@ -64,12 +78,23 @@ export function TemplateBuilderRoute() {
             </SheetDescription>
           </div>
           <div className="flex min-h-0 flex-1 scroll-pt-4 flex-col overflow-y-auto px-5 py-5 sm:px-6">
-            {sheetOpen && (
-              <TemplateForm
-                key={editId ?? "new"}
-                template={editId ? editTemplate ?? null : null}
-                onClose={closeSheet}
-              />
+            {/* Edit waits for the template so the form starts pre-filled. */}
+            {sheetOpen && editId && !editTemplate ? (
+              editFailed ? (
+                <p className="text-body text-error">Couldn&apos;t load this template.</p>
+              ) : (
+                <div className="flex items-center justify-center py-12">
+                  <Spinner className="size-6" />
+                </div>
+              )
+            ) : (
+              sheetOpen && (
+                <TemplateForm
+                  key={editTemplate?.id ?? "new"}
+                  template={editId ? (editTemplate ?? null) : null}
+                  onClose={closeSheet}
+                />
+              )
             )}
           </div>
         </SheetContent>

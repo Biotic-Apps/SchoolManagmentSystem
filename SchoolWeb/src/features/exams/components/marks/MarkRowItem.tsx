@@ -25,14 +25,16 @@ export function MarkRowItem({ row, index, editable, flagged, nav, editor }: Mark
 
   return (
     <TableRow className={cn(flagged ? "bg-error-soft/40" : row.pending && "bg-warning-soft/40")}>
-      <TableCell className="w-20 whitespace-nowrap tabular-nums">{row.rollNo ?? EMPTY_VALUE}</TableCell>
-      <TableCell className="min-w-56">
-        <span className="flex flex-wrap items-center gap-2">
+      <TableCell className="hidden w-20 whitespace-nowrap tabular-nums sm:table-cell">{row.rollNo ?? EMPTY_VALUE}</TableCell>
+      {/* Phones: roll number sits with the name so Marks and Absent stay on screen. */}
+      <TableCell className="min-w-32 sm:min-w-56">
+        <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span className="font-medium text-fg">{row.name}</span>
+          {row.rollNo != null && <span className="text-caption text-fg-muted tabular-nums sm:hidden">Roll {row.rollNo}</span>}
           {row.pending && <Badge tone={flagged ? "error" : "warning"}>Pending</Badge>}
         </span>
       </TableCell>
-      <TableCell className="w-36 align-top">
+      <TableCell className="w-24 align-top sm:w-36">
         {editable ? (
           <div className="flex flex-col gap-1">
             <Input
@@ -62,7 +64,7 @@ export function MarkRowItem({ row, index, editable, flagged, nav, editor }: Mark
           </span>
         )}
       </TableCell>
-      <TableCell className="w-24">
+      <TableCell className="w-14 sm:w-24">
         <Checkbox
           aria-label={`${row.name} absent`}
           checked={row.absent}
@@ -70,7 +72,7 @@ export function MarkRowItem({ row, index, editable, flagged, nav, editor }: Mark
           onCheckedChange={(checked) => editor.setAbsent(row.studentId, checked === true)}
         />
       </TableCell>
-      <TableCell className="min-w-48">
+      <TableCell className="min-w-40 sm:min-w-48">
         {editable ? (
           <Input
             aria-label={`Remark for ${row.name}`}

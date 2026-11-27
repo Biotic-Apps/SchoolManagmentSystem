@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { Section } from '../../generated/prisma/client';
 import { AuditService } from '../../core/audit/audit.service';
-import { parseDate } from '../../core/common/dates';
+import { formatDate, parseDate } from '../../core/common/dates';
 import { AppError } from '../../core/common/errors/app-error';
 import { ErrorCode } from '../../core/common/errors/error-code.enum';
 import { forbidden, invalid } from '../../core/common/errors/errors';
@@ -18,7 +18,9 @@ import type {
   SubmitRegisterDto,
 } from './dto/register-input.dto';
 import type { RegisterDto } from './dto/register.dto';
+import { AbsenceNotifier } from './absence-notifier';
 import { RegisterAccessService } from './register-access.service';
+import { RegisterLockPolicy } from './register-lock';
 import {
   RegisterSubmitAction,
   REGISTER_SUBMIT_ACTION,
@@ -41,6 +43,8 @@ export class RegistersService {
     private readonly requests: ClientRequestService,
     private readonly workingDays: WorkingDayService,
     private readonly audit: AuditService,
+    private readonly lock: RegisterLockPolicy,
+    private readonly absences: AbsenceNotifier,
   ) {}
 
   async get(scope: Scope, sectionId: string, date: string) {
@@ -62,6 +66,10 @@ export class RegistersService {
       user,
       key,
     });
+    if (result.filledStudentIds) {
+      await this.filled(actor.section, result.registerId, result);
+      return this.view.build(actor.section, date);
+    }
     this.stage(actor.section, result.registerId, 'attendance.save_draft', {
       entries: dto.entries.length,
       onBehalfOfStaffId: actor.onBehalfOfStaffId,
@@ -80,13 +88,15 @@ export class RegistersService {
     const date = await this.checkDate(actor.section, dto.date);
     if ((await this.requests.seen(key)) !== undefined)
       return this.view.build(actor.section, date);
-    const { registerId } = await this.write(
-      actor,
-      date,
-      dto.entries ?? [],
-      'SUBMIT',
-      { user, key },
-    );
+    const written = await this.write(actor, date, dto.entries ?? [], 'SUBMIT', {
+      user,
+      key,
+    });
+    const { registerId } = written;
+    if (written.filledStudentIds) {
+      await this.filled(actor.section, registerId, written);
+      return this.view.build(actor.section, date);
+    }
     const payload: RegisterSubmitPayload = {
       registerId,
       userId: user.id,
@@ -133,6 +143,7 @@ export class RegistersService {
     action: RegisterAction,
     ctx: { user: AuthUser; key: ReturnType<RegistersService['key']> },
   ) {
+    const pastLock = await this.lock.isPastLock(actor.section.branchId, date);
     try {
       return await this.prisma.$transaction(async (tx) => {
         const saved = await this.writer.save(tx, {
@@ -143,6 +154,7 @@ export class RegistersService {
           action,
           onBehalfOfStaffId: actor.onBehalfOfStaffId,
           helper: actor.helper,
+          pastLock,
         });
         await this.requests.remember(tx, ctx.key, saved.registerId);
         return saved;
@@ -162,9 +174,30 @@ export class RegistersService {
     }
   }
 
+  /** Late marks for students added to a submitted/locked register. */
+  private async filled(
+    section: Section,
+    registerId: string,
+    result: { filledStudentIds: string[] | null },
+  ): Promise<void> {
+    this.stage(section, registerId, 'attendance.fill_unmarked', {
+      studentIds: result.filledStudentIds,
+    });
+    await this.absences.notify(registerId);
+  }
+
   private async checkDate(section: Section, value: string): Promise<Date> {
     const date = parseDate(value);
     if (date > today()) throw invalid('Attendance cannot be marked ahead');
+    const session = await this.prisma.academicSession.findUnique({
+      where: { id: section.sessionId },
+      select: { startDate: true, endDate: true },
+    });
+    if (session && (date < session.startDate || date > session.endDate)) {
+      throw invalid(
+        `${formatDate(date)} is outside the academic session of this section`,
+      );
+    }
     await this.workingDays.assertWorkingDay(section.branchId, date);
     return date;
   }

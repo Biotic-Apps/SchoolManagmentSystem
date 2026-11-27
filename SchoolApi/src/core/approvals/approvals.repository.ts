@@ -5,6 +5,7 @@ import type {
   Prisma,
 } from '../../generated/prisma/client';
 import { toSkipTake } from '../common/pagination/paginate';
+import { containsInsensitive } from '../common/search';
 import type { PaginationQueryDto } from '../common/pagination/pagination-query.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import type { Scope } from '../rbac/scope/scope';
@@ -14,6 +15,8 @@ export interface InboxFilter {
   activeRole: string;
   status?: ApprovalStatus;
   type?: ApprovalType;
+  entityType?: string;
+  search?: string;
 }
 
 const INCLUDE = {
@@ -44,6 +47,8 @@ export class ApprovalsRepository {
     return {
       status: filter.status,
       type: filter.type,
+      entityType: filter.entityType,
+      title: containsInsensitive(filter.search),
       NOT: RETIRED,
       OR: [
         { requestedById: filter.userId },

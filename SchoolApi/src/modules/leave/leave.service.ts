@@ -161,9 +161,13 @@ export class LeaveService {
         name: student.name,
       };
     }
-    const staff = await this.people.staffOfUser(user.id);
-    if (!staff || scope.guardian)
+    if (scope.guardian)
       throw invalid('studentId is required for student leave');
+    const staff = await this.people.staffOfUser(user.id);
+    if (!staff)
+      throw invalid(
+        'You have no staff profile yet; ask the office to add you under staff before applying for leave',
+      );
     return {
       schoolId: staff.schoolId,
       branchId: staff.branchId,

@@ -4,15 +4,18 @@ import type { PageResult } from '../common/pagination/page-result';
 import { toPageResult } from '../common/pagination/paginate';
 import type { NotificationDto } from './dto/notification.dto';
 import type { NotificationQueryDto } from './dto/notification-query.dto';
+import { withRoute } from './notification-routes';
 import { NotificationsRepository } from './notifications.repository';
 
 @Injectable()
 export class NotificationInboxService {
   constructor(private readonly repository: NotificationsRepository) {}
 
+  /** `activeRole` picks the portal route each item opens (`data.route`). */
   async list(
     userId: string,
     query: NotificationQueryDto,
+    activeRole = '',
   ): Promise<PageResult<NotificationDto>> {
     const { rows, total } = await this.repository.list(
       userId,
@@ -24,7 +27,7 @@ export class NotificationInboxService {
       category: row.category,
       title: row.title,
       body: row.body,
-      data: row.data,
+      data: withRoute(row.category, row.data, activeRole),
       readAt: row.readAt?.toISOString() ?? null,
       createdAt: row.createdAt.toISOString(),
     }));

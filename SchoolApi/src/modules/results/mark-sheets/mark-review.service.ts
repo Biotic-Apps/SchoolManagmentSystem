@@ -12,12 +12,12 @@ import { pendingStudents } from './mark-rows';
 import { MarkSheetAccessService } from './mark-sheet-access.service';
 import { MarkSheetNotifier } from './mark-sheet-notifier';
 import { MarkSheetsService } from './mark-sheets.service';
+import { reviewProblem } from './sheet-review-rules';
 import {
   MARKS_SUBMIT_ACTION,
   MarkSubmitAction,
   type MarksSubmitPayload,
 } from './mark-submit.action';
-import { toHundredths } from '../shared/hundredths';
 
 /** Submit (P)(X) by the teacher; accept / return by coordinator or principal. */
 @Injectable()
@@ -49,23 +49,10 @@ export class MarkReviewService {
       throw conflict(`The mark sheet is ${sheet.status.toLowerCase()}`);
     if (sheet.approvalId)
       throw conflict('The submission is awaiting probation review');
-    const roster = await this.roster.of(sheet.sectionId);
-    const entered = new Map(
-      sheet.marks.map((m) => [
-        m.studentId,
-        {
-          absent: m.absent,
-          marksH: m.marks === null ? null : toHundredths(m.marks),
-        },
-      ]),
-    );
-    const pending = pendingStudents(
-      roster.map((r) => r.studentId),
-      entered,
-    );
+    const pending = await this.pendingRows(sheet);
     if (pending.length > 0)
       throw invalid('Marks are pending for some students', {
-        studentIds: pending,
+        studentIds: pending.map((p) => p.studentId),
       });
 
     const payload: MarksSubmitPayload = { sheetId: id };
@@ -102,10 +89,22 @@ export class MarkReviewService {
     comment?: string,
   ): Promise<MarkSheetDto> {
     const { sheet, exam } = await this.access.manage(scope, id);
-    if (sheet.status !== 'SUBMITTED')
-      throw conflict('Only submitted mark sheets can be reviewed');
-    if (decision === 'RETURNED' && exam.status !== 'MARKS_OPEN')
-      throw conflict('Marks entry is closed; the sheet cannot be returned');
+    const pending =
+      decision === 'ACCEPTED' ? await this.pendingRows(sheet) : [];
+    const problem = reviewProblem({
+      sheetStatus: sheet.status,
+      examStatus: exam.status,
+      decision,
+      pendingNames: pending.map((p) => p.name),
+      comment,
+    });
+    if (problem)
+      throw conflict(
+        problem,
+        pending.length > 0
+          ? { studentIds: pending.map((p) => p.studentId) }
+          : undefined,
+      );
     const updated = await this.prisma.markSheet.update({
       where: { id },
       data: {
@@ -128,5 +127,26 @@ export class MarkReviewService {
     if (decision === 'RETURNED')
       await this.notifier.returned(updated, updated.comment);
     return this.sheets.detail(id);
+  }
+
+  /** Active roster students with neither marks nor Absent on this sheet. */
+  private async pendingRows(sheet: {
+    sectionId: string;
+    marks: { studentId: string; absent: boolean; marks: unknown }[];
+  }) {
+    const roster = await this.roster.of(sheet.sectionId);
+    const entered = new Map(
+      sheet.marks.map((m) => [
+        m.studentId,
+        { absent: m.absent, marksH: m.marks === null ? null : 1 },
+      ]),
+    );
+    const ids = new Set(
+      pendingStudents(
+        roster.map((r) => r.studentId),
+        entered,
+      ),
+    );
+    return roster.filter((r) => ids.has(r.studentId));
   }
 }

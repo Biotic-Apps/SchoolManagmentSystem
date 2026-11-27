@@ -15,10 +15,9 @@ import { FileRefService } from '../../core/files/file-ref.service';
 import { ClientRequestService } from '../../core/idempotency/client-request.service';
 import { PrismaService } from '../../core/prisma/prisma.service';
 import type { Scope } from '../../core/rbac/scope/scope';
-import { BranchSettingsReader } from '../branches/settings/branch-settings.reader';
-import { localTime } from '../school-day/clock';
 import { WorkingDayService } from '../school-day/working-day.service';
 import { DiaryAccessService } from './diary-access.service';
+import { assertDueDate, publishedEditable } from './diary-rules';
 import { DIARY_INCLUDE, DiaryMapper } from './diary.mapper';
 import type {
   DiaryEntryDto,
@@ -37,7 +36,6 @@ export class DiaryService {
     private readonly mapper: DiaryMapper,
     private readonly files: FileRefService,
     private readonly requests: ClientRequestService,
-    private readonly settings: BranchSettingsReader,
     private readonly workingDays: WorkingDayService,
     private readonly audit: AuditService,
   ) {}
@@ -91,6 +89,12 @@ export class DiaryService {
     if (seen) return this.get(seen);
     const date = parseDate(dto.date);
     if (date > today()) throw invalid('Diary cannot be written ahead');
+    const session = await this.prisma.academicSession.findUnique({
+      where: { id: actor.section.sessionId },
+      select: { startDate: true, endDate: true },
+    });
+    if (session && (date < session.startDate || date > session.endDate))
+      throw invalid(`${dto.date} is outside the academic session`);
     await this.workingDays.assertWorkingDay(actor.section.branchId, date);
     for (const fileId of dto.attachmentFileIds ?? []) {
       await this.files.assertUsable(fileId, {
@@ -108,13 +112,14 @@ export class DiaryService {
         },
       },
     });
-    if (existing) await this.assertEditable(existing, actor.helper);
+    if (existing) this.assertEditable(existing, actor.helper);
     const content = {
       topics: dto.topics,
-      homework: dto.homework ?? null,
+      homework: dto.homework || null,
       dueDate: dto.dueDate ? parseDate(dto.dueDate) : null,
       attachmentFileIds: dto.attachmentFileIds ?? [],
     };
+    assertDueDate(date, content.dueDate);
     const id = await this.prisma.$transaction(async (tx) => {
       const row = existing
         ? await this.update(tx, existing, content, user.id, actor)
@@ -195,17 +200,12 @@ export class DiaryService {
     });
   }
 
-  private async assertEditable(entry: DiaryEntry, helper: boolean) {
+  private assertEditable(entry: DiaryEntry, helper: boolean) {
     if (entry.status === 'SUBMITTED' || entry.status === 'PENDING_REVIEW')
       throw conflict('The entry is awaiting review');
     if (entry.status !== 'PUBLISHED') return;
     if (helper) throw forbidden('Helpers can only edit drafts');
-    const closing = await this.settings.get<string>(
-      entry.branchId,
-      'diary.closingTime',
-    );
-    const sameDay = formatDate(entry.date) === formatDate(today());
-    if (!sameDay || localTime() >= closing)
+    if (!publishedEditable(entry.date))
       throw recordLocked('The diary closed for this day');
   }
 

@@ -129,6 +129,7 @@ services:
         NEXT_PUBLIC_API_URL: https://${API_DOMAIN}/api/v1
         NEXT_PUBLIC_IDLE_TIMEOUT_MINUTES: ${WEB_IDLE_TIMEOUT_MINUTES:-30}
         NEXT_PUBLIC_ASSET_ORIGINS: ${WEB_ASSET_ORIGINS:-}
+        NEXT_PUBLIC_SITE_ORIGIN: https://${APP_DOMAIN}
     image: ${WEB_IMAGE:-eschool-web}:${IMAGE_TAG:-latest}
     restart: unless-stopped
     init: true

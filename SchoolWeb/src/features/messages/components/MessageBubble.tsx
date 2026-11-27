@@ -2,7 +2,7 @@ import { CheckCheck } from "lucide-react";
 import { AttachmentList } from "@/components/shared/AttachmentList";
 import { PersonAvatar } from "@/components/shared/PersonAvatar";
 import { cn } from "@/lib/cn";
-import { humanize } from "@/lib/format";
+import { formatDateTime, humanize } from "@/lib/format";
 import { messageStamp } from "../format";
 import type { Message } from "../types";
 
@@ -33,7 +33,7 @@ export function MessageBubble({ message, mine }: { message: Message; mine: boole
             className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-fg px-2 py-1 text-[11px] text-on-primary opacity-0 shadow-sm transition-opacity group-hover:opacity-100"
             aria-hidden
           >
-            {new Date(message.sentAt).toLocaleString()}
+            {formatDateTime(message.sentAt)}
           </span>
         </div>
       </div>

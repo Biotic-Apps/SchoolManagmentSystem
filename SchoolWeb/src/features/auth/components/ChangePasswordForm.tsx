@@ -13,7 +13,7 @@ export function ChangePasswordForm({ onDone, submitLabel = "Change password" }: 
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={submit} noValidate className="flex flex-col gap-4">
+      <form method="post" onSubmit={submit} noValidate className="flex flex-col gap-4">
         <FormAlert message={formError} />
         <TextField name="currentPassword" label="Current password" type="password" autoComplete="current-password" required />
         <TextField

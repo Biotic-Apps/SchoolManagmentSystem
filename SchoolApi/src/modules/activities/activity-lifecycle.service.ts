@@ -13,6 +13,7 @@ import { canMoveTo } from './activity-status';
 import { ACTIVITY_INCLUDE, toActivityDto } from './activity.mapper';
 import type { ActivityStatusDto } from './dto/activity-input.dto';
 import type { ActivityDto } from './dto/activity.dto';
+import { assertStatusTiming } from './activity-timing';
 
 /** Approve/reject (principal) and the ANNOUNCED → COMPLETED/CANCELLED flow. */
 @Injectable()
@@ -61,6 +62,7 @@ export class ActivityLifecycleService {
       throw conflict(
         `Cannot move activity from ${row.status} to ${dto.status}`,
       );
+    assertStatusTiming(dto.status, row.startAt);
     await this.prisma.activity.update({
       where: { id },
       data: {

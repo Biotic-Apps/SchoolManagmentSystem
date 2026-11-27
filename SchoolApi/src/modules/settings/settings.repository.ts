@@ -28,13 +28,18 @@ export class SettingsRepository {
     });
   }
 
-  /** The only active school, else the oldest active one. */
-  defaultSchool(): Promise<SettingsSchool | null> {
-    return this.prisma.school.findFirst({
+  /**
+   * The install's school when exactly one is active (single-school install);
+   * null when none or several are active, so no school's brand is shown to everyone.
+   */
+  async soleActiveSchool(): Promise<SettingsSchool | null> {
+    const schools = await this.prisma.school.findMany({
       where: { status: 'ACTIVE' },
       orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
       select: SCHOOL_SELECT,
+      take: 2,
     });
+    return schools.length === 1 ? schools[0] : null;
   }
 
   settings(schoolId: string): Promise<SchoolSettingRow | null> {

@@ -68,7 +68,7 @@ export function useCreateEarlyLeave() {
 export function useDecideEarlyLeave() {
   return useApiMutation({
     mutationFn: ({ id, action, reason }: DecideEarlyLeave) =>
-      http.post<EarlyLeave>(`/early-leave/${id}/${action}`, reason ? { reason } : undefined),
+      http.post<EarlyLeave>(`/early-leave/${id}/${action}`, reason ? { comment: reason } : undefined),
     invalidate: [pickupKeys.earlyLeave, ["dashboard"]],
     success: (_, vars) => (vars.action === "approve" ? "Early leave approved" : "Early leave rejected"),
   });

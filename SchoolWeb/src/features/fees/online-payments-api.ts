@@ -21,13 +21,20 @@ export interface OnlinePaymentStatus {
   createdAt: string;
 }
 
+export interface InitiateOnlineInput {
+  invoiceId: string;
+  /** The wallet the parent picked; the API refuses one the school has not set up. */
+  gateway: string;
+}
+
 /** Initiate an online payment for an invoice. */
 export function useInitiateOnlinePayment() {
   return useApiMutation({
-    mutationFn: async (invoiceId: string) =>
-      (await http.post<OnlinePaymentResult>("/payments/online/initiate", { invoiceId })).data,
+    mutationFn: async (input: InitiateOnlineInput) =>
+      (await http.post<OnlinePaymentResult>("/payments/online/initiate", input)).data,
     invalidate: [feesKeys.all],
-    toastError: true,
+    // The dialog shows the error inline.
+    toastError: false,
   });
 }
 

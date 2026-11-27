@@ -7,8 +7,11 @@ import { MoneyText } from "@/components/shared/MoneyText";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { errorMessage } from "@/lib/error-messages";
+import { formatMoney } from "@/lib/format";
 import { EMPTY_VALUE, formatDate } from "@/lib/format";
-import { requestTotal } from "../purchase-amounts";
+import { receivedTotal, requestTotal } from "../purchase-amounts";
 import type { PurchaseRequest } from "../types";
 import type { ItemLookups } from "../use-item-lookups";
 import { usePurchaseDetail } from "../use-purchase-detail";
@@ -60,7 +63,7 @@ export function PurchaseDetailDrawer({ request, lookups, onClose }: PurchaseDeta
               </Button>
             )}
             {rights.bill && (
-              <Button size="sm" variant="secondary" loading={detail.billing} onClick={detail.createBill}>
+              <Button size="sm" variant="secondary" onClick={() => detail.openDialog("bill")}>
                 <FileText />
                 Create bill
               </Button>
@@ -88,6 +91,23 @@ export function PurchaseDetailDrawer({ request, lookups, onClose }: PurchaseDeta
           )}
           {detail.dialog === "receive" && order && (
             <ReceiveDialog order={order} lookups={lookups} onClose={detail.closeDialog} />
+          )}
+          {order && (
+            <ConfirmDialog
+              open={detail.dialog === "bill"}
+              onOpenChange={(next) => !next && detail.closeDialog()}
+              title="Create vendor bill?"
+              description={
+                `The bill will be for ${formatMoney(receivedTotal(order))}, the received items only.` +
+                (detail.partialBill
+                  ? " Items not yet received are left off and can no longer be received on this order."
+                  : "")
+              }
+              confirmLabel="Create bill"
+              loading={detail.billing}
+              error={detail.billError ? errorMessage(detail.billError) : null}
+              onConfirm={detail.createBill}
+            />
           )}
         </>
       )}

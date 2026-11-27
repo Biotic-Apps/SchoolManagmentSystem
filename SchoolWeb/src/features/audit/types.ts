@@ -9,5 +9,8 @@ export interface AuditLog {
   onBehalfOf: { id: string; name: string } | string | null;
   before: Record<string, unknown> | null;
   after: Record<string, unknown> | null;
+  /** Recorded client IP / user agent (absent on older APIs). */
+  ip?: string | null;
+  userAgent?: string | null;
   at: string;
 }

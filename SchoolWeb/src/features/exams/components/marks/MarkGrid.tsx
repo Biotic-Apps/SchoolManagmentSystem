@@ -18,11 +18,11 @@ export function MarkGrid({ editor, editable, flagged }: MarkGridProps) {
   const nav = useMarkGridNav();
 
   return (
-    <div className="overflow-hidden rounded-card border border-border bg-surface shadow-card">
+    <div className="min-w-0 max-w-full overflow-hidden rounded-card border border-border bg-surface shadow-card">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead>Roll no</TableHead>
+            <TableHead className="hidden sm:table-cell">Roll no</TableHead>
             <TableHead>Student</TableHead>
             <TableHead className={NUMERIC_COLUMN}>Marks</TableHead>
             <TableHead>Absent</TableHead>

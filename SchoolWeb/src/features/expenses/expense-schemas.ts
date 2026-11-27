@@ -10,7 +10,7 @@ export const expenseSchema = z
     vendorId: z.string(),
     title: requiredText("a title", 150),
     amount: moneyText("the amount"),
-    billDate: isoDate,
+    billDate: isoDate.refine((value) => value <= todayIso(), { message: "The bill date can't be in the future" }),
     dueDate: optionalIsoDate,
     billFileId: z.string(),
     recurringMonthly: z.boolean(),

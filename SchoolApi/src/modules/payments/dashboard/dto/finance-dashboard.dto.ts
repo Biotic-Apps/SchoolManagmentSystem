@@ -19,6 +19,7 @@ export class FinanceDashboardDto {
   branchId!: string | null;
   month!: string;
   billedMinor!: number;
+  /** Payments received in the month minus refunds paid out in the month. */
   collectedMinor!: number;
   outstandingMinor!: number;
   overdueMinor!: number;

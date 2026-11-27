@@ -70,11 +70,6 @@ describe('Parent email + one-time code sign-in (e2e)', () => {
       where: { email },
       data: { createdAt: new Date(Date.now() - 61_000) },
     });
-  const resetFailures = (userId: string) =>
-    prisma.user.update({
-      where: { id: userId },
-      data: { failedLoginCount: 0, lockedUntil: null },
-    });
 
   beforeAll(async () => {
     app = await createTestApp();
@@ -172,37 +167,39 @@ describe('Parent email + one-time code sign-in (e2e)', () => {
 
   it('allows 5 attempts per code', async () => {
     const email = nextEmail();
-    const parent = await newUser('PARENT', email);
+    await newUser('PARENT', email);
     await requestCode(email).expect(200);
     const code = await codeSentTo(email);
     const wrong = code === '000000' ? '111111' : '000000';
-    for (let i = 0; i < 5; i++) {
-      // Keep the account lockout out of the way: this checks the per-code limit.
-      await resetFailures(parent.id);
-      await verify(email, wrong).expect(401);
-    }
-    await resetFailures(parent.id);
+    for (let i = 0; i < 5; i++) await verify(email, wrong).expect(401);
     await verify(email, code).expect(401);
   });
 
-  it('counts wrong codes toward the shared account lockout', async () => {
+  it('locks only the email-code path, never the account', async () => {
     const email = nextEmail();
     const parent = await newUser('PARENT', email);
     await requestCode(email).expect(200);
     const code = await codeSentTo(email);
     const wrong = code === '000000' ? '111111' : '000000';
-    for (let i = 0; i < 4; i++) await verify(email, wrong).expect(401);
-    const locked = await verify(email, wrong).expect(423);
-    expect(errorCode(locked)).toBe('ACCOUNT_LOCKED');
+    for (let i = 0; i < 5; i++) await verify(email, wrong).expect(401);
+    // Password sign-in is untouched by wrong codes.
+    const account = await prisma.user.findUniqueOrThrow({
+      where: { id: parent.id },
+    });
+    expect(account.lockedUntil).toBeNull();
+    expect(account.failedLoginCount).toBe(0);
 
+    // A second code with 5 more wrong tries reaches the per-email lock.
     await ageCodes(email);
     await requestCode(email).expect(200);
     const next = await codeSentTo(email, 2);
-    expect(errorCode(await verify(email, next).expect(423))).toBe(
-      'ACCOUNT_LOCKED',
-    );
-    await resetFailures(parent.id);
-    await verify(email, next).expect(200);
+    const wrongNext = next === '000000' ? '111111' : '000000';
+    for (let i = 0; i < 5; i++) await verify(email, wrongNext).expect(401);
+    // Locked: no third code is sent.
+    await ageCodes(email);
+    await requestCode(email).expect(200);
+    await settle();
+    expect(emailCount(email)).toBe(2);
   });
 
   it('rejects expired codes', async () => {

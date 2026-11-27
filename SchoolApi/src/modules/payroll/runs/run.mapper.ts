@@ -27,9 +27,11 @@ export interface RunContext {
 }
 
 export function toLineDto(line: LineRow): PayrollLineDto {
+  const detail = parseLineDetail(line.detail);
   return {
     id: line.id,
     staffId: line.staffId,
+    userId: line.staff.userId,
     name: line.staff.name,
     designation: line.designation,
     employeeNo: line.staff.employeeNo,
@@ -43,8 +45,9 @@ export function toLineDto(line: LineRow): PayrollLineDto {
     overtimeMinutes: line.overtimeMinutes,
     overtimeMinor: Number(line.overtimeMinor),
     grossMinor: Number(line.basicMinor + line.allowancesMinor),
-    breakdown: buildBreakdown(line, parseLineDetail(line.detail)),
+    breakdown: buildBreakdown(line, detail),
     netMinor: Number(line.netMinor),
+    carriedForwardMinor: Math.max(0, -(detail.uncappedNetMinor ?? 0)),
     paidMinor: Number(line.paidMinor),
     balanceMinor: Number(line.netMinor - line.paidMinor),
     status: line.status,

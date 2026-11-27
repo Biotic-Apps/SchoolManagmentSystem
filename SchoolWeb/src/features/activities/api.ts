@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { omit } from "@/lib/omit";
 import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type {
@@ -41,7 +42,10 @@ export function useSaveActivity() {
   return useApiMutation({
     mutationFn: withRowFlash(
       async ({ id, input }: { id?: string; input: ActivityInput }) =>
-        (id ? await http.patch<Activity>(`/activities/${id}`, input) : await http.post<Activity>("/activities", input)).data,
+        (id
+          ? await http.patch<Activity>(`/activities/${id}`, omit(input, ["branchId"]))
+          : await http.post<Activity>("/activities", input)
+        ).data,
       (row, vars) => vars.id ?? row.id,
     ),
     invalidate: [activityKeys.all],
@@ -53,7 +57,7 @@ export function useSaveActivity() {
 export function useDecideActivity() {
   return useApiMutation({
     mutationFn: ({ id, action, reason }: { id: string; action: "approve" | "reject"; reason?: string }) =>
-      http.post<Activity>(`/activities/${id}/${action}`, reason ? { reason } : {}),
+      http.post<Activity>(`/activities/${id}/${action}`, reason ? { comment: reason } : {}),
     invalidate: [activityKeys.all, ["approvals"]],
     success: (_, vars) => (vars.action === "approve" ? "Activity approved and announced" : "Activity rejected"),
   });

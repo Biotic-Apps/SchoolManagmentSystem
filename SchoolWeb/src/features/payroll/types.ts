@@ -49,6 +49,8 @@ export interface PayBreakdown {
 
 export interface PayrollLine {
   staffId: string;
+  /** Login of the staff member; the viewer cannot pay their own salary. */
+  userId?: string | null;
   name: string;
   designation: string | null;
   employeeNo?: string | null;
@@ -64,6 +66,8 @@ export interface PayrollLine {
   overtimeMinor: number;
   breakdown: PayBreakdown | null;
   netMinor: number;
+  /** Recovery that did not fit in this month (net stopped at 0); moves to next month on approval. */
+  carriedForwardMinor?: number;
   paidMinor: number;
   balanceMinor: number;
   status: string;

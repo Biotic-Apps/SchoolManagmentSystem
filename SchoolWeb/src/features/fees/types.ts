@@ -99,7 +99,8 @@ export interface Payment {
   reference: string | null;
   receivedOn: string;
   status: string;
-  cashier?: PersonRef | null;
+  /** Cashier who recorded the payment (API `receivedBy`). */
+  receivedBy?: PersonRef | null;
   allocations?: { invoiceId: string; invoiceNo?: string; amountMinor: number }[];
   advanceMinor?: number;
   receiptUrl?: string | null;
@@ -118,7 +119,7 @@ export interface PaymentProof {
   file?: { id: string; url: string; mime: string; name?: string } | null;
   fileUrl?: string | null;
   status: ProofStatus;
-  reason?: string | null;
+  rejectReason?: string | null;
   submittedBy?: PersonRef | null;
   createdAt?: string;
 }
@@ -153,25 +154,57 @@ export interface FeeSummary {
   advanceMinor: number;
   lastPayment: { amountMinor: number; paidOn: string; receiptNo?: string } | null;
   nextDue: { invoiceId?: string; invoiceNo?: string; dueDate: string; balanceMinor: number } | null;
+  /** False when the branch has no online gateway (fees.onlineGateway = NONE). */
+  onlineGatewayEnabled?: boolean;
+  /** The branch's gateway key: NONE, MANUAL, JAZZCASH or EASYPAISA. */
+  onlineGateway?: string;
 }
 
+/** GET /dues */
 export interface DueRow {
   student: InvoiceStudent;
   balanceMinor: number;
-  oldestDueDate?: string | null;
-  days?: number;
-  buckets: { d0_30: number; d31_60: number; d61_90: number; d90plus: number };
+  overdueMinor?: number;
+  oldestOverdueDays?: number;
+  aging: { d0_30: number; d31_60: number; d61_90: number; d90plus: number };
+}
+
+/** GET /refunds (RefundDto). Approved refunds are money paid back out. */
+export interface Refund {
+  id: string;
+  paymentId: string;
+  receiptNo: string;
+  student: { id: string; name: string; admissionNo: string };
+  amountMinor: number;
+  method: PaymentMethod;
+  reason: string;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  approvalId: string | null;
+  requestedBy: PersonRef;
+  decidedAt: string | null;
+  currency: string;
+  createdAt: string;
 }
 
 export interface DailyCollection {
   branchId: string;
   date: string;
+  /** Received on the day, before refunds. */
   totalMinor: number;
+  /** Refunds approved (paid back) on the day. */
+  refundedMinor?: number;
+  refundedCount?: number;
+  cashRefundedMinor?: number;
+  /** totalMinor − refundedMinor. */
+  netMinor?: number;
+  /** Cash received − cash refunds: what the closing count is checked against. */
+  expectedCashMinor?: number;
+  refunds?: Refund[];
   byMethod: { method: PaymentMethod; amountMinor: number; count?: number }[];
   byCashier: { cashier: PersonRef; amountMinor: number; count?: number }[];
   payments: Payment[];
-  closed: boolean;
-  closing?: { cashCountedMinor: number; differenceMinor: number; note: string | null; closedBy?: PersonRef; closedAt?: string } | null;
+  /** The stored closing; null while the day is open. */
+  closed: { cashExpectedMinor?: number; cashCountedMinor: number; differenceMinor: number; note: string | null; closedBy?: PersonRef; closedAt?: string } | null;
 }
 
 export interface SiblingDiscount {

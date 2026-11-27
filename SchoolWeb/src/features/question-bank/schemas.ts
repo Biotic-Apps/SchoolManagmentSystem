@@ -5,6 +5,19 @@ import type { Question, QuestionInput, QuestionType, QuestionUpdate, DifficultyL
 const QUESTION_TYPES: QuestionType[] = ["MCQ", "SHORT", "LONG", "TRUE_FALSE", "FILL_BLANK"];
 const DIFFICULTY_LEVELS: DifficultyLevel[] = ["EASY", "MEDIUM", "HARD"];
 
+const MAX_OPTIONS = 10;
+
+/** One option per line, trimmed, blank lines dropped. */
+export const parseOptions = (text: string | undefined): string[] =>
+  (text ?? "").split("\n").map((o) => o.trim()).filter(Boolean);
+
+const intIn = (min: number, max: number, message: string) =>
+  z
+    .string()
+    .trim()
+    .regex(/^\d{1,3}$/, message)
+    .refine((v) => Number(v) >= min && Number(v) <= max, message);
+
 export const questionSchema = z.object({
   subjectId: z.string().min(1, "Choose a subject"),
   classId: z.string().min(1, "Choose a class"),
@@ -19,6 +32,26 @@ export const questionSchema = z.object({
   questionText: requiredText("the question", 5000),
   options: z.string().optional(),
   correctAnswer: requiredText("the correct answer", 2000),
+}).superRefine((values, ctx) => {
+  // Same rules as the API (question-rules.ts checkAnswer).
+  const answer = values.correctAnswer.trim().toLowerCase();
+  if (values.questionType === "MCQ") {
+    const options = parseOptions(values.options);
+    const keys = options.map((o) => o.toLowerCase());
+    const optionIssue =
+      options.length < 2 || options.length > MAX_OPTIONS
+        ? `Enter 2-${MAX_OPTIONS} options, one per line`
+        : options.some((o) => o.length > 500)
+          ? "Each option can be at most 500 characters"
+          : new Set(keys).size !== keys.length
+            ? "Options must all be different"
+            : null;
+    if (optionIssue) ctx.addIssue({ code: "custom", path: ["options"], message: optionIssue });
+    else if (answer && !keys.includes(answer))
+      ctx.addIssue({ code: "custom", path: ["correctAnswer"], message: "The correct answer must be one of the options" });
+  }
+  if (values.questionType === "TRUE_FALSE" && answer && answer !== "true" && answer !== "false")
+    ctx.addIssue({ code: "custom", path: ["correctAnswer"], message: "Enter True or False" });
 });
 export type QuestionFormValues = z.infer<typeof questionSchema>;
 
@@ -48,9 +81,7 @@ export function toQuestionUpdate(values: QuestionFormValues): QuestionUpdate {
     difficultyLevel: values.difficultyLevel as DifficultyLevel,
     marks: Number(values.marks),
     questionText: values.questionText.trim(),
-    ...(values.questionType === "MCQ" && values.options
-      ? { options: values.options.split("\n").map((o) => o.trim()).filter(Boolean) }
-      : {}),
+    ...(values.questionType === "MCQ" ? { options: parseOptions(values.options) } : {}),
     correctAnswer: values.correctAnswer.trim(),
   };
 }
@@ -59,7 +90,7 @@ export const generatePaperSchema = z.object({
   subjectId: z.string().min(1, "Choose a subject"),
   classId: z.string().min(1, "Choose a class"),
   title: requiredText("a title", 200),
-  totalMarks: z.string().regex(/^[1-9]\d{0,2}$/, "Enter total marks (1-500)"),
+  totalMarks: intIn(1, 500, "Enter total marks (1-500)"),
   duration: z
     .string()
     .regex(/^\d{1,3}$/, "Enter duration in minutes")
@@ -67,12 +98,25 @@ export const generatePaperSchema = z.object({
   sections: z.array(
     z.object({
       title: requiredText("section title", 100),
-      questionCount: z.string().regex(/^[1-9]\d{0,1}$/, "Enter question count"),
+      questionCount: intIn(1, 50, "Enter 1-50 questions"),
       type: z.enum(["MCQ", "SHORT", "LONG", "TRUE_FALSE", "FILL_BLANK"], { message: "Choose type" }),
       difficulty: z.enum(["EASY", "MEDIUM", "HARD"], { message: "Choose difficulty" }),
-      marksPerQuestion: z.string().regex(/^[1-9]\d{0,1}$/, "Enter marks per question"),
+      marksPerQuestion: intIn(1, 100, "Enter marks per question (1-100)"),
     }),
   ).min(1, "Add at least one section"),
+}).superRefine((values, ctx) => {
+  // The API refuses a paper whose sections do not add up to the total.
+  const total = Number(values.totalMarks);
+  const sum = values.sections.reduce(
+    (acc, s) => acc + Number(s.questionCount) * Number(s.marksPerQuestion),
+    0,
+  );
+  if (Number.isFinite(sum) && total > 0 && sum !== total)
+    ctx.addIssue({
+      code: "custom",
+      path: ["totalMarks"],
+      message: `Sections add up to ${sum} marks; make the total ${sum} or change the sections`,
+    });
 });
 export type GeneratePaperFormValues = z.infer<typeof generatePaperSchema>;
 

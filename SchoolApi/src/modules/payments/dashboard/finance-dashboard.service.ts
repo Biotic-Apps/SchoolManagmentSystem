@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '../../../generated/prisma/client';
-import { parseDate } from '../../../core/common/dates';
+import { formatDate, parseDate } from '../../../core/common/dates';
 import { forbidden } from '../../../core/common/errors/errors';
 import { schoolDate } from '../../../core/common/school-time';
 import { PrismaService } from '../../../core/prisma/prisma.service';
 import type { Scope } from '../../../core/rbac/scope/scope';
 import { OPEN_STATUSES } from '../../finance-core/invoice-state';
 import { periodEnd, periodStart } from '../../finance-core/period';
+import { refundsPaidWhere } from '../refunds/refunds-paid';
 import { FinanceAccess } from '../shared/finance-access';
 import { collectionRate } from './collection-rate';
 import type {
@@ -48,43 +49,60 @@ export class FinanceDashboardService {
     const range = { gte: periodStart(month), lte: periodEnd(month) };
     const live = { not: 'REVERSED' } as const;
 
-    const [billed, collected, open, overdue, expenses, payroll, todays] =
-      await Promise.all([
-        this.prisma.invoice.aggregate({
-          where: {
-            AND: [branch],
-            status: { notIn: ['DRAFT', 'CANCELLED'] },
-            OR: [{ period: month }, { period: null, issueDate: range }],
-          },
-          _sum: { totalMinor: true },
-        }),
-        this.sumPayments({ AND: [branch], status: live, receivedOn: range }),
-        this.openBalance({ AND: [branch], status: { in: OPEN_STATUSES } }),
-        this.openBalance({ AND: [branch], status: 'OVERDUE' }),
-        this.prisma.expense.aggregate({
-          where: {
-            AND: [branch],
-            billDate: range,
-            status: { in: [...EXPENSE_COUNTED] },
-          },
-          _sum: { amountMinor: true },
-        }),
-        this.prisma.payrollLine.aggregate({
-          where: {
-            run: {
-              AND: [branch],
-              month,
-              status: { in: [...PAYROLL_COUNTED] },
-            },
-          },
-          _sum: { netMinor: true },
-        }),
-        this.sumPayments({
+    const monthFrom = formatDate(periodStart(month));
+    const monthTo = formatDate(periodEnd(month));
+
+    const [
+      billed,
+      received,
+      open,
+      overdue,
+      expenses,
+      payroll,
+      todaysReceived,
+      refunded,
+      todaysRefunded,
+    ] = await Promise.all([
+      this.prisma.invoice.aggregate({
+        where: {
           AND: [branch],
-          status: live,
-          receivedOn: parseDate(today),
-        }),
-      ]);
+          status: { notIn: ['DRAFT', 'CANCELLED'] },
+          OR: [{ period: month }, { period: null, issueDate: range }],
+        },
+        _sum: { totalMinor: true },
+      }),
+      this.sumPayments({ AND: [branch], status: live, receivedOn: range }),
+      this.openBalance({ AND: [branch], status: { in: OPEN_STATUSES } }),
+      this.openBalance({ AND: [branch], status: 'OVERDUE' }),
+      this.prisma.expense.aggregate({
+        where: {
+          AND: [branch],
+          billDate: range,
+          status: { in: [...EXPENSE_COUNTED] },
+        },
+        _sum: { amountMinor: true },
+      }),
+      this.prisma.payrollLine.aggregate({
+        where: {
+          run: {
+            AND: [branch],
+            month,
+            status: { in: [...PAYROLL_COUNTED] },
+          },
+        },
+        _sum: { netMinor: true },
+      }),
+      this.sumPayments({
+        AND: [branch],
+        status: live,
+        receivedOn: parseDate(today),
+      }),
+      this.sumRefunds(refundsPaidWhere(branch, monthFrom, monthTo)),
+      this.sumRefunds(refundsPaidWhere(branch, today)),
+    ]);
+    // Money paid back is not collected: refunds are netted off (cash basis).
+    const collected = received - refunded;
+    const todays = todaysReceived - todaysRefunded;
     const billedMinor = billed._sum.totalMinor ?? 0n;
     return {
       branchId: query.branchId ?? null,
@@ -103,6 +121,14 @@ export class FinanceDashboardService {
 
   private async sumPayments(where: Prisma.PaymentWhereInput): Promise<bigint> {
     const result = await this.prisma.payment.aggregate({
+      where,
+      _sum: { amountMinor: true },
+    });
+    return result._sum.amountMinor ?? 0n;
+  }
+
+  private async sumRefunds(where: Prisma.RefundWhereInput): Promise<bigint> {
+    const result = await this.prisma.refund.aggregate({
       where,
       _sum: { amountMinor: true },
     });

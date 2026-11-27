@@ -17,7 +17,7 @@ export function useReportForm(report: Report, onDone: () => void) {
 
   const { form, submit, submitting, formError } = useServerForm({
     schema,
-    defaultValues: reportDefaults(report, { branchId: picker.branchId }),
+    defaultValues: reportDefaults(report, { branchId: picker.branchId, schoolId: picker.schoolId }),
     onSubmit: async (values) => {
       const request = toReportRequest(report, values);
       const result = await generate.mutateAsync(request);

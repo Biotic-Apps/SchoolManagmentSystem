@@ -50,7 +50,7 @@ describe('ManualGateway', () => {
   const gateway: PaymentGateway = new ManualGateway();
 
   it('refuses to start an online payment with GATEWAY_DISABLED', async () => {
-    await expect(gateway.initiate({} as Invoice)).rejects.toMatchObject({
+    await expect(gateway.initiate({} as Invoice, 100n)).rejects.toMatchObject({
       code: ErrorCode.GATEWAY_DISABLED,
     });
   });

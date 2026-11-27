@@ -110,8 +110,9 @@ export interface StaffAttendanceInput {
   entries: { staffId: string; status: AttendanceStatus; checkIn?: string; checkOut?: string; remark?: string }[];
 }
 
+/** GET /staff-attendance/me */
 export interface MyStaffAttendance {
-  entries: {
+  records: {
     date: string;
     status: AttendanceStatus | null;
     checkIn: string | null;

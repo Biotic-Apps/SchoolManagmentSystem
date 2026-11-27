@@ -3,6 +3,8 @@
 import { FormSection } from "@/components/shared/FormSection";
 import { TextField } from "@/components/shared/form/TextField";
 import { TextareaField } from "@/components/shared/form/TextareaField";
+import { SelectField } from "@/components/shared/form/SelectField";
+import { ONLINE_GATEWAY_OPTIONS } from "../settings-schema";
 
 /** Deposit account printed on the bank, school and parent copies of every fee challan. */
 export function BranchBankFields() {
@@ -28,6 +30,13 @@ export function BranchBankFields() {
         label="Note on challans"
         hint="Optional, e.g. late-fee or refund policy. Up to 300 characters."
         rows={2}
+      />
+      <SelectField
+        name="onlineGateway"
+        label="Online fee payment"
+        options={ONLINE_GATEWAY_OPTIONS}
+        hint="Parents see Pay Online only when a wallet is chosen. The wallet's merchant account must be set up on the server."
+        required
       />
     </FormSection>
   );

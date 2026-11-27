@@ -2,7 +2,8 @@ import {
   EMPTY_PROFILE,
   mergeProfile,
   pickChanges,
-  toHelperView,
+  seesCareOnly,
+  toCareView,
   toProfileColumns,
 } from './health-profile.mapper';
 
@@ -19,13 +20,34 @@ const PROFILE = {
 };
 
 describe('health profile mapper', () => {
-  it('keeps only allergies and instructions for helpers', () => {
-    const view = toHelperView(PROFILE);
+  it('limits teachers and helpers to the care view; management sees all', () => {
+    expect(seesCareOnly('TEACHER')).toBe(true);
+    expect(seesCareOnly('HELPER')).toBe(true);
+    for (const role of ['PRINCIPAL', 'COORDINATOR', 'HEAD_TEACHER', 'PARENT']) {
+      expect(seesCareOnly(role)).toBe(false);
+    }
+  });
+
+  it('keeps only allergies and instructions in the care view', () => {
+    const view = toCareView({
+      ...PROFILE,
+      medications: [{ name: 'Ventolin', dose: '2 puffs', schedule: null }],
+      emergencyContacts: [
+        {
+          name: 'Uncle',
+          relation: 'Uncle',
+          phone: '+923001112223',
+          priority: 1,
+        },
+      ],
+    });
     expect(view.allergies).toEqual(PROFILE.allergies);
     expect(view.instructions).toBe('Inhaler in bag');
     expect(view.bloodGroup).toBeNull();
     expect(view.conditions).toEqual([]);
     expect(view.doctor).toBeNull();
+    expect(view.medications).toEqual([]);
+    expect(view.emergencyContacts).toEqual([]);
   });
 
   it('picks only the keys a parent sent and merges them', () => {

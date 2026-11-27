@@ -32,6 +32,8 @@ async function downloadPdf(paperId: string) {
   URL.revokeObjectURL(url);
 }
 
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+
 export function PaperPreviewDrawer({ paper, onClose }: PaperPreviewDrawerProps) {
   return (
     <DetailDrawer open onOpenChange={(open) => !open && onClose()} title={paper.title}>
@@ -50,7 +52,8 @@ export function PaperPreviewDrawer({ paper, onClose }: PaperPreviewDrawerProps) 
           <div key={i} className="mb-3 rounded-lg border border-border p-3">
             <p className="text-sm font-medium">{section.title}</p>
             <p className="text-caption text-fg-muted">
-              {section.questionIds.length} questions &middot; {section.marks} marks
+              {plural(section.questionIds.length, "question")} &middot; {plural(section.marks, "mark")}
+              {section.marksPerQuestion ? ` (${plural(section.marksPerQuestion, "mark")} each)` : ""}
             </p>
           </div>
         ))}

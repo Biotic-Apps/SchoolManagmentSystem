@@ -10,7 +10,7 @@ interface ActivitySummaryProps {
 }
 
 export function ActivitySummary({ activity, nameOf }: ActivitySummaryProps) {
-  const reason = activity.reason ?? activity.comment;
+  const reason = activity.reason;
   const ended = activity.status === "REJECTED" || activity.status === "CANCELLED";
   return (
     <div className="flex flex-col gap-4">

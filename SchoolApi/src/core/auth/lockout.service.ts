@@ -7,8 +7,9 @@ import { UserAccountRepository } from './user-account.repository';
 
 /**
  * Account lockout (security.md §1): 5 failures → 15 min. Wrong passwords and
- * wrong second-factor codes share the same counter, so neither can be
- * brute-forced across sessions or challenges.
+ * wrong 2FA codes (only reachable after a correct first factor) share the same
+ * counter. Email sign-in codes do NOT count here: they have their own
+ * per-email limit (otp-code.ts), so knowing an email cannot lock an account.
  */
 @Injectable()
 export class LockoutService {

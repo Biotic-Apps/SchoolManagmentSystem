@@ -22,6 +22,8 @@ interface ProfitLossLine {
 }
 
 interface ProfitLossData {
+  /** CASH: money received and paid out between the dates. */
+  basis?: string;
   totalIncomeMinor: number;
   totalExpensesMinor: number;
   netMinor: number;
@@ -49,7 +51,10 @@ export function ProfitLossTab({ branchId }: { branchId: string }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <SectionHeading title="Profit & Loss" />
+      <SectionHeading
+        title="Profit & Loss"
+        description="Cash basis: fees received minus refunds, other income, expense payments made, and salaries paid plus deductions withheld (tax, EOBI) — all between the dates."
+      />
       <div className="flex flex-wrap items-end gap-3">
         <label className="flex flex-col gap-1 text-sm">
           From

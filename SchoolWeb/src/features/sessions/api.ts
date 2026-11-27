@@ -2,6 +2,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { Option } from "@/components/shared/OptionSelect";
 import { OPTIONS_PAGE } from "@/config/options";
 import { http } from "@/lib/http";
+import { omit } from "@/lib/omit";
 import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type {
@@ -114,7 +115,9 @@ export function useSaveCalendarEvent() {
   return useApiMutation({
     mutationFn: withRowFlash(
       ({ id, input }: { id?: string; input: CalendarEventInput }) =>
-        id ? http.patch<CalendarEvent>(`/calendar/${id}`, input) : http.post<CalendarEvent>("/calendar", input),
+        id
+          ? http.patch<CalendarEvent>(`/calendar/${id}`, omit(input, ["schoolId", "branchId"]))
+          : http.post<CalendarEvent>("/calendar", input),
       (result, vars) => vars.id ?? result.data.id,
     ),
     invalidate: [sessionKeys.calendar],

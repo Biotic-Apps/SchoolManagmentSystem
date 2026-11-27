@@ -55,6 +55,7 @@ export const REPORT_TEXT: Record<string, { name: string; description: string }> 
 
 /** Default label per parameter type, for catalog params without a label. */
 export const TYPE_LABEL: Partial<Record<ReportParamType, string>> = {
+  school: "School",
   branch: "Branch",
   month: "Month",
   class: "Class",

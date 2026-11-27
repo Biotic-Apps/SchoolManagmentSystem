@@ -9,7 +9,7 @@ export function useRegisterPanel(sectionId: string | null, date: string) {
   const correction = useDialogState<RegisterEntry>();
 
   const columns = registerColumns({
-    editable: tab.canEdit,
+    isEditable: tab.isRowEditable,
     alerts: new Map(tab.alerts.map((alert) => [alert.studentId, alert])),
     onStatus: tab.editor.setStatus,
     onRemark: tab.editor.setRemark,

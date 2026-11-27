@@ -3,7 +3,7 @@ import { useCan } from "@/features/auth/use-can";
 import { errorMessage } from "@/lib/error-messages";
 import { toast } from "@/lib/toast";
 import { useCancelInvoice, useInvoice, useIssueInvoices } from "./invoices-api";
-import { isCancellable, isPayable } from "./invoice-options";
+import { cancelNeedsApproval, isCancellable, isPayable } from "./invoice-options";
 
 export type InvoiceDialog = "cancel" | "payment" | "ledger";
 
@@ -24,7 +24,7 @@ export function useInvoiceDetail(id: string | null) {
     rights: {
       issue: can("fees.approve") && status === "DRAFT",
       pay: can("fees.add") && !!status && isPayable(status) && (invoice?.balanceMinor ?? 0) > 0,
-      cancel: can("fees.edit") && !!status && isCancellable(status),
+      cancel: can("fees.edit") && !!status && isCancellable(status, invoice?.paidMinor ?? 0),
     },
     dialog,
     openDialog: setDialog,
@@ -38,7 +38,7 @@ export function useInvoiceDetail(id: string | null) {
     cancelError: cancel.error ? errorMessage(cancel.error) : null,
     cancelInvoice: (reason: string) => {
       if (!invoice) return;
-      const needsApproval = invoice.status === "ISSUED";
+      const needsApproval = cancelNeedsApproval(invoice.status);
       cancel.mutate(
         { id: invoice.id, reason },
         {

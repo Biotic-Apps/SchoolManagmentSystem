@@ -11,7 +11,7 @@ Stack on one Linux server, all in Docker (`infra/docker-compose.prod.yml`):
 | api | built from `SchoolApi/Dockerfile` | NestJS API + BullMQ workers + nightly jobs. Runs `prisma migrate deploy` on every start |
 | postgres | `postgres:16-bookworm` | Database (volume `pgdata`) |
 | redis | `redis:7-alpine` | Job queue, cache, rate limits (AOF on, password, `noeviction`) |
-| clamav | `clamav/clamav:stable` | Virus scan of every upload (clamd on 3310) |
+| clamav | `clamav/clamav-debian:stable` (multi-arch) | Virus scan of every upload (clamd on 3310) |
 | minio | `minio/minio` | Optional (`--profile minio`) S3 storage; not needed for the pilot |
 
 Everything except Caddy is on the private network `eschool` (`DOCKER_SUBNET`, default `172.30.0.0/24`), which the
@@ -213,7 +213,7 @@ CI (`.github/workflows/ci.yml`) must be green on `main` before updating the serv
 3. **API restarting?** Usually a bad `.env` value (validation message in the log) or a failed migration (`prisma migrate deploy` output). Fix, then `up -d api`.
 4. **Messages not arriving?** Support → Failed notifications (provider error is shown, secrets removed) → fix provider settings → "Send test message" → Resend.
 5. **Backups failing?** Support / Backups shows the error; common causes: disk full, key missing, `pg_dump` error. Click "Run backup" after fixing.
-6. **Suspected account compromise**: Users → disable the account (revokes all sessions immediately) → review Audit (filter by user) → reset password, re-enable, require 2FA.
+6. **Suspected account compromise**: Users → disable the account (revokes all sessions immediately) → review Reports & History › Audit log (filter by person) → reset password, re-enable, require 2FA.
 7. **Suspected data exposure**: preserve logs (`docker compose logs > incident-<date>.log`), list affected records from Audit, inform the principal; the school notifies guardians per its policy.
 8. **Server lost**: new server → §4 first deploy (same `.env` from the password manager) → restore-drill.md "Full restore" from the off-site copy → restore uploads → DNS to the new IP.
 9. Afterwards: one-paragraph note in the pilot feedback log (what happened, impact, fix, follow-up).
@@ -230,3 +230,33 @@ the server disk holds only the database. Backup downloads use presigned bucket U
 from the super admin's browser — with the bundled MinIO (`--profile minio`) that means publishing it through Caddy on
 its own domain; for the pilot prefer local storage or a hosted bucket. For off-site copies set `OFFSITE_SOURCE` to the
 rclone path of the bucket.
+
+## 13. Free test server: Oracle Cloud Always Free + GitHub Actions
+A zero-cost setup for testing: the stack above on an Oracle Always Free Ampere A1 VM (arm64), with the images built on
+GitHub (the VM never builds). It stays inside the Always Free limits: one `VM.Standard.A1.Flex` with 2 OCPU / 12 GB
+(1,460 of 1,500 OCPU-hours and 8,760 of 9,000 GB-hours a month), a 100 GB boot volume (limit 200 GB), one VCN, an
+ephemeral public IP. Do not upgrade the account to Pay As You Go and do not resize the VM. Not for real student data:
+no SLA, backups stay on the same disk until off-site copies are set up (§6).
+
+**Once**
+1. OCI CLI (`pip install oci-cli`) and `oci session authenticate --region <home-region>`, then
+   `bash infra/scripts/oci-create-server.sh "$(cat ~/.ssh/<key>.pub)"`: VCN, internet gateway, public subnet,
+   ingress 22/80/443 only, the VM; prints the public IP. Re-run on "Out of host capacity".
+2. Point both hostnames at the IP (a DuckDNS name works: `name.duckdns.org` for the web, `api.name.duckdns.org` for
+   the API resolve to the same IP).
+3. `ssh ubuntu@<ip> 'sudo bash -s' < infra/scripts/server-bootstrap.sh`: updates, unattended-upgrades, swap, Docker,
+   host firewall (Oracle's Ubuntu image rejects everything but SSH in iptables), `/opt/eschool`.
+4. Create `/opt/eschool/infra/.env` on the server from `.env.production.example` (secrets generated there with
+   `openssl rand`), plus `API_IMAGE=ghcr.io/<owner>/eschool-api` and `WEB_IMAGE=ghcr.io/<owner>/eschool-web`.
+   While testing without an SMTP/SMS provider: `EMAIL_DRIVER=log`, `SMS_DRIVER=log`, `WHATSAPP_DRIVER=log`,
+   `ALLOW_LOG_CHANNELS=true` (messages only appear in `docker compose logs api`).
+5. A separate deploy key pair: its `.pub` in the server's `~/.ssh/authorized_keys`; in the GitHub repository set
+   secrets `SSH_HOST`, `SSH_USER`, `SSH_KEY` (private key), `SSH_KNOWN_HOSTS` (`ssh-keyscan <ip>`) and the variable
+   `API_DOMAIN`.
+
+**Every deploy**: Actions → **Deploy** → Run workflow (branch/tag/commit). `.github/workflows/deploy.yml` builds both
+images on a native arm64 runner (free for public repositories), pushes them to GHCR tagged with the commit, copies
+`infra/` (never `.env`) to the server and runs `infra/scripts/deploy-images.sh <tag>`: pre-update dump (kept in
+`/opt/eschool/backups/pre-update`), pull, api (migrations) → healthy → web → caddy, then records `IMAGE_TAG` in `.env`.
+Roll back with `infra/scripts/deploy-images.sh --rollback` on the server. The first super admin is seeded as in §4
+("Bootstrap the first super admin").

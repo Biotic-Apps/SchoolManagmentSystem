@@ -2,7 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { toBuffer as qrToBuffer } from 'qrcode';
 import { API_PREFIX } from '../../bootstrap/configure-app';
 import { AppConfigService } from '../../config/app-config.service';
-import { formatDate } from '../../core/common/dates';
+import { publicWebUrl } from '../../config/public-web-url';
 import { PrismaService } from '../../core/prisma/prisma.service';
 import {
   DocumentRendererRegistry,
@@ -12,9 +12,14 @@ import {
 import { PdfBuilder } from '../generated-docs/pdf-builder';
 import { fullName } from '../students/student.mapper';
 import { CertificateContentLoader } from './certificate-content.loader';
-import { CERTIFICATE_TITLES, certificateBody } from './certificate-text';
+import {
+  CERTIFICATE_TITLES,
+  certificateBody,
+  certificateDate,
+  certificateVerifyUrl,
+} from './certificate-text';
 
-/** CERTIFICATE PDFs: body text, serial, QR to the public verify endpoint. */
+/** CERTIFICATE PDFs: body text, serial, QR to the public verification page. */
 @Injectable()
 export class CertificateRenderer implements DocumentRenderer, OnModuleInit {
   readonly kind = 'CERTIFICATE' as const;
@@ -40,8 +45,12 @@ export class CertificateRenderer implements DocumentRenderer, OnModuleInit {
     }
     const loaded = await this.loader.load(cert);
     const duplicate = cert.duplicateOfId !== null;
-    const base = this.config.get('APP_URL').replace(/\/$/, '');
-    const verifyUrl = `${base}/${API_PREFIX}/certificates/verify/${encodeURIComponent(cert.serialNo)}`;
+    const verifyUrl = certificateVerifyUrl(
+      cert.serialNo,
+      publicWebUrl(this.config),
+      this.config.get('APP_URL'),
+      API_PREFIX,
+    );
     const qr = await qrToBuffer(verifyUrl, { margin: 0, width: 200 });
 
     const pdf = new PdfBuilder().header(
@@ -52,7 +61,7 @@ export class CertificateRenderer implements DocumentRenderer, OnModuleInit {
     if (duplicate) pdf.watermark('DUPLICATE');
     pdf.fields([
       ['Serial No', cert.serialNo],
-      ['Issue date', formatDate(cert.issuedOn)],
+      ['Issue date', certificateDate(cert.issuedOn)],
       ['Student', fullName(cert.student)],
       ['Admission No', cert.student.admissionNo],
       ['Class', loaded.content.className ?? '-'],
@@ -66,7 +75,7 @@ export class CertificateRenderer implements DocumentRenderer, OnModuleInit {
     }
     if (duplicate) {
       pdf.paragraph(
-        `DUPLICATE copy issued on ${formatDate(cert.issuedOn)}${cert.reissueReason ? ` (${cert.reissueReason})` : ''}. The original serial number remains valid.`,
+        `DUPLICATE copy issued on ${certificateDate(cert.issuedOn)}${cert.reissueReason ? ` (${cert.reissueReason})` : ''}. The original serial number remains valid.`,
         { size: 9 },
       );
     }

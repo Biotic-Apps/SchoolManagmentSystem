@@ -26,6 +26,9 @@ export function isRoleKey(value: string): value is RoleKey {
   return (ROLE_KEYS as readonly string[]).includes(value);
 }
 
+/** Built-in role label; custom role keys (CUSTOM_QA_NOTICES_VIEWER) read as "Qa notices viewer", not the raw key. */
 export function roleLabel(role: string): string {
-  return isRoleKey(role) ? ROLE_LABELS[role] : role;
+  if (isRoleKey(role)) return ROLE_LABELS[role];
+  const text = role.replace(/^CUSTOM_/, "").replace(/[_-]+/g, " ").trim().toLowerCase();
+  return text ? text.charAt(0).toUpperCase() + text.slice(1) : role;
 }

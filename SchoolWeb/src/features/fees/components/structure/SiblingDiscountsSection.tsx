@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -17,6 +15,9 @@ import {
   TableRow,
 } from "@/components/ui/Table";
 import { InlineNotice } from "@/components/shared/InlineNotice";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { FormAlert } from "@/components/shared/FormAlert";
+import { useServerForm } from "@/lib/use-server-form";
 import {
   useSiblingDiscounts,
   useCreateSiblingDiscount,
@@ -47,22 +48,23 @@ export function SiblingDiscountsSection({ schoolId }: Props) {
   const deleteMut = useDeleteSiblingDiscount();
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<SiblingDiscount | null>(null);
 
-  const form = useForm<SiblingDiscountFormValues>({
-    resolver: zodResolver(siblingDiscountSchema),
+  const { form, submit, formError } = useServerForm<SiblingDiscountFormValues>({
+    schema: siblingDiscountSchema,
     defaultValues: SIBLING_DISCOUNT_DEFAULTS,
+    conflictField: "childIndex",
+    onSubmit: async (values) => {
+      if (editId) return updateMut.mutateAsync({ id: editId, percentOff: values.percentOff });
+      if (!schoolId) throw new Error("Choose a school first");
+      return createMut.mutateAsync({ ...values, schoolId });
+    },
+    onSuccess: () => {
+      form.reset(SIBLING_DISCOUNT_DEFAULTS);
+      setShowForm(false);
+      setEditId(null);
+    },
   });
-
-  const onSubmit = async (values: SiblingDiscountFormValues) => {
-    if (editId) {
-      await updateMut.mutateAsync({ id: editId, percentOff: values.percentOff });
-    } else {
-      await createMut.mutateAsync(values);
-    }
-    form.reset(SIBLING_DISCOUNT_DEFAULTS);
-    setShowForm(false);
-    setEditId(null);
-  };
 
   const startEdit = (rule: SiblingDiscount) => {
     setEditId(rule.id);
@@ -112,13 +114,19 @@ export function SiblingDiscountsSection({ schoolId }: Props) {
                   <TableCell>{ordinal(rule.childIndex)} child</TableCell>
                   <TableCell>{rule.percentOff}%</TableCell>
                   <TableCell className="text-right">
-                    <Button size="icon" variant="ghost" onClick={() => startEdit(rule)}>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      aria-label={`Edit ${ordinal(rule.childIndex)} child discount`}
+                      onClick={() => startEdit(rule)}
+                    >
                       <Pencil className="h-4 w-4" />
                     </Button>
                     <Button
                       size="icon"
                       variant="ghost"
-                      onClick={() => deleteMut.mutate(rule.id)}
+                      aria-label={`Remove ${ordinal(rule.childIndex)} child discount`}
+                      onClick={() => setDeleting(rule)}
                       disabled={deleteMut.isPending}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -131,39 +139,60 @@ export function SiblingDiscountsSection({ schoolId }: Props) {
         )}
 
         {showForm && (
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-end gap-3">
-            <div className="space-y-1">
-              <Label>Child #</Label>
-              <Input
-                type="number"
-                className="w-24"
-                disabled={!!editId}
-                {...form.register("childIndex", { valueAsNumber: true })}
-              />
-              {form.formState.errors.childIndex && (
-                <p className="text-xs text-destructive">{form.formState.errors.childIndex.message}</p>
-              )}
+          <form onSubmit={submit} className="space-y-2">
+            <FormAlert message={formError} />
+            <div className="flex flex-wrap items-end gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="sibling-child-index">Child #</Label>
+                <Input
+                  id="sibling-child-index"
+                  type="number"
+                  className="w-24"
+                  disabled={!!editId}
+                  {...form.register("childIndex", { valueAsNumber: true })}
+                />
+                {form.formState.errors.childIndex && (
+                  <p className="text-xs text-destructive">{form.formState.errors.childIndex.message}</p>
+                )}
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="sibling-percent-off">Discount %</Label>
+                <Input
+                  id="sibling-percent-off"
+                  type="number"
+                  className="w-24"
+                  {...form.register("percentOff", { valueAsNumber: true })}
+                />
+                {form.formState.errors.percentOff && (
+                  <p className="text-xs text-destructive">{form.formState.errors.percentOff.message}</p>
+                )}
+              </div>
+              <Button type="submit" size="sm" disabled={createMut.isPending || updateMut.isPending}>
+                {editId ? "Update" : "Add"}
+              </Button>
+              <Button type="button" size="sm" variant="ghost" onClick={cancelForm}>
+                Cancel
+              </Button>
             </div>
-            <div className="space-y-1">
-              <Label>Discount %</Label>
-              <Input
-                type="number"
-                className="w-24"
-                {...form.register("percentOff", { valueAsNumber: true })}
-              />
-              {form.formState.errors.percentOff && (
-                <p className="text-xs text-destructive">{form.formState.errors.percentOff.message}</p>
-              )}
-            </div>
-            <Button type="submit" size="sm" disabled={createMut.isPending || updateMut.isPending}>
-              {editId ? "Update" : "Add"}
-            </Button>
-            <Button type="button" size="sm" variant="ghost" onClick={cancelForm}>
-              Cancel
-            </Button>
           </form>
         )}
       </CardContent>
+      <ConfirmDialog
+        open={!!deleting}
+        onOpenChange={(open) => !open && setDeleting(null)}
+        title="Remove sibling discount?"
+        description={
+          deleting
+            ? `The ${ordinal(deleting.childIndex)} child discount (${deleting.percentOff}%) will no longer apply to new invoices.`
+            : undefined
+        }
+        confirmLabel="Remove"
+        tone="danger"
+        loading={deleteMut.isPending}
+        onConfirm={() =>
+          deleting && deleteMut.mutate(deleting.id, { onSuccess: () => setDeleting(null) })
+        }
+      />
     </Card>
   );
 }

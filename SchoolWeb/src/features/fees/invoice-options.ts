@@ -10,10 +10,14 @@ export const INVOICE_STATUS_OPTIONS: Option[] = [
   { id: "CANCELLED", name: "Cancelled" },
 ];
 
-const CANCELLABLE: InvoiceStatus[] = ["DRAFT", "ISSUED"];
+// API: DRAFT cancels at once; ISSUED/OVERDUE without payments go for approval.
+const CANCELLABLE: InvoiceStatus[] = ["DRAFT", "ISSUED", "OVERDUE"];
 const PAYABLE: InvoiceStatus[] = ["ISSUED", "PARTIALLY_PAID", "OVERDUE"];
 
-export const isCancellable = (status: InvoiceStatus) => CANCELLABLE.includes(status);
+export const isCancellable = (status: InvoiceStatus, paidMinor = 0) =>
+  CANCELLABLE.includes(status) && paidMinor <= 0;
+/** Issued (incl. overdue) invoices are cancelled only through an approval. */
+export const cancelNeedsApproval = (status: InvoiceStatus) => status !== "DRAFT";
 export const isPayable = (status: InvoiceStatus) => PAYABLE.includes(status);
 
 /** "ADM-0042 · Class 5 A" */

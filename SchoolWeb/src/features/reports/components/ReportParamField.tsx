@@ -4,11 +4,11 @@ import { SelectField } from "@/components/shared/form/SelectField";
 import { TextField } from "@/components/shared/form/TextField";
 import type { ReportParam } from "../types";
 
-const PICKER_TYPES = new Set(["branch", "class", "section", "session", "exam"]);
+const PICKER_TYPES = new Set(["school", "branch", "class", "section", "session", "exam"]);
 
 interface ReportParamFieldProps {
   param: ReportParam;
-  /** Choices for branch / class / section / session / exam params. */
+  /** Choices for school / branch / class / section / session / exam params. */
   options: Option[];
 }
 

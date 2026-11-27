@@ -55,5 +55,7 @@ export class FeeSummaryDto {
   nextDue!: NextDueDto | null;
   currency!: string;
   onlineGatewayEnabled!: boolean;
+  /** Branch `fees.onlineGateway` (NONE, MANUAL, JAZZCASH, EASYPAISA): the wallet parents can use. */
+  onlineGateway!: string;
   proofUploadEnabled!: boolean;
 }

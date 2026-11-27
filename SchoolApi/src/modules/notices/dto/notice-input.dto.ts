@@ -14,11 +14,20 @@ import {
 import { NoticeStatus } from '../../../generated/prisma/client';
 import { PaginationQueryDto } from '../../../core/common/pagination/pagination-query.dto';
 import { IsOptionalDateOnly } from '../../../core/common/validation/is-date-only';
+import { Trim } from '../../../core/common/validation/trim';
 
 export class NoticeAudienceInputDto {
   @IsOptional()
   @IsBoolean()
   schoolWide?: boolean;
+
+  /**
+   * The school a `schoolWide` notice is for. Needed by authors without a
+   * school of their own (super admin); others default to their own school.
+   */
+  @IsOptional()
+  @IsUUID()
+  schoolId?: string;
 
   @IsOptional()
   @IsArray()
@@ -50,12 +59,14 @@ export class NoticeAudienceInputDto {
 }
 
 export class UpdateNoticeDto {
+  @Trim()
   @IsOptional()
   @IsString()
   @MinLength(1)
   @MaxLength(200)
   title?: string;
 
+  @Trim()
   @IsOptional()
   @IsString()
   @MinLength(1)
@@ -82,11 +93,13 @@ export class UpdateNoticeDto {
 }
 
 export class CreateNoticeDto {
+  @Trim()
   @IsString()
   @MinLength(1)
   @MaxLength(200)
   title!: string;
 
+  @Trim()
   @IsString()
   @MinLength(1)
   @MaxLength(10000)

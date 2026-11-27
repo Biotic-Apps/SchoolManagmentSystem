@@ -6,10 +6,17 @@ export type ReportFormatName = (typeof REPORT_FORMATS)[number];
 
 export type ParamType = 'uuid' | 'month' | 'date' | 'int';
 
+/** What a uuid param refers to, so clients can render the matching picker. */
+export const PARAM_PICKERS = ['school', 'branch', 'exam'] as const;
+export type ParamPicker = (typeof PARAM_PICKERS)[number];
+
 export interface ReportParam {
   name: string;
   type: ParamType;
   required: boolean;
+  /** Human label for the form field. */
+  label: string;
+  picker?: ParamPicker;
 }
 
 export interface ReportDefinition {
@@ -22,14 +29,22 @@ export interface ReportDefinition {
   params: ReportParam[];
 }
 
-const p = (name: string, type: ParamType, required = true): ReportParam => ({
+const p = (
+  name: string,
+  type: ParamType,
+  label: string,
+  required = true,
+  picker?: ParamPicker,
+): ReportParam => ({
   name,
   type,
   required,
+  label,
+  ...(picker ? { picker } : {}),
 });
-const BRANCH = p('branchId', 'uuid');
-const MONTH = p('month', 'month');
-const RANGE = [p('from', 'date'), p('to', 'date')];
+const BRANCH = p('branchId', 'uuid', 'Branch', true, 'branch');
+const MONTH = p('month', 'month', 'Month');
+const RANGE = [p('from', 'date', 'From'), p('to', 'date', 'To')];
 
 export const REPORTS: readonly ReportDefinition[] = [
   {
@@ -51,7 +66,7 @@ export const REPORTS: readonly ReportDefinition[] = [
     title: 'Results analysis',
     description: 'Average, pass rate and top scorer per section and subject.',
     permission: 'exams.view',
-    params: [p('examId', 'uuid')],
+    params: [p('examId', 'uuid', 'Exam', true, 'exam')],
   },
   {
     key: 'fees.collection',
@@ -72,7 +87,7 @@ export const REPORTS: readonly ReportDefinition[] = [
     title: 'Fee defaulters',
     description: 'Students with overdue balances.',
     permission: 'fees.view',
-    params: [BRANCH, p('minDays', 'int', false)],
+    params: [BRANCH, p('minDays', 'int', 'Overdue for at least (days)', false)],
   },
   {
     key: 'payroll.summary',
@@ -109,7 +124,7 @@ export const REPORTS: readonly ReportDefinition[] = [
       'Students, attendance, billing, collection and expenses per branch.',
     permission: 'reports.view',
     superAdminOnly: true,
-    params: [p('schoolId', 'uuid'), MONTH],
+    params: [p('schoolId', 'uuid', 'School', true, 'school'), MONTH],
   },
 ];
 

@@ -9,6 +9,7 @@ import {
   invalid,
   notFound,
 } from '../../../core/common/errors/errors';
+import { assertNotPastDay } from '../../../core/common/time-checks';
 import type { AuthUser } from '../../../core/common/types/auth-user';
 import { NotificationService } from '../../../core/notifications/notification.service';
 import { PrismaService } from '../../../core/prisma/prisma.service';
@@ -42,6 +43,7 @@ export class EarlyLeaveService {
     scope: Scope,
     dto: CreateEarlyLeaveDto,
   ): Promise<EarlyLeaveDto> {
+    assertNotPastDay(dto.date, 'Early leave date');
     const placement = await this.placements.read(scope, dto.studentId);
     if (dto.pickupPersonId) {
       const person = await this.prisma.pickupPerson.findUnique({

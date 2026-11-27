@@ -38,7 +38,7 @@ export function EventFormDialog({ event, schoolId, branchId, onClose }: EventFor
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <SelectField name="type" label="Type" options={EVENT_TYPE_OPTIONS} required />
-        <SelectField name="scope" label="Applies to" options={SCOPE_OPTIONS} required />
+        <SelectField name="scope" label="Applies to" options={SCOPE_OPTIONS} required disabled={!!event} />
         <TextField name="title" label="Title" required className="sm:col-span-2" placeholder="Winter vacation" />
         <TextField name="startDate" label="Start date" type="date" required />
         <TextField name="endDate" label="End date" type="date" required />

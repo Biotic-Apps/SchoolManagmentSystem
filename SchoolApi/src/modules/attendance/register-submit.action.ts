@@ -8,6 +8,7 @@ import type {
 } from '../../core/probation/probation-action';
 import { ProbationActionRegistry } from '../../core/probation/probation-action.registry';
 import { AbsenceNotifier } from './absence-notifier';
+import { RegisterLockPolicy } from './register-lock';
 import { RegisterWriter } from './register-writer';
 import { RegistersRepository } from './registers.repository';
 
@@ -32,6 +33,7 @@ export class RegisterSubmitAction
     private readonly writer: RegisterWriter,
     private readonly absences: AbsenceNotifier,
     private readonly audit: AuditService,
+    private readonly lock: RegisterLockPolicy,
   ) {}
 
   onModuleInit(): void {
@@ -52,6 +54,9 @@ export class RegisterSubmitAction
     const roster = await this.repository.roster(row.sectionId, tx);
     const ids = roster.map((s) => s.studentId);
     const leave = await this.repository.onLeave(ids, row.date, tx);
+    // Submitted after the lock time (late, or a probation review approved
+    // later): lock at once so later changes need a correction.
+    const lockNow = await this.lock.isPastLock(row.branchId, row.date);
     await this.writer.submit(
       tx,
       row.id,
@@ -61,6 +66,7 @@ export class RegisterSubmitAction
       },
       leave,
       ids,
+      lockNow,
     );
     this.audit.stage({
       action: 'attendance.submit',
@@ -71,7 +77,11 @@ export class RegisterSubmitAction
       actorId: context.performedById,
       onBehalfOfStaffId: payload.onBehalfOfStaffId ?? undefined,
       before: { status: locked.status },
-      after: { status: 'SUBMITTED', submittedById: payload.userId },
+      after: {
+        status: lockNow ? 'LOCKED' : 'SUBMITTED',
+        submittedById: payload.userId,
+        ...(lockNow && { late: true }),
+      },
     });
     await this.absences.notify(row.id, tx);
   }

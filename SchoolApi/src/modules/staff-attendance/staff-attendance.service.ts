@@ -16,6 +16,7 @@ import type {
   SaveStaffAttendanceDto,
   StaffAttendanceDayDto,
 } from './dto/staff-attendance.dto';
+import { assertStaffEntries, capAtToday } from './staff-entry-rules';
 
 /** Staff register per branch day, marked by office/principal (flows §7.2). */
 @Injectable()
@@ -69,11 +70,17 @@ export class StaffAttendanceService {
     if (date > today()) throw invalid('Attendance cannot be marked ahead');
     await this.workingDays.assertWorkingDay(branch.id, date);
     const ids = dto.entries.map((e) => e.staffId);
-    const known = await this.prisma.staff.count({
+    const known = await this.prisma.staff.findMany({
       where: { id: { in: ids }, branchId: branch.id },
+      select: { id: true, name: true, joinDate: true },
     });
-    if (known !== new Set(ids).size)
-      throw invalid('Staff must belong to this branch');
+    const actor = await this.people.staffOfUser(user.id);
+    assertStaffEntries(
+      dto.entries,
+      new Map(known.map((s) => [s.id, s])),
+      date,
+      actor?.id ?? null,
+    );
     await this.prisma.$transaction(
       dto.entries.map((e) => {
         const values = {
@@ -113,7 +120,7 @@ export class StaffAttendanceService {
   ): Promise<MyStaffAttendanceDto> {
     const staff = await this.people.staffOfUser(user.id);
     if (!staff) throw notFound('Staff profile');
-    const to = query.to ? parseDate(query.to) : today();
+    const to = capAtToday(query.to ? parseDate(query.to) : today(), today());
     const from = query.from
       ? parseDate(query.from)
       : new Date(to.getTime() - 30 * 86_400_000);

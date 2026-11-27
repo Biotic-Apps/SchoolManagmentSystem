@@ -13,6 +13,7 @@ import {
   IsOptionalDateOnly,
 } from '../../../../core/common/validation/is-date-only';
 import { PaymentDto } from '../../payments/dto/payment.dto';
+import { RefundDto } from '../../refunds/dto/refund.dto';
 
 export class DailyCollectionQueryDto {
   @ApiProperty({ format: 'uuid' })
@@ -69,8 +70,20 @@ export class DailyCollectionDto {
   branchId!: string;
   date!: string;
   count!: number;
+  /** Received in the day (all methods), before refunds. */
   totalMinor!: number;
+  /** Cash received, before refunds. */
   cashMinor!: number;
+  /** Refunds approved (paid out) on the day. */
+  refundedCount!: number;
+  refundedMinor!: number;
+  cashRefundedMinor!: number;
+  /** totalMinor − refundedMinor. */
+  netMinor!: number;
+  /** cashMinor − cashRefundedMinor: what the cash closing is checked against. */
+  expectedCashMinor!: number;
+  @ApiProperty({ type: [RefundDto] })
+  refunds!: RefundDto[];
   @ApiProperty({ type: [MethodTotalDto] })
   byMethod!: MethodTotalDto[];
   @ApiProperty({ type: [CashierTotalDto] })

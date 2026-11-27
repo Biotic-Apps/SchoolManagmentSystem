@@ -10,8 +10,31 @@ import type { ExamDto } from './dto/exam.dto';
 import type { ScheduleExamDto, SchedulePaperDto } from './dto/schedule.dto';
 import { ExamMapper } from './exam.mapper';
 import { MarkSheetBuilder } from './mark-sheet-builder';
-import { paperKey, paperProblems } from './paper-checks';
+import {
+  paperKey,
+  paperProblems,
+  problemsMessage,
+  type OffDay,
+} from './paper-checks';
 import { findClashes, type SlotPaper } from './schedule-clash';
+
+const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+/** opensAt/closesAt of the branch timings JSON when both are valid. */
+export function schoolHours(timings: unknown): {
+  opensAt?: string;
+  closesAt?: string;
+} {
+  if (!timings || typeof timings !== 'object') return {};
+  const { opensAt, closesAt } = timings as Record<string, unknown>;
+  return typeof opensAt === 'string' &&
+    typeof closesAt === 'string' &&
+    HHMM.test(opensAt) &&
+    HHMM.test(closesAt) &&
+    opensAt < closesAt
+    ? { opensAt, closesAt }
+    : {};
+}
 
 /** PUT /exams/:id/schedule: papers per class/subject, clash check, mark sheets. */
 @Injectable()
@@ -94,7 +117,8 @@ export class ExamScheduleService {
   }
 
   private async assertPapers(exam: Exam, papers: SchedulePaperDto[]) {
-    const [session, classSubjects, rooms] = await Promise.all([
+    const dates = papers.map((p) => p.date).sort();
+    const [session, classSubjects, rooms, branch, events] = await Promise.all([
       this.prisma.academicSession.findUniqueOrThrow({
         where: { id: exam.sessionId },
       }),
@@ -106,15 +130,42 @@ export class ExamScheduleService {
         where: { branchId: exam.branchId, status: 'ACTIVE' },
         select: { id: true },
       }),
+      this.prisma.branch.findUniqueOrThrow({
+        where: { id: exam.branchId },
+        select: { workingDays: true, timings: true },
+      }),
+      dates.length === 0
+        ? Promise.resolve([])
+        : this.prisma.calendarEvent.findMany({
+            where: {
+              schoolId: exam.schoolId,
+              OR: [{ branchId: exam.branchId }, { branchId: null }],
+              type: { in: ['HOLIDAY', 'VACATION'] },
+              status: 'ACTIVE',
+              startDate: { lte: parseDate(dates[dates.length - 1]) },
+              endDate: { gte: parseDate(dates[0]) },
+            },
+            select: { startDate: true, endDate: true, title: true, type: true },
+          }),
     ]);
+    const hours = schoolHours(branch.timings);
     const problems = paperProblems(papers, {
       classIds: new Set(exam.classIds),
       classSubjects: new Set(classSubjects.map(paperKey)),
       roomIds: new Set(rooms.map((r) => r.id)),
       from: formatDate(session.startDate),
       to: formatDate(session.endDate),
+      workingDays: new Set(branch.workingDays),
+      offDays: events.map((e): OffDay => ({
+        from: formatDate(e.startDate),
+        to: formatDate(e.endDate),
+        title: e.title,
+        type: e.type === 'VACATION' ? 'VACATION' : 'HOLIDAY',
+      })),
+      ...hours,
     });
-    if (problems.length > 0) throw invalid('Invalid exam papers', { problems });
+    if (problems.length > 0)
+      throw invalid(problemsMessage(problems), { problems });
   }
 
   /** Same class or room at overlapping times, also against the branch's other exams. */

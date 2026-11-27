@@ -172,17 +172,25 @@ export class PdfBuilder {
     return this;
   }
 
+  /**
+   * Diagonal mark across the page. Drawn out of the text flow: the cursor is
+   * restored afterwards, so the content keeps its place on the same page.
+   */
   watermark(text: string): this {
     const { doc } = this;
+    const { x, y } = doc;
     doc.save();
     doc.rotate(-30, { origin: [doc.page.width / 2, doc.page.height / 2] });
     doc.font('Helvetica-Bold').fontSize(60).fillColor('#C9B8BE').opacity(0.35);
     doc.text(text, 0, doc.page.height / 2 - 30, {
       width: doc.page.width,
       align: 'center',
+      lineBreak: false,
     });
     doc.restore();
     doc.opacity(1);
+    doc.x = x;
+    doc.y = y;
     return this;
   }
 

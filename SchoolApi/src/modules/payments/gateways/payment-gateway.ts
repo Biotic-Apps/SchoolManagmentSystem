@@ -25,7 +25,11 @@ export interface GatewayInitiateResult {
 
 export interface PaymentGateway {
   readonly key: string;
-  initiate(invoice: Invoice): Promise<GatewayInitiateResult>;
+  /** `amountMinor`: what the parent pays now, i.e. the invoice's open balance (never the full total). */
+  initiate(
+    invoice: Invoice,
+    amountMinor: bigint,
+  ): Promise<GatewayInitiateResult>;
   /** `null` when the callback is not authentic or not a success. */
   verifyCallback(
     request: GatewayCallbackRequest,

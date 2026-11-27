@@ -14,6 +14,18 @@ import type {
 import { toQuestionDto } from './question-bank.mapper';
 import { QuestionsRepository } from './questions.repository';
 import { toJson } from '../../core/common/prisma-json';
+import { Prisma } from '../../generated/prisma/client';
+import { checkAnswer, type AnswerInput } from './question-rules';
+
+/** Applies the cross-field answer rules or throws 400 naming the field. */
+function validAnswer(input: AnswerInput) {
+  const check = checkAnswer(input);
+  if (!check.ok)
+    throw invalid(check.message, [
+      { field: check.field, message: check.message },
+    ]);
+  return check;
+}
 
 @Injectable()
 export class QuestionsService {
@@ -56,6 +68,7 @@ export class QuestionsService {
     if (!schoolClass || schoolClass.schoolId !== dto.schoolId)
       throw invalid('Class does not belong to this school');
 
+    const answer = validAnswer(dto);
     const row = await this.repository.create({
       schoolId: dto.schoolId,
       subjectId: dto.subjectId,
@@ -65,8 +78,8 @@ export class QuestionsService {
       difficultyLevel: dto.difficultyLevel,
       marks: dto.marks,
       questionText: dto.questionText.trim(),
-      options: dto.options ? toJson(dto.options) : undefined,
-      correctAnswer: dto.correctAnswer.trim(),
+      options: answer.options ? toJson(answer.options) : Prisma.DbNull,
+      correctAnswer: answer.correctAnswer,
       createdById: user.id,
     });
     return toQuestionDto(row);
@@ -81,6 +94,21 @@ export class QuestionsService {
     if (!existing || !scope.canManageSchool(existing.schoolId))
       throw notFound('Question');
 
+    const answerChanged =
+      dto.questionType !== undefined ||
+      dto.options !== undefined ||
+      dto.correctAnswer !== undefined;
+    const answer = answerChanged
+      ? validAnswer({
+          questionType: dto.questionType ?? existing.questionType,
+          options:
+            dto.options ??
+            (Array.isArray(existing.options)
+              ? (existing.options as string[])
+              : null),
+          correctAnswer: dto.correctAnswer ?? existing.correctAnswer,
+        })
+      : null;
     const row = await this.repository.update(id, {
       ...(dto.chapterName !== undefined && {
         chapterName: dto.chapterName.trim(),
@@ -93,9 +121,9 @@ export class QuestionsService {
       ...(dto.questionText !== undefined && {
         questionText: dto.questionText.trim(),
       }),
-      ...(dto.options !== undefined && { options: toJson(dto.options) }),
-      ...(dto.correctAnswer !== undefined && {
-        correctAnswer: dto.correctAnswer.trim(),
+      ...(answer && {
+        options: answer.options ? toJson(answer.options) : Prisma.DbNull,
+        correctAnswer: answer.correctAnswer,
       }),
       ...(dto.status !== undefined && { status: dto.status }),
     });

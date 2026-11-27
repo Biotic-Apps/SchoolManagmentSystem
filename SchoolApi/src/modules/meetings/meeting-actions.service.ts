@@ -17,6 +17,7 @@ import {
   type MeetingRow,
 } from './meeting.mapper';
 import { MeetingNotifier } from './meeting-notifier';
+import { assertMeetingStarted } from './meeting-times';
 import { MeetingsService } from './meetings.service';
 
 /** Cancel or withdraw a request (either party), complete and no-show (staff participant). */
@@ -76,6 +77,7 @@ export class MeetingActionsService {
     dto: CompleteMeetingDto,
   ): Promise<MeetingDto> {
     const row = await this.loadAsStaff(user, scope, id);
+    assertMeetingStarted(row);
     const followUps = dto.followUps ?? [];
     await this.assertOwners(followUps.map((f) => f.ownerUserId));
     const updated = await this.prisma.$transaction(async (tx) => {
@@ -124,6 +126,7 @@ export class MeetingActionsService {
     dto: MeetingReasonDto,
   ): Promise<MeetingDto> {
     const row = await this.loadAsStaff(user, scope, id);
+    assertMeetingStarted(row);
     const updated = await this.prisma.$transaction((tx) =>
       this.finish(tx, row, 'NO_SHOW', { reason: dto.reason?.trim() || null }),
     );

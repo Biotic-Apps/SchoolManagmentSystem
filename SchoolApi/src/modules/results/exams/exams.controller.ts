@@ -26,6 +26,7 @@ import {
   ExamDto,
   ExamQueryDto,
   ExamStatusDto,
+  ReopenMarksDto,
   UpdateExamDto,
 } from './dto/exam.dto';
 import { ScheduleExamDto } from './dto/schedule.dto';
@@ -104,5 +105,18 @@ export class ExamsController {
     @Body() body: ExamStatusDto,
   ): Promise<ExamDto> {
     return this.exams.setStatus(scope, id, body);
+  }
+
+  /** Reopen marks entry after closing (results not published); audited. */
+  @Post(':id/reopen-marks')
+  @HttpCode(200)
+  @RequirePermission('exams.publish')
+  @ApiData(ExamDto)
+  reopenMarks(
+    @CurrentScope() scope: Scope,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: ReopenMarksDto,
+  ): Promise<ExamDto> {
+    return this.exams.reopenMarks(scope, id, body);
   }
 }

@@ -38,7 +38,7 @@ export function ReceiveDialog({ order, lookups, onClose }: ReceiveDialogProps) {
           >
             <div className="flex flex-col gap-0.5">
               <span className="text-label font-medium text-fg">
-                {lookups.itemName(line.itemId, lineFor(line.itemId)?.item)}
+                {lookups.itemName(line.itemId, { name: lineFor(line.itemId)?.itemName })}
               </span>
               <span className="text-caption text-fg-muted">Outstanding: {line.outstanding}</span>
             </div>

@@ -4,6 +4,7 @@ import { AuditService } from '../../../core/audit/audit.service';
 import { AppError } from '../../../core/common/errors/app-error';
 import { ErrorCode } from '../../../core/common/errors/error-code.enum';
 import { conflict, invalid } from '../../../core/common/errors/errors';
+import { assertNotFuture, onSchoolDay } from '../../../core/common/time-checks';
 import type { AuthUser } from '../../../core/common/types/auth-user';
 import { NotificationService } from '../../../core/notifications/notification.service';
 import { PrismaService } from '../../../core/prisma/prisma.service';
@@ -61,9 +62,10 @@ export class DeparturesService {
         decision.reason,
       );
     }
-    if (dto.earlyLeaveId) await this.assertApprovedLeave(dto);
-
     const at = dto.at ? new Date(dto.at) : new Date();
+    assertNotFuture(at, 'Departure time');
+    if (dto.earlyLeaveId) await this.assertApprovedLeave(dto, at);
+
     const row = await this.prisma.$transaction(async (tx) => {
       if (dto.earlyLeaveId) {
         const moved = await tx.earlyLeave.updateMany({
@@ -185,7 +187,10 @@ export class DeparturesService {
     );
   }
 
-  private async assertApprovedLeave(dto: CreateDepartureDto): Promise<void> {
+  private async assertApprovedLeave(
+    dto: CreateDepartureDto,
+    at: Date,
+  ): Promise<void> {
     const leave = await this.prisma.earlyLeave.findUnique({
       where: { id: dto.earlyLeaveId },
     });
@@ -193,5 +198,7 @@ export class DeparturesService {
       throw invalid('Early leave does not belong to this student');
     if (leave.status !== 'APPROVED')
       throw conflict(`Early leave is ${leave.status.toLowerCase()}`);
+    if (!onSchoolDay(leave.date, at))
+      throw invalid('Early leave is for a different day');
   }
 }

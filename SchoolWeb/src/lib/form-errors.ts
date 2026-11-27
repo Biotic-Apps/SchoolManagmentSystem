@@ -24,8 +24,11 @@ function fromObject(value: Record<string, unknown>): Issue[] {
     const texts = typeof raw === "string" ? [raw] : Object.values(raw as object).map(String);
     return texts.map((message) => ({ field: String(field), message: sentence(message) }));
   }
+  // Only text is a message; numbers/ids (e.g. `{ differenceMinor: -49950 }`) are data for the screen.
   return Object.entries(value).flatMap(([key, entry]) =>
-    (Array.isArray(entry) ? entry : [entry]).map((message) => ({ field: key, message: sentence(String(message)) })),
+    (Array.isArray(entry) ? entry : [entry])
+      .filter((message): message is string => typeof message === "string")
+      .map((message) => ({ field: key, message: sentence(message) })),
   );
 }
 

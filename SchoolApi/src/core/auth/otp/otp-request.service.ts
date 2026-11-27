@@ -8,6 +8,7 @@ import { LoginCodeMailer } from './login-code-mailer';
 import { LoginOtpRepository } from './login-otp.repository';
 import {
   generateOtpCode,
+  OTP_LOCK_FAILURES,
   OTP_RESEND_SECONDS,
   OTP_TTL_MS,
   otpHashInput,
@@ -47,6 +48,10 @@ export class OtpRequestService {
   async request(rawEmail: string): Promise<OtpRequestResult> {
     const email = this.emails.normalize(rawEmail);
     if (!email || (await this.inCooldown(email))) return RESULT;
+    // Too many wrong codes recently: no new code until the window passes.
+    if ((await this.repository.recentFailures(email)) >= OTP_LOCK_FAILURES) {
+      return RESULT;
+    }
     const user = await this.emails.findParent(email);
     if (!user?.email || !(await this.twoFactorReady(user.id))) return RESULT;
 

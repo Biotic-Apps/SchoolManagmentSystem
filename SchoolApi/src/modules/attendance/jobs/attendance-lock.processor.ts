@@ -3,23 +3,26 @@ import {
   OnApplicationBootstrap,
   OnModuleInit,
 } from '@nestjs/common';
-import { formatDate } from '../../../core/common/dates';
+import { formatDate, parseDate } from '../../../core/common/dates';
 import type { JobProcessor } from '../../../core/jobs/job-processor';
 import { JobProcessorRegistry } from '../../../core/jobs/job-processor.registry';
 import { JobScheduler } from '../../../core/jobs/job-scheduler';
 import { QUEUES } from '../../../core/jobs/queues';
-import { today } from '../../../core/common/week';
+import { schoolDate } from '../../../core/common/school-time';
 import { NotificationService } from '../../../core/notifications/notification.service';
 import { PrismaService } from '../../../core/prisma/prisma.service';
-import { BranchSettingsReader } from '../../branches/settings/branch-settings.reader';
 import { BranchDailyJob } from '../../school-day/branch-daily-job';
 import { WorkingDayService } from '../../school-day/working-day.service';
+import { isPastLock, RegisterLockPolicy } from '../register-lock';
 
 export const ATTENDANCE_LOCK_JOB = 'attendance.lock';
 
 /**
- * At each branch's `attendance.lockTime`: locks submitted registers and tells
- * class teachers (and the principal) which sections are still unmarked.
+ * Every run: locks SUBMITTED registers of earlier days, and of today once the
+ * branch's `attendance.lockTime` passed (so a register submitted after the
+ * lock time is locked on the next run, not the next day). Once a day after
+ * the lock time it tells class teachers (and the principal) which sections
+ * are still unmarked.
  */
 @Injectable()
 export class AttendanceLockProcessor
@@ -33,7 +36,7 @@ export class AttendanceLockProcessor
     private readonly scheduler: JobScheduler,
     private readonly prisma: PrismaService,
     private readonly daily: BranchDailyJob,
-    private readonly settings: BranchSettingsReader,
+    private readonly lock: RegisterLockPolicy,
     private readonly workingDays: WorkingDayService,
     private readonly notifications: NotificationService,
   ) {}
@@ -50,19 +53,25 @@ export class AttendanceLockProcessor
     });
   }
 
-  async process(): Promise<void> {
-    const day = today();
+  process(): Promise<void> {
+    return this.run(new Date());
+  }
+
+  async run(now: Date): Promise<void> {
+    const day = parseDate(schoolDate(now));
     for (const branch of await this.daily.activeBranches()) {
-      const lockTime = await this.settings.get<string>(
-        branch.id,
-        'attendance.lockTime',
-      );
-      if (!(await this.daily.claim(branch.id, this.name, day, lockTime)))
-        continue;
+      const lockTime = await this.lock.lockTime(branch.id);
+      const todayLocked = isPastLock(day, lockTime, now);
       await this.prisma.attendanceRegister.updateMany({
-        where: { branchId: branch.id, status: 'SUBMITTED', date: { lte: day } },
+        where: {
+          branchId: branch.id,
+          status: 'SUBMITTED',
+          date: todayLocked ? { lte: day } : { lt: day },
+        },
         data: { status: 'LOCKED', lockedAt: new Date() },
       });
+      if (!(await this.daily.claim(branch.id, this.name, day, lockTime, now)))
+        continue;
       if (await this.workingDays.isWorkingDay(branch.id, day))
         await this.notifyUnmarked(branch.id, branch.principalUserId, day);
     }

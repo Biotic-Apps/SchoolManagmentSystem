@@ -14,6 +14,29 @@ export class BranchSettingsRepository {
     return Object.fromEntries(rows.map((row) => [row.key, row.value]));
   }
 
+  /**
+   * Mirrors `attendance.lockTime` into Branch.timings.attendanceLockAt (shown in the branch list and edit dialog),
+   * so the two never disagree. BranchesService.update syncs the other direction.
+   */
+  async syncTimingLock(
+    branchId: string,
+    lockAt: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
+    const db = tx ?? this.prisma;
+    const branch = await db.branch.findUnique({
+      where: { id: branchId },
+      select: { timings: true },
+    });
+    const timings = branch?.timings;
+    if (!timings || typeof timings !== 'object' || Array.isArray(timings))
+      return;
+    await db.branch.update({
+      where: { id: branchId },
+      data: { timings: toJson({ ...timings, attendanceLockAt: lockAt }) },
+    });
+  }
+
   /** Upserts every value; pass `tx` to join a caller's transaction. */
   async save(
     branchId: string,

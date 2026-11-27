@@ -5,6 +5,8 @@ export type NoticeStatus = "DRAFT" | "PENDING_REVIEW" | "PUBLISHED" | "EXPIRED";
 
 export interface NoticeAudience {
   schoolWide?: boolean;
+  /** School of a school-wide notice (input only; the super admin has no school of their own). */
+  schoolId?: string;
   branchIds?: string[];
   classIds?: string[];
   sectionIds?: string[];

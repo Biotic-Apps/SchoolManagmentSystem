@@ -30,6 +30,7 @@ export function Composer({ threadId }: { threadId: string }) {
           />
           <Button
             type="submit"
+            aria-label="Send message"
             loading={composer.submitting}
             disabled={!composer.canSend}
             className="h-10 w-10 shrink-0 rounded-full bg-primary p-0 text-on-primary"

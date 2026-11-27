@@ -10,6 +10,7 @@ import { TimetableCellsService } from './drafts/timetable-cells.service';
 import { TimetablePublisherService } from './drafts/timetable-publisher.service';
 import { OverridesController } from './overrides/overrides.controller';
 import { OverridesService } from './overrides/overrides.service';
+import { SubstitutionValidator } from './overrides/substitution-validator';
 import { BellScheduleController } from './periods/bell-schedule.controller';
 import { BellScheduleService } from './periods/bell-schedule.service';
 import { PeriodsInUse } from './periods/periods-in-use';
@@ -38,6 +39,7 @@ import { WeekViewService } from './week-view.service';
     BellScheduleService,
     TimetablesRepository,
     TimetableContextService,
+    SubstitutionValidator,
     ConflictService,
     TimetableViewService,
     CellValidator,

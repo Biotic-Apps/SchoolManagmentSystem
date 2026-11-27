@@ -3,7 +3,6 @@ import { AuditService } from '../../../core/audit/audit.service';
 import { forbiddenScope, notFound } from '../../../core/common/errors/errors';
 import type { AuthUser } from '../../../core/common/types/auth-user';
 import { PrismaService } from '../../../core/prisma/prisma.service';
-import { RoleKey } from '../../../core/rbac/role-key.enum';
 import type { Scope } from '../../../core/rbac/scope/scope';
 import { StudentPlacementService } from '../../school-day/student-placement.service';
 import type {
@@ -11,8 +10,9 @@ import type {
   HealthProfileInputDto,
 } from '../dto/health-profile.dto';
 import {
+  seesCareOnly,
+  toCareView,
   toHealthProfile,
-  toHelperView,
   toProfileColumns,
   toProfileData,
 } from './health-profile.mapper';
@@ -47,9 +47,7 @@ export class HealthProfileService {
       schoolId: placement.schoolId,
       branchId: placement.branchId,
     });
-    return user.activeRole === String(RoleKey.HELPER)
-      ? toHelperView(profile)
-      : profile;
+    return seesCareOnly(user.activeRole) ? toCareView(profile) : profile;
   }
 
   async replace(

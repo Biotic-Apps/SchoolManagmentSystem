@@ -41,7 +41,7 @@ function CloseDayForm({ branchId, date, expectedCashMinor, onOpenChange }: Close
       <MoneyField name="cashCounted" label="Cash counted" required />
       <DetailList
         items={[
-          { label: "Expected cash", value: <MoneyText amountMinor={expectedCashMinor} /> },
+          { label: "Expected cash (after cash refunds)", value: <MoneyText amountMinor={expectedCashMinor} /> },
           {
             label: "Difference",
             value: <MoneyText amountMinor={difference} className={`font-medium ${differenceTone}`} />,

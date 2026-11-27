@@ -61,7 +61,8 @@ export function useSectionOptions(branchId: string | null, sessionId: string | n
   const options: Option[] = sections.map((section) => ({ id: section.id, name: sectionLabel(section, !classId) }));
   const isFull = (id: string) => {
     const section = sections.find((item) => item.id === id);
-    return !!section && section.studentCount >= section.capacity;
+    // capacity null = no seat limit (sections made by the New school wizard start without one).
+    return !!section && section.capacity != null && section.studentCount >= section.capacity;
   };
   return { sections, options, isFull, isLoading: enabled && query.isLoading };
 }

@@ -23,7 +23,7 @@ export function BranchSettingsForm({ branchId, branchName, settings, onClose }: 
       open
       onOpenChange={(open) => !open && onClose()}
       title={`Settings — ${branchName}`}
-      description="Rules used by attendance, diary and messaging, and the bank details printed on fee challans."
+      description="Rules used by attendance, diary and messaging, the bank details printed on fee challans, and online fee payment."
       submitLabel="Save settings"
       submitting={submitting}
       onSubmit={submit}

@@ -43,9 +43,15 @@ export function toNumber(value: unknown): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+/**
+ * Up to 2 decimals, truncated (never rounded up): grades use floor(percent),
+ * so 79.99 must not read "80%" next to a B. Matches the report card PDF.
+ */
 export function formatPercent(value: unknown): string {
   const parsed = toNumber(value);
-  return parsed === null ? EMPTY_VALUE : `${Math.round(parsed * 10) / 10}%`;
+  if (parsed === null) return EMPTY_VALUE;
+  const hundredths = Math.trunc(Math.round(parsed * 1e6) / 1e4);
+  return `${hundredths / 100}%`;
 }
 
 export function formatMarks(value: unknown): string {

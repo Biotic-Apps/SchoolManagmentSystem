@@ -82,12 +82,19 @@ export function toRequestDto(
           poNo: row.order.poNo,
           vendor: row.order.vendor,
           status: row.order.status,
+          totalMinor: Number(row.order.totalMinor),
+          receivedTotalMinor: Number(receivedTotal(row.order.lines)),
+          expectedOn: row.order.expectedOn
+            ? formatDate(row.order.expectedOn)
+            : null,
           lines: row.order.lines.map((l) => ({
             itemId: l.itemId,
             itemName: (items.get(l.itemId) ?? UNKNOWN).name,
             orderedQty: l.quantity,
             receivedQty: l.receivedQty,
+            remainingQty: l.quantity - l.receivedQty,
             unitPriceMinor: Number(l.unitPriceMinor),
+            totalMinor: Number(lineTotal(l)),
           })),
         }
       : null,

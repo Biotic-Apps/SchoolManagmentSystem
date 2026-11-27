@@ -1,5 +1,11 @@
 import { IsInt, IsOptional, IsUUID, Max, Min } from 'class-validator';
 
+export class SiblingDiscountQueryDto {
+  @IsOptional()
+  @IsUUID()
+  schoolId?: string;
+}
+
 export class CreateSiblingDiscountDto {
   @IsUUID()
   schoolId!: string;

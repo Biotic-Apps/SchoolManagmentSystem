@@ -9,7 +9,12 @@ import { TokenService } from '../token.service';
 import { TwoFactorLoginService } from '../two-factor/two-factor-login.service';
 import { UserAccountRepository } from '../user-account.repository';
 import { LoginOtpRepository } from './login-otp.repository';
-import { normalizeOtpCode, otpHashInput, sameHash } from './otp-code';
+import {
+  normalizeOtpCode,
+  OTP_LOCK_FAILURES,
+  otpHashInput,
+  sameHash,
+} from './otp-code';
 import { ParentEmailService } from './parent-email.service';
 
 const MESSAGE = 'Invalid or expired code';
@@ -17,7 +22,9 @@ const rejected = () => new AppError(ErrorCode.INVALID_CREDENTIALS, MESSAGE);
 
 /**
  * `POST /auth/otp/verify`: email + code → the same LoginResult as the
- * password login. Wrong codes count toward the shared account lockout.
+ * password login. Wrong codes are limited per code (5 attempts) and per email
+ * (OTP_LOCK_FAILURES in the window), but never lock the account itself: a
+ * stranger who knows the email must not be able to block password sign-in.
  */
 @Injectable()
 export class OtpVerifyService {
@@ -38,7 +45,12 @@ export class OtpVerifyService {
     client: ClientInfo,
   ): Promise<LoginResultDto> {
     const email = this.emails.normalize(rawEmail);
-    const otp = email ? await this.repository.findUsable(email) : null;
+    if (!email) throw rejected();
+    // Same answer as a wrong code, so the lock reveals nothing about the email.
+    if ((await this.repository.recentFailures(email)) >= OTP_LOCK_FAILURES) {
+      throw rejected();
+    }
+    const otp = await this.repository.findUsable(email);
     if (!otp) throw rejected();
     const user = await this.users.findById(otp.userId);
     if (!user) throw rejected();
@@ -47,9 +59,7 @@ export class OtpVerifyService {
 
     const code = normalizeOtpCode(rawCode);
     const hash = code ? this.tokens.hash(otpHashInput(otp.id, code)) : null;
-    if (!sameHash(hash, otp.codeHash)) {
-      await this.lockout.registerFailure(user.id, MESSAGE);
-    }
+    if (!sameHash(hash, otp.codeHash)) throw rejected();
     if (!(await this.repository.consume(otp.id))) throw rejected();
     if (user.status === 'DISABLED') {
       throw new AppError(ErrorCode.ACCOUNT_DISABLED, 'Account is disabled');

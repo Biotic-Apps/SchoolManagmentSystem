@@ -1,6 +1,6 @@
 import type { Prisma } from '../../../generated/prisma/client';
 import { formatDate } from '../../../core/common/dates';
-import { balanceOf } from '../../finance-core/invoice-state';
+import { shownBalanceOf } from '../../finance-core/invoice-state';
 import { fullName } from '../../students/student.mapper';
 import type { InvoiceDto } from './dto/invoice.dto';
 
@@ -60,7 +60,7 @@ export function toInvoiceDto(
     lateFeeMinor: Number(row.lateFeeMinor),
     totalMinor: Number(row.totalMinor),
     paidMinor: Number(row.paidMinor),
-    balanceMinor: Number(balanceOf(row)),
+    balanceMinor: Number(shownBalanceOf(row)),
     payments: row.allocations.map((a) => ({
       paymentId: a.payment.id,
       receiptNo: a.payment.receiptNo,

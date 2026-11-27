@@ -5,7 +5,7 @@ import type { MyStaffAttendance } from "@/features/attendance/types";
 import { EMPTY_VALUE, formatDate } from "@/lib/format";
 import { formatTime } from "@/lib/time";
 
-type Day = MyStaffAttendance["entries"][number];
+type Day = MyStaffAttendance["records"][number];
 
 const weekday = new Intl.DateTimeFormat("en-PK", { weekday: "short" });
 

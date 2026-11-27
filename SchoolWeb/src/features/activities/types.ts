@@ -33,7 +33,6 @@ export interface Activity {
   maxParticipants: number | null;
   status: ActivityStatus;
   proposedBy?: PersonRef | null;
-  comment?: string | null;
   /** Rejection or cancellation reason. */
   reason?: string | null;
   createdAt?: string;
@@ -65,11 +64,11 @@ export interface ConsentCounts {
   pending: number;
   granted: number;
   declined: number;
-  total?: number;
 }
 
+/** GET /activities/:id/consents */
 export interface ConsentList {
-  consents: ConsentRow[];
+  items: ConsentRow[];
   counts: ConsentCounts;
 }
 
@@ -84,5 +83,5 @@ export interface Participant {
 
 /** GET /activities/mine — upcoming activities for the child, with the consent state when asked. */
 export interface MyActivity extends Activity {
-  consentStatus?: ConsentStatus | null;
+  myConsent?: ConsentStatus | null;
 }

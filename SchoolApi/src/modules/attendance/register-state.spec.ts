@@ -33,4 +33,15 @@ describe('checkRegisterAction', () => {
       'PENDING_REVIEW',
     );
   });
+
+  it('treats a submitted register as locked once the lock time passed', () => {
+    expect(checkRegisterAction(submitted, 'SUBMIT', 'teacher', true)).toBe(
+      'LOCKED',
+    );
+    expect(checkRegisterAction(submitted, 'SAVE_DRAFT', 'other', true)).toBe(
+      'LOCKED',
+    );
+    const draft = { status: 'DRAFT' as const, submittedById: null };
+    expect(checkRegisterAction(draft, 'SUBMIT', 'u', true)).toBe('OK');
+  });
 });

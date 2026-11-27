@@ -40,7 +40,14 @@ export function ApplicationFormDialog({ item, context, classOptions, onClose, on
       size="xl"
     >
       <FormSection title="Class">
-        <SelectField name="classId" label="Class applying for" options={classOptions} required className="sm:w-80" />
+        <SelectField
+          name="classId"
+          label="Class applying for"
+          options={classOptions}
+          required
+          disabled={!!item}
+          className="sm:w-80"
+        />
       </FormSection>
       <FormSection title="Child">
         <ChildFields prefix="child" />

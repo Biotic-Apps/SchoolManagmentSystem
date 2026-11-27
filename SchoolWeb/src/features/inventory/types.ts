@@ -92,24 +92,27 @@ export interface PurchaseRequestLine {
   estimatedUnitMinor: number;
 }
 
+/** API OrderSummaryLineDto / OrderLineDto (SchoolApi inventory/dto/purchasing.dto.ts). */
 export interface PurchaseOrderLine {
   itemId: string;
-  item?: Pick<InventoryItem, "id" | "name"> | null;
-  quantity: number;
-  receivedQuantity?: number;
-  receivedQty?: number;
+  itemName?: string;
+  orderedQty: number;
+  receivedQty: number;
+  remainingQty?: number;
   unitPriceMinor: number;
+  totalMinor?: number;
 }
 
+/** The purchase order as embedded in a purchase request (OrderSummaryDto). */
 export interface PurchaseOrder {
   id: string;
   poNo: string;
   status: PurchaseOrderStatus;
-  vendorId?: string;
   vendor?: { id: string; name: string } | null;
   expectedOn?: string | null;
   totalMinor?: number;
-  expenseId?: string | null;
+  /** Σ received × unit price: what the vendor bill will claim. */
+  receivedTotalMinor?: number;
   lines: PurchaseOrderLine[];
 }
 

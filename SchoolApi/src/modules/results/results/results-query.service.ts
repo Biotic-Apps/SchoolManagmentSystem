@@ -33,8 +33,10 @@ export class ResultsQueryService {
     const where: Prisma.ExamResultWhereInput = {
       examId: exam.id,
       sectionId: query.sectionId,
+      studentId: query.studentId,
     };
-    if (scope.guardian) where.studentId = { in: [...scope.studentIds] };
+    if (scope.guardian)
+      where.AND = [{ studentId: { in: [...scope.studentIds] } }];
     else if (!this.exams.canManage(scope, exam))
       where.AND = [{ sectionId: { in: [...scope.sectionIds] } }];
     const rows = await this.prisma.examResult.findMany({ where });

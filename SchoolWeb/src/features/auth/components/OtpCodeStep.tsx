@@ -18,7 +18,7 @@ export function OtpCodeStep({ otp, onChallenge }: OtpCodeStepProps) {
   const waiting = otp.secondsLeft > 0;
 
   return (
-    <form onSubmit={submit} noValidate className="flex flex-col gap-5">
+    <form method="post" onSubmit={submit} noValidate className="flex flex-col gap-5">
       <p className="text-label text-fg-muted">
         If <span className="font-medium text-fg">{otp.email}</span> is on a parent account at the school, we have
         emailed it a 6-digit code that works for 5 minutes. Nothing after a minute? Check spam, or ask the school

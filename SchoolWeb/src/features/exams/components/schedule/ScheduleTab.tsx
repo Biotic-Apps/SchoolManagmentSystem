@@ -15,7 +15,7 @@ export function ScheduleTab({ exam }: { exam: Exam }) {
   useReportUnsaved(editor.dirty);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex min-w-0 flex-col gap-6">
       <InlineNotice>{editor.notice}</InlineNotice>
       {editor.feedback.general.length > 0 && (
         <InlineNotice tone="error">

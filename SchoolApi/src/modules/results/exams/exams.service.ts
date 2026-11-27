@@ -13,12 +13,15 @@ import { NotificationService } from '../../../core/notifications/notification.se
 import { PrismaService } from '../../../core/prisma/prisma.service';
 import type { Scope } from '../../../core/rbac/scope/scope';
 import { assertSessionOpen } from '../../academic-sessions/session-lock';
+import { reopenProblem } from '../mark-sheets/sheet-review-rules';
+import { ExamReadinessService } from '../results/exam-readiness.service';
 import { ExamAccessService } from '../shared/exam-access.service';
 import type {
   CreateExamDto,
   ExamDto,
   ExamQueryDto,
   ExamStatusDto,
+  ReopenMarksDto,
   UpdateExamDto,
 } from './dto/exam.dto';
 import { ExamRefsService } from './exam-refs.service';
@@ -40,6 +43,7 @@ export class ExamsService {
     private readonly refs: ExamRefsService,
     private readonly notifications: NotificationService,
     private readonly audit: AuditService,
+    private readonly readiness: ExamReadinessService,
   ) {}
 
   async list(scope: Scope, query: ExamQueryDto): Promise<PageResult<ExamDto>> {
@@ -163,6 +167,8 @@ export class ExamsService {
     const from = dto.status === 'MARKS_OPEN' ? 'SCHEDULED' : 'MARKS_OPEN';
     if (exam.status !== from)
       throw conflict(`${dto.status} is only allowed from ${from}`);
+    // Closing ends marks entry: every sheet accepted and no pending rows.
+    if (dto.status === 'MARKS_CLOSED') await this.readiness.assertReady(id);
     await this.prisma.exam.update({
       where: { id },
       data: { status: dto.status, version: { increment: 1 } },
@@ -180,7 +186,54 @@ export class ExamsService {
     return this.mapper.withPapers(id);
   }
 
-  private async notifyTeachers(examId: string, name: string) {
+  /**
+   * MARKS_CLOSED | RESULTS_APPROVED → MARKS_OPEN while results are not
+   * published (recovers a sheet accepted with a missing student). Clears the
+   * results approval; results must be computed and approved again. Audited
+   * with the reason.
+   */
+  async reopenMarks(
+    scope: Scope,
+    id: string,
+    dto: ReopenMarksDto,
+  ): Promise<ExamDto> {
+    const exam = await this.access.manage(scope, id);
+    const approvalPending = exam.approvalId
+      ? (await this.prisma.approvalRequest.count({
+          where: { id: exam.approvalId, status: 'PENDING' },
+        })) > 0
+      : false;
+    const problem = reopenProblem(exam.status, approvalPending);
+    if (problem) throw conflict(problem);
+    const reason = dto.reason.trim();
+    const updated = await this.prisma.exam.updateMany({
+      where: { id, version: exam.version },
+      data: {
+        status: 'MARKS_OPEN',
+        approvalId: null,
+        version: { increment: 1 },
+      },
+    });
+    if (updated.count === 0)
+      throw conflict('The exam changed meanwhile; reload and try again');
+    this.audit.stage({
+      action: 'exam.reopen_marks',
+      entityType: 'Exam',
+      entityId: id,
+      schoolId: exam.schoolId,
+      branchId: exam.branchId,
+      before: { status: exam.status, approvalId: exam.approvalId },
+      after: { status: 'MARKS_OPEN', reason },
+    });
+    await this.notifyTeachers(id, exam.name, 'Marks entry reopened');
+    return this.mapper.withPapers(id);
+  }
+
+  private async notifyTeachers(
+    examId: string,
+    name: string,
+    title = 'Marks entry open',
+  ) {
     const sheets = await this.prisma.markSheet.findMany({
       where: { examId, teacherStaffId: { not: null } },
       select: { teacherStaffId: true },
@@ -193,7 +246,7 @@ export class ExamsService {
     await this.notifications.notify({
       userIds: staff.map((s) => s.userId).filter((v): v is string => !!v),
       category: 'EXAM',
-      title: 'Marks entry open',
+      title,
       body: `Marks entry is open for ${name}.`,
       data: { examId },
     });

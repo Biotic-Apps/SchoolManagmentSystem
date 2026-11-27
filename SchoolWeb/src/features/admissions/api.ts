@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { omit } from "@/lib/omit";
 import { withRowFlash } from "@/lib/row-highlight";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import type {
@@ -80,7 +81,7 @@ export function useSaveApplication() {
     mutationFn: withRowFlash(
       async ({ id, input }: { id?: string; input: ApplicationInput }) =>
         (id
-          ? await http.patch<Application>(`/admissions/applications/${id}`, input)
+          ? await http.patch<Application>(`/admissions/applications/${id}`, omit(input, ["branchId", "sessionId", "classId"]))
           : await http.post<Application>("/admissions/applications", input)
         ).data,
       (row, vars) => vars.id ?? row.id,

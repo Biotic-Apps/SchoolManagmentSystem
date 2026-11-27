@@ -13,7 +13,12 @@ import { BuiltForPakistan } from "@/components/site/sections/BuiltForPakistan";
 import { Trust } from "@/components/site/sections/Trust";
 import { Faq } from "@/components/site/sections/Faq";
 import { CtaBand } from "@/components/site/sections/CtaBand";
+import type { Metadata } from "next";
 import { JsonLd, faqSchema, organisationSchema, softwareSchema } from "@/lib/site/schema";
+import { SITE } from "@/lib/site/content";
+
+// `absolute`: the root layout's "%s · eSchool" template would otherwise repeat the product name.
+export const metadata: Metadata = { title: { absolute: `${SITE.name} | ${SITE.tagline}` } };
 
 export default function HomePage() {
   return (

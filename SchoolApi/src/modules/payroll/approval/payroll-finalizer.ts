@@ -3,6 +3,7 @@ import type { ApprovalRequest, Prisma } from '../../../generated/prisma/client';
 import { AuditService } from '../../../core/audit/audit.service';
 import { JobDispatcher } from '../../../core/jobs/job-dispatcher';
 import { QUEUES } from '../../../core/jobs/queues';
+import { carryForwards } from '../calculation/carry-forward';
 import { parseLineDetail } from '../calculation/line-detail';
 import {
   PAYROLL_PAYSLIPS_JOB,
@@ -27,7 +28,7 @@ export class PayrollFinalizer {
     if (!run || run.status !== 'REVIEWED') return false;
     const lines = await tx.payrollLine.findMany({
       where: { runId },
-      select: { approvalId: true, detail: true },
+      select: { approvalId: true, detail: true, staffId: true },
     });
     const approvalIds = [...new Set(lines.map((l) => l.approvalId))];
     if (lines.length === 0 || approvalIds.includes(null)) return false;
@@ -65,6 +66,15 @@ export class PayrollFinalizer {
       where: { id: { in: adjustmentIds }, status: 'PENDING' },
       data: { status: 'APPLIED', runId: run.id },
     });
+    // Recoveries larger than a month's pay continue next month (never dropped).
+    const carried = carryForwards(
+      run,
+      lines,
+      step?.decidedById ?? run.createdById,
+    );
+    if (carried.length > 0) {
+      await tx.payrollAdjustment.createMany({ data: carried });
+    }
     // Paid overtime is tied to the run so it is never paid twice.
     await tx.payrollOvertime.updateMany({
       where: {
@@ -84,7 +94,15 @@ export class PayrollFinalizer {
       branchId: run.branchId,
       actorId: step?.decidedById ?? undefined,
       before: { status: run.status },
-      after: { status: 'APPROVED', adjustmentsApplied: adjustmentIds.length },
+      after: {
+        status: 'APPROVED',
+        adjustmentsApplied: adjustmentIds.length,
+        carriedForward: carried.map((c) => ({
+          staffId: c.staffId,
+          month: c.month,
+          amountMinor: Number(c.amountMinor),
+        })),
+      },
     });
     // The processor waits until this transaction is visible.
     await this.jobs.dispatch<PayrollPayslipsInput>(

@@ -15,7 +15,11 @@ import type { PayrollRunDto } from '../runs/dto/run.dto';
 import { PAYABLE_STATUSES } from '../runs/run-status';
 import { RunViewService } from '../runs/run-view.service';
 import type { CreatePayrollPaymentDto } from './dto/payroll-payment.dto';
-import { lineStatusOf, runStatusAfterPayment } from './line-payment';
+import {
+  assertNotOwnSalary,
+  lineStatusOf,
+  runStatusAfterPayment,
+} from './line-payment';
 
 /** Salary disbursements against approved lines (partial allowed). */
 @Injectable()
@@ -38,6 +42,11 @@ export class PayrollPaymentsService {
       throw invalid('paidOn cannot be in the future');
     }
     const amount = BigInt(dto.amountMinor);
+    const payee = await this.prisma.staff.findUnique({
+      where: { id: dto.staffId },
+      select: { userId: true },
+    });
+    assertNotOwnSalary(payee?.userId, user.id);
 
     const result = await this.prisma.$transaction(async (tx) => {
       // Serialises payments of one run (line totals and run status).

@@ -16,16 +16,24 @@ import { AudienceBuilder } from "./AudienceBuilder";
 
 interface NoticeComposeDialogProps {
   notice: Notice | null;
+  schoolId: string | null;
   branchId: string | null;
   audienceOptions: AudienceOptions;
   canPublish: boolean;
   onClose: () => void;
 }
 
-export function NoticeComposeDialog({ notice, branchId, audienceOptions, canPublish, onClose }: NoticeComposeDialogProps) {
+export function NoticeComposeDialog({
+  notice,
+  schoolId,
+  branchId,
+  audienceOptions,
+  canPublish,
+  onClose,
+}: NoticeComposeDialogProps) {
   const { form, formError, submitting, saveDraft, saveAndPublish, pendingAction } = useNoticeForm(
     notice,
-    branchId,
+    { schoolId, branchId },
     onClose,
   );
 

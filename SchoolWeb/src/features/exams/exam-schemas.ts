@@ -22,7 +22,7 @@ export function examDefaults(exam: Exam | null): ExamFormValues {
   return {
     name: exam?.name ?? "",
     type: exam?.type ?? "",
-    gradingSchemeId: exam?.gradingSchemeId ?? "",
+    gradingSchemeId: exam?.gradingScheme?.id ?? "",
     termId: exam?.termId ?? "",
     weightPercent: exam?.weightPercent != null ? String(exam.weightPercent) : "",
     classIds: exam?.classIds ?? exam?.classes?.map((item) => item.id) ?? [],

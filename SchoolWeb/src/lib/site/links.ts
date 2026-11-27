@@ -34,7 +34,8 @@ export const MAKER = {
  * or crawlers and share cards will follow URLs that host does not serve.
  */
 export const SITE_ORIGIN =
-  process.env.NEXT_PUBLIC_SITE_ORIGIN ??
+  // `||`, not `??`: the Docker build passes an empty build arg when the origin is not configured.
+  process.env.NEXT_PUBLIC_SITE_ORIGIN ||
   "https://eschool-web-s9tq.onrender.com";
 
 /**

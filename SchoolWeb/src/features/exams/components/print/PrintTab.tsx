@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { CalendarDays, ClipboardList, FileText } from "lucide-react";
+import { useCan } from "@/features/auth/use-can";
 import { OptionSelect, type Option } from "@/components/shared/OptionSelect";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useReportCardTemplates } from "../../report-card-templates/templates-api";
@@ -11,6 +13,7 @@ import { PrintActionCard } from "./PrintActionCard";
 /** Bulk PDFs of an exam: report cards, date sheet and blank award lists. */
 export function PrintTab({ exam }: { exam: Exam }) {
   const tab = usePrintTab(exam);
+  const can = useCan();
   const templatesQuery = useReportCardTemplates({ branchId: exam.branchId });
   const templateOptions: Option[] = [
     { id: "", name: "Default template" },
@@ -36,6 +39,11 @@ export function PrintTab({ exam }: { exam: Exam }) {
         <OptionSelect label="Print for" options={tab.sectionTargets} value={tab.cards.target} onChange={tab.cards.setTarget} />
         {templateOptions.length > 1 && (
           <OptionSelect label="Template" options={templateOptions} value={tab.cards.templateId} onChange={tab.cards.setTemplateId} />
+        )}
+        {can("exams.approve") && (
+          <Link href="/exams/report-card-templates" className="text-label font-medium text-primary hover:underline">
+            Manage report card templates
+          </Link>
         )}
       </PrintActionCard>
       <PrintActionCard

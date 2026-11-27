@@ -9,6 +9,7 @@ name: Deploy
 #             SSH_KEY           private key of the deploy key pair (its .pub is in the server's authorized_keys)
 #             SSH_KNOWN_HOSTS   output of `ssh-keyscan <host>` taken once from a trusted machine
 #   variables API_DOMAIN        e.g. api.futurelearning.duckdns.org (compiled into the web bundle)
+#             APP_DOMAIN        e.g. futurelearning.duckdns.org (canonical URL / og:image of the public site)
 #             WEB_IDLE_TIMEOUT_MINUTES (optional, default 30)
 #             WEB_ASSET_ORIGINS        (optional)
 
@@ -78,6 +79,7 @@ jobs:
             NEXT_PUBLIC_API_URL=https://${{ vars.API_DOMAIN }}/api/v1
             NEXT_PUBLIC_IDLE_TIMEOUT_MINUTES=${{ vars.WEB_IDLE_TIMEOUT_MINUTES || '30' }}
             NEXT_PUBLIC_ASSET_ORIGINS=${{ vars.WEB_ASSET_ORIGINS }}
+            NEXT_PUBLIC_SITE_ORIGIN=${{ vars.APP_DOMAIN && format('https://{0}', vars.APP_DOMAIN) || '' }}
           cache-from: type=gha,scope=${{ matrix.app }}
           cache-to: type=gha,mode=max,scope=${{ matrix.app }}
 

@@ -11,6 +11,7 @@ import {
   NoticeOverseers,
   type OverseenNotice,
 } from './notice-overseers.service';
+import { assertNotExpired } from './notice-expiry';
 import { NoticePublisher } from './notice-publisher.service';
 import { NoticesService } from './notices.service';
 
@@ -30,6 +31,7 @@ export class NoticeWorkflowService {
     const notice = await this.notices.load(user, id);
     if (notice.status !== 'DRAFT')
       throw conflict(`Notice is ${notice.status}; only DRAFT can be published`);
+    assertNotExpired(notice.expiresOn);
     const publisher =
       user.permissions.has('notices.publish') &&
       this.notices.canManage(scope, notice);

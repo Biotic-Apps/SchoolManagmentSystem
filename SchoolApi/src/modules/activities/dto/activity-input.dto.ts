@@ -17,6 +17,7 @@ import {
 import { ActivityStatus, ActivityType } from '../../../generated/prisma/client';
 import { PaginationQueryDto } from '../../../core/common/pagination/pagination-query.dto';
 import { IsOptionalDateOnly } from '../../../core/common/validation/is-date-only';
+import { Trim } from '../../../core/common/validation/trim';
 
 export class ActivityAudienceInputDto {
   @IsOptional()
@@ -41,6 +42,7 @@ export class UpdateActivityDto {
   @IsIn(Object.values(ActivityType))
   type?: ActivityType;
 
+  @Trim()
   @IsOptional()
   @IsString()
   @MinLength(1)
@@ -95,6 +97,7 @@ export class CreateActivityDto {
   @IsIn(Object.values(ActivityType))
   type!: ActivityType;
 
+  @Trim()
   @IsString()
   @MinLength(1)
   @MaxLength(200)

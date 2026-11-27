@@ -11,7 +11,7 @@ export const documentKeys = {
 export function useDocuments(ownerType: DocumentOwnerType, ownerId: string | null) {
   return useQuery({
     queryKey: documentKeys.owner(ownerType, ownerId ?? ""),
-    queryFn: async () => (await http.get<SchoolDocument[]>("/documents", { ownerType, ownerId, pageSize: 100 })).data,
+    queryFn: async () => (await http.get<SchoolDocument[]>("/documents", { ownerType, ownerId })).data,
     enabled: !!ownerId,
   });
 }

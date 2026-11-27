@@ -217,9 +217,9 @@ describe('DEFAULT_ROLE_PERMISSIONS', () => {
     const head = [...permissionsOf(RoleKey.HEAD_TEACHER)];
     expect(head.filter((p) => p.startsWith('payroll.'))).toEqual([]);
     expect(head).toContain('self.payroll.view');
-    // Coordinator gains payroll only; every other module matches the head teacher.
+    // Coordinator gains payroll and the question bank (navigation.md); every other module matches the head teacher.
     const coordinatorOther = [...permissionsOf(RoleKey.COORDINATOR)].filter(
-      (p) => !p.startsWith('payroll.'),
+      (p) => !p.startsWith('payroll.') && !p.startsWith('questions.'),
     );
     expect(coordinatorOther.sort()).toEqual([...head].sort());
     expect(permissionsOf(RoleKey.ACCOUNTANT).has('payroll.approve')).toBe(

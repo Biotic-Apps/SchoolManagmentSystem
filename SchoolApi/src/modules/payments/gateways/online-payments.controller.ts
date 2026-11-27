@@ -36,7 +36,7 @@ export class OnlinePaymentsController {
     @CurrentScope() scope: Scope,
     @Body() body: InitiateOnlineDto,
   ): Promise<InitiateOnlineResultDto> {
-    return this.online.initiate(scope, body.invoiceId);
+    return this.online.initiate(scope, body.invoiceId, body.gateway);
   }
 
   /** Called by the gateway; the adapter verifies the signature. */

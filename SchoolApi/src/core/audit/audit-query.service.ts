@@ -30,6 +30,8 @@ export class AuditQueryService {
       onBehalfOf: row.onBehalfOfStaffId,
       before: row.before,
       after: row.after,
+      ip: row.ip,
+      userAgent: row.userAgent,
       at: row.at.toISOString(),
     }));
     return toPageResult(items, total, query);

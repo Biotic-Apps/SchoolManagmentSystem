@@ -20,13 +20,21 @@ export class OrderSummaryLineDto {
   itemName!: string;
   orderedQty!: number;
   receivedQty!: number;
+  remainingQty!: number;
   unitPriceMinor!: number;
+  /** orderedQty × unitPriceMinor. */
+  totalMinor!: number;
 }
 
 export class OrderSummaryDto {
   id!: string;
   poNo!: string;
   vendor!: IdNameDto;
+  /** Σ ordered quantity × unit price. */
+  totalMinor!: number;
+  /** Σ received quantity × unit price: what a vendor bill may claim. */
+  receivedTotalMinor!: number;
+  expectedOn!: string | null;
   lines!: OrderSummaryLineDto[];
   @ApiProperty({ enum: PurchaseOrderStatus })
   status!: PurchaseOrderStatus;

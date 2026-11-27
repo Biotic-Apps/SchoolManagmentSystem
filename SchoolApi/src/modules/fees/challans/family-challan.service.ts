@@ -31,8 +31,10 @@ export class FamilyChallanService {
     const studentIds = links.map((l) => l.studentId);
     if (studentIds.length === 0)
       throw invalid('Guardian has no linked students');
+    // A parent may only print their own family's challan: another guardian's id must look like it does not exist.
+    for (const studentId of studentIds) scope.assertGuardianStudent(studentId);
 
-    return this.generateFamilyPdf(studentIds, branchId, guardian.name);
+    return this.generateFamilyPdf(scope, studentIds, branchId, guardian.name);
   }
 
   /** Generate a combined challan PDF for specific student IDs. */
@@ -42,10 +44,13 @@ export class FamilyChallanService {
     branchId: string,
   ): Promise<{ buffer: Buffer; fileName: string; pages: number }> {
     if (studentIds.length === 0) throw invalid('No students specified');
-    return this.generateFamilyPdf(studentIds, branchId, 'family');
+    // Parents: only their own children (404 otherwise, security.md §2.5).
+    for (const studentId of studentIds) scope.assertGuardianStudent(studentId);
+    return this.generateFamilyPdf(scope, studentIds, branchId, 'family');
   }
 
   private async generateFamilyPdf(
+    scope: Scope,
     studentIds: string[],
     branchId: string,
     label: string,
@@ -55,6 +60,8 @@ export class FamilyChallanService {
         studentId: { in: studentIds },
         branchId,
         status: { in: OPEN_STATUSES },
+        // Staff: only invoices of schools/branches in their scope.
+        ...scope.branchFilter(),
       },
       select: { id: true },
       orderBy: [{ studentId: 'asc' }, { dueDate: 'asc' }],

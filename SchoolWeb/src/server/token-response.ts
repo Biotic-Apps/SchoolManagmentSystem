@@ -45,11 +45,12 @@ export function errorResponse(status: number, code: string, message: string, cle
   return response;
 }
 
-export function upstreamError({ status, payload }: UpstreamResult, clearCookies = false): NextResponse {
+export function upstreamError({ status, payload, retryAfter }: UpstreamResult, clearCookies = false): NextResponse {
   const body = (payload as { error?: unknown } | null)?.error
     ? payload
     : { error: { code: "HTTP_ERROR", message: `Request failed (${status}).` } };
-  const response = NextResponse.json(body, { status: status >= 400 ? status : 502, headers: NO_STORE });
+  const headers = retryAfter ? { ...NO_STORE, "Retry-After": retryAfter } : NO_STORE;
+  const response = NextResponse.json(body, { status: status >= 400 ? status : 502, headers });
   if (clearCookies) clearSessionCookies(response);
   return response;
 }

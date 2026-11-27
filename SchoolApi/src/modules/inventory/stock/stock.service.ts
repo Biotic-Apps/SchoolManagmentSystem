@@ -22,6 +22,7 @@ import {
   toMovementDto,
 } from './movement.mapper';
 import { StockLedger } from './stock-ledger';
+import { isLowStock } from './stock-rules';
 
 const DAY_MS = 86_400_000;
 
@@ -49,7 +50,7 @@ export class StockService {
         item,
         quantity,
         reorderLevel,
-        lowStock: quantity <= reorderLevel,
+        lowStock: isLowStock(quantity, reorderLevel),
       };
     });
   }

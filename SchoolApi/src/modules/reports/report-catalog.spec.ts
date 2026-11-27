@@ -39,4 +39,22 @@ describe('report catalog', () => {
     expect(findReport('fees.aging')?.permission).toBe('fees.view');
     expect(findReport('nope')).toBeUndefined();
   });
+
+  it('labels every param and names the picker of every uuid param', () => {
+    for (const report of REPORTS) {
+      for (const param of report.params) {
+        expect(param.label.trim()).not.toBe('');
+        if (param.type === 'uuid') expect(param.picker).toBeDefined();
+      }
+    }
+    expect(findReport('fees.aging')?.params[0]).toEqual({
+      name: 'branchId',
+      type: 'uuid',
+      required: true,
+      label: 'Branch',
+      picker: 'branch',
+    });
+    expect(findReport('branch.comparison')?.params[0].picker).toBe('school');
+    expect(findReport('results.analysis')?.params[0].picker).toBe('exam');
+  });
 });

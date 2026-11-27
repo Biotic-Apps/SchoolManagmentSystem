@@ -12,6 +12,7 @@ import {
   toSkipTake,
 } from '../../../core/common/pagination/paginate';
 import type { PageResult } from '../../../core/common/pagination/page-result';
+import { assertNotFuture } from '../../../core/common/time-checks';
 import type { AuthUser } from '../../../core/common/types/auth-user';
 import { FileRefService } from '../../../core/files/file-ref.service';
 import { NotificationService } from '../../../core/notifications/notification.service';
@@ -50,6 +51,7 @@ export class IncidentsService {
     dto: CreateIncidentDto,
   ): Promise<IncidentDto> {
     if (scope.guardian) throw forbidden('Only staff report incidents');
+    assertNotFuture(new Date(dto.occurredAt), 'Incident time');
     const placement = await this.placements.read(scope, dto.studentId);
     const fileIds = [...new Set(dto.attachmentFileIds ?? [])];
     for (const fileId of fileIds) {

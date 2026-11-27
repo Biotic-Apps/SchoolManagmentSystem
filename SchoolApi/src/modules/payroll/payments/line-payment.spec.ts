@@ -1,4 +1,9 @@
-import { lineStatusOf, runStatusAfterPayment } from './line-payment';
+import { ErrorCode } from '../../../core/common/errors/error-code.enum';
+import {
+  assertNotOwnSalary,
+  lineStatusOf,
+  runStatusAfterPayment,
+} from './line-payment';
 
 describe('salary payment status', () => {
   it('derives line status from paid vs net', () => {
@@ -13,5 +18,22 @@ describe('salary payment status', () => {
       'PARTIALLY_PAID',
     );
     expect(runStatusAfterPayment(['PAID', 'PAID'])).toBe('PAID');
+  });
+});
+
+describe('assertNotOwnSalary', () => {
+  it('refuses a payment of the actor’s own salary (403)', () => {
+    let error: unknown;
+    try {
+      assertNotOwnSalary('user-1', 'user-1');
+    } catch (caught) {
+      error = caught;
+    }
+    expect(error).toMatchObject({ code: ErrorCode.FORBIDDEN });
+  });
+
+  it('allows other staff and staff without a login', () => {
+    expect(() => assertNotOwnSalary('user-2', 'user-1')).not.toThrow();
+    expect(() => assertNotOwnSalary(null, 'user-1')).not.toThrow();
   });
 });

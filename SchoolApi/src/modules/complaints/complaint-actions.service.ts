@@ -69,6 +69,9 @@ export class ComplaintActionsService {
       select: { id: true, name: true },
     });
     if (!assignee) throw notFound('User');
+    const sameAssignee = row.assigneeId === assignee.id;
+    // Re-assigning to the current assignee changes nothing: no timeline entry, no duplicate notices.
+    if (sameAssignee && row.status === 'ASSIGNED') return;
     const updated = await this.transition(row, {
       actorId: user.id,
       status: 'ASSIGNED',
@@ -80,7 +83,9 @@ export class ComplaintActionsService {
       assigneeId: assignee.id,
     });
     await this.notifier.statusChanged(updated, 'ASSIGNED', user.id);
-    await this.notifier.assigned(updated, assignee.id, user.id);
+    if (!sameAssignee) {
+      await this.notifier.assigned(updated, assignee.id, user.id);
+    }
   }
 
   async addUpdate(

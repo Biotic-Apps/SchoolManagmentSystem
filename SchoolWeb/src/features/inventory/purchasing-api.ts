@@ -52,5 +52,7 @@ export function useBillOrder(orderId: string) {
     mutationFn: () => http.post<unknown>(`/purchase-orders/${orderId}/bill`),
     invalidate: [inventoryKeys.all, ["expenses"]],
     success: "Vendor bill created. Find it under Expenses & Vendors to submit and pay it.",
+    // The confirm dialog shows the error.
+    toastError: false,
   });
 }

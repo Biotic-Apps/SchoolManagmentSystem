@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { AuditService } from '../../core/audit/audit.service';
-import { parseDate } from '../../core/common/dates';
 import { OK, type OkDto } from '../../core/common/dto/ok.dto';
 import {
   conflict,
@@ -24,6 +23,7 @@ import type {
   UpdateNoticeDto,
 } from './dto/notice-input.dto';
 import type { NoticeDto, NoticeReadsDto } from './dto/notice.dto';
+import { expiryDate } from './notice-expiry';
 import { noticeListWhere } from './notice-reach';
 import { NoticeTargetService } from './notice-target.service';
 import { noticeInclude, toNoticeDto, type NoticeRow } from './notice.mapper';
@@ -89,7 +89,7 @@ export class NoticesService {
         body: dto.body,
         audience: toJson(origin.audience),
         attachmentFileIds: fileIds,
-        expiresOn: dto.expiresOn ? parseDate(dto.expiresOn) : null,
+        expiresOn: expiryDate(dto.expiresOn) ?? null,
         pinned: dto.pinned ?? false,
         authorId: user.id,
       },
@@ -126,7 +126,7 @@ export class NoticesService {
         branchId: origin ? origin.branchId : undefined,
         audience: origin ? toJson(origin.audience) : undefined,
         attachmentFileIds: fileIds,
-        expiresOn: dto.expiresOn ? parseDate(dto.expiresOn) : undefined,
+        expiresOn: expiryDate(dto.expiresOn),
         pinned: dto.pinned,
       },
     });

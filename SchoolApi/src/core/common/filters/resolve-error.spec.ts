@@ -1,3 +1,4 @@
+import { ThrottlerException } from '@nestjs/throttler';
 import { resolveError } from './resolve-error';
 
 describe('resolveError (body-parser errors)', () => {
@@ -23,5 +24,15 @@ describe('resolveError (body-parser errors)', () => {
     const { status, body } = resolveError(new Error('db password=secret'));
     expect(status).toBe(500);
     expect(JSON.stringify(body)).not.toContain('secret');
+  });
+});
+
+describe('resolveError (rate limits)', () => {
+  it('replaces the throttler class name with a friendly message', () => {
+    const { status, body } = resolveError(new ThrottlerException());
+    expect(status).toBe(429);
+    expect(body.error.code).toBe('RATE_LIMITED');
+    expect(body.error.message).not.toMatch(/ThrottlerException/);
+    expect(body.error.message).toMatch(/try again/i);
   });
 });

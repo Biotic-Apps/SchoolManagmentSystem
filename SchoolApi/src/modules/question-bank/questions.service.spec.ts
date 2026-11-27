@@ -71,3 +71,54 @@ describe('QuestionsService.create', () => {
     });
   });
 });
+
+describe('QuestionsService answer rules', () => {
+  it('refuses an MCQ whose answer is not an option (400)', async () => {
+    const { service, repository } = setup();
+    await expect(
+      service.create(user, Scope.createGlobal(), {
+        ...dto,
+        questionType: 'MCQ',
+        options: ['1', '2'],
+        correctAnswer: '9',
+      }),
+    ).rejects.toMatchObject({
+      code: 'VALIDATION_FAILED',
+      message: 'The correct answer must be one of the options',
+    });
+    expect(repository.create).not.toHaveBeenCalled();
+  });
+
+  it('stores a canonical True/False answer without options', async () => {
+    const { service, repository } = setup();
+    await service.create(user, Scope.createGlobal(), {
+      ...dto,
+      questionType: 'TRUE_FALSE',
+      options: ['x'],
+      correctAnswer: 'true',
+    });
+    expect(repository.create).toHaveBeenCalledWith(
+      expect.objectContaining({ correctAnswer: 'True' }),
+    );
+  });
+
+  it('checks an update against the stored question', async () => {
+    const { service, repository } = setup();
+    const stored = {
+      id: 'q-1',
+      schoolId: 'school-1',
+      questionType: 'MCQ',
+      options: ['Paris', 'Rome'],
+      correctAnswer: 'Paris',
+    };
+    const repo = repository as unknown as Record<string, jest.Mock>;
+    repo.findById = jest.fn().mockResolvedValue(stored);
+    repo.update = jest.fn();
+    await expect(
+      service.update(Scope.createGlobal(), 'q-1', { correctAnswer: 'Berlin' }),
+    ).rejects.toMatchObject({
+      message: 'The correct answer must be one of the options',
+    });
+    expect(repo.update).not.toHaveBeenCalled();
+  });
+});

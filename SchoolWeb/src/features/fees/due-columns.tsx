@@ -52,11 +52,11 @@ export function dueColumns({ selectable, isSelected, onToggle, onLedger, onPayme
         </span>
       ),
     },
-    { id: "days", header: "Days overdue", className: NUMERIC_COLUMN, cell: (row) => formatNumber(row.days) },
-    money("d0_30", "0–30 days", (row) => row.buckets?.d0_30),
-    money("d31_60", "31–60 days", (row) => row.buckets?.d31_60),
-    money("d61_90", "61–90 days", (row) => row.buckets?.d61_90),
-    money("d90plus", "90+ days", (row) => row.buckets?.d90plus),
+    { id: "days", header: "Days overdue", className: NUMERIC_COLUMN, cell: (row) => formatNumber(row.oldestOverdueDays) },
+    money("d0_30", "0–30 days", (row) => row.aging?.d0_30),
+    money("d31_60", "31–60 days", (row) => row.aging?.d31_60),
+    money("d61_90", "61–90 days", (row) => row.aging?.d61_90),
+    money("d90plus", "90+ days", (row) => row.aging?.d90plus),
     { ...money("total", "Total balance", (row) => row.balanceMinor), className: `${NUMERIC_COLUMN} font-semibold` },
     {
       id: "actions",

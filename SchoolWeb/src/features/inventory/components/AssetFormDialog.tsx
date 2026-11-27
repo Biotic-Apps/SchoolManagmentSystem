@@ -36,10 +36,11 @@ export function AssetFormDialog({ branchId, asset, itemOptions, onClose }: Asset
         label="Item"
         options={itemOptions}
         required
+        disabled={editing}
         placeholder={itemOptions.length ? "Select" : "No asset items yet"}
       />
       <div className="grid gap-4 sm:grid-cols-2">
-        <TextField name="tag" label="Asset tag" required maxLength={40} placeholder="e.g. CHR-0012" />
+        <TextField name="tag" label="Asset tag" required readOnly={editing} maxLength={40} placeholder="e.g. CHR-0012" />
         <SelectField name="condition" label="Condition" options={ASSET_CONDITION_OPTIONS} required />
       </div>
       <TextField name="location" label="Location" required maxLength={120} placeholder="e.g. Room 4, Computer lab" />

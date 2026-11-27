@@ -37,7 +37,7 @@ export class ResultComputeService {
     });
     if (scheme.status !== 'APPROVED')
       throw conflict('The grading scheme is not approved');
-    await this.readiness.assertAllAccepted(id);
+    await this.readiness.assertReady(id);
     const jobId = await this.tasks.enqueue<ComputeResultsInput>(user, {
       queue: QUEUES.REPORTS,
       name: COMPUTE_RESULTS_JOB,

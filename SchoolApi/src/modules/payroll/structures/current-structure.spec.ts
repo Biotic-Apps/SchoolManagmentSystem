@@ -1,4 +1,5 @@
 import {
+  deductionsError,
   parseComponents,
   sortStructures,
   structureFor,
@@ -51,5 +52,29 @@ describe('salary structure selection', () => {
       ]),
     ).toEqual([{ name: 'House rent', amountMinor: 100 }]);
     expect(parseComponents(null)).toEqual([]);
+  });
+});
+
+describe('deductionsError', () => {
+  const pay = (amountMinor: number) => [{ name: 'x', amountMinor }];
+
+  it('refuses deductions above basic + allowances', () => {
+    expect(
+      deductionsError({
+        basicMinor: 2_000_000,
+        allowances: [],
+        deductions: pay(2_500_000),
+      }),
+    ).toMatch(/Deductions cannot be more than the gross salary/);
+  });
+
+  it('accepts deductions up to the gross', () => {
+    expect(
+      deductionsError({
+        basicMinor: 2_000_000,
+        allowances: pay(500_000),
+        deductions: pay(2_500_000),
+      }),
+    ).toBeNull();
   });
 });

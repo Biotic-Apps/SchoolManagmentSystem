@@ -23,12 +23,17 @@ export function ParentFeesView() {
   const { child, summary, invoices, proofs, detail, upload } = fees;
   const payOnline = useDialogState<Invoice>();
 
+  const { payable, onlineGateway } = fees;
+
   const actions = fees.hasOpenInvoice && (
     <div className="flex gap-2">
-      <Button variant="primary" onClick={() => payOnline.show()}>
-        <CreditCard />
-        Pay Online
-      </Button>
+      {onlineGateway && (
+        // Starts with the oldest unpaid invoice; the dialog lets the parent pick another.
+        <Button variant="primary" onClick={() => payOnline.show(payable[0])}>
+          <CreditCard />
+          Pay Online
+        </Button>
+      )}
       <Button variant="secondary" onClick={() => upload.show()}>
         <Upload />
         Upload payment proof
@@ -42,6 +47,12 @@ export function ParentFeesView() {
       {!child && <NoChildState description="Once your child link is verified, their fees and receipts appear here." />}
       {child && (
         <>
+          {fees.hasOpenInvoice && summary.data && !onlineGateway && (
+            <InlineNotice>
+              Online payment is not available for this school yet. Pay at the school office or bank using the
+              challan, then upload a payment proof.
+            </InlineNotice>
+          )}
           {summary.error ? (
             <InlineNotice tone="error">{errorMessage(summary.error)}</InlineNotice>
           ) : (
@@ -76,6 +87,7 @@ export function ParentFeesView() {
         invoice={detail.item}
         open={detail.open}
         onOpenChange={detail.onOpenChange}
+        onlinePaymentEnabled={!!onlineGateway}
         onUploadProof={(invoiceId) => {
           detail.close();
           upload.show(invoiceId);
@@ -93,6 +105,8 @@ export function ParentFeesView() {
       />
       <PayOnlineDialog
         invoice={payOnline.item}
+        invoices={payable}
+        gateway={onlineGateway}
         open={payOnline.open}
         onOpenChange={payOnline.onOpenChange}
       />

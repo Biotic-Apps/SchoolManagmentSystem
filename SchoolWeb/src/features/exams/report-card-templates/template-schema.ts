@@ -84,7 +84,8 @@ export function valuesToInput(v: TemplateFormValues): ReportCardTemplateInput {
     showPosition: v.showPosition,
     signatures: v.signatures.filter(Boolean),
     remarkLabels: v.remarkLabels?.filter(Boolean),
-    footerText: v.footerText || undefined,
+    // "" clears the footer on edit (the API stores blank as none).
+    footerText: v.footerText?.trim() ?? "",
   };
 }
 

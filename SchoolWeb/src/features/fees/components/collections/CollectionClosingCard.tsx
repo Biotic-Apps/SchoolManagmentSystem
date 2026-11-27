@@ -8,7 +8,7 @@ import { EMPTY_VALUE, formatDateTime, textOrDash } from "@/lib/format";
 import type { DailyCollection } from "../../types";
 
 /** Stored closing of a closed day. */
-export function CollectionClosingCard({ closing, expectedCashMinor }: { closing: DailyCollection["closing"]; expectedCashMinor: number }) {
+export function CollectionClosingCard({ closing, expectedCashMinor }: { closing: DailyCollection["closed"]; expectedCashMinor: number }) {
   return (
     <Card>
       <CardHeader>
@@ -19,7 +19,7 @@ export function CollectionClosingCard({ closing, expectedCashMinor }: { closing:
         <InlineNotice tone="warning">Back-dated cash payments for this day are blocked.</InlineNotice>
         <DetailList
           items={[
-            { label: "Expected cash", value: <MoneyText amountMinor={expectedCashMinor} /> },
+            { label: "Expected cash", value: <MoneyText amountMinor={closing?.cashExpectedMinor ?? expectedCashMinor} /> },
             { label: "Cash counted", value: <MoneyText amountMinor={closing?.cashCountedMinor} /> },
             { label: "Difference", value: <MoneyText amountMinor={closing?.differenceMinor} /> },
             { label: "Closed by", value: closing?.closedBy?.name ?? EMPTY_VALUE },

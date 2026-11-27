@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { http, type Query } from "@/lib/http";
+import { omit } from "@/lib/omit";
 import { useApiMutation } from "@/lib/use-api-mutation";
 import { templateKeys } from "./keys";
 import type { ReportCardTemplate, ReportCardTemplateInput } from "./types";
@@ -26,7 +27,7 @@ export function useSaveReportCardTemplate() {
   return useApiMutation({
     mutationFn: async ({ id, input }: { id?: string; input: ReportCardTemplateInput }) =>
       id
-        ? (await http.patch<ReportCardTemplate>(`/report-card-templates/${id}`, input)).data
+        ? (await http.patch<ReportCardTemplate>(`/report-card-templates/${id}`, omit(input, ["branchId"]))).data
         : (await http.post<ReportCardTemplate>("/report-card-templates", input)).data,
     invalidate: ALL,
     success: (_, vars) => (vars.id ? "Template updated" : "Template created"),

@@ -32,13 +32,15 @@ export function reportSchema(report: Report): ZodType<ReportFormValues> {
 
 interface DefaultContext {
   branchId: string | null;
+  schoolId?: string | null;
 }
 
-export function reportDefaults(report: Report, { branchId }: DefaultContext): ReportFormValues {
+export function reportDefaults(report: Report, { branchId, schoolId = null }: DefaultContext): ReportFormValues {
   const today = todayIso();
   const values: ReportFormValues = { format: report.formats[0] };
   for (const param of report.params) {
     if (param.type === "branch") values[param.name] = branchId ?? "";
+    else if (param.type === "school") values[param.name] = schoolId ?? "";
     else if (param.type === "month") values[param.name] = currentPeriod();
     else if (param.name === "from") values[param.name] = `${today.slice(0, 7)}-01`;
     else if (param.name === "to") values[param.name] = today;

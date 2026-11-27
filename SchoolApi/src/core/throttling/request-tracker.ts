@@ -28,3 +28,34 @@ export const callerTracker = (req: TrackedRequest): string => {
   const digest = createHash('sha256').update(token).digest('base64url');
   return `tok:${digest.slice(0, 32)}`;
 };
+
+interface CredentialRequest extends TrackedRequest {
+  body?: unknown;
+}
+
+/** The account an anonymous credential request is about (login identifier, OTP email/phone), lower-cased. */
+const credentialSubject = (body: unknown): string | undefined => {
+  if (!body || typeof body !== 'object') return undefined;
+  const fields = body as Record<string, unknown>;
+  for (const key of ['identifier', 'email', 'phone']) {
+    const value = fields[key];
+    if (typeof value === 'string' && value.trim())
+      return value.trim().toLowerCase();
+  }
+  return undefined;
+};
+
+/**
+ * Strict credential budget per client IP *and* account: guessing one account's password stays slow, while a
+ * whole school behind one NAT address (staff and parents signing in at 8 am) does not share ten attempts.
+ * `ipTracker` keeps a looser per-IP cap on top (auth-ip throttler). The subject is hashed, never stored.
+ */
+export const credentialTracker = (req: CredentialRequest): string => {
+  const subject = credentialSubject(req.body);
+  if (!subject) return ipTracker(req);
+  const digest = createHash('sha256')
+    .update(subject)
+    .digest('base64url')
+    .slice(0, 22);
+  return `${ipTracker(req)}:acct:${digest}`;
+};

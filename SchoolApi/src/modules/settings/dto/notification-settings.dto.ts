@@ -54,6 +54,7 @@ export class NotificationSettingsDto {
   @ApiProperty({ type: EmailSwitchDto }) email!: EmailSwitchDto;
   @ApiProperty({ type: SmsSwitchDto }) sms!: SmsSwitchDto;
   @ApiProperty({ type: PushSwitchDto }) push!: PushSwitchDto;
+  @ApiProperty({ type: PushSwitchDto }) whatsapp!: PushSwitchDto;
   @ApiProperty({ type: [CategoryChannelsDto] })
   categories!: CategoryChannelsDto[];
 }

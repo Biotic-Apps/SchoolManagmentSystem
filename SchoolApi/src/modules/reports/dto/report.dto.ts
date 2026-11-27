@@ -8,7 +8,9 @@ import {
 } from 'class-validator';
 import { JOB_STATUSES, type JobStatus } from '../../tasks/job-status.dto';
 import {
+  PARAM_PICKERS,
   REPORT_FORMATS,
+  type ParamPicker,
   type ParamType,
   type ReportFormatName,
 } from '../report-catalog';
@@ -17,6 +19,12 @@ export class ReportParamDto {
   @ApiProperty() name!: string;
   @ApiProperty({ enum: ['uuid', 'month', 'date', 'int'] }) type!: ParamType;
   @ApiProperty() required!: boolean;
+  @ApiProperty({ example: 'Branch' }) label!: string;
+  @ApiPropertyOptional({
+    enum: PARAM_PICKERS,
+    description: 'For uuid params: which entity to pick',
+  })
+  picker?: ParamPicker;
 }
 
 export class ReportCatalogEntryDto {

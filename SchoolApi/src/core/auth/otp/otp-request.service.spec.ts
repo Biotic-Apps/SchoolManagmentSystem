@@ -15,6 +15,7 @@ interface Options {
   parent?: boolean;
   lastIssuedAt?: Date | null;
   required?: boolean;
+  failures?: number;
   config?: { production: boolean; driver: string; echo: boolean };
 }
 
@@ -29,6 +30,7 @@ function setup(options: Options = {}) {
   };
   const repository = {
     lastIssuedAt: jest.fn().mockResolvedValue(options.lastIssuedAt ?? null),
+    recentFailures: jest.fn().mockResolvedValue(options.failures ?? 0),
     replace: jest.fn<Promise<void>, [object]>().mockResolvedValue(undefined),
   };
   const mailer = { send: jest.fn<void, [string, string, string]>() };
@@ -62,6 +64,13 @@ function configOf(
 }
 
 describe('OtpRequestService', () => {
+  it('sends no new code while the email-code lock is active', async () => {
+    const { service, repository, mailer } = setup({ failures: 10 });
+    await expect(service.request(EMAIL)).resolves.toEqual(OK);
+    expect(repository.replace).not.toHaveBeenCalled();
+    expect(mailer.send).not.toHaveBeenCalled();
+  });
+
   it('stores a hashed code and emails it to the parent', async () => {
     const { service, repository, mailer, emails } = setup();
     await expect(service.request(' Parent@Example.COM ')).resolves.toEqual(OK);

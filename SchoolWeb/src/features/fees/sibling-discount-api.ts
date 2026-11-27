@@ -13,6 +13,7 @@ export interface SiblingDiscount {
 }
 
 export interface SiblingDiscountInput {
+  schoolId: string;
   childIndex: number;
   percentOff: number;
 }

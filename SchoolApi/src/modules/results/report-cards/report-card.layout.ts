@@ -31,23 +31,51 @@ export function skillRows(skills: StudentSkillDto[]): string[][] {
   return rows;
 }
 
+/** Optional template text: blank or whitespace counts as not set. */
+const filled = (value: string | null | undefined): string | undefined =>
+  value?.trim() || undefined;
+
+/**
+ * Header lines: template overrides win only when filled in, so a blank
+ * "school name override" keeps the real school name.
+ */
+export function reportCardHeader(
+  c: Pick<
+    ReportCardContent,
+    'schoolName' | 'branchLine' | 'customHeaderOverrides'
+  >,
+): { schoolName: string; branchLine: string } {
+  const o = c.customHeaderOverrides;
+  const branchLine = o
+    ? [filled(o.subtitle), filled(o.address), filled(o.phone)]
+        .filter(Boolean)
+        .join(' · ')
+    : '';
+  return {
+    schoolName: filled(o?.schoolName) ?? c.schoolName,
+    branchLine: branchLine || c.branchLine,
+  };
+}
+
+/** "Grading scale: A+ 90–100 · A 80–89 · …" (bands highest first). */
+export function gradingScaleLine(
+  bands: ReportCardContent['gradeBands'],
+): string {
+  if (bands.length === 0) return '';
+  const sorted = [...bands].sort((a, b) => b.minPercent - a.minPercent);
+  return `Grading scale: ${sorted
+    .map((b) => `${b.grade} ${b.minPercent}–${b.maxPercent}%`)
+    .join(' · ')}`;
+}
+
 /** Draws one report card on the builder's current page. */
 export function drawReportCard(
   pdf: PdfBuilder,
   c: ReportCardContent,
   footer: string,
 ): void {
-  // Header: use custom overrides if provided
-  const headerSchoolName = c.customHeaderOverrides?.schoolName ?? c.schoolName;
-  const headerBranchLine = c.customHeaderOverrides
-    ? [
-        c.customHeaderOverrides.subtitle,
-        c.customHeaderOverrides.address,
-        c.customHeaderOverrides.phone,
-      ]
-        .filter(Boolean)
-        .join(' · ') || c.branchLine
-    : c.branchLine;
+  const { schoolName: headerSchoolName, branchLine: headerBranchLine } =
+    reportCardHeader(c);
 
   pdf
     .header(
@@ -130,6 +158,10 @@ export function drawReportCard(
       { boldLastRow: true },
     );
   }
+
+  // Grading scale of the exam's scheme (one compact line).
+  const scale = c.showGradingScale ? gradingScaleLine(c.gradeBands) : '';
+  if (scale) pdf.paragraph(scale, { size: 7.5 });
 
   // Attendance summary
   if (c.showAttendance && c.attendanceSummary) {

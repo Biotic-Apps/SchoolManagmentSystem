@@ -61,7 +61,7 @@ export function ProofDetailDrawer({ proof, open, onOpenChange, canReview }: Proo
                 { label: "Reference", value: proof.reference || EMPTY_VALUE },
                 { label: "Submitted by", value: proof.submittedBy?.name ?? EMPTY_VALUE },
                 { label: "Submitted", value: formatDateTime(proof.createdAt) },
-                ...(proof.reason ? [{ label: "Rejection reason", value: proof.reason }] : []),
+                ...(proof.rejectReason ? [{ label: "Rejection reason", value: proof.rejectReason }] : []),
               ]}
             />
             <div>

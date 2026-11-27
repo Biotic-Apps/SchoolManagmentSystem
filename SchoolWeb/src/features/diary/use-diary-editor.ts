@@ -21,7 +21,7 @@ export function useDiaryEditor({ sectionId, date, entry }: DiaryEditorContext, o
         return await save.mutateAsync(toDiaryInput(values, { sectionId, date }));
       } catch (error) {
         if (!hasErrorCode(error, "RECORD_LOCKED")) throw error;
-        toast.error("Diary closed for today");
+        toast.error("The diary for this day is closed");
         return null;
       }
     },

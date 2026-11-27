@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { useCan } from "@/features/auth/use-can";
+import { useCan, useCurrentUserId } from "@/features/auth/use-can";
 import { useAcademicScope } from "@/features/classes/use-academic-scope";
 import { useDialogState } from "@/lib/use-dialog-state";
+import { useIsExamManager } from "./use-exam-manager";
 import { useApproveGradingScheme, useGradingSchemes } from "./grading-api";
 import type { GradingScheme } from "./types";
 
 /** Grading schemes of the picked school and session. */
 export function useGradingTab() {
   const can = useCan();
+  const manager = useIsExamManager();
+  const currentUserId = useCurrentUserId();
   const scope = useAcademicScope();
   const editor = useDialogState<GradingScheme>();
   const approve = useApproveGradingScheme();
@@ -21,8 +24,9 @@ export function useGradingTab() {
     query,
     schemes: query.data ?? [],
     editor,
-    canAdd: can("exams.add") && ready,
-    canEdit: can("exams.edit"),
+    canAdd: can("exams.add") && manager && ready,
+    canEdit: can("exams.edit") && manager,
+    currentUserId,
     canApprove: can("exams.approve"),
     isLocked: (scheme: GradingScheme) => !!scheme.locked || lockedIds.includes(scheme.id),
     markLocked: (id: string) => setLockedIds((current) => [...current, id]),
