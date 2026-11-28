@@ -10,7 +10,7 @@ Multi-school, multi-branch school management: one web panel and one Android app,
 | [SchoolApp/](SchoolApp/) | Android app (Kotlin, Jetpack Compose) |
 | [infra/](infra/) | Docker Compose stacks (local and production) |
 
-See [docs/PROGRESS.md](docs/PROGRESS.md) for the current module status.
+See [docs/PROGRESS.md](docs/PROGRESS.md) for the current module status, and [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) for everything needed to develop, build and host it.
 
 ---
 
