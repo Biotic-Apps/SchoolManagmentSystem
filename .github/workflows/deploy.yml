@@ -3,11 +3,13 @@ name: Deploy
 # Builds the API and web images on GitHub (native ARM64 runner, matching the Oracle Ampere server), pushes them to
 # GHCR, then SSHes to the server and runs infra/scripts/deploy-images.sh. The server never builds anything.
 #
-# Repository settings (Settings › Secrets and variables › Actions):
-#   secrets   SSH_HOST          server public IP / hostname
+# Settings › Environments › production (only runs from main may use it):
+#   secrets   SSH_HOST         server public IP / hostname
 #             SSH_USER          login user (ubuntu on Oracle Ubuntu images)
 #             SSH_KEY           private key of the deploy key pair (its .pub is in the server's authorized_keys)
 #             SSH_KNOWN_HOSTS   output of `ssh-keyscan <host>` taken once from a trusted machine
+# Repository variables (Settings › Secrets and variables › Actions; the build job has no environment),
+# with API_DOMAIN and APP_DOMAIN also copied into the production environment:
 #   variables API_DOMAIN        e.g. api.futurelearning.duckdns.org (compiled into the web bundle)
 #             APP_DOMAIN        e.g. futurelearning.duckdns.org (canonical URL / og:image of the public site)
 #             WEB_IDLE_TIMEOUT_MINUTES (optional, default 30)

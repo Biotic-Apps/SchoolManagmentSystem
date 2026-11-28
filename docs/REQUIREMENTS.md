@@ -76,7 +76,11 @@ tells you which value is wrong.
 
 ## 4. GitHub repository settings
 
-Settings → Secrets and variables → Actions. The **Deploy** workflow ([.github/workflows/deploy.yml](../.github/workflows/deploy.yml)) reads:
+The **Deploy** workflow ([.github/workflows/deploy.yml](../.github/workflows/deploy.yml)) reads the values below.
+The four `SSH_*` secrets live **only** in the `production` environment (Settings → Environments → production),
+which accepts deploys started from `main` only. The variables are repository variables (Settings → Secrets and
+variables → Actions → Variables), because the image build job runs outside the environment; `API_DOMAIN` and
+`APP_DOMAIN` are also copied into the `production` environment. Change a domain in both places.
 
 | Kind | Name | Value |
 |---|---|---|
@@ -100,7 +104,7 @@ Settings → Secrets and variables → Actions. The **Deploy** workflow ([.githu
 3. **Prepare Ubuntu.** Run [infra/scripts/server-bootstrap.sh](../infra/scripts/server-bootstrap.sh) on the server
    (updates, swap, Docker, host firewall rules for Oracle images).
 4. **Copy the app.** Put the repository's `infra/` folder in `/opt/eschool/infra` and create `infra/.env` there from the template.
-5. **Add the GitHub secrets and variables** from section 4.
+5. **Add the GitHub secrets and variables** from section 4 (SSH secrets in the `production` environment).
 6. **Deploy.** GitHub → Actions → **Deploy** → Run workflow (choose a branch, tag, or commit).
 7. **Create the first admin** once, inside the API container, with `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` set
    and `npm run db:seed` (see [deployment.md](deployment.md)).
